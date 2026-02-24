@@ -21,6 +21,7 @@ create table users (
                        last_name varchar(80) not null,
                        email varchar(190) not null unique,
                        password_hash varchar(255) not null,
+                       phone varchar(20),
                        job_title varchar(120),
                        department_id bigint references departments(id),
                        is_active boolean not null default true,
