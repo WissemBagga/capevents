@@ -2,6 +2,7 @@ package com.capevents.backend.user;
 
 
 import com.capevents.backend.common.dto.PageResponse;
+import com.capevents.backend.common.exception.BadRequestException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @Tag(name="Users")
 @SecurityRequirement(name = "bearerAuth")
@@ -26,6 +28,10 @@ public class UserController {
         this.userService = userService;
     }
 
+    private static final Set<String> USER_SORT_FIELDS = Set.of(
+            "createdAt", "updatedAt", "email", "firstName", "lastName", "lastLoginAt"
+    );
+    
     @PreAuthorize("hasAuthority('ROLE_HR')")
     @GetMapping("/admin")
     public PageResponse<UserSummaryDto> listUsers(
@@ -34,6 +40,10 @@ public class UserController {
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir
     ) {
+
+        if (!USER_SORT_FIELDS.contains(sortBy)) {
+            throw new BadRequestException("Invalid sortBy. Allowed: " + USER_SORT_FIELDS);
+        }
         Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         var pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         return userService.listUsers(pageable);

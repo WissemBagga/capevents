@@ -54,6 +54,9 @@ public class User {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(name = "created_at")
+    private Instant createdAt;
+
     @Column(name = "updated_at")
     private Instant updatedAt;
 
@@ -72,6 +75,11 @@ public class User {
         if (id == null) {
             id = UUID.randomUUID();
         }
+
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+
         if (updatedAt == null) {
             updatedAt = Instant.now();
         }
