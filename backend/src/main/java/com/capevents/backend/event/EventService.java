@@ -339,31 +339,46 @@ public class EventService {
 
 
     @Transactional(readOnly = true)
-    public List<EventResponse> searchPublishedForUserDept(String actorEmail, String category, Instant from, Instant to) {
+    public PageResponse<EventResponse> listPublishedForUserDept(String actorEmail, Pageable pageable) {
         var actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
+        boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
         Instant now = Instant.now();
 
-        Instant effectiveFrom = (from != null) ? from : now;
-        Instant effectiveTo = (to != null) ? to : Instant.parse("9999-12-31T23:59:59Z");
-
-        if (effectiveFrom.isAfter(effectiveTo)) {
-            throw new BadRequestException("from must be before or equal to to");
-        }
-
-        boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
         if (isHr) {
-            return eventRepository.searchPublished(now, category, effectiveFrom, effectiveTo)
-                    .stream().map(this::toResponse).toList();
+            Page<EventResponse> page = eventRepository
+                    .findByStatusAndStartAtAfter(EventStatus.PUBLISHED, now, pageable)
+                    .map(this::toResponse);
+
+            return new PageResponse<>(
+                    page.getContent(),
+                    page.getNumber(),
+                    page.getSize(),
+                    page.getTotalPages(),
+                    page.getTotalElements(),
+                    page.hasNext(),
+                    page.hasPrevious()
+            );
         }
 
         if (actor.getDepartment() == null) throw new BadRequestException("User has no department");
 
         Long deptId = actor.getDepartment().getId();
 
-        return eventRepository.searchPublishedVisibleForDept(now, deptId, category, effectiveFrom, effectiveTo)
-                .stream().map(this::toResponse).toList();
+        Page<EventResponse> page = eventRepository
+                .findPublishedVisibleForDeptPage(now, deptId, pageable)
+                .map(this::toResponse);
+
+        return new PageResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
     }
 
 
@@ -396,6 +411,66 @@ public class EventService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public PageResponse<EventResponse> searchPublishedForUserDept(
+            String actorEmail, String category, Instant from, Instant to, Pageable pageable
+    ) {
+        var actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        Instant now = Instant.now();
+
+        Instant effectiveFrom = (from != null) ? from : now;
+        Instant effectiveTo = (to != null) ? to : Instant.parse("9999-12-31T23:59:59Z");
+
+        if (effectiveFrom.isAfter(effectiveTo)) {
+            throw new BadRequestException("from must be before or equal to to");
+        }
+
+        boolean isHr = actor.getRoles().stream()
+                .anyMatch(r -> r.getCode().equals("ROLE_HR"));
+
+        Page<Event> page;
+
+        if (isHr) {
+            page = eventRepository.searchPublishedPage(
+                    now,
+                    category,
+                    effectiveFrom,
+                    effectiveTo,
+                    pageable
+            );
+        } else {
+
+            if (actor.getDepartment() == null) {
+                throw new BadRequestException("User has no department");
+            }
+
+            Long deptId = actor.getDepartment().getId();
+
+            page = eventRepository.searchPublishedVisibleForDeptPage(
+                    now,
+                    deptId,
+                    category,
+                    effectiveFrom,
+                    effectiveTo,
+                    pageable
+            );
+        }
+
+        Page<EventResponse> dtoPage = page.map(this::toResponse);
+
+        return new PageResponse<>(
+                dtoPage.getContent(),
+                dtoPage.getNumber(),
+                dtoPage.getSize(),
+                dtoPage.getTotalPages(),
+                dtoPage.getTotalElements(),
+                dtoPage.hasNext(),
+                dtoPage.hasPrevious()
+        );
+    }
+
     private void validateBusiness(CreateEventRequest req){
         if (req.registrationDeadline().isAfter(req.startAt()) || req.registrationDeadline().equals(req.startAt())){
             throw new BadRequestException("Registration deadline must be before event start time");
@@ -410,28 +485,6 @@ public class EventService {
             throw new BadRequestException("Location name is required for ONSITE events");
         }
     }
-
-
-    @Transactional(readOnly = true)
-    public List<EventResponse> listPublishedForUserDept(String actorEmail) {
-        var actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
-        boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
-        if (isHr) {
-            return listPublishedUpcoming(); // ce pour RH voit tout published
-        }
-
-        if (actor.getDepartment() == null) {
-            throw new BadRequestException("User has no department");
-        }
-
-        Long deptId = actor.getDepartment().getId();
-        return eventRepository.findPublishedVisibleForDept(Instant.now(), deptId)
-                .stream().map(this::toResponse).toList();
-    }
-
-
 
 
     private void validateBusinessForUpdate(UpdateEventRequest req){

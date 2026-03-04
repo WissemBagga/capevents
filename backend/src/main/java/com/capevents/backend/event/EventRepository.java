@@ -1,5 +1,7 @@
 package com.capevents.backend.event;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,22 +15,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     List<Event> findByStatusAndStartAtAfterOrderByCreatedAtAsc(EventStatus status, Instant now);
 
     List<Event> findAllByOrderByCreatedAtDesc();
-
-    @Query("""
-          select e from Event e 
-          where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
-            and e.startAt >= :now
-            and (:category is null or e.category = :category)
-            and e.startAt >= :from
-            and e.startAt <= :to
-          order by e.startAt asc
-    """)
-    List<Event> searchPublished(
-            @Param("now") Instant now,
-            @Param("category") String category,
-            @Param("from") Instant from,
-            @Param("to") Instant to
-    );
 
     @Query("""
       select e from Event e
@@ -48,20 +34,9 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     """)
     Optional<Event> findByIdWithCreatorDept(@Param("id") UUID id);
 
+    Page<Event> findByStatusAndStartAtAfter(EventStatus status, Instant startAt, Pageable pageable);
 
-    @Query("""
-  select e from Event e
-  left join fetch e.createdBy
-  left join fetch e.targetDepartment td
-  where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
-    and e.startAt >= :now
-    and (
-      e.audience = com.capevents.backend.event.EventAudience.GLOBAL
-      or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
-    )
-  order by e.startAt asc
-""")
-    List<Event> findPublishedVisibleForDept(@Param("now") Instant now, @Param("deptId") Long deptId);
+
 
     @Query("""
       select e from Event e
@@ -76,26 +51,65 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     """)
     Optional<Event> findPublishedByIdVisibleForDept(@Param("id") UUID id, @Param("deptId") Long deptId);
 
+
+
     @Query("""
-      select e from Event e
-      left join fetch e.createdBy
-      left join fetch e.targetDepartment td
-      where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
-        and e.startAt >= :now
-        and (
-          e.audience = com.capevents.backend.event.EventAudience.GLOBAL
-          or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
-        )
-        and (coalesce(:category, e.category) = e.category)
-        and e.startAt >= :from
-        and e.startAt <= :to
-      order by e.startAt asc
-    """)
-    List<Event> searchPublishedVisibleForDept(
+  select e from Event e
+  left join e.targetDepartment td
+  where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+    and e.startAt >= :now
+    and (
+      e.audience = com.capevents.backend.event.EventAudience.GLOBAL
+      or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
+    )
+""")
+    Page<Event> findPublishedVisibleForDeptPage(
+            @Param("now") Instant now,
+            @Param("deptId") Long deptId,
+            Pageable pageable
+    );
+
+    @Query("""
+  select e from Event e
+  left join e.targetDepartment td
+  where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+    and e.startAt >= :now
+    and (
+      e.audience = com.capevents.backend.event.EventAudience.GLOBAL
+      or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
+    )
+    and (:category is null or e.category = :category)
+    and (:from is null or e.startAt >= :from)
+    and (:to is null or e.startAt <= :to)
+""")
+    Page<Event> searchPublishedVisibleForDeptPage(
             @Param("now") Instant now,
             @Param("deptId") Long deptId,
             @Param("category") String category,
             @Param("from") Instant from,
-            @Param("to") Instant to
+            @Param("to") Instant to,
+            Pageable pageable
     );
+    @Query("""
+select e from Event e
+left join e.targetDepartment td
+where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+and e.startAt >= :now
+and (:category is null or e.category = :category)
+and e.startAt >= :from
+and e.startAt <= :to
+""")
+    Page<Event> searchPublishedPage(
+            @Param("now") Instant now,
+            @Param("category") String category,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
+
+
+
+
+
 }

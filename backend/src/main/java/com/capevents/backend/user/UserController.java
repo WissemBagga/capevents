@@ -6,7 +6,6 @@ import com.capevents.backend.common.exception.BadRequestException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Set;
 
 @Tag(name="Users")
@@ -31,7 +29,7 @@ public class UserController {
     private static final Set<String> USER_SORT_FIELDS = Set.of(
             "createdAt", "updatedAt", "email", "firstName", "lastName", "lastLoginAt"
     );
-    
+
     @PreAuthorize("hasAuthority('ROLE_HR')")
     @GetMapping("/admin")
     public PageResponse<UserSummaryDto> listUsers(

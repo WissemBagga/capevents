@@ -15,12 +15,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @SecurityRequirement(name = "bearerAuth")
@@ -36,8 +38,19 @@ public class EventController {
 
     // l'employe peut voir les events publies
     @GetMapping("/published")
-    public List<EventResponse> listPublished(Authentication auth) {
-        return eventService.listPublishedForUserDept(auth.getName());
+    public PageResponse<EventResponse> listPublished(
+            Authentication auth,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "startAt") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ) {
+        if (!EVENT_SORT_FIELDS.contains(sortBy)) {
+            throw new BadRequestException("Invalid sortBy. Allowed: " + EVENT_SORT_FIELDS);
+        }
+        Sort.Direction dir = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        var pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
+        return eventService.listPublishedForUserDept(auth.getName(), pageable);
     }
 
     // Hr peut Publier un event
@@ -93,27 +106,29 @@ public class EventController {
         return eventService.archive(id, auth.getName(), http.getRemoteAddr());
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/published/search")
-    public List<EventResponse> searchPublished(
+    public PageResponse<EventResponse> searchPublished(
             Authentication auth,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) String from,
-            @RequestParam(required = false) String to
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "startAt") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
     ) {
-        Instant fromInstant = parseInstantOrNull(from);
-        Instant toInstant = parseInstantOrNull(to);
+        Sort.Direction dir = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        var pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
 
-        return eventService.searchPublishedForUserDept(auth.getName(), category, fromInstant, toInstant);
-    }
-
-    private Instant parseInstantOrNull(String v) {
-        if (v == null || v.isBlank()) return null;
-        try {
-            return Instant.parse(v); // ex: 2026-03-10T09:00:00Z
-        } catch (Exception e) {
-            throw new BadRequestException("Invalid date format. Use ISO like 2026-03-10T09:00:00Z");
+        if (!EVENT_SORT_FIELDS.contains(sortBy)) {
+            throw new BadRequestException("Invalid sortBy. Allowed: " + EVENT_SORT_FIELDS);
         }
+        return eventService.searchPublishedForUserDept(auth.getName(), category, from, to, pageable);
     }
+
+    private static final Set<String> EVENT_SORT_FIELDS = Set.of("startAt","createdAt","title");
+
 
     @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
     @GetMapping("/admin/department")
