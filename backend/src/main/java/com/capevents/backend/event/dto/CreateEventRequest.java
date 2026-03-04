@@ -1,5 +1,6 @@
 package com.capevents.backend.event.dto;
 
+import com.capevents.backend.event.EventAudience;
 import com.capevents.backend.event.EventLocationType;
 import jakarta.validation.constraints.*;
 
@@ -20,6 +21,9 @@ public record CreateEventRequest(
 
         @NotNull @Min(1) @Max(500) Integer capacity,
         @NotNull Instant registrationDeadline,
+
+        @NotNull EventAudience audience,
+        Long targetDepartmentId,
 
         String imageUrl
 ) {}

@@ -30,9 +30,6 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/events/published").permitAll()
-                        .requestMatchers("/api/events/published/**").permitAll()
-                        .requestMatchers("/api/events/published/search").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )

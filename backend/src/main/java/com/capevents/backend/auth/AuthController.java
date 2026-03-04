@@ -3,6 +3,7 @@ package com.capevents.backend.auth;
 
 import com.capevents.backend.auth.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,24 +22,25 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest req){
-        authService.register(req);
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest req, HttpServletRequest http) {
+        authService.register(req, http.getRemoteAddr());
         return ResponseEntity.ok().build();
     }
 
+
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest req){
-        return authService.login(req);
+    public AuthResponse login(@Valid @RequestBody LoginRequest req, HttpServletRequest http) {
+        return authService.login(req, http.getRemoteAddr());
     }
 
     @PostMapping("/forgot-password")
-    public ForgotPasswordResponse forgot(@Valid @RequestBody ForgotPasswordRequest req) {
-        return authService.forgotPassword(req);
+    public ForgotPasswordResponse forgot(@Valid @RequestBody ForgotPasswordRequest req, HttpServletRequest http) {
+        return authService.forgotPassword(req, http.getRemoteAddr());
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<Void> reset(@Valid @RequestBody ResetPasswordRequest req) {
-        authService.resetPassword(req);
+    public ResponseEntity<Void> reset(@Valid @RequestBody ResetPasswordRequest req, HttpServletRequest http) {
+        authService.resetPassword(req, http.getRemoteAddr());
         return ResponseEntity.ok().build();
     }
 

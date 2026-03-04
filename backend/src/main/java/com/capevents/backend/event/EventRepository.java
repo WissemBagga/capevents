@@ -6,20 +6,96 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface EventRepository extends JpaRepository<Event, UUID> {
-    List<Event> findByStatusOrderByCreatedAtAsc(EventStatus status);
     List<Event> findByStatusAndStartAtAfterOrderByCreatedAtAsc(EventStatus status, Instant now);
 
     List<Event> findAllByOrderByCreatedAtDesc();
-    List<Event> findByStatus(EventStatus status);
+
     @Query("""
-        select e from Event e
-        where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
-        and e.startAt >= :from
-        and (:category is null or e.category = :category)
-        order by e.startAt asc
+          select e from Event e 
+          where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+            and e.startAt >= :now
+            and (:category is null or e.category = :category)
+            and e.startAt >= :from
+            and e.startAt <= :to
+          order by e.startAt asc
     """)
-    List<Event> searchPublished(@Param("from") Instant from, @Param("category") String category);
+    List<Event> searchPublished(
+            @Param("now") Instant now,
+            @Param("category") String category,
+            @Param("from") Instant from,
+            @Param("to") Instant to
+    );
+
+    @Query("""
+      select e from Event e
+      left join fetch e.createdBy cb
+      left join fetch cb.department d
+      where d.id = :deptId
+      order by e.createdAt desc
+    """)
+    List<Event> findAllByCreatorDepartment(@Param("deptId") Long deptId);
+
+
+    @Query("""
+      select e from Event e
+      left join fetch e.createdBy cb
+      left join fetch cb.department
+      where e.id = :id
+    """)
+    Optional<Event> findByIdWithCreatorDept(@Param("id") UUID id);
+
+
+    @Query("""
+  select e from Event e
+  left join fetch e.createdBy
+  left join fetch e.targetDepartment td
+  where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+    and e.startAt >= :now
+    and (
+      e.audience = com.capevents.backend.event.EventAudience.GLOBAL
+      or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
+    )
+  order by e.startAt asc
+""")
+    List<Event> findPublishedVisibleForDept(@Param("now") Instant now, @Param("deptId") Long deptId);
+
+    @Query("""
+      select e from Event e
+      left join fetch e.createdBy
+      left join fetch e.targetDepartment td
+      where e.id = :id
+        and e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+        and (
+          e.audience = com.capevents.backend.event.EventAudience.GLOBAL
+          or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
+        )
+    """)
+    Optional<Event> findPublishedByIdVisibleForDept(@Param("id") UUID id, @Param("deptId") Long deptId);
+
+    @Query("""
+      select e from Event e
+      left join fetch e.createdBy
+      left join fetch e.targetDepartment td
+      where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+        and e.startAt >= :now
+        and (
+          e.audience = com.capevents.backend.event.EventAudience.GLOBAL
+          or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
+        )
+        and (coalesce(:category, e.category) = e.category)
+        and e.startAt >= :from
+        and e.startAt <= :to
+      order by e.startAt asc
+    """)
+    List<Event> searchPublishedVisibleForDept(
+            @Param("now") Instant now,
+            @Param("deptId") Long deptId,
+            @Param("category") String category,
+            @Param("from") Instant from,
+            @Param("to") Instant to
+    );
 }

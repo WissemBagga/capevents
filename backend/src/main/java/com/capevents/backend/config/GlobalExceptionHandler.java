@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
     // Fallback
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleOther(Exception ex, HttpServletRequest req) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", req);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), req);
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String message, HttpServletRequest req) {

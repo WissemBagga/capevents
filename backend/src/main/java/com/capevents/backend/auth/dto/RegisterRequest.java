@@ -10,6 +10,6 @@ import jakarta.validation.constraints.Size;
         @NotBlank @Email @Size(max = 190) String email,
         @NotBlank @Size(min = 6, max= 72) String password,
         @Size(max = 20) String phone,
-        Long departementId
+        Long departmentId
     ) {}
 

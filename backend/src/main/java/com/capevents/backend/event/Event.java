@@ -24,8 +24,8 @@ public class Event {
     @Column(length = 100, nullable = false)
     private String title;
 
-    @Column(length = 60)
-    private String category;
+        @Column(length = 60)
+        private String category;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -62,6 +62,14 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EventAudience audience = EventAudience.DEPARTMENT;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "target_department_id")
+    private com.capevents.backend.department.Department targetDepartment;
 
     @Column(name = "created_at")
     private Instant createdAt;
