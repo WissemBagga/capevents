@@ -1,7 +1,8 @@
 package com.capevents.backend.event;
 
 
-import com.capevents.backend.config.BadRequestException;
+import com.capevents.backend.common.dto.PageResponse;
+import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.event.dto.CancelEventRequest;
 import com.capevents.backend.event.dto.CreateEventRequest;
 import com.capevents.backend.event.dto.EventResponse;
@@ -10,7 +11,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -60,8 +64,15 @@ public class EventController {
     // Liste de tous les events : pour HR
     @PreAuthorize("hasAuthority('ROLE_HR')")
     @GetMapping("/admin")
-    public List<EventResponse> listAllForHr() {
-        return eventService.listAllForHr();
+    public PageResponse<EventResponse> listAllForHr(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        var pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        return eventService.listAllForHr(pageable);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")

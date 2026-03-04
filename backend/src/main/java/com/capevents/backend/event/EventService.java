@@ -1,14 +1,17 @@
 package com.capevents.backend.event;
 
 import com.capevents.backend.audit.AuditService;
-import com.capevents.backend.config.BadRequestException;
-import com.capevents.backend.config.NotFoundException;
+import com.capevents.backend.common.dto.PageResponse;
+import com.capevents.backend.common.exception.BadRequestException;
+import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.department.DepartmentRepository;
 import com.capevents.backend.event.dto.CreateEventRequest;
 import com.capevents.backend.event.dto.EventResponse;
 import com.capevents.backend.event.dto.UpdateEventRequest;
 import com.capevents.backend.user.User;
 import com.capevents.backend.user.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -200,17 +203,27 @@ public class EventService {
 
 
     @Transactional(readOnly = true)
-    public List<EventResponse> listAllForHr(){
-        List<Event> events = eventRepository.findAllByOrderByCreatedAtDesc();
-        List<EventResponse> responses = new ArrayList<>();
+    public PageResponse<EventResponse> listAllForHr(Pageable pageable) {
+        Page<EventResponse> page = eventRepository.findAll(pageable).map(this::toResponse);
 
-        for (Event e : events) {
-            responses.add(toResponse(e));
-        }
-        return responses;
+        return new PageResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
+    }
 
-        // ou on peut faire par autre methode return eventRepository.findAllByOrderByCreatedAtDesc().stream().map(this::toResponse).toList();
-
+    @Transactional(readOnly = true)
+    public List<EventResponse> listAllForHr() {
+        return eventRepository
+                .findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
 
@@ -467,7 +480,7 @@ public class EventService {
 
         boolean isManager = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
         if (!isManager) {
-            throw new com.capevents.backend.config.NotFoundException("Event not found");
+            throw new NotFoundException("Event not found");
         }
 
         // Dept de l'acteur
@@ -481,7 +494,7 @@ public class EventService {
 
         if (actorDeptId == null || eventDeptId == null || !actorDeptId.equals(eventDeptId)) {
             // On renvoie "not found" plutôt que "forbidden" pour ne pas révéler l'existence
-            throw new com.capevents.backend.config.NotFoundException("Event not found");
+            throw new NotFoundException("Event not found");
         }
     }
 

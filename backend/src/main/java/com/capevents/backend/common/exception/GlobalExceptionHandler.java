@@ -1,10 +1,13 @@
-package com.capevents.backend.config;
+package com.capevents.backend.common.exception;
 
+import com.capevents.backend.common.dto.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
@@ -48,4 +51,16 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(status).body(body);
     }
+    @ExceptionHandler(PropertyReferenceException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handlePropertyReference(PropertyReferenceException ex, HttpServletRequest req) {
+        return new ApiError(
+                Instant.now(),
+                400,
+                "Bad Request",
+                "Invalid sort property: " + ex.getPropertyName(),
+                req.getRequestURI()
+        );
+    }
+
 }

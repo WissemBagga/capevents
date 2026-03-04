@@ -1,4 +1,4 @@
-package com.capevents.backend.config;
+package com.capevents.backend.common.dto;
 
 import java.time.Instant;
 

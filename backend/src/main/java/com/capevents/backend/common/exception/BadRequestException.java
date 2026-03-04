@@ -1,4 +1,4 @@
-package com.capevents.backend.config;
+package com.capevents.backend.common.exception;
 
 public class BadRequestException extends RuntimeException {
     public BadRequestException(String message) {

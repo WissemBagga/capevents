@@ -2,8 +2,8 @@ package com.capevents.backend.auth;
 
 import com.capevents.backend.audit.AuditService;
 import com.capevents.backend.auth.dto.*;
-import com.capevents.backend.config.BadRequestException;
-import com.capevents.backend.config.NotFoundException;
+import com.capevents.backend.common.exception.BadRequestException;
+import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.department.Department;
 import com.capevents.backend.department.DepartmentRepository;
 import com.capevents.backend.role.RoleRepository;
