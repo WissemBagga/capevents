@@ -24,7 +24,7 @@ class EventVisibilityTest {
         String token = TestAuthHelper.loginAndGetToken(
                 mockMvc, objectMapper,
                 "Mounir@capgemini.com",
-                "123456"
+                "Mounir123!"
         );
 
         mockMvc.perform(get("/api/events/published")

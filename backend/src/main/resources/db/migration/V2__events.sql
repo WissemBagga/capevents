@@ -12,6 +12,8 @@ create table events (
                         capacity int not null,
                         registration_deadline timestamptz not null,
                         status varchar(20) not null default 'DRAFT',
+                        audience varchar(20) not null default 'DEPARTMENT',
+                        target_department_id bigint references departments(id),
                         created_by uuid not null references users(id),
                         created_at timestamptz not null default now(),
                         updated_at timestamptz not null default now(),
@@ -22,10 +24,12 @@ create table events (
                         constraint chk_event_duration check (duration_minutes > 0 and duration_minutes <= 1440),
                         constraint chk_event_capacity check (capacity >= 1 and capacity <= 500),
                         constraint chk_deadline_before_start check (registration_deadline < start_at),
-
                         constraint chk_event_location_type check (location_type in ('ONSITE','ONLINE','EXTERNAL')),
-                        constraint chk_event_status check (status in ('DRAFT','PUBLISHED','PENDING','CANCELLED','ARCHIVED'))
+                        constraint chk_event_status check (status in ('DRAFT','PUBLISHED','PENDING','CANCELLED','ARCHIVED')),
+                        constraint chk_event_audience check (audience in ('GLOBAL','DEPARTMENT'))
 );
 
 create index idx_events_status_start on events(status, start_at);
 create index idx_events_created_by on events(created_by);
+create index idx_events_audience on events(audience);
+create index idx_events_target_dept on events(target_department_id);

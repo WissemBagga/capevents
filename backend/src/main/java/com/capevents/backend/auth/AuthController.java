@@ -2,6 +2,7 @@ package com.capevents.backend.auth;
 
 
 import com.capevents.backend.auth.dto.*;
+import com.capevents.backend.auth.dto.VerifyEmailRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -33,6 +34,18 @@ public class AuthController {
         return authService.login(req, http.getRemoteAddr());
     }
 
+
+    @PostMapping("/refresh")
+    public RefreshResponse refresh(@Valid @RequestBody RefreshRequest req, HttpServletRequest http) {
+        return authService.refresh(req, http.getRemoteAddr());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshRequest req, HttpServletRequest http) {
+        authService.logout(req, http.getRemoteAddr());
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/forgot-password")
     public ForgotPasswordResponse forgot(@Valid @RequestBody ForgotPasswordRequest req, HttpServletRequest http) {
         return authService.forgotPassword(req, http.getRemoteAddr());
@@ -43,5 +56,19 @@ public class AuthController {
         authService.resetPassword(req, http.getRemoteAddr());
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<Void> verifyEmail(@Valid @RequestBody VerifyEmailRequest req, HttpServletRequest http) {
+        authService.verifyEmail(req.token(), http.getRemoteAddr());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<Void> resendVerification(@Valid @RequestBody ResendVerificationRequest req, HttpServletRequest http) {
+        authService.resendVerification(req.email(), http.getRemoteAddr());
+        return ResponseEntity.ok().build();
+    }
+
+
 
 }

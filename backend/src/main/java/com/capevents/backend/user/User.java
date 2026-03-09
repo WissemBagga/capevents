@@ -51,6 +51,9 @@ public class User {
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
 
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
+
     @Column(name = "avatar_url")
     private String avatarUrl;
 
@@ -83,9 +86,7 @@ public class User {
         if (updatedAt == null) {
             updatedAt = Instant.now();
         }
-        if (lastLoginAt == null) {
-            lastLoginAt = Instant.now();
-        }
+
     }
     @PreUpdate
     public void preUpdate() {

@@ -6,7 +6,7 @@ create table audit_logs (
                             entity_id varchar(64),
                             ip_address varchar(64),
                             created_at timestamptz not null default now(),
-                            details jsonb
+                            details text
 );
 
 create index idx_audit_actor on audit_logs(actor_user_id);

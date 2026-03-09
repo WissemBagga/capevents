@@ -1,4 +1,3 @@
-
 server:
   port : 8080
 spring:
@@ -12,6 +11,21 @@ spring:
       ddl-auto: validate
     open-in-view: false
 
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: TON_USERNAME_MAILTRAP
+    password: TON_PASSWORD_MAILTRAP
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  profiles:
+    active: dev
+
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -20,4 +34,13 @@ app:
   security:
     jwt:
       secret: "capgemini-pfe-dev-secret-key-very-long"
-      expiration-minutes: 60
+      access-expiration-minutes: 30
+      refresh-expiration-days: 7
+    allowed-email-domains:
+      - capgemini.com
+      - entreprise.local
+      - test.com
+
+  mail:
+    from: noreply@capevents.local
+    frontend-base-url: http://localhost:8080

@@ -27,7 +27,7 @@ class AuthControllerTest {
         String body = """
   {
     "email":"wissem.bagga@capgemini.com",
-    "password":"12345678"
+    "password":"Azerty123!"
   }
   """;
 

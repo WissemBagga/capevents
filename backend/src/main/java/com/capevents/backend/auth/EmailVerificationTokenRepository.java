@@ -9,11 +9,11 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
-    Optional<PasswordResetToken> findByTokenHash(String tokenHash);
+public interface EmailVerificationTokenRepository extends JpaRepository<EmailVerificationToken, Long> {
+    Optional<EmailVerificationToken> findByTokenHash(String tokenHash);
     @Modifying
     @Query("""
-    update PasswordResetToken t
+    update EmailVerificationToken t
     set t.usedAt = :usedAt
     where t.user.id = :userId
       and t.usedAt is null

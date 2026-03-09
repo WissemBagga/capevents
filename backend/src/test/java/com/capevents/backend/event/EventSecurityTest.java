@@ -24,8 +24,8 @@ class EventSecurityTest {
 
         String token = TestAuthHelper.loginAndGetToken(
                 mockMvc, objectMapper,
-                "Ahmed@capgemini.com",
-                "123456"
+                "ahmed@capgemini.com",
+                "Ahmed123!"
         );
 
         String body = """

@@ -79,8 +79,8 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
       or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
     )
     and (:category is null or e.category = :category)
-    and (:from is null or e.startAt >= :from)
-    and (:to is null or e.startAt <= :to)
+    and e.startAt >= :from
+    and e.startAt <= :to
 """)
     Page<Event> searchPublishedVisibleForDeptPage(
             @Param("now") Instant now,
@@ -91,13 +91,12 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             Pageable pageable
     );
     @Query("""
-select e from Event e
-left join e.targetDepartment td
-where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
-and e.startAt >= :now
-and (:category is null or e.category = :category)
-and e.startAt >= :from
-and e.startAt <= :to
+  select e from Event e
+  where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+    and e.startAt >= :now
+    and (:category is null or e.category = :category)
+    and e.startAt >= :from
+    and e.startAt <= :to
 """)
     Page<Event> searchPublishedPage(
             @Param("now") Instant now,
@@ -106,10 +105,5 @@ and e.startAt <= :to
             @Param("to") Instant to,
             Pageable pageable
     );
-
-
-
-
-
 
 }

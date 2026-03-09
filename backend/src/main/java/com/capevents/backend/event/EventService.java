@@ -413,7 +413,11 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public PageResponse<EventResponse> searchPublishedForUserDept(
-            String actorEmail, String category, Instant from, Instant to, Pageable pageable
+            String actorEmail,
+            String category,
+            Instant from,
+            Instant to,
+            Pageable pageable
     ) {
         var actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
                 .orElseThrow(() -> new NotFoundException("User not found"));
@@ -441,7 +445,6 @@ public class EventService {
                     pageable
             );
         } else {
-
             if (actor.getDepartment() == null) {
                 throw new BadRequestException("User has no department");
             }

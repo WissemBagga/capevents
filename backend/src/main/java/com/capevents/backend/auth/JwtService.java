@@ -1,5 +1,6 @@
 package com.capevents.backend.auth;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,19 +16,19 @@ import java.util.Map;
 @Service
 public class JwtService {
     private final String secret;
-    private final long expirationMinutes;
+    private final long accessExpirationMinutes;
 
     public JwtService(
             @Value("${app.security.jwt.secret}") String secret,
-            @Value("${app.security.jwt.expiration-minutes}") long expirationMinutes
+            @Value("${app.security.jwt.access-expiration-minutes}") long accessExpirationMinutes
     ){
         this.secret = secret;
-        this.expirationMinutes = expirationMinutes;
+        this.accessExpirationMinutes = accessExpirationMinutes;
     }
 
-    public String generateToken(String subjectEmail, Map<String, Object> claims) {
+    public String generateAccessToken(String subjectEmail, Map<String, Object> claims) {
         Instant now = Instant.now();
-        Instant exp = now.plusSeconds(expirationMinutes * 60);
+        Instant exp = now.plusSeconds(accessExpirationMinutes * 60);
 
         var key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
@@ -40,12 +41,13 @@ public class JwtService {
                 .compact();
     }
 
-    public String extractSubject(String token){
+    public Claims parseAndValidate(String token) {
         var key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        return Jwts.parser().verifyWith(key).build()
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+                .getPayload();
     }
 }
 
