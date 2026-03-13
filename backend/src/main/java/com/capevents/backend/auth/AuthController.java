@@ -3,23 +3,25 @@ package com.capevents.backend.auth;
 
 import com.capevents.backend.auth.dto.*;
 import com.capevents.backend.auth.dto.VerifyEmailRequest;
+import com.capevents.backend.user.UserService;
+import com.capevents.backend.user.UserSummaryDto;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
-
-    public AuthController(AuthService authService) {
+    private final UserService  userService;
+    public AuthController(AuthService authService, UserService userService) {
         this.authService = authService;
+        this.userService = userService;
     }
 
     @PostMapping("/register")
@@ -69,6 +71,10 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-
+    @GetMapping("/me")
+    @SecurityRequirement(name = "bearerAuth")
+    public UserSummaryDto me(Authentication auth) {
+        return userService.getByEmail(auth.getName());
+    }
 
 }

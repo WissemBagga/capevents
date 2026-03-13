@@ -412,6 +412,19 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
+    public EventResponse getAdminById(UUID id, String actorEmail) {
+        Event e = eventRepository.findByIdWithCreatorDept(id)
+                .orElseThrow(() -> new NotFoundException("Event not found"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        authorizeManageEvent(actor, e);
+
+        return toResponse(e);
+    }
+
+    @Transactional(readOnly = true)
     public PageResponse<EventResponse> searchPublishedForUserDept(
             String actorEmail,
             String category,
@@ -503,10 +516,24 @@ public class EventService {
             throw new BadRequestException("Location name is required for ONSITE events");
         }
     }
-    private EventResponse toResponse(Event e){
-        String email = null;
+    private EventResponse toResponse(Event e) {
+        String createdByEmail = null;
+        String createdByFullName = null;
+
         if (e.getCreatedBy() != null) {
-            email = e.getCreatedBy().getEmail();
+            createdByEmail = e.getCreatedBy().getEmail();
+
+            String firstName = e.getCreatedBy().getFirstName() != null ? e.getCreatedBy().getFirstName() : "";
+            String lastName = e.getCreatedBy().getLastName() != null ? e.getCreatedBy().getLastName() : "";
+            createdByFullName = (firstName + " " + lastName).trim();
+        }
+
+        Long targetDepartmentId = null;
+        String targetDepartmentName = null;
+
+        if (e.getTargetDepartment() != null) {
+            targetDepartmentId = e.getTargetDepartment().getId();
+            targetDepartmentName = e.getTargetDepartment().getName();
         }
 
         return new EventResponse(
@@ -523,7 +550,14 @@ public class EventService {
                 e.getCapacity(),
                 e.getRegistrationDeadline(),
                 e.getStatus(),
-                email,
+
+                createdByEmail,
+                createdByFullName,
+
+                e.getAudience(),
+                targetDepartmentId,
+                targetDepartmentName,
+
                 e.getCreatedAt(),
                 e.getUpdatedAt(),
                 e.getImageUrl()

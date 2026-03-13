@@ -107,6 +107,13 @@ public class EventController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
+    @GetMapping("/admin/{id}")
+    public EventResponse getAdminById(@PathVariable UUID id, Authentication auth) {
+        return eventService.getAdminById(id, auth.getName());
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/published/search")
     public PageResponse<EventResponse> searchPublished(
             Authentication auth,

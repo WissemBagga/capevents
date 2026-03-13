@@ -30,6 +30,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
       select e from Event e
       left join fetch e.createdBy cb
       left join fetch cb.department
+      left join fetch e.targetDepartment td
       where e.id = :id
     """)
     Optional<Event> findByIdWithCreatorDept(@Param("id") UUID id);
