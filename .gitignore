@@ -1,0 +1,17 @@
+# IntelliJ
+.idea/
+
+# build folders
+out/
+backend/target/
+frontend/dist/
+
+# node
+frontend/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# env
+.env
