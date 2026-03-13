@@ -1,0 +1,47 @@
+<div class="login-page">
+    <div class="login-card">
+        <section class="login-left">
+            <div class="brand">CapEvents</div>
+            <h1>Renforcez la cohésion de vos équipes</h1>   
+            <p class="subtite">
+                Une plateforme moderne pour organiser, participer et mesurer
+        l’engagement de vos activités internes.
+            </p>
+            <div class="feature-box">
+                <strong>Tableau de bord analytique</strong>
+                <span>KPIs et métriques en temps réel.</span>
+            </div>
+            <div class="feature-box">
+                <strong>Recommandation IA</strong>
+                <span>Événements personnalisés pour vos équipes.</span>
+            </div>
+            <div class="feature-box">
+                <strong>Gamification</strong>
+                <span>Points, badges et motivation.</span>
+            </div>
+        </section>
+        <section class="login-right">
+            <h2>Connexion</h2>
+            <p class="welcome-text">Bienvenue sur CapEvents.</p>
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input id="email" type="email" formControlName="email" placeholder="votre.email@capgemini.com"/>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input id="password" type="password" formControlName="password" placeholder="••••••••"/>
+                </div>
+
+                @if (errorMessage) {
+                    <p class="error-message">{{errorMessage}}</p>
+                }
+
+                <button type="submit" [disabled]="loading">
+                    {{ loading ? 'Connexion...': 'Se connecter' }}
+                </button>
+
+            </form>
+        </section>
+    </div>
+</div>

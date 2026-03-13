@@ -1,0 +1,60 @@
+<div class="auth-page">
+    <div class="auth-card">
+        <h2>Inscription</h2>
+        <p class="subtitle">Créez votre compte CapEvents.</p>
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">Prénom</label>
+                    <input id="firstName" type="text" formControlName="firstName"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Nom</label>
+                    <input id="lastName" type="text" formControlName="lastName"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" type="email" formControlName="email" placeholder="votre.email@capgemini.com"/>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input id="password" type="password" formControlName="password" placeholder="********"/>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Téléphone</label>
+                <input id="phone" type="text" formControlName="phone" />
+            </div>
+
+            <div class="form-group">
+                <label for="departmentId">Département</label>
+                <select id="departmentId" formControlName="departmentId">
+                    <option [ngValue]="null">Sélectionnez un département</option>
+                    @for (department of departments; track department.id){
+                        <option [ngValue]="department.id">{{department.name}}</option>
+                    }
+                </select>
+            </div>
+
+            @if (errorMessage){
+                <p class="error-message">{{errorMessage}}</p>
+            }
+            @if (errorMessage){
+                <p class="success-message">{{successMessage}}</p>
+            }
+            <button type="submit" [disabled] = "loading">
+                {{loading ? 'Inscription...' : 'Créer un compte'}}
+            </button>
+        </form>
+
+        <p class="auth-link">
+            Déjà un compte ?
+            <a routerLink="/login">Se connecter</a>
+        </p>
+
+    </div>    
+</div>

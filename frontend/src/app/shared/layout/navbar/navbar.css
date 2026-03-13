@@ -1,0 +1,50 @@
+.navbar {
+  height: 72px;
+  background: #ffffff;
+  border-bottom: 1px solid #d9e2ec;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+.navbar-left,
+.navbar-center,
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.brand {
+  font-size: 24px;
+  font-weight: 700;
+  color: #005a8b;
+  text-decoration: none;
+}
+
+.navbar-center a {
+  color: #121a38;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar-center a:hover {
+  color: #1db8f2;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #121a38;
+}
+
+button {
+  border: none;
+  background: #1db8f2;
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Ubuntu', Verdana, sans-serif;
+}

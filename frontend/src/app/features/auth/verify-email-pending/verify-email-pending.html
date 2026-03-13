@@ -1,0 +1,30 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h2>Vérifiez votre email</h2>
+    <p class="subtitle">
+      Votre compte a été créé. Un email de vérification a été envoyé à :
+    </p>
+
+    <p class="email-box">{{ email || 'Email inconnu' }}</p>
+
+    <p class="helper-text">
+      En mode développement, si aucun email n’est envoyé, vous pouvez récupérer le lien dans les logs du backend.
+    </p>
+
+    @if (successMessage) {
+      <p class="success-message">{{ successMessage }}</p>
+    }
+
+    @if (errorMessage) {
+      <p class="error-message">{{ errorMessage }}</p>
+    }
+
+    <div class="actions">
+      <button type="button" (click)="resendVerification()" [disabled]="loading">
+        {{ loading ? 'Envoi...' : 'Renvoyer l’email' }}
+      </button>
+
+      <a routerLink="/login">Retour à la connexion</a>
+    </div>
+  </div>
+</div>

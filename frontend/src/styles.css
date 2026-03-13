@@ -1,0 +1,18 @@
+:root {
+  --cap-blue: #005A8B;
+  --cap-light-blue: #1DB8F2;
+  --cap-dark-blue: #121A38;
+  --cap-white: #FFFFFF;
+  --cap-bg: #F5F7FA;
+  --cap-text: #121A38;
+  --cap-muted: #6B7280;
+  --cap-border: #D9E2EC;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Ubuntu', Verdana, sans-serif;
+  background: var(--cap-bg);
+  color: var(--cap-text);
+}

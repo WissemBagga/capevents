@@ -1,0 +1,143 @@
+<div class="create-event-page">
+  <div class="page-header">
+    <div>
+      <h1>Modifier un événement</h1>
+
+      @if (isHr) {
+        <p>Modifiez un événement global ou départemental.</p>
+      }
+
+      @if (isManager) {
+        <p>Modifiez un événement de votre département : {{ currentDepartmentName }}</p>
+      }
+    </div>
+
+    <a routerLink="/events" class="back-link">Retour</a>
+  </div>
+
+  @if (loading) {
+    <p class="info-message">Chargement de l’événement...</p>
+  }
+
+  @if (errorMessage) {
+    <p class="error-message">{{ errorMessage }}</p>
+  }
+
+  @if (successMessage) {
+    <p class="success-message">{{ successMessage }}</p>
+  }
+
+  @if (!loading) {
+    <form class="event-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="title">Titre</label>
+          <input id="title" type="text" formControlName="title" />
+        </div>
+
+        <div class="form-group">
+          <label for="category">Catégorie</label>
+          <input id="category" type="text" formControlName="category" placeholder="WORK, TRAINING..." />
+        </div>
+
+        <div class="form-group">
+          <label for="audience">Audience</label>
+          <select id="audience" formControlName="audience" (change)="onAudienceChange()">
+            <option value="DEPARTMENT">Département</option>
+            @if (isHr) {
+              <option value="GLOBAL">Global</option>
+            }
+          </select>
+        </div>
+
+        @if (form.getRawValue().audience === 'DEPARTMENT') {
+          <div class="form-group">
+            <label for="targetDepartmentId">Département cible</label>
+            <select id="targetDepartmentId" formControlName="targetDepartmentId">
+              <option [ngValue]="null">Sélectionnez un département</option>
+              @for (department of departments; track department.id) {
+                <option [ngValue]="department.id">{{ department.name }}</option>
+              }
+            </select>
+          </div>
+        }
+
+        <div class="form-group">
+          <label for="startAt">Date de début</label>
+          <input id="startAt" type="datetime-local" formControlName="startAt" />
+        </div>
+
+        <div class="form-group">
+          <label for="registrationDeadline">Date limite d’inscription</label>
+          <input id="registrationDeadline" type="datetime-local" formControlName="registrationDeadline" />
+        </div>
+
+        <div class="form-group">
+          <label for="durationMinutes">Durée (minutes)</label>
+          <input id="durationMinutes" type="number" formControlName="durationMinutes" />
+        </div>
+
+        <div class="form-group">
+          <label for="capacity">Capacité</label>
+          <input id="capacity" type="number" formControlName="capacity" />
+        </div>
+
+        <div class="form-group">
+          <label for="locationType">Type de lieu</label>
+          <select id="locationType" formControlName="locationType" (change)="onLocationTypeChange()">
+            <option value="ONSITE">ONSITE</option>
+            <option value="ONLINE">ONLINE</option>
+            <option value="EXTERNAL">EXTERNAL</option>
+          </select>
+        </div>
+
+        @if (form.getRawValue().locationType === 'ONSITE') {
+          <div class="form-group">
+            <label for="locationName">Lieu</label>
+            <input id="locationName" type="text" formControlName="locationName" />
+          </div>
+        }
+
+        @if (form.getRawValue().locationType === 'ONLINE') {
+          <div class="form-group">
+            <label for="meetingUrl">Meeting URL</label>
+            <input id="meetingUrl" type="text" formControlName="meetingUrl" />
+          </div>
+        }
+
+        @if (form.getRawValue().locationType === 'EXTERNAL') {
+          <div class="form-group">
+            <label for="address">Adresse</label>
+            <input id="address" type="text" formControlName="address" />
+          </div>
+        }
+
+        <div class="form-group full-width">
+          <label for="description">Description</label>
+          <textarea id="description" rows="5" formControlName="description"></textarea>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="imageFile">Image de l’événement</label>
+          <input id="imageFile" type="file" accept="image/*" (change)="onImageSelected($event)" />
+
+          @if (imagePreviewUrl) {
+            <div class="image-preview">
+              <img [src]="imagePreviewUrl" alt="Aperçu de l’image" />
+            </div>
+          }
+
+          <p class="helper-text">
+            L’aperçu fonctionne déjà. L’enregistrement réel de l’image nécessitera un upload backend.
+          </p>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="submitting">
+          {{ submitting ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

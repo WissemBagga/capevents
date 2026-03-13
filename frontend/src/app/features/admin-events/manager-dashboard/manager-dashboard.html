@@ -1,0 +1,77 @@
+<div class="manager-page">
+  <div class="page-header">
+    <div>
+      <h1>Dashboard Manager</h1>
+      <p>Gérez les événements de votre département.</p>
+    </div>
+
+    <a routerLink="/admin/create-event" class="primary-link">Créer un événement</a>
+  </div>
+
+  @if (loading && events.length === 0) {
+    <p class="info-message">Chargement des événements du département...</p>
+  }
+
+  @if (errorMessage) {
+    <p class="error-message">{{ errorMessage }}</p>
+  }
+
+  @if (!loading && events.length === 0) {
+    <p class="info-message">Aucun événement trouvé pour votre département.</p>
+  }
+
+  <div class="events-grid">
+    @for (event of events; track event.id) {
+      <article class="event-card">
+        <div class="event-top">
+          <span class="category">{{ event.category || 'Sans catégorie' }}</span>
+          <span class="status">{{ event.status }}</span>
+        </div>
+
+        <h3>{{ event.title }}</h3>
+        <p class="description">{{ event.description || 'Aucune description.' }}</p>
+
+        <div class="meta">
+          <span>{{ event.startAt | date:'medium' }}</span>
+          <span>{{ event.locationType }}</span>
+          <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
+          <span>Créé par : {{ event.createdByFullName || event.createdByEmail || 'Non renseigné' }}</span>
+          <span>Audience : {{ event.audience }}</span>
+
+          @if (event.audience === 'DEPARTMENT') {
+            <span>Département cible : {{ event.targetDepartmentName || 'Non renseigné' }}</span>
+          }
+        </div>
+
+        @if (event.status === 'CANCELLED') {
+          <p class="state-note cancelled-note">Événement annulé — aucune action disponible.</p>
+        }
+
+        @if (event.status === 'ARCHIVED') {
+          <p class="state-note archived-note">Événement archivé — aucune action disponible.</p>
+        }
+
+        <div class="actions">
+          <a [routerLink]="['/admin/events', event.id]" class="details-link">Détails</a>
+
+          @if (canEdit(event)) {
+            <button type="button" (click)="goToEdit(event.id)">Modifier</button>
+          }
+
+          @if (canPublish(event)) {
+            <button type="button" (click)="publish(event.id)" [disabled]="actionLoading">Publier</button>
+          }
+
+          @if (canCancel(event)) {
+            <button type="button" (click)="cancel(event.id)" [disabled]="actionLoading">Annuler</button>
+          }
+
+          @if (canArchive(event)) {
+            <button type="button" class="danger" (click)="archive(event.id)" [disabled]="actionLoading">Archiver</button>
+          }
+        </div>
+      </article>
+    }
+    
+  </div>
+</div>

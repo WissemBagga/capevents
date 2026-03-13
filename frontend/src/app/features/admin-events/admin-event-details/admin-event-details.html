@@ -1,0 +1,106 @@
+<div class="event-details-page">
+  <a routerLink="/admin/hr" class="back-link">← Retour</a>
+
+  @if (loading) {
+    <p class="info-message">Chargement des détails de l’événement...</p>
+  }
+
+  @if (errorMessage) {
+    <p class="error-message">{{ errorMessage }}</p>
+  }
+
+  @if (event && !loading) {
+    <article class="details-card">
+      <div class="details-header">
+        <div>
+          <span class="category">{{ event.category || 'Sans catégorie' }}</span>
+          <h1>{{ event.title }}</h1>
+        </div>
+
+        <span class="status">{{ event.status }}</span>
+      </div>
+
+      <p class="description">
+        {{ event.description || 'Aucune description disponible.' }}
+      </p>
+
+      <div class="details-grid">
+        <div class="detail-box">
+          <h3>Date et heure</h3>
+          <p>{{ event.startAt | date:'full' }}</p>
+        </div>
+
+        <div class="detail-box">
+          <h3>Durée</h3>
+          <p>{{ event.durationMinutes }} minutes</p>
+        </div>
+
+        <div class="detail-box">
+          <h3>Type de lieu</h3>
+          <p>{{ event.locationType }}</p>
+        </div>
+
+        <div class="detail-box">
+          <h3>Lieu / plateforme</h3>
+          <p>{{ event.locationName || event.address || 'Non précisé' }}</p>
+        </div>
+
+        <div class="detail-box">
+          <h3>Meeting URL</h3>
+          <p>
+            @if (event.meetingUrl) {
+              <a [href]="event.meetingUrl" target="_blank" rel="noopener noreferrer">
+                Ouvrir le lien
+              </a>
+            } @else {
+              <span>Non applicable</span>
+            }
+          </p>
+        </div>
+
+        <div class="detail-box">
+          <h3>Capacité</h3>
+          <p>{{ event.capacity }} participants</p>
+        </div>
+
+        <div class="detail-box">
+          <h3>Date limite d’inscription</h3>
+          <p>{{ event.registrationDeadline | date:'medium' }}</p>
+        </div>
+
+        <div class="detail-box">
+          <h3>Créé par</h3>
+          <p>{{ event.createdByFullName || event.createdByEmail || 'Non renseigné' }}</p>
+        </div>
+
+        <div class="detail-box">
+          <h3>Audience</h3>
+          <p>{{ event.audience }}</p>
+        </div>
+
+        @if (event.audience === 'DEPARTMENT') {
+          <div class="detail-box">
+            <h3>Département cible</h3>
+            <p>{{ event.targetDepartmentName || 'Non renseigné' }}</p>
+          </div>
+        }
+
+        <div class="detail-box">
+          <h3>Créé le</h3>
+          <p>{{ event.createdAt | date:'medium' }}</p>
+        </div>
+
+        <div class="detail-box">
+          <h3>Mis à jour le</h3>
+          <p>{{ event.updatedAt | date:'medium' }}</p>
+        </div>
+      </div>
+
+      @if (event.imageUrl) {
+        <div class="image-box">
+          <img [src]="event.imageUrl" [alt]="event.title" />
+        </div>
+      }
+    </article>
+  }
+</div>

@@ -1,0 +1,69 @@
+<div class="employee-dashboard-page">
+  <section class="hero-card">
+    <div>
+      <h1>Bienvenue, {{ firstName }}</h1>
+      <p>
+        Consultez les événements publiés pour votre département
+        <strong>{{ departmentName }}</strong>
+        ainsi que les événements globaux.
+      </p>
+    </div>
+
+    <a routerLink="/events" class="primary-link">Voir tous les événements</a>
+  </section>
+
+  <section class="stats-grid">
+    <article class="stat-card">
+      <h3>Département</h3>
+      <p>{{ departmentName }}</p>
+    </article>
+
+    <article class="stat-card">
+      <h3>Événements disponibles</h3>
+      <p>{{ totalItems }}</p>
+    </article>
+  </section>
+
+  <section class="upcoming-section">
+    <div class="section-header">
+      <h2>Prochains événements</h2>
+      <a routerLink="/events">Voir plus</a>
+    </div>
+
+    @if (loading) {
+      <p class="info-message">Chargement des prochains événements...</p>
+    }
+
+    @if (errorMessage) {
+      <p class="error-message">{{ errorMessage }}</p>
+    }
+
+    @if (!loading && events.length === 0) {
+      <p class="info-message">Aucun événement disponible pour le moment.</p>
+    }
+
+    <div class="events-grid">
+      @for (event of events; track event.id) {
+        <article class="event-card">
+          <div class="event-top">
+            <span class="category">{{ event.category || 'Sans catégorie' }}</span>
+            <span class="status">{{ event.status }}</span>
+          </div>
+
+          <h3>{{ event.title }}</h3>
+          <p class="description">{{ event.description || 'Aucune description.' }}</p>
+
+          <div class="meta">
+            <span>{{ event.startAt | date:'medium' }}</span>
+            <span>{{ event.locationType }}</span>
+            <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
+          </div>
+
+          <div class="actions">
+            <a [routerLink]="['/events', event.id]" class="details-link">Voir détails</a>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+</div>

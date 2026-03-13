@@ -1,0 +1,19 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h2>Vérification de l’email</h2>
+
+    @if (loading) {
+      <p class="subtitle">Vérification en cours...</p>
+    }
+
+    @if (successMessage) {
+      <p class="success-message">{{ successMessage }}</p>
+      <a routerLink="/login">Aller à la connexion</a>
+    }
+
+    @if (errorMessage) {
+      <p class="error-message">{{ errorMessage }}</p>
+      <a routerLink="/login">Retour à la connexion</a>
+    }
+  </div>
+</div>

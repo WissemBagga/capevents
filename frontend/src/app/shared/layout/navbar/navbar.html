@@ -1,0 +1,28 @@
+<nav class="navbar">
+    <div class="navbar-left">
+        <a routerLink="/events" class="brand">CapEvents</a>
+    </div>
+    <div class="navbar-center">
+        @if (isEmployee()) {
+            <a routerLink="/dashboard/employee">Dashboard</a>
+            <a routerLink="/events">Événements</a>
+        }
+        @if (isManager()){
+            <a routerLink="/admin/manager">Dashboard Manager</a>
+            <a routerLink="/admin/create-event">Créer un événement</a>
+        }
+        @if (isHr()) {
+            <a routerLink="/admin/hr">Dashboard RH</a>
+            <a routerLink="/admin/create-event">Créer un événement</a>
+        }
+    </div>
+
+    <div class="navbar-right">
+        @if (currentUser$ | async; as user) {
+            <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+            <button type="button" (click)="logout()">Déconnexion</button>
+        }
+
+    </div>
+    
+</nav>

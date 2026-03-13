@@ -1,0 +1,75 @@
+<div class="events-page">
+    <div class="events-header">
+        <h1>Événements publiés</h1>
+        <p>Consultez les événements disponibles pour votre département et les événements globaux.</p>
+    </div>
+    <div class="filters-card">
+        <div class="filter-group">
+            <label for="category">Catégorie</label>
+            <input id="category" type="text" [(ngModel)]="category" placeholder="Ex: WORK, PLEASURE, SPORT..." />
+        </div>
+
+        <div class="filter-group">
+            <label for="from">À partir du</label>
+            <input id="from" type="datetime-local" [(ngModel)]="from" />
+        </div>
+
+        <div class="filter-group">
+            <label for="to">Jusqu’au</label>
+            <input id="to" type="datetime-local" [(ngModel)]="to" />
+        </div>
+
+        <div class="filter-actions">
+            <button type="button" (click)="search()">Rechercher</button>
+            <button type="button" class="secondary" (click)="resetFilters()">Réinitialiser</button>
+        </div>
+    </div>
+
+    @if (loading && events.length === 0) {
+        <p class="info-message">Chargement des événements...</p>
+    }
+
+    @if (loading && events.length > 0) {
+        <p class="info-message">Mise à jour de la liste...</p>
+    }
+    
+    @if (errorMessage) {
+        <p class="error-message">{{ errorMessage}}</p>
+    }
+    @if (!loading && events.length === 0) {
+        <p class="info-message">Aucun événement trouvé.</p>
+    }
+    <div class="events-grid">
+        @for (event of events; track event.id) {
+            <article class="event-card">
+                <div class="event-card-header">
+                    <span class="category">{{event.category || 'Sans catégorie' }}</span>
+                    <span class="status">{{event.status}}</span>
+                </div>
+
+                <h3>{{event.title}}</h3>
+                <p class="description">{{ event.description || 'Aucune description disponible.' }}</p>
+                <div class="meta">
+                    <span>{{ event.startAt | date:'medium' }}</span>
+                    <span>{{ event.locationType }}</span>
+                    <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
+                </div>
+
+                <div class="card-actions">
+                <a [routerLink]="['/events', event.id]">Voir détails</a>
+                </div>
+            </article>
+        }
+    </div>
+
+    @if (totalItems > 0) {
+        <div class="pagination-bar">
+            <button type="button" (click)="previousPage()" [disabled]="!hasPrevious">Précédent</button>
+
+            <span>Page {{ currentPage + 1 }} / {{ totalPages }} — {{ totalItems }} éléments</span>
+
+            <button type="button" (click)="nextPage()" [disabled]="!hasNext">Suivant</button>
+        </div>
+    }
+
+</div>

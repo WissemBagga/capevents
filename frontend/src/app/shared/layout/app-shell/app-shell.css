@@ -1,0 +1,4 @@
+.app-content{
+    min-height: calc(100vh - 72px);
+    background: #f5f7fa;
+}
