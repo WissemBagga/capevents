@@ -1,4 +1,4 @@
-package com.capevents.backend.auth;
+package com.capevents.backend.auth.token;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

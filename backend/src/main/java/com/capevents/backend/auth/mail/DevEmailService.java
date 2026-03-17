@@ -1,4 +1,4 @@
-package com.capevents.backend.auth;
+package com.capevents.backend.auth.mail;
 
 import com.capevents.backend.config.AppMailProperties;
 import org.springframework.context.annotation.Profile;

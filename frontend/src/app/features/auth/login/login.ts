@@ -1,15 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AuthService } from '../../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+
 
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -17,14 +19,19 @@ export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService)
   private router = inject(Router)
+  private cdr = inject(ChangeDetectorRef)
 
   errorMessage='';
   loading=false;
 
+  
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['',[Validators.required]]
   });
+
+
+
 
   onSubmit():void{
     if(this.loginForm.invalid){
@@ -39,28 +46,56 @@ export class Login {
       password: this.loginForm.value.password!
     };
 
+
+
     this.authService.login(payload).subscribe({
       next: () => {
         this.authService.getMe().subscribe({
-          next: (user) => {
-            if (user.roles.includes('ROLE_HR')) {
-                this.router.navigate(['/admin/hr']);
-            } else if (user.roles.includes('ROLES_MANAGER')){
-                this.router.navigate(['/admin/manager']);
-            }else{
-                this.router.navigate(['/dashboard/employee']);
+          next: () => {
+            const role = this.authService.getPrimaryRole()
+            if (role === 'ROLE_HR') {
+              this.router.navigate(['/admin/hr']);
+            } else if (role === 'ROLE_MANAGER') {
+              this.router.navigate(['/admin/manager']);
+            } else {
+              this.router.navigate(['/dashboard/employee']);
             }
           },
-          error: () => {
+          error: (err) => {
             this.loading = false;
-            this.errorMessage = 'Impossible de récupérer le profil utilisateur.';  
+            this.errorMessage = this.mapLoginError(err);
+            this.cdr.markForCheck();
           },
         });
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
-        this.errorMessage='Adresse e-mail ou mot de passe invalide.';
+        this.errorMessage = this.mapLoginError(err);
+        this.cdr.markForCheck();
       }
     })
+  }
+
+
+  private mapLoginError(err: any): string {
+    const raw = err?.error?.message || err?.error || '';
+
+    if (typeof raw !== 'string') {
+      return 'Connexion impossible.';
+    }
+
+    if (raw.includes('Email is not verified')) {
+      return 'Votre email n’est pas encore vérifié.';
+    }
+
+    if (raw.includes('Bad credentials') || raw.includes('Invalid email or password')) {
+      return 'Email ou mot de passe incorrect.';
+    }
+
+    if (raw.includes('User is not active')) {
+      return 'Votre compte est désactivé. Contactez un administrateur.';
+    }
+
+    return raw || 'Connexion impossible.';
   }
 }

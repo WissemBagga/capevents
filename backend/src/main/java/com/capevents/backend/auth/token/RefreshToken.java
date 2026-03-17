@@ -1,4 +1,4 @@
-package com.capevents.backend.auth;
+package com.capevents.backend.auth.token;
 
 import com.capevents.backend.user.User;
 import jakarta.persistence.*;

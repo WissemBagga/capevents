@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -25,7 +27,21 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), req);
     }
 
-    // Validation errors: @Valid
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiError> handleBadCredentials(BadCredentialsException ex, HttpServletRequest req) {
+        return build(HttpStatus.UNAUTHORIZED, "Bad credentials", req);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiError> handleUsernameNotFound(UsernameNotFoundException ex, HttpServletRequest req) {
+        return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), req);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         String msg = ex.getBindingResult().getFieldErrors().stream()
@@ -35,7 +51,18 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, msg, req);
     }
 
-    // Fallback
+    @ExceptionHandler(PropertyReferenceException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handlePropertyReference(PropertyReferenceException ex, HttpServletRequest req) {
+        return new ApiError(
+                Instant.now(),
+                400,
+                "Bad Request",
+                "Invalid sort property: " + ex.getPropertyName(),
+                req.getRequestURI()
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleOther(Exception ex, HttpServletRequest req) {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), req);
@@ -51,16 +78,4 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(status).body(body);
     }
-    @ExceptionHandler(PropertyReferenceException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handlePropertyReference(PropertyReferenceException ex, HttpServletRequest req) {
-        return new ApiError(
-                Instant.now(),
-                400,
-                "Bad Request",
-                "Invalid sort property: " + ex.getPropertyName(),
-                req.getRequestURI()
-        );
-    }
-
 }

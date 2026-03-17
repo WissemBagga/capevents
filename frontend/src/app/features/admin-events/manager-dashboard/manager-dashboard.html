@@ -37,6 +37,7 @@
           <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
           <span>Créé par : {{ event.createdByFullName || event.createdByEmail || 'Non renseigné' }}</span>
           <span>Audience : {{ event.audience }}</span>
+          <span>Capacité : {{ event.capacity }}</span>
 
           @if (event.audience === 'DEPARTMENT') {
             <span>Département cible : {{ event.targetDepartmentName || 'Non renseigné' }}</span>

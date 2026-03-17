@@ -1,4 +1,4 @@
-package com.capevents.backend.auth;
+package com.capevents.backend.auth.mail;
 
 public interface EmailService {
     void sendVerificationEmail(String to, String rawToken);

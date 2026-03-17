@@ -20,6 +20,8 @@ export interface EventResponse {
   targetDepartmentId: number | null;
   targetDepartmentName: string | null;
 
+  cancelReason: string | null;
+
   createdAt: string | null;
   updatedAt: string | null;
   imageUrl: string | null;

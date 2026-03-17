@@ -558,6 +558,7 @@ public class EventService {
                 targetDepartmentId,
                 targetDepartmentName,
 
+                e.getCancelReason(),
                 e.getCreatedAt(),
                 e.getUpdatedAt(),
                 e.getImageUrl()

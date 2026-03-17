@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+
 
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -15,6 +16,7 @@ export class ResetPassword {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef)
 
   private route = inject(ActivatedRoute)
 
@@ -23,7 +25,11 @@ export class ResetPassword {
   successMessage = '';
 
   form = this.fb.group({
-    newPassword: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(72)]]
+    newPassword: ['',[
+    Validators.required,
+    Validators.minLength(8),
+    Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)
+  ]]
   });
   token = '';
 
@@ -55,13 +61,38 @@ export class ResetPassword {
     this.authService.resetPassword(this.token, newPassword).subscribe({
       next: () => {
         this.loading = false;
-        this.successMessage = 'Mot de passe réinitialisé avec succès.';
-        setTimeout(() => this.router.navigate(['/login']), 1200);
+        this.successMessage = 'Mot de passe modifié avec succès. Redirection vers la connexion...';
+        this.cdr.markForCheck();
+
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err?.error?.message ?? 'Impossible de réinitialiser le mot de passe.';
+        this.errorMessage = this.mapResetPasswordError(err);
+        this.cdr.markForCheck();
       }
     });
   }
+
+  private mapResetPasswordError(err: any): string {
+    const raw = err?.error?.message || err?.error || '';
+
+    if (typeof raw !== 'string') {
+      return 'Impossible de réinitialiser le mot de passe.';
+    }
+
+    if (raw.includes('Invalid token')) {
+      return 'Le token de réinitialisation est invalide.';
+    }
+
+    if (raw.includes('Token expired')) {
+      return 'Le token de réinitialisation a expiré.';
+    }
+
+    return raw || 'Impossible de réinitialiser le mot de passe.';
+  }
+
+
 }

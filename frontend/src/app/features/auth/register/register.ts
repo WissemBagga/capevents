@@ -1,9 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 import { Department } from '../../../core/models/department.model';
+
+
+
 
 @Component({
   selector: 'app-register',
@@ -17,6 +20,7 @@ export class Register implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private userService = inject(UserService);
+  private cdr = inject(ChangeDetectorRef)
 
   departments: Department[] = [];
 
@@ -28,9 +32,10 @@ export class Register implements OnInit {
     firstName: ['', [Validators.required, Validators.maxLength(80)]],
     lastName: ['', [Validators.required, Validators.maxLength(80)]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(190)]],
-    password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(72)]],
+    password: ['', [Validators.required, Validators.minLength(8), 
+      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)]],
     phone: [''],
-    departmentId: [null as number | null]
+    departmentId: [null as number | null, [Validators.required]]
   });
 
   onSubmit(): void{
@@ -64,7 +69,8 @@ export class Register implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage= err?.error.message ?? 'Impossible de créer le compte.'
+        this.errorMessage = this.mapRegisterError(err);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -74,12 +80,35 @@ export class Register implements OnInit {
       next: (departments) => {
         this.departments = departments;
       },
-      error: () => {
-        this.errorMessage = 'Impossible de charger les départements.';
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = this.mapRegisterError(err);
+        this.cdr.markForCheck();
       }
     });
   }
 
 
+  private mapRegisterError(err: any): string {
+    const raw = err?.error?.message || err?.error || '';
+
+    if (typeof raw !== 'string') {
+      return 'Impossible de créer le compte.';
+    }
+
+    if (raw.includes('Email already used')) {
+      return 'Cet email est déjà utilisé.';
+    }
+
+    if (raw.includes('Email domain is not allowed')) {
+      return 'Le domaine de cet email n’est pas autorisé. Utilisez une adresse @capgemini.com.';
+    }
+
+    if (raw.includes('Department not found')) {
+      return 'Le département sélectionné est invalide.';
+    }
+
+    return raw || 'Impossible de créer le compte.';
+  }
 
 }

@@ -1,4 +1,5 @@
-package com.capevents.backend.auth;
+package com.capevents.backend.auth.token;
+
 
 import com.capevents.backend.user.User;
 import jakarta.persistence.*;
@@ -10,9 +11,8 @@ import java.time.Instant;
 @Entity
 @Getter
 @Setter
-@Table(name = "email_verification_tokens")
-public class EmailVerificationToken {
-
+@Table(name="password_reset_tokens")
+public class PasswordResetToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

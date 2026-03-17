@@ -1,12 +1,10 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, tap } from "rxjs";
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, firstValueFrom, tap } from 'rxjs';
 
-import { UserSummary } from "../models/user-summary.model";
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest } from "../models/auth.models";
-import { firstValueFrom } from 'rxjs';
-
+import { UserSummary } from '../models/user-summary.model';
+import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.models';
 
 @Injectable({
   providedIn: 'root'
@@ -45,24 +43,27 @@ export class AuthService {
   }
 
   resetPassword(token: string, newPassword: string): Observable<string> {
-    return this.http.post(`${this.apiUrl}/reset-password`, {
-      token,
-      newPassword
-    }, {
-      responseType: 'text'
-    });
+    return this.http.post(
+      `${this.apiUrl}/reset-password`,
+      { token, newPassword },
+      { responseType: 'text' }
+    );
   }
 
   resendVerification(email: string): Observable<string> {
-    return this.http.post(`${this.apiUrl}/resend-verification`, { email }, {
-      responseType: 'text'
-    });
+    return this.http.post(
+      `${this.apiUrl}/resend-verification`,
+      { email },
+      { responseType: 'text' }
+    );
   }
 
   verifyEmail(token: string): Observable<string> {
-    return this.http.post(`${this.apiUrl}/verify-email`, { token }, {
-      responseType: 'text'
-    });
+    return this.http.post(
+      `${this.apiUrl}/verify-email`,
+      { token },
+      { responseType: 'text' }
+    );
   }
 
   logout(): void {
@@ -101,5 +102,28 @@ export class AuthService {
   hasRole(role: string): boolean {
     const user = this.getCurrentUserSnapshot();
     return !!user && user.roles.includes(role);
+  }
+
+  getPrimaryRole(): string | null {
+    const user = this.getCurrentUserSnapshot();
+    if (!user) return null;
+
+    if (user.roles.includes('ROLE_HR')) return 'ROLE_HR';
+    if (user.roles.includes('ROLE_MANAGER')) return 'ROLE_MANAGER';
+    if (user.roles.includes('ROLE_EMPLOYEE')) return 'ROLE_EMPLOYEE';
+
+    return null;
+  }
+
+  isHr(): boolean {
+    return this.getPrimaryRole() === 'ROLE_HR';
+  }
+
+  isManager(): boolean {
+    return this.getPrimaryRole() === 'ROLE_MANAGER';
+  }
+
+  isEmployeeOnly(): boolean {
+    return this.getPrimaryRole() === 'ROLE_EMPLOYEE';
   }
 }

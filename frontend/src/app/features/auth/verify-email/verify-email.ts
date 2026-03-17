@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+
 
 @Component({
   selector: 'app-verify-email',
@@ -13,11 +13,15 @@ export class VerifyEmail {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef)
 
   loading = true;
   successMessage = '';
   errorMessage = '';
   alreadyVerified = false;
+
+
+  
 
   ngOnInit(): void {
     const token = this.route.snapshot.queryParamMap.get('token') ?? '';
@@ -28,25 +32,33 @@ export class VerifyEmail {
       return;
     }
 
-    this.authService.verifyEmail(token)
-    .pipe(finalize(()=> {
-      this.loading = false;
-    }))   
-    .subscribe({
+    
+    this.authService.verifyEmail(token).subscribe({
       next: () => {
-        this.successMessage = 'Votre email a été vérifié avec succès.';
-        setTimeout(()=> this.router.navigate(['/login']),1500);
+        this.loading = false;
+        this.successMessage = 'Votre email a été vérifié avec succès. Redirection vers la connexion...';
+        this.cdr.markForCheck();
+
+        setTimeout(() => {
+          this.router.navigate(['/login'], { queryParams: { verified: 'true' } });
+        }, 2000);
       },
       error: (err) => {
-        const backendMessage = err?.error?.message || err?.error || '';
+        this.loading = false;
 
-        if (typeof backendMessage === 'string' && backendMessage.includes('already used')) {
-          this.successMessage = 'Cet email a déjà été vérifié. Vous pouvez vous connecter.';
-          setTimeout(() => this.router.navigate(['/login']), 1500);
-          return;
-        }  
+        const raw = err?.error?.message || err?.error || '';
 
-        this.errorMessage = backendMessage || 'La vérification de l’email a échoué.';
+        if (!token) {
+          this.errorMessage = 'Le token de vérification est manquant.';
+        } else if (typeof raw === 'string' && raw.includes('Invalid verification token')) {
+          this.errorMessage = 'Le lien de vérification est invalide.';
+        } else if (typeof raw === 'string' && raw.includes('already used')) {
+          this.errorMessage = 'Ce lien de vérification a déjà été utilisé. Vous pouvez vous connecter.';
+        } else {
+          this.errorMessage = raw || 'La vérification de l’email a échoué.';
+        }
+
+        this.cdr.markForCheck();
       }
     });
   }

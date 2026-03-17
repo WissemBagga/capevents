@@ -1,6 +1,8 @@
-import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+
 
 @Component({
   selector: 'app-verify-email-pending',
@@ -12,6 +14,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class VerifyEmailPending {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef)
 
   email = '';
   loading = false;
@@ -35,11 +38,15 @@ export class VerifyEmailPending {
     this.authService.resendVerification(this.email).subscribe({
       next: () => {
         this.loading = false;
-        this.successMessage = 'Email de vérification renvoyé.';
+        this.successMessage = 'Un nouvel email de vérification a été envoyé.';
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err?.error?.message ?? 'Impossible de renvoyer l’email de vérification.';
+
+        const raw = err?.error?.message || err?.error || '';
+        this.errorMessage = typeof raw === 'string' ? raw : 'Impossible de renvoyer l’email de vérification.';
+        this.cdr.markForCheck();
       }
     });
   }

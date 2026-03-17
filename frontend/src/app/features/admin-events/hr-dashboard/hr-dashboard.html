@@ -37,15 +37,19 @@
             <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
             <span>Créé par : {{ event.createdByFullName || event.createdByEmail || 'Non renseigné' }}</span>
             <span>Audience : {{ event.audience }}</span>
+            <span>Capacité : {{ event.capacity }}</span>
 
             @if (event.audience === 'DEPARTMENT') {
                 <span>Département cible : {{ event.targetDepartmentName || 'Non renseigné' }}</span>
             }
         </div>
 
-            @if (event.status === 'CANCELLED') {
-            <p class="state-note cancelled-note">Événement annulé — aucune action disponible.</p>
-            }
+            @if (event.status === 'CANCELLED' && event.cancelReason) {
+            <div class="detail-box">
+              <h3>Raison d’annulation</h3>
+              <p>{{ event.cancelReason }}</p>
+            </div>
+          }
 
             @if (event.status === 'ARCHIVED') {
             <p class="state-note archived-note">Événement archivé — aucune action disponible.</p>

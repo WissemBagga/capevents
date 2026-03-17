@@ -57,6 +57,7 @@
             <span>{{ event.startAt | date:'medium' }}</span>
             <span>{{ event.locationType }}</span>
             <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
+            <span>Capacité : {{ event.capacity }}</span>
           </div>
 
           <div class="actions">

@@ -116,6 +116,33 @@ button:disabled {
   font-weight: 600;
 }
 
+.field-error {
+  color: #b42318;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.input-error {
+  border-color: #b42318 !important;
+  box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.12);
+}
+
+.password-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.toggle-password {
+  white-space: nowrap;
+  border: none;
+  background: #005a8b;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;

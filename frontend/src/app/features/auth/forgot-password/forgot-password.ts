@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 
@@ -15,6 +15,9 @@ export class ForgotPassword {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef)
+
+
 
 
   loading = false;
@@ -42,7 +45,8 @@ export class ForgotPassword {
     this.authService.forgotPassword(email).subscribe({
       next: (res) => {
         this.loading = false;
-        this.successMessage = res.message ?? 'Vérifiez votre boîte mail.';
+        this.successMessage = 'Si cet email existe, un lien de réinitialisation a été envoyé.';
+        this.cdr.markForCheck();
 
         if (res.resetToken) {
           setTimeout(() => {
@@ -54,8 +58,23 @@ export class ForgotPassword {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err?.error?.message ?? 'Impossible de lancer la réinitialisation.';
+        this.errorMessage = this.mapForgotPasswordError(err);
+        this.cdr.markForCheck();
       }
     });
+  }
+
+  private mapForgotPasswordError(err: any): string {
+    const raw = err?.error?.message || err?.error || '';
+
+    if (typeof raw !== 'string') {
+      return 'Impossible d’envoyer la demande de réinitialisation.';
+    }
+
+    if (raw.includes('Email not found')) {
+      return 'Aucun compte n’est associé à cet email.';
+    }
+
+    return raw || 'Impossible d’envoyer la demande de réinitialisation.';
   }
 }

@@ -29,6 +29,8 @@ public record EventResponse (
         Long targetDepartmentId,
         String targetDepartmentName,
 
+        String cancelReason,
+
         Instant createdAt,
         Instant updatedAt,
         String imageUrl

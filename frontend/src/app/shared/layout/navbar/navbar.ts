@@ -5,7 +5,7 @@ import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
-  standalone:true,
+  standalone: true,
   imports: [RouterLink, AsyncPipe],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
@@ -16,21 +16,20 @@ export class Navbar {
 
   currentUser$ = this.authService.currentUser$;
 
-  logout(): void{
+  logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
 
-  isHr(): boolean{
-    return this.authService.hasRole('ROLE_HR');
+  isHr(): boolean {
+    return this.authService.isHr();
   }
 
   isManager(): boolean {
-    return this.authService.hasRole('ROLE_MANAGER');
+    return this.authService.isManager();
   }
 
-  isEmployee(): boolean {
-    return this.authService.hasRole('ROLE_EMPLOYEE');
+  isEmployeeOnly(): boolean {
+    return this.authService.isEmployeeOnly();
   }
-
 }
