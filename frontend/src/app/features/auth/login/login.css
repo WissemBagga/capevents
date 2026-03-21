@@ -1,154 +1,418 @@
+/* ===== Entrance Animation ===== */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Page Container ===== */
 .login-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 32px;
-  background: #f5f7fa;
+  background: #eef2f7;
 }
 
+/* ===== Card Shell ===== */
 .login-card {
   width: 100%;
-  max-width: 1180px;
-  min-height: 680px;
+  max-width: 1100px;
+  min-height: 700px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   background: #ffffff;
-  border-radius: 24px;
+  border-radius: 28px;
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba(18, 26, 56, 0.16);
+  box-shadow: 0 30px 80px rgba(0, 40, 80, 0.14), 0 4px 16px rgba(0, 40, 80, 0.06);
 }
 
+/* ===== Left Panel ===== */
 .login-left {
-  background: linear-gradient(135deg, #1db8f2 0%, #005a8b 100%);
+  position: relative;
   color: #ffffff;
-  padding: 56px 48px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  background: url('/images/login-bg.png') center / cover no-repeat;
+  overflow: hidden;
 }
 
-.brand {
-  font-size: 30px;
+.login-left-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(160deg, rgba(0, 60, 120, 0.78) 0%, rgba(0, 40, 85, 0.85) 100%);
+  z-index: 1;
+}
+
+.login-left-content {
+  position: relative;
+  z-index: 2;
+  padding: 52px 44px 40px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Brand Badge */
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 28px;
+  padding: 10px 26px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 16px;
   font-weight: 700;
-  margin-bottom: 40px;
+  letter-spacing: 0.3px;
+  width: fit-content;
+  margin-bottom: 44px;
+  backdrop-filter: blur(6px);
 }
 
+/* Left Heading */
 .login-left h1 {
-  font-size: 52px;
-  line-height: 1.08;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 44px;
+  line-height: 1.12;
   margin: 0 0 20px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
+/* Subtitle */
 .subtitle {
-  font-size: 21px;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.92);
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.82);
   margin-bottom: 36px;
+  max-width: 340px;
+}
+
+/* Feature Cards */
+.features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
 }
 
 .feature-box {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 16px;
-  padding: 18px 20px;
-  margin-bottom: 16px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 16px 18px;
+  transition: background 0.25s ease, transform 0.2s ease;
 }
 
-.feature-box strong {
-  font-size: 20px;
+.feature-box:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateX(4px);
+}
+
+.feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: #ffffff;
+}
+
+.feature-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.feature-text strong {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 15px;
   font-weight: 600;
 }
 
-.feature-box span {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.9);
+.feature-text span {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.78);
 }
 
+/* Footer */
+.login-footer {
+  margin-top: auto;
+  padding-top: 28px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+/* ===== Right Panel ===== */
 .login-right {
-  padding: 72px 56px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  color: #121a38;
+  padding: 48px 44px;
 }
 
+.login-right-inner {
+  width: 100%;
+  max-width: 420px;
+  animation: fadeSlideIn 0.5s ease-out both;
+}
+
+/* Heading */
 .login-right h2 {
-  font-size: 44px;
-  margin: 0 0 12px;
-  font-weight: 700;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 34px;
+  margin: 0 0 6px;
+  font-weight: 800;
+  color: #0f1b2d;
+  letter-spacing: -0.3px;
 }
 
 .welcome-text {
-  font-size: 18px;
-  color: #6b7280;
-  margin-bottom: 32px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14.5px;
+  color: #7a8599;
+  margin-bottom: 24px;
 }
 
+/* Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e8ecf1;
+  margin-bottom: 28px;
+}
+
+.tab {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 22px;
+  color: #8a95a8;
+  text-decoration: none;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tab:hover {
+  color: #0a6ebd;
+}
+
+.tab.active {
+  color: #0a6ebd;
+  font-weight: 600;
+  border-bottom-color: #0a6ebd;
+}
+
+/* Form */
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 22px;
 }
 
 label {
-  font-size: 16px;
-  font-weight: 500;
-  color: #121a38;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #2e3a4d;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
-input {
-  height: 52px;
-  border: 1px solid #d9e2ec;
+/* Input Wrapper with Icon */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  color: #9aa6b8;
+  pointer-events: none;
+  z-index: 1;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  height: 50px;
+  border: 1.5px solid #dce3ed;
   border-radius: 12px;
-  padding: 0 16px;
-  font-size: 16px;
-  font-family: 'Ubuntu', Verdana, sans-serif;
+  padding: 0 16px 0 46px;
+  font-size: 14.5px;
+  font-family: Verdana, Geneva, sans-serif;
+  color: #1a2538;
+  background: #f8fafc;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
 
-input:focus {
-  border-color: #1db8f2;
-  box-shadow: 0 0 0 4px rgba(29, 184, 242, 0.14);
+input[type="email"]::placeholder,
+input[type="password"]::placeholder {
+  color: #b0bac8;
+  font-size: 14px;
 }
 
-button {
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #0a6ebd;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(10, 110, 189, 0.08);
+}
+
+input.input-error {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* Auth Options Row */
+.auth-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  color: #5a6a80;
+  cursor: pointer;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.remember-me input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0a6ebd;
+  border-radius: 4px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.forgot-link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  color: #0a6ebd;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.forgot-link:hover {
+  color: #084e8a;
+  text-decoration: underline;
+}
+
+/* Error Message */
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13.5px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin: 0 0 18px;
+}
+
+.field-error {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12.5px;
+  color: #dc3545;
+  margin: 2px 0 0;
+}
+
+/* Submit Button */
+button[type="submit"] {
   width: 100%;
   height: 52px;
   border: none;
   border-radius: 12px;
-  background: #1db8f2;
+  background: linear-gradient(135deg, #0a6ebd 0%, #0d8ae0 100%);
   color: #ffffff;
-  font-size: 17px;
-  font-weight: 600;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 4px 16px rgba(10, 110, 189, 0.25);
 }
 
-button:hover {
-  transform: translateY(-1px);
+button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(10, 110, 189, 0.3);
 }
 
-button:disabled {
-  opacity: 0.7;
+button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.65;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-.error-message {
-  color: #8f3237;
-  font-size: 15px;
-  margin: 0 0 16px;
+/* Register Prompt */
+.register-prompt {
+  text-align: center;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13.5px;
+  color: #7a8599;
+  margin-top: 28px;
 }
 
+.register-prompt a {
+  color: #0a6ebd;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.register-prompt a:hover {
+  color: #084e8a;
+  text-decoration: underline;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 960px) {
   .login-card {
     grid-template-columns: 1fr;
+    max-width: 500px;
   }
 
   .login-left {
@@ -156,6 +420,20 @@ button:disabled {
   }
 
   .login-right {
-    padding: 40px 24px;
+    padding: 40px 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 16px;
+  }
+
+  .login-right {
+    padding: 32px 20px;
+  }
+
+  .login-right h2 {
+    font-size: 28px;
   }
 }

@@ -1,88 +1,142 @@
 <div class="hr-page">
-  <div class="page-header">
-    <div>
-      <h1>Dashboard RH</h1>
-      <p>Gérez tous les événements de l’entreprise.</p>
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-text">
+            <p class="breadcrumb">ACCUEIL › TABLEAU DE BORD</p>
+            <h1>Tableau de Bord RH</h1>
+            <p class="header-sub">Gérez tous les événements de l'entreprise.</p>
+        </div>
+        <a routerLink="/admin/create-event" class="create-btn">
+            + Créer un événement
+        </a>
     </div>
 
-    <a routerLink="/admin/create-event" class="primary-link">Créer un événement</a>
-  </div>
-
-  @if (loading && events.length === 0) {
-    <p class="info-message">Chargement des événements...</p>
-  }
-
-  @if (errorMessage) {
-    <p class="error-message">{{ errorMessage }}</p>
-  }
-
-  @if (!loading && events.length === 0) {
-    <p class="info-message">Aucun événement trouvé.</p>
-  }
-
-  <div class="events-grid">
-    @for (event of events; track event.id) {
-      <article class="event-card">
-        <div class="event-top">
-          <span class="category">{{ event.category || 'Sans catégorie' }}</span>
-          <span class="status">{{ event.status }}</span>
+    <!-- State Messages -->
+    @if (loading && events.length === 0) {
+        <div class="state-message loading-msg">
+            <div class="spinner"></div>
+            <p>Chargement des événements...</p>
         </div>
-
-        <h3>{{ event.title }}</h3>
-        <p class="description">{{ event.description || 'Aucune description.' }}</p>
-
-        <div class="meta">
-            <span>{{ event.startAt | date:'medium' }}</span>
-            <span>{{ event.locationType }}</span>
-            <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
-            <span>Créé par : {{ event.createdByFullName || event.createdByEmail || 'Non renseigné' }}</span>
-            <span>Audience : {{ event.audience }}</span>
-            <span>Capacité : {{ event.capacity }}</span>
-
-            @if (event.audience === 'DEPARTMENT') {
-                <span>Département cible : {{ event.targetDepartmentName || 'Non renseigné' }}</span>
-            }
-        </div>
-
-            @if (event.status === 'CANCELLED' && event.cancelReason) {
-            <div class="detail-box">
-              <h3>Raison d’annulation</h3>
-              <p>{{ event.cancelReason }}</p>
-            </div>
-          }
-
-            @if (event.status === 'ARCHIVED') {
-            <p class="state-note archived-note">Événement archivé — aucune action disponible.</p>
-            }
-
-        <div class="actions">
-            <a [routerLink]="['/admin/events', event.id]" class="details-link">Détails</a>
-
-            @if (canEdit(event)) {
-                <button type="button" (click)="goToEdit(event.id)">Modifier</button>
-            }
-
-            @if (canPublish(event)) {
-                <button type="button" (click)="publish(event.id)" [disabled]="actionLoading">Publier</button>
-            }
-
-            @if (canCancel(event)) {
-                <button type="button" (click)="cancel(event.id)" [disabled]="actionLoading">Annuler</button>
-            }
-
-            @if (canArchive(event)) {
-                <button type="button" class="danger" (click)="archive(event.id)" [disabled]="actionLoading">Archiver</button>
-            }
-        </div>
-      </article>
     }
-  </div>
 
-  @if (totalItems > 0) {
-    <div class="pagination-bar">
-      <button type="button" (click)="previousPage()" [disabled]="!hasPrevious">Précédent</button>
-      <span>Page {{ currentPage + 1 }} / {{ totalPages }} — {{ totalItems }} éléments</span>
-      <button type="button" (click)="nextPage()" [disabled]="!hasNext">Suivant</button>
+    @if (errorMessage) {
+        <div class="state-message error-msg">
+            <p>{{ errorMessage }}</p>
+        </div>
+    }
+
+    @if (!loading && events.length === 0) {
+        <div class="state-message empty-msg">
+            <p>Aucun événement trouvé.</p>
+        </div>
+    }
+
+    <!-- Events Grid -->
+    <div class="events-grid">
+        @for (event of events; track event.id) {
+            <article class="event-card">
+                <!-- Visual Left -->
+                <div class="card-visual">
+                    <span class="visual-category">{{ event.category || 'Sans catégorie' }}</span>
+                </div>
+
+                <!-- Body Right -->
+                <div class="card-body">
+                    <div class="card-header-row">
+                        <h3>{{ event.title }}</h3>
+                        <span class="status-tag"
+                            [class.published]="event.status === 'PUBLISHED'"
+                            [class.draft]="event.status === 'DRAFT'"
+                            [class.cancelled]="event.status === 'CANCELLED'"
+                            [class.archived]="event.status === 'ARCHIVED'">
+                            {{ event.status }}
+                        </span>
+                    </div>
+
+                    <p class="description">{{ event.description || 'Aucune description.' }}</p>
+
+                    <div class="meta">
+                        <div class="meta-row">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span>{{ event.startAt | date:'medium' }}</span>
+                        </div>
+                        <div class="meta-row">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
+                        </div>
+                        <div class="meta-row">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                            <span>Par {{ event.createdByFullName || event.createdByEmail || 'Non renseigné' }}</span>
+                        </div>
+                        <div class="meta-row">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                            <span>Capacité: {{ event.capacity }}</span>
+                            <span class="meta-sep">·</span>
+                            <span>Audience: {{ event.audience }}</span>
+                        </div>
+                        @if (event.audience === 'DEPARTMENT') {
+                            <div class="meta-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                <span>Dept. cible: {{ event.targetDepartmentName || 'Non renseigné' }}</span>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Cancel Reason -->
+                    @if (event.status === 'CANCELLED' && event.cancelReason) {
+                        <div class="cancel-reason">
+                            <h4>Raison d'annulation</h4>
+                            <p>{{ event.cancelReason }}</p>
+                        </div>
+                    }
+
+                    <!-- Archived Note -->
+                    @if (event.status === 'ARCHIVED') {
+                        <div class="state-note archived-note">Événement archivé — aucune action disponible.</div>
+                    }
+
+                    <!-- Actions -->
+                    <div class="actions">
+                        <a [routerLink]="['/admin/events', event.id]" class="btn-details">Détails</a>
+
+                        @if (canEdit(event)) {
+                            <button type="button" class="btn-edit" (click)="goToEdit(event.id)">Modifier</button>
+                        }
+
+                        @if (canPublish(event)) {
+                            <button type="button" class="btn-publish" (click)="publish(event.id)" [disabled]="actionLoading">Publier</button>
+                        }
+
+                        @if (canCancel(event)) {
+                            <button type="button" class="btn-cancel" (click)="cancel(event.id)" [disabled]="actionLoading">Annuler</button>
+                        }
+
+                        @if (canArchive(event)) {
+                            <button type="button" class="btn-archive" (click)="archive(event.id)" [disabled]="actionLoading">Archiver</button>
+                        }
+                    </div>
+                </div>
+            </article>
+        }
     </div>
-  }
+
+    <!-- Pagination -->
+    @if (totalItems > 0) {
+        <div class="pagination-bar">
+            <div class="pagination-controls">
+                <button type="button" class="page-btn" (click)="previousPage()" [disabled]="!hasPrevious">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    Précédent
+                </button>
+                <span class="page-info">Page {{ currentPage + 1 }} / {{ totalPages }}</span>
+                <button type="button" class="page-btn" (click)="nextPage()" [disabled]="!hasNext">
+                    Suivant
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </div>
+            <p class="page-total">{{ totalItems }} événements au total</p>
+        </div>
+    }
+
 </div>

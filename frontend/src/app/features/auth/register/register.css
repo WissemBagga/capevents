@@ -1,154 +1,450 @@
-.auth-page {
+/* ===== Entrance Animation ===== */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Page Container ===== */
+.register-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 32px;
-  background: #f5f7fa;
+  background: #eef2f7;
 }
 
-.auth-card {
+/* ===== Card Shell ===== */
+.register-card {
   width: 100%;
-  max-width: 760px;
+  max-width: 1100px;
+  min-height: 700px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   background: #ffffff;
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 24px 60px rgba(18, 26, 56, 0.12);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 40, 80, 0.14), 0 4px 16px rgba(0, 40, 80, 0.06);
 }
 
-.auth-card h2 {
-  margin: 0 0 8px;
-  font-size: 36px;
-  color: #121a38;
+/* ===== Left Panel ===== */
+.register-left {
+  position: relative;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  background: url('/images/login-bg.png') center / cover no-repeat;
+  overflow: hidden;
 }
 
-.subtitle {
-  margin: 0 0 28px;
-  color: #6b7280;
+.register-left-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(160deg, rgba(0, 60, 120, 0.78) 0%, rgba(0, 40, 85, 0.85) 100%);
+  z-index: 1;
 }
 
+.register-left-content {
+  position: relative;
+  z-index: 2;
+  padding: 48px 40px 36px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Brand Badge */
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 28px;
+  padding: 10px 26px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  width: fit-content;
+  margin-bottom: 40px;
+  backdrop-filter: blur(6px);
+}
+
+/* Left Heading */
+.register-left h1 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 42px;
+  line-height: 1.12;
+  margin: 0 0 18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* Left Subtitle */
+.left-subtitle {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.82);
+  margin-bottom: 32px;
+  max-width: 320px;
+}
+
+/* Feature Cards */
+.features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.feature-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 14px 16px;
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.feature-box:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateX(4px);
+}
+
+.feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: #ffffff;
+}
+
+.feature-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.feature-text strong {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.feature-text span {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* Footer */
+.register-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+/* ===== Right Panel ===== */
+.register-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 44px;
+  overflow-y: auto;
+}
+
+.register-right-inner {
+  width: 100%;
+  max-width: 420px;
+  animation: fadeSlideIn 0.5s ease-out both;
+}
+
+/* Heading */
+.register-right h2 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 34px;
+  margin: 0 0 6px;
+  font-weight: 800;
+  color: #0f1b2d;
+  letter-spacing: -0.3px;
+}
+
+.welcome-text {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14.5px;
+  color: #7a8599;
+  margin-bottom: 24px;
+}
+
+/* Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e8ecf1;
+  margin-bottom: 28px;
+}
+
+.tab {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 22px;
+  color: #8a95a8;
+  text-decoration: none;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tab:hover {
+  color: #0a6ebd;
+}
+
+.tab.active {
+  color: #0a6ebd;
+  font-weight: 600;
+  border-bottom-color: #0a6ebd;
+}
+
+/* Form Row (2 columns) */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
+/* Form Group */
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   margin-bottom: 18px;
 }
 
 label {
-  font-size: 15px;
-  font-weight: 500;
-  color: #121a38;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #2e3a4d;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
-input {
+/* Input Wrapper with Icon */
+.input-wrapper,
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  color: #9aa6b8;
+  pointer-events: none;
+  z-index: 1;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
   height: 48px;
-  border: 1px solid #d9e2ec;
+  border: 1.5px solid #dce3ed;
   border-radius: 12px;
-  padding: 0 14px;
-  font-size: 15px;
-  font-family: 'Ubuntu', Verdana, sans-serif;
+  padding: 0 14px 0 42px;
+  font-size: 14px;
+  font-family: Verdana, Geneva, sans-serif;
+  color: #1a2538;
+  background: #f8fafc;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+input::placeholder {
+  color: #b0bac8;
+  font-size: 13.5px;
 }
 
 input:focus {
-  outline: none;
-  border-color: #1db8f2;
-  box-shadow: 0 0 0 4px rgba(29, 184, 242, 0.14);
+  border-color: #0a6ebd;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(10, 110, 189, 0.08);
 }
 
+input.input-error {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
 
+/* Select */
 select {
+  width: 100%;
   height: 48px;
-  border: 1px solid #d9e2ec;
+  border: 1.5px solid #dce3ed;
   border-radius: 12px;
-  padding: 0 14px;
-  font-size: 15px;
-  font-family: 'Ubuntu', Verdana, sans-serif;
-  background: #ffffff;
+  padding: 0 14px 0 42px;
+  font-size: 14px;
+  font-family: Verdana, Geneva, sans-serif;
+  color: #1a2538;
+  background: #f8fafc;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa6b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
 }
 
 select:focus {
-  outline: none;
-  border-color: #1db8f2;
-  box-shadow: 0 0 0 4px rgba(29, 184, 242, 0.14);
+  border-color: #0a6ebd;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(10, 110, 189, 0.08);
 }
 
-button {
-  width: 100%;
-  height: 50px;
-  border: none;
-  border-radius: 12px;
-  background: #1db8f2;
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
+select.input-error {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
 }
 
-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+/* Error / Success Messages */
+.field-error {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
+  color: #dc3545;
+  margin: 2px 0 0;
+  line-height: 1.4;
 }
 
 .error-message {
-  color: #8f3237;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  padding: 12px 16px;
+  border-radius: 10px;
   margin: 0 0 16px;
 }
 
 .success-message {
-  color: #00828e;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  padding: 12px 16px;
+  border-radius: 10px;
   margin: 0 0 16px;
 }
 
-.auth-link {
-  margin-top: 18px;
-  text-align: center;
-}
-
-.auth-link a {
-  color: #005a8b;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.field-error {
-  color: #b42318;
-  font-size: 13px;
-  margin-top: 4px;
-}
-
-.input-error {
-  border-color: #b42318 !important;
-  box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.12);
-}
-
-.password-wrapper {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.toggle-password {
-  white-space: nowrap;
+/* Submit Button */
+button[type="submit"] {
+  width: 100%;
+  height: 50px;
   border: none;
-  background: #005a8b;
-  color: #fff;
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0a6ebd 0%, #0d8ae0 100%);
+  color: #ffffff;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 4px 16px rgba(10, 110, 189, 0.25);
 }
 
-@media (max-width: 768px) {
-  .form-row {
+button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(10, 110, 189, 0.3);
+}
+
+button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Auth Prompt */
+.auth-prompt {
+  text-align: center;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  color: #7a8599;
+  margin-top: 22px;
+}
+
+.auth-prompt a {
+  color: #0a6ebd;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-prompt a:hover {
+  color: #084e8a;
+  text-decoration: underline;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 960px) {
+  .register-card {
     grid-template-columns: 1fr;
+    max-width: 520px;
   }
 
-  .auth-card {
-    padding: 24px;
+  .register-left {
+    display: none;
+  }
+
+  .register-right {
+    padding: 36px 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-page {
+    padding: 16px;
+  }
+
+  .register-right {
+    padding: 28px 20px;
+  }
+
+  .register-right h2 {
+    font-size: 26px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
   }
 }

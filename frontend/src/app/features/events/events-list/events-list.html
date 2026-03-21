@@ -1,75 +1,116 @@
 <div class="events-page">
+
+    <!-- Page Header -->
     <div class="events-header">
-        <h1>Événements publiés</h1>
-        <p>Consultez les événements disponibles pour votre département et les événements globaux.</p>
+        <div class="header-text">
+            <h1>Explorez nos activités</h1>
+            <p>Découvrez et inscrivez-vous aux événements organisés par CapEvents.</p>
+        </div>
     </div>
+
+    <!-- Filters Bar -->
     <div class="filters-card">
         <div class="filter-group">
-            <label for="category">Catégorie</label>
-            <input id="category" type="text" [(ngModel)]="category" placeholder="Ex: WORK, PLEASURE, SPORT..." />
+            <label for="category">CATÉGORIE</label>
+            <input id="category" type="text" [(ngModel)]="category" placeholder="Toutes les catégories" />
         </div>
 
         <div class="filter-group">
-            <label for="from">À partir du</label>
+            <label for="from">À PARTIR DE</label>
             <input id="from" type="datetime-local" [(ngModel)]="from" />
         </div>
 
         <div class="filter-group">
-            <label for="to">Jusqu’au</label>
+            <label for="to">JUSQU'À</label>
             <input id="to" type="datetime-local" [(ngModel)]="to" />
         </div>
 
         <div class="filter-actions">
-            <button type="button" (click)="search()">Rechercher</button>
-            <button type="button" class="secondary" (click)="resetFilters()">Réinitialiser</button>
+            <button type="button" class="btn-search" (click)="search()">Rechercher</button>
+            <button type="button" class="btn-reset" (click)="resetFilters()">Réinitialiser</button>
         </div>
     </div>
 
+    <!-- State Messages -->
     @if (loading && events.length === 0) {
-        <p class="info-message">Chargement des événements...</p>
+        <div class="state-message loading">
+            <div class="spinner"></div>
+            <p>Chargement des événements...</p>
+        </div>
     }
 
     @if (loading && events.length > 0) {
-        <p class="info-message">Mise à jour de la liste...</p>
+        <div class="state-message loading">
+            <div class="spinner"></div>
+            <p>Mise à jour de la liste...</p>
+        </div>
     }
-    
+
     @if (errorMessage) {
-        <p class="error-message">{{ errorMessage}}</p>
+        <div class="state-message error">
+            <p>{{ errorMessage }}</p>
+        </div>
     }
+
     @if (!loading && events.length === 0) {
-        <p class="info-message">Aucun événement trouvé.</p>
+        <div class="state-message empty">
+            <p>Aucun événement trouvé.</p>
+        </div>
     }
+
+    <!-- Events Grid -->
     <div class="events-grid">
         @for (event of events; track event.id) {
             <article class="event-card">
-                <div class="event-card-header">
-                    <span class="category">{{event.category || 'Sans catégorie' }}</span>
-                    <span class="status">{{event.status}}</span>
+                <div class="event-image">
+                    <span class="status-badge">{{ event.status }}</span>
                 </div>
 
-                <h3>{{event.title}}</h3>
-                <p class="description">{{ event.description || 'Aucune description disponible.' }}</p>
-                <div class="meta">
-                    <span>{{ event.startAt | date:'medium' }}</span>
-                    <span>{{ event.locationType }}</span>
-                    <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
-                    <span>Capacité : {{ event.capacity }}</span>
-                </div>
+                <div class="event-body">
+                    <span class="category-tag">{{ event.category || 'Sans catégorie' }}</span>
+                    <h3>{{ event.title }}</h3>
+                    <p class="description">{{ event.description || 'Aucune description disponible.' }}</p>
 
-                <div class="card-actions">
-                <a [routerLink]="['/events', event.id]">Voir détails</a>
+                    <div class="meta">
+                        <div class="meta-row">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
+                        </div>
+                        <div class="meta-row">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span>{{ event.startAt | date:'medium' }}</span>
+                        </div>
+                        <div class="meta-row">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                            <span>Capacité : {{ event.capacity }}</span>
+                        </div>
+                    </div>
+
+                    <div class="card-actions">
+                        <a [routerLink]="['/events', event.id]" class="details-btn">Voir détails</a>
+                    </div>
                 </div>
             </article>
         }
     </div>
 
+    <!-- Pagination -->
     @if (totalItems > 0) {
         <div class="pagination-bar">
-            <button type="button" (click)="previousPage()" [disabled]="!hasPrevious">Précédent</button>
+            <div class="pagination-controls">
+                <button type="button" class="page-btn" (click)="previousPage()" [disabled]="!hasPrevious">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    Précédent
+                </button>
 
-            <span>Page {{ currentPage + 1 }} / {{ totalPages }} — {{ totalItems }} éléments</span>
+                <span class="page-info">Page {{ currentPage + 1 }} / {{ totalPages }}</span>
 
-            <button type="button" (click)="nextPage()" [disabled]="!hasNext">Suivant</button>
+                <button type="button" class="page-btn" (click)="nextPage()" [disabled]="!hasNext">
+                    Suivant
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </div>
+            <p class="page-total">Affichage de {{ events.length }} sur {{ totalItems }} événements</p>
         </div>
     }
 

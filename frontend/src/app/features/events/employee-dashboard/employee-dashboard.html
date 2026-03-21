@@ -1,33 +1,35 @@
 <div class="employee-dashboard-page">
-  <section class="hero-card">
-    <div>
-      <h1>Bienvenue, {{ firstName }}</h1>
-      <p>
-        Consultez les événements publiés pour votre département
-        <strong>{{ departmentName }}</strong>
-        ainsi que les événements globaux.
-      </p>
+
+  <!-- Greeting Bar -->
+  <section class="greeting-bar">
+    <div class="greeting-left">
+      <h1>Bonjour, {{ firstName }} 👋</h1>
+      <div class="stat-badges">
+        <span class="badge dept-badge">DÉPARTEMENT: {{ departmentName }}</span>
+        <span class="badge count-badge">ÉVÉNEMENTS DISPONIBLES: {{ totalItems }}</span>
+      </div>
     </div>
-
-    <a routerLink="/events" class="primary-link">Voir tous les événements</a>
   </section>
 
-  <section class="stats-grid">
-    <article class="stat-card">
-      <h3>Département</h3>
-      <p>{{ departmentName }}</p>
-    </article>
-
-    <article class="stat-card">
-      <h3>Événements disponibles</h3>
-      <p>{{ totalItems }}</p>
-    </article>
+  <!-- Hero Card -->
+  <section class="hero-card">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <span class="hero-label">À la une : Département {{ departmentName }}</span>
+      <h2>Consultez les événements<br>publiés pour votre département</h2>
+      <p class="hero-subtitle">
+        Restez connecté avec votre équipe et participez aux
+        prochaines sessions prévues.
+      </p>
+      <a routerLink="/events" class="hero-btn">Voir tous les événements →</a>
+    </div>
   </section>
 
+  <!-- Events Section -->
   <section class="upcoming-section">
     <div class="section-header">
       <h2>Prochains événements</h2>
-      <a routerLink="/events">Voir plus</a>
+      <a routerLink="/events">Voir tout</a>
     </div>
 
     @if (loading) {
@@ -45,23 +47,31 @@
     <div class="events-grid">
       @for (event of events; track event.id) {
         <article class="event-card">
-          <div class="event-top">
-            <span class="category">{{ event.category || 'Sans catégorie' }}</span>
-            <span class="status">{{ event.status }}</span>
+          <div class="event-image">
+            <span class="event-date-badge">{{ event.startAt | date:'mediumDate' }}</span>
           </div>
 
-          <h3>{{ event.title }}</h3>
-          <p class="description">{{ event.description || 'Aucune description.' }}</p>
+          <div class="event-body">
+            <h3>{{ event.title }}</h3>
 
-          <div class="meta">
-            <span>{{ event.startAt | date:'medium' }}</span>
-            <span>{{ event.locationType }}</span>
-            <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
-            <span>Capacité : {{ event.capacity }}</span>
-          </div>
+            <div class="meta">
+              <div class="meta-row">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
+              </div>
+              <div class="meta-row">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>{{ event.startAt | date:'shortTime' }}</span>
+              </div>
+              <div class="meta-row">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                <span>Capacité: {{ event.capacity }}</span>
+              </div>
+            </div>
 
-          <div class="actions">
-            <a [routerLink]="['/events', event.id]" class="details-link">Voir détails</a>
+            <div class="actions">
+              <a [routerLink]="['/events', event.id]" class="details-link">Voir détails</a>
+            </div>
           </div>
         </article>
       }

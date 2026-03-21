@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { finalize } from 'rxjs';
 
 import { EventService } from '../../../core/services/event.service';
@@ -17,6 +17,7 @@ export class AdminEventDetails {
   private route = inject(ActivatedRoute);
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
+  private location = inject(Location);
 
   event: EventResponse | null = null;
   loading = false;
@@ -53,5 +54,9 @@ export class AdminEventDetails {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }
