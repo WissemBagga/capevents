@@ -40,7 +40,7 @@ public class EventService {
         validateBusiness(req);
 
         User creator = userRepository.findByEmailWithRolesAndDepartment(creatorEmail)
-                .orElseThrow(() -> new NotFoundException("Creator user not found"));
+                .orElseThrow(() -> new NotFoundException("Créateur introuvable"));
 
         boolean isHr = creator.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
         boolean isManager = creator.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
@@ -49,7 +49,7 @@ public class EventService {
 
         // Règles audience
         if (audience == EventAudience.GLOBAL && !isHr) {
-            throw new BadRequestException("Only HR can create GLOBAL events");
+            throw new BadRequestException("Seuls les RH peuvent créer des événements globaux");
         }
 
         com.capevents.backend.department.Department targetDept = null;
@@ -57,12 +57,12 @@ public class EventService {
         if (audience == EventAudience.DEPARTMENT) {
             if (isManager) {
                 // manager : forcé sur son département
-                if (creator.getDepartment() == null) throw new BadRequestException("Manager has no department");
+                if (creator.getDepartment() == null) throw new BadRequestException("Le manager n’a pas de département");
 
                 Long managerDeptId = creator.getDepartment().getId();
 
                 if (req.targetDepartmentId() != null && !req.targetDepartmentId().equals(managerDeptId)) {
-                    throw new BadRequestException("Manager cannot create events for another department");
+                    throw new BadRequestException("Le manager ne peut pas créer des événements pour un autre département");
                 }
 
 
@@ -70,15 +70,15 @@ public class EventService {
             } else {
                 // HR : doit préciser targetDepartmentId
                 if (req.targetDepartmentId() == null) {
-                    throw new BadRequestException("targetDepartmentId is required for DEPARTMENT events");
+                    throw new BadRequestException("Le champ targetDepartmentId est requis pour les événements de type DÉPARTEMENT");
                 }
                 targetDept = departmentRepository.findById(req.targetDepartmentId())
-                        .orElseThrow(() -> new NotFoundException("Target department not found"));
+                        .orElseThrow(() -> new NotFoundException("Département cible introuvable"));
             }
         } else {
             // GLOBAL
             if (req.targetDepartmentId() != null) {
-                throw new BadRequestException("targetDepartmentId must be null for GLOBAL events");
+                throw new BadRequestException("Le champ targetDepartmentId doit être nul pour les événements globaux");
             }
         }
 
@@ -115,22 +115,23 @@ public class EventService {
         return toResponse(saved);
     }
 
+
     @Transactional
     public EventResponse publish(UUID eventId, String actorEmail, String ip){
         Event e = eventRepository.findByIdWithCreatorDept(eventId)
-                .orElseThrow(()-> new NotFoundException("Event not found"));
+                .orElseThrow(()-> new NotFoundException("Événement introuvable"));
 
         User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
         authorizeManageEvent(actor, e);
 
 
         if (e.getStatus() == EventStatus.ARCHIVED || e.getStatus() == EventStatus.CANCELLED){
-            throw new BadRequestException("Cannot publish an archived or cancelled event");
+            throw new BadRequestException("Impossible de publier un événement archivé ou annulé");
         }
 
         if (e.getStartAt().isBefore(Instant.now())){
-            throw new BadRequestException("Cannot publish an event that has already started");
+            throw new BadRequestException("Impossible de publier un événement déjà commencé");
         }
 
 
@@ -171,10 +172,10 @@ public class EventService {
     @Transactional(readOnly = true)
     public EventResponse getPublishedById(UUID id){
         Event e = eventRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Event not found"));
+                .orElseThrow(()-> new NotFoundException("Événement introuvable"));
 
         if (e.getStatus() != EventStatus.PUBLISHED){
-            throw new NotFoundException("Event not found"); // pour chachee les non-published
+            throw new NotFoundException("Événement introuvable"); // pour chachee les non-published
         }
         return toResponse(e);
     }
@@ -183,18 +184,18 @@ public class EventService {
     @Transactional(readOnly = true)
     public EventResponse getPublishedForUserDept(UUID id, String actorEmail) {
         var actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
         if (isHr) {
             return getPublishedById(id);
         }
 
-        if (actor.getDepartment() == null) throw new BadRequestException("User has no department");
+        if (actor.getDepartment() == null) throw new BadRequestException("L’utilisateur n’a pas de département");
 
 
         var e = eventRepository.findPublishedByIdVisibleForDept(id, actor.getDepartment().getId())
-                .orElseThrow(() -> new NotFoundException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
 
 
         return toResponse(e);
@@ -232,15 +233,15 @@ public class EventService {
         validateBusinessForUpdate(req);
 
         Event e = eventRepository.findByIdWithCreatorDept(id)
-                .orElseThrow(()-> new NotFoundException("Event not found"));
+                .orElseThrow(()-> new NotFoundException("Événement introuvable"));
 
         User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         authorizeManageEvent(actor, e);
 
         if (e.getStatus() == EventStatus.ARCHIVED || e.getStatus() == EventStatus.CANCELLED){
-            throw new BadRequestException("Cannot update an archived or cancelled event");
+            throw new BadRequestException("Impossible de modifier un événement archivé ou annulé");
         }
 
         e.setTitle(req.title());
@@ -273,19 +274,19 @@ public class EventService {
     @Transactional
     public EventResponse cancel(UUID id, String reason, String actorEmail, String ip){
         Event e = eventRepository.findByIdWithCreatorDept(id)
-                .orElseThrow(()-> new NotFoundException("Event not found"));
+                .orElseThrow(()-> new NotFoundException("Événement introuvable"));
 
         User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         authorizeManageEvent(actor, e);
 
         if (e.getStatus() == EventStatus.ARCHIVED){
-            throw new BadRequestException("Event already archived");
+            throw new BadRequestException("Événement déjà archivé");
         }
 
         if (e.getStatus() == EventStatus.CANCELLED){
-            throw new BadRequestException("Event already cancelled");
+            throw new BadRequestException("Événement déjà annulé");
         }
         e.setStatus(EventStatus.CANCELLED);
         e.setCancelReason(reason);
@@ -310,16 +311,16 @@ public class EventService {
     @Transactional
     public EventResponse archive(UUID id, String actorEmail, String ip){
         Event e = eventRepository.findByIdWithCreatorDept(id)
-                .orElseThrow(()-> new NotFoundException("Event not found"));
+                .orElseThrow(()-> new NotFoundException("Événement introuvable"));
 
         User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         authorizeManageEvent(actor, e);
 
 
         if (e.getStatus() == EventStatus.ARCHIVED){
-            throw new BadRequestException("Event already archived");
+            throw new BadRequestException("Événement déjà archivé");
         }
 
 
@@ -341,7 +342,7 @@ public class EventService {
     @Transactional(readOnly = true)
     public PageResponse<EventResponse> listPublishedForUserDept(String actorEmail, Pageable pageable) {
         var actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
         Instant now = Instant.now();
@@ -362,7 +363,7 @@ public class EventService {
             );
         }
 
-        if (actor.getDepartment() == null) throw new BadRequestException("User has no department");
+        if (actor.getDepartment() == null) throw new BadRequestException("L’utilisateur n’a pas de département");
 
         Long deptId = actor.getDepartment().getId();
 
@@ -385,7 +386,7 @@ public class EventService {
     @Transactional(readOnly = true)
     public List<EventResponse> listForDepartment(String actorEmail) {
         var actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         // HR : option 1 → voir tout
         boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
@@ -396,11 +397,11 @@ public class EventService {
         // Manager : doit avoir un dept
         boolean isManager = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
         if (!isManager) {
-            throw new BadRequestException("Not allowed");
+            throw new BadRequestException("Action non autorisée");
         }
 
         if (actor.getDepartment() == null) {
-            throw new BadRequestException("Manager has no department");
+            throw new BadRequestException("Le manager n’a pas de département");
         }
 
         Long deptId = actor.getDepartment().getId();
@@ -414,10 +415,10 @@ public class EventService {
     @Transactional(readOnly = true)
     public EventResponse getAdminById(UUID id, String actorEmail) {
         Event e = eventRepository.findByIdWithCreatorDept(id)
-                .orElseThrow(() -> new NotFoundException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
 
         User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         authorizeManageEvent(actor, e);
 
@@ -433,7 +434,7 @@ public class EventService {
             Pageable pageable
     ) {
         var actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         Instant now = Instant.now();
 
@@ -441,8 +442,12 @@ public class EventService {
         Instant effectiveTo = (to != null) ? to : Instant.parse("9999-12-31T23:59:59Z");
 
         if (effectiveFrom.isAfter(effectiveTo)) {
-            throw new BadRequestException("from must be before or equal to to");
+            throw new BadRequestException("La date de début doit être antérieure ou égale à la date de fin");
         }
+
+        String normalizedCategory = (category != null && !category.trim().isEmpty())
+            ? category.trim()
+            : null;
 
         boolean isHr = actor.getRoles().stream()
                 .anyMatch(r -> r.getCode().equals("ROLE_HR"));
@@ -451,21 +456,19 @@ public class EventService {
 
         if (isHr) {
             page = eventRepository.searchPublishedPage(
-                    now,
-                    category,
+                    normalizedCategory,
                     effectiveFrom,
                     effectiveTo,
                     pageable
             );
         } else {
             if (actor.getDepartment() == null) {
-                throw new BadRequestException("User has no department");
+                throw new BadRequestException("L’utilisateur n’a pas de département");
             }
 
             Long deptId = actor.getDepartment().getId();
 
             page = eventRepository.searchPublishedVisibleForDeptPage(
-                    now,
                     deptId,
                     category,
                     effectiveFrom,
@@ -489,31 +492,31 @@ public class EventService {
 
     private void validateBusiness(CreateEventRequest req){
         if (req.registrationDeadline().isAfter(req.startAt()) || req.registrationDeadline().equals(req.startAt())){
-            throw new BadRequestException("Registration deadline must be before event start time");
+            throw new BadRequestException("La date limite d’inscription doit être antérieure à la date de début de l’événement");
         }
         if (req.startAt().isBefore(Instant.now())){
-            throw new BadRequestException("Event start time must be in the future");
+            throw new BadRequestException("La date de début de l’événement doit être dans le futur");
         }
         if (req.locationType() == EventLocationType.ONLINE && (req.meetingUrl() == null || req.meetingUrl().isBlank())){
-            throw new BadRequestException("Meeting URL is required for ONLINE events");
+            throw new BadRequestException("Meeting URL est requise pour les événements EN LIGNE");
         }
         if (req.locationType() == EventLocationType.ONSITE && (req.locationName() == null || req.locationName().isBlank())){
-            throw new BadRequestException("Location name is required for ONSITE events");
+            throw new BadRequestException("Le nom du lieu est requis pour les événements SUR SITE");
         }
     }
 
 
     private void validateBusinessForUpdate(UpdateEventRequest req){
         if (!req.registrationDeadline().isBefore(req.startAt())){
-            throw new BadRequestException("Registration deadline must be before event start time");
+            throw new BadRequestException("La date limite d’inscription doit être antérieure à la date de début de l’événement");
         }
 
         if (req.locationType() == EventLocationType.ONLINE && (req.meetingUrl() == null || req.meetingUrl().isBlank())){
-            throw new BadRequestException("Meeting URL is required for ONLINE events");
+            throw new BadRequestException("Meeting URL est requise pour les événements EN LIGNE");
         }
 
         if (req.locationType() == EventLocationType.ONSITE && (req.locationName() == null || req.locationName().isBlank())){
-            throw new BadRequestException("Location name is required for ONSITE events");
+            throw new BadRequestException("Le nom du lieu est requis pour les événements SUR SITE");
         }
     }
     private EventResponse toResponse(Event e) {
@@ -571,7 +574,7 @@ public class EventService {
 
         boolean isManager = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
         if (!isManager) {
-            throw new NotFoundException("Event not found");
+            throw new NotFoundException("Événement introuvable");
         }
 
         // Dept de l'acteur
@@ -585,7 +588,7 @@ public class EventService {
 
         if (actorDeptId == null || eventDeptId == null || !actorDeptId.equals(eventDeptId)) {
             // On renvoie "not found" plutôt que "forbidden" pour ne pas révéler l'existence
-            throw new NotFoundException("Event not found");
+            throw new NotFoundException("Événement introuvable");
         }
     }
 

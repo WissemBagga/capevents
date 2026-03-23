@@ -50,7 +50,7 @@
                             [class.draft]="event.status === 'DRAFT'"
                             [class.cancelled]="event.status === 'CANCELLED'"
                             [class.archived]="event.status === 'ARCHIVED'">
-                            {{ event.status }}
+                            {{ statusLabel(event.status) }}
                         </span>
                     </div>
 

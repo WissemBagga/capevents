@@ -141,12 +141,37 @@ export class ManagerDashboard {
     return event.status === 'DRAFT';
   }
 
+  private isBeforeStart(event: EventResponse): boolean {
+    return new Date(event.startAt).getTime() > Date.now();
+  }
+
+  private isAfterStart(event: EventResponse): boolean {
+    return new Date(event.startAt).getTime() <= Date.now();
+  }
+
   canCancel(event: EventResponse): boolean {
-    return event.status === 'DRAFT' || event.status === 'PUBLISHED';
+    return (event.status === 'DRAFT' || event.status === 'PUBLISHED') && this.isBeforeStart(event);
   }
 
   canArchive(event: EventResponse): boolean {
-    return event.status === 'DRAFT' || event.status === 'PUBLISHED';
+    return (event.status === 'DRAFT' || event.status === 'PUBLISHED') && this.isAfterStart(event);
+  }
+
+   statusLabel(status: string): string {
+    switch (status) {
+      case 'DRAFT':
+        return 'Brouillon';
+      case 'PUBLISHED':
+        return 'Publié';
+      case 'CANCELLED':
+        return 'Annulé';
+      case 'ARCHIVED':
+        return 'Archivé';
+      case 'PENDING':
+        return 'En attente';
+      default:
+        return status;
+    }
   }
 
 

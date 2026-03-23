@@ -57,11 +57,11 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     @Query("""
   select e from Event e
   left join e.targetDepartment td
-  where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+  where e.status = 'PUBLISHED'
     and e.startAt >= :now
     and (
-      e.audience = com.capevents.backend.event.EventAudience.GLOBAL
-      or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
+      e.audience = 'GLOBAL'
+      or (e.audience = 'DEPARTMENT' and td.id = :deptId)
     )
 """)
     Page<Event> findPublishedVisibleForDeptPage(
@@ -73,18 +73,16 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     @Query("""
   select e from Event e
   left join e.targetDepartment td
-  where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
-    and e.startAt >= :now
+  where e.status = 'PUBLISHED'
     and (
-      e.audience = com.capevents.backend.event.EventAudience.GLOBAL
-      or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
+      e.audience = 'GLOBAL'
+      or (e.audience = 'DEPARTMENT' and td.id = :deptId)
     )
     and (:category is null or e.category = :category)
     and e.startAt >= :from
     and e.startAt <= :to
 """)
     Page<Event> searchPublishedVisibleForDeptPage(
-            @Param("now") Instant now,
             @Param("deptId") Long deptId,
             @Param("category") String category,
             @Param("from") Instant from,
@@ -92,15 +90,14 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             Pageable pageable
     );
     @Query("""
-  select e from Event e
-  where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
-    and e.startAt >= :now
-    and (:category is null or e.category = :category)
-    and e.startAt >= :from
-    and e.startAt <= :to
+      select e from Event e
+      where e.status = 'PUBLISHED'
+      and  e.startAt >= :from
+      and  e.startAt <= :to
+      and (:category is null or lower(e.category) like lower( concat('%', :category, '%')))
+    
 """)
     Page<Event> searchPublishedPage(
-            @Param("now") Instant now,
             @Param("category") String category,
             @Param("from") Instant from,
             @Param("to") Instant to,

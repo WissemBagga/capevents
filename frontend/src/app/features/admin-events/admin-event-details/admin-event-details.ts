@@ -59,4 +59,22 @@ export class AdminEventDetails {
   goBack(): void {
     this.location.back();
   }
+
+   statusLabel(status: string): string {
+    switch (status) {
+      case 'DRAFT':
+        return 'Brouillon';
+      case 'PUBLISHED':
+        return 'Publié';
+      case 'CANCELLED':
+        return 'Annulé';
+      case 'ARCHIVED':
+        return 'Archivé';
+      case 'PENDING':
+        return 'En attente';
+      default:
+        return status;
+    }
+  }
+
 }

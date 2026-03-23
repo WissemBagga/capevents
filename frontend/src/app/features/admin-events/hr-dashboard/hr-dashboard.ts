@@ -82,6 +82,14 @@ export class HrDashboard {
     this.router.navigate(['/admin/edit-event', eventId]);
   }
 
+  private isBeforeStart(event: EventResponse): boolean {
+    return new Date(event.startAt).getTime() > Date.now();
+  }
+
+  private isAfterStart(event: EventResponse): boolean {
+    return new Date(event.startAt).getTime() <= Date.now();
+  }
+
   canEdit(event: EventResponse): boolean {
     return event.status === 'DRAFT' || event.status === 'PUBLISHED';
   }
@@ -91,11 +99,11 @@ export class HrDashboard {
   }
 
   canCancel(event: EventResponse): boolean {
-    return event.status === 'DRAFT' || event.status === 'PUBLISHED';
+    return (event.status === 'DRAFT' || event.status === 'PUBLISHED') && this.isBeforeStart(event);
   }
 
   canArchive(event: EventResponse): boolean {
-    return event.status === 'DRAFT' || event.status === 'PUBLISHED';
+    return (event.status === 'DRAFT' || event.status === 'PUBLISHED') && this.isAfterStart(event);
   }
 
   publish(eventId: string): void {
@@ -165,5 +173,22 @@ export class HrDashboard {
           this.cdr.markForCheck();
         }
       });
+  }
+
+   statusLabel(status: string): string {
+    switch (status) {
+      case 'DRAFT':
+        return 'Brouillon';
+      case 'PUBLISHED':
+        return 'Publié';
+      case 'CANCELLED':
+        return 'Annulé';
+      case 'ARCHIVED':
+        return 'Archivé';
+      case 'PENDING':
+        return 'En attente';
+      default:
+        return status;
+    }
   }
 }

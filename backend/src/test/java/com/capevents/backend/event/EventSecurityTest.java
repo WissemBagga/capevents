@@ -2,6 +2,7 @@ package com.capevents.backend.event;
 
 import com.capevents.backend.TestAuthHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,6 +19,8 @@ class EventSecurityTest {
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
+    @Autowired
+    private EventService eventService;
 
     @Test
     void managerCannotCreateEventForAnotherDepartment() throws Exception {
@@ -53,4 +56,16 @@ class EventSecurityTest {
                         .content(body))
                 .andExpect(status().isBadRequest());
     }
+
+
+   /* public void additionTest() {
+        int s = 5;
+        int add = eventService.addition(2,3);
+        if (s==add){
+            System.out.println("valide");
+        }
+        else {
+            System.out.println("invalide");
+        }
+    }*/
 }

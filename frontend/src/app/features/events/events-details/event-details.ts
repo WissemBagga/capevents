@@ -27,7 +27,6 @@ export class EventDetails {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
-
     if (!id) {
       this.errorMessage = 'Identifiant de l’événement manquant.';
       this.cdr.markForCheck();
@@ -57,6 +56,24 @@ export class EventDetails {
           this.cdr.markForCheck();
         }
       });
+  }
+
+
+   statusLabel(status: string): string {
+    switch (status) {
+      case 'DRAFT':
+        return 'Brouillon';
+      case 'PUBLISHED':
+        return 'Publié';
+      case 'CANCELLED':
+        return 'Annulé';
+      case 'ARCHIVED':
+        return 'Archivé';
+      case 'PENDING':
+        return 'En attente';
+      default:
+        return status;
+    }
   }
 
   goBack(): void {

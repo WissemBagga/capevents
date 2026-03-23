@@ -31,7 +31,7 @@
                 <span class="category-tag">{{ event.category || 'Sans catégorie' }}</span>
                 <h1>{{ event.title }}</h1>
                 <div class="hero-meta">
-                    <span class="status-badge">{{ event.status }}</span>
+                    <span class="status-badge">{{ statusLabel(event.status) }}</span>
                     <span class="date-pill">{{ event.startAt | date:'fullDate' }}</span>
                 </div>
             </div>

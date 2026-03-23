@@ -29,12 +29,30 @@ export class Register implements OnInit {
   loading = false;
 
   registerForm = this.fb.group({
-    firstName: ['', [Validators.required, Validators.maxLength(80)]],
-    lastName: ['', [Validators.required, Validators.maxLength(80)]],
+    firstName: [
+        '',
+        [
+          Validators.required, Validators.maxLength(80),
+          Validators.pattern(/^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ' -]*$/)
+        ]
+      ],
+    lastName: [
+        '',
+        [
+          Validators.required, Validators.maxLength(80),
+          Validators.pattern(/^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ' -]*$/)
+        ]
+      ],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(190)]],
     password: ['', [Validators.required, Validators.minLength(8), 
       Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)]],
-    phone: [''],
+    phone: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(/^\+216(?:\s?\d{8}|\s?\d{2}\s?\d{3}\s?\d{3})$/)
+      ]
+    ],
     departmentId: [null as number | null, [Validators.required]]
   });
 

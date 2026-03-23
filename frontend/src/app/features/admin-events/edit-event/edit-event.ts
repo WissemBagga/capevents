@@ -40,12 +40,12 @@ export class EditEvent {
     category: ['', [Validators.required]],
     description: ['', [Validators.required]],
     startAt: ['', [Validators.required]],
-    durationMinutes: [60, [Validators.required, Validators.min(1)]],
+    durationMinutes: [30, [Validators.required, Validators.min(30)]],
     locationType: ['ONSITE', [Validators.required]],
     locationName: [''],
     meetingUrl: [''],
     address: [''],
-    capacity: [10, [Validators.required, Validators.min(1), Validators.max(500)]],
+    capacity: [2, [Validators.required, Validators.min(2)]],
     registrationDeadline: ['', [Validators.required]],
     imageUrl: [''],
     audience: ['DEPARTMENT', [Validators.required]],
@@ -148,11 +148,16 @@ export class EditEvent {
   onLocationTypeChange(): void {
     const locationType = this.form.get('locationType')?.value;
 
+    this.form.get('locationName')?.clearValidators();
+    this.form.get('meetingUrl')?.clearValidators();
+    this.form.get('address')?.clearValidators();
+
     if (locationType === 'ONSITE') {
       this.form.patchValue({
         meetingUrl: '',
         address: ''
       });
+      this.form.get('locationName')?.setValidators([Validators.required]);
     }
 
     if (locationType === 'ONLINE') {
@@ -160,6 +165,7 @@ export class EditEvent {
         locationName: '',
         address: ''
       });
+      this.form.get('meetingUrl')?.setValidators([Validators.required]);
     }
 
     if (locationType === 'EXTERNAL') {
@@ -167,7 +173,12 @@ export class EditEvent {
         locationName: '',
         meetingUrl: ''
       });
+      this.form.get('address')?.setValidators([Validators.required]);
     }
+
+    this.form.get('locationName')?.updateValueAndValidity();
+    this.form.get('meetingUrl')?.updateValueAndValidity();
+    this.form.get('address')?.updateValueAndValidity();
 
     this.cdr.markForCheck();
   }
@@ -176,11 +187,15 @@ export class EditEvent {
     const audience = this.form.getRawValue().audience;
 
     if (audience === 'GLOBAL') {
-      this.form.patchValue({
-        targetDepartmentId: null
-      });
+      this.form.patchValue({ targetDepartmentId: null });
+      this.form.get('targetDepartmentId')?.clearValidators();
+    } else {
+      if (this.isHr) {
+        this.form.get('targetDepartmentId')?.setValidators([Validators.required]);
+      }
     }
 
+    this.form.get('targetDepartmentId')?.updateValueAndValidity();
     this.cdr.markForCheck();
   }
 
@@ -273,4 +288,5 @@ export class EditEvent {
       }
     });
   }
+
 }

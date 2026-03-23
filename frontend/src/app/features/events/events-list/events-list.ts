@@ -17,6 +17,12 @@ import { finalize } from 'rxjs';
 export class EventsList {
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
+  private normalizeSearchText(value: string): string | null {
+    if (!value || !value.trim()) return null;
+    return value.trim();
+  }
+
+
 
   events: EventResponse[] = [];
   loading = false;
@@ -35,6 +41,23 @@ export class EventsList {
 
   ngOnInit(): void {
     this.loadEvents();
+  }
+
+  statusLabel(status: string): string {
+    switch (status) {
+      case 'DRAFT':
+        return 'Brouillon';
+      case 'PUBLISHED':
+        return 'Publié';
+      case 'CANCELLED':
+        return 'Annulé';
+      case 'ARCHIVED':
+        return 'Archivé';
+      case 'PENDING':
+        return 'En attente';
+      default:
+        return status;
+    }
   }
 
   loadEvents(page = 0): void {
@@ -71,7 +94,7 @@ export class EventsList {
     this.cdr.markForCheck();
 
     this.eventService.searchPublished(
-      this.category || null,
+      this.normalizeSearchText(this.category),
       this.toIsoInstant(this.from),
       this.toIsoInstant(this.to),
       0,

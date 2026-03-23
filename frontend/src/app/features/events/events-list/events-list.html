@@ -16,12 +16,12 @@
         </div>
 
         <div class="filter-group">
-            <label for="from">À PARTIR DE</label>
+            <label for="from">Date de début</label>
             <input id="from" type="datetime-local" [(ngModel)]="from" />
         </div>
 
         <div class="filter-group">
-            <label for="to">JUSQU'À</label>
+            <label for="to">Date limite d’inscription</label>
             <input id="to" type="datetime-local" [(ngModel)]="to" />
         </div>
 
@@ -63,7 +63,7 @@
         @for (event of events; track event.id) {
             <article class="event-card">
                 <div class="event-image">
-                    <span class="status-badge">{{ event.status }}</span>
+                    <span class="status-badge">{{ statusLabel(event.status) }}</span>
                 </div>
 
                 <div class="event-body">

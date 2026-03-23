@@ -12,7 +12,7 @@
                 <p class="header-sub">Créez un événement pour votre département: {{ currentDepartmentName }}</p>
             }
         </div>
-        <a routerLink="/events" class="back-link">
+        <a routerLink="/admin/hr" class="back-link">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             Retour
         </a>
@@ -48,11 +48,17 @@
                 <div class="form-group full-width">
                     <label for="title">Titre</label>
                     <input id="title" type="text" formControlName="title" placeholder="Nom de l'événement" />
+                    @if (form.get('title')?.touched && form.get('title')?.errors?.['required']) {
+                        <p class="field-error">Le titre est obligatoire.</p>
+                    }
                 </div>
 
                 <div class="form-group">
                     <label for="category">Catégorie</label>
                     <input id="category" type="text" formControlName="category" placeholder="WORK, TRAINING..." />
+                    @if (form.get('category')?.touched && form.get('category')?.errors?.['required']) {
+                        <p class="field-error">La catégorie est obligatoire.</p>
+                    }
                 </div>
 
                 <div class="form-group">
@@ -63,6 +69,7 @@
                             <option value="GLOBAL">Global</option>
                         }
                     </select>
+                    
                 </div>
 
                 @if (form.getRawValue().audience === 'DEPARTMENT' && isHr) {
@@ -72,8 +79,11 @@
                             <option [ngValue]="null">Sélectionnez un département</option>
                             @for (department of departments; track department.id) {
                                 <option [ngValue]="department.id">{{ department.name }}</option>
-                            }
+                            }                            
                         </select>
+                        @if (form.get('targetDepartmentId')?.touched && form.get('targetDepartmentId')?.errors?.['required']) {
+                               <p class="field-error">Le département cible est obligatoire.</p>
+                        }
                     </div>
                 }
 
@@ -98,21 +108,39 @@
                 <div class="form-group">
                     <label for="startAt">Date de début</label>
                     <input id="startAt" type="datetime-local" formControlName="startAt" />
+                    @if (form.get('startAt')?.touched && form.get('startAt')?.errors?.['required']) {
+                        <p class="field-error">La date de début est obligatoire.</p>
+                    }
                 </div>
 
                 <div class="form-group">
                     <label for="registrationDeadline">Date limite d'inscription</label>
                     <input id="registrationDeadline" type="datetime-local" formControlName="registrationDeadline" />
+                    @if (form.get('registrationDeadline')?.touched && form.get('registrationDeadline')?.errors?.['required']) {
+                        <p class="field-error">La date limite d’inscription est obligatoire.</p>
+                    }
                 </div>
 
                 <div class="form-group">
-                    <label for="durationMinutes">Durée (minutes)</label>
-                    <input id="durationMinutes" type="number" formControlName="durationMinutes" placeholder="60" />
+                        <label for="durationMinutes">Durée (minutes)</label>
+                        <input id="durationMinutes" type="number" min="30" step="1" formControlName="durationMinutes" placeholder="60" />
+                        @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['required']) {
+                            <p class="field-error">La durée est obligatoire.</p>
+                        }
+                        @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['min']) {
+                            <p class="field-error">La durée minimale est de 30 minutes.</p>
+                        }
                 </div>
 
                 <div class="form-group">
-                    <label for="capacity">Capacité</label>
-                    <input id="capacity" type="number" formControlName="capacity" placeholder="30" />
+                        <label for="capacity">Capacité</label>
+                        <input id="capacity" type="number" min="2" step="1" formControlName="capacity" placeholder="30" />
+                        @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['required']) {
+                            <p class="field-error">La capacité est obligatoire.</p>
+                        }
+                        @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['min']) {
+                            <p class="field-error">La capacité minimale est de 2 participants.</p>
+                        }
                 </div>
             </div>
         </div>
@@ -124,9 +152,9 @@
                 <div class="form-group">
                     <label for="locationType">Type de lieu</label>
                     <select id="locationType" formControlName="locationType" (change)="onLocationTypeChange()">
-                        <option value="ONSITE">ONSITE</option>
-                        <option value="ONLINE">ONLINE</option>
-                        <option value="EXTERNAL">EXTERNAL</option>
+                        <option value="ONSITE">SUR SITE</option>
+                        <option value="ONLINE">EN LIGNE</option>
+                        <option value="EXTERNAL">EXTERNE</option>
                     </select>
                 </div>
 
@@ -134,6 +162,9 @@
                     <div class="form-group">
                         <label for="locationName">Lieu</label>
                         <input id="locationName" type="text" formControlName="locationName" placeholder="Salle, bâtiment..." />
+                        @if (form.get('locationName')?.touched && form.get('locationName')?.errors?.['required']) {
+                            <p class="field-error">Le lieu est obligatoire pour un événement sur site.</p>
+                        }
                     </div>
                 }
 
@@ -141,6 +172,9 @@
                     <div class="form-group">
                         <label for="meetingUrl">Meeting URL</label>
                         <input id="meetingUrl" type="text" formControlName="meetingUrl" placeholder="https://..." />
+                        @if (form.get('meetingUrl')?.touched && form.get('meetingUrl')?.errors?.['required']) {
+                            <p class="field-error">Le lien de réunion est obligatoire pour un événement en ligne.</p>
+                        }
                     </div>
                 }
 
@@ -148,6 +182,9 @@
                     <div class="form-group">
                         <label for="address">Adresse</label>
                         <input id="address" type="text" formControlName="address" placeholder="Adresse complète..." />
+                        @if (form.get('address')?.touched && form.get('address')?.errors?.['required']) {
+                            <p class="field-error">L’adresse est obligatoire pour un événement externe.</p>
+                        }
                     </div>
                 }
             </div>
