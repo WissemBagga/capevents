@@ -22,22 +22,20 @@ public class EventRegistrationService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EventRegistrationRepository registrationRepository;
-    private final AuthenticationManager authenticationManager;
 
     public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository, AuthenticationManager authenticationManager) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.registrationRepository = registrationRepository;
-        this.authenticationManager = authenticationManager;
     }
 
     @Transactional
     public RegistrationResponse register(UUID eventId, String userEmail) {
         Event event = eventRepository.findByIdWithCreatorDept(eventId)
-                .orElseThrow(() -> new NotFoundException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
 
         User user = userRepository.findByEmailWithRolesAndDepartment(userEmail.toLowerCase())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         validateRegistrationAllowed(event, user);
 
@@ -45,7 +43,7 @@ public class EventRegistrationService {
                 .orElse(null);
 
         if (registration != null && registration.getStatus() == RegistrationStatus.REGISTERED) {
-            throw new BadRequestException("You are already registered for this event");
+            throw new BadRequestException("Vous êtes déjà inscrit à cet événement");
         }
 
         if (registration == null) {
@@ -65,17 +63,17 @@ public class EventRegistrationService {
     @Transactional
     public RegistrationResponse unregister(UUID eventId, String userEmail) {
         Event event = eventRepository.findByIdWithCreatorDept(eventId)
-                .orElseThrow(() -> new NotFoundException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
 
         User user = userRepository.findByEmailWithRolesAndDepartment(userEmail.toLowerCase())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         EventRegistration registration = registrationRepository
                 .findByEventIdAndUserId(event.getId(), user.getId())
-                .orElseThrow(() -> new NotFoundException("Registration not found"));
+                .orElseThrow(() -> new NotFoundException("Inscription introuvable"));
 
         if (registration.getStatus() != RegistrationStatus.REGISTERED) {
-            throw new BadRequestException("You are not currently registered for this event");
+            throw new BadRequestException("Vous n’êtes pas inscrit à cet événement");
         }
 
         registration.setStatus(RegistrationStatus.CANCELLED);
@@ -88,7 +86,7 @@ public class EventRegistrationService {
     @Transactional(readOnly = true)
     public List<RegistrationResponse> myRegistrations(String userEmail) {
         User user = userRepository.findByEmailWithRolesAndDepartment(userEmail.toLowerCase())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         return registrationRepository
                 .findByUserIdAndStatusOrderByRegisteredAtDesc(user.getId(), RegistrationStatus.REGISTERED)
@@ -100,7 +98,7 @@ public class EventRegistrationService {
     @Transactional(readOnly = true)
     public boolean isRegistered(UUID eventId, String userEmail) {
         User user = userRepository.findByEmail(userEmail.toLowerCase())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         return registrationRepository.existsByEventIdAndUserIdAndStatus(
                 eventId,
@@ -109,18 +107,13 @@ public class EventRegistrationService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public long countRegistered(Event event) {
-        return registrationRepository.countByEventAndStatus(event, RegistrationStatus.REGISTERED);
-    }
-
     @Transactional
     public  List<EventParticipantResponse> eventParticipants(UUID eventId, String actorEmail) {
         Event event = eventRepository.findByIdWithCreatorDept(eventId)
-                .orElseThrow(() -> new NotFoundException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
 
         User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail.toLowerCase())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         authorizeAdminAccess(actor, event);
 
@@ -144,12 +137,12 @@ public class EventRegistrationService {
         }
 
         if (event.getRegistrationDeadline() != null && Instant.now().isAfter(event.getRegistrationDeadline())) {
-            throw new BadRequestException("Registration deadline has passed");
+            throw new BadRequestException("La date limite d'inscription est passée.");
         }
 
         long registeredCount = registrationRepository.countByEventAndStatus(event, RegistrationStatus.REGISTERED);
         if (event.getCapacity() != null && registeredCount >= event.getCapacity()) {
-            throw new BadRequestException("Event is full");
+            throw new BadRequestException("L'événement est complet.");
         }
 
         // TODO later:
@@ -174,7 +167,7 @@ public class EventRegistrationService {
 
         boolean isManager = user.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
         if (!isManager) {
-            throw new NotFoundException("Event not found");
+            throw new NotFoundException("Événement introuvable");
         }
 
         Long actorDeptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
@@ -185,11 +178,8 @@ public class EventRegistrationService {
         }
 
         if (actorDeptId == null || eventDeptId == null || !actorDeptId.equals(eventDeptId)) {
-            throw new NotFoundException("Event not found");
+            throw new NotFoundException("Événement introuvable");
         }
 
     }
-
-
-
 }
