@@ -5,9 +5,11 @@ import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.event.Event;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
+import com.capevents.backend.registration.dto.EventParticipantResponse;
 import com.capevents.backend.registration.dto.RegistrationResponse;
 import com.capevents.backend.user.User;
 import com.capevents.backend.user.UserRepository;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +22,13 @@ public class EventRegistrationService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EventRegistrationRepository registrationRepository;
+    private final AuthenticationManager authenticationManager;
 
-    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository) {
+    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository, AuthenticationManager authenticationManager) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.registrationRepository = registrationRepository;
+        this.authenticationManager = authenticationManager;
     }
 
     @Transactional
@@ -110,6 +114,30 @@ public class EventRegistrationService {
         return registrationRepository.countByEventAndStatus(event, RegistrationStatus.REGISTERED);
     }
 
+    @Transactional
+    public  List<EventParticipantResponse> eventParticipants(UUID eventId, String actorEmail) {
+        Event event = eventRepository.findByIdWithCreatorDept(eventId)
+                .orElseThrow(() -> new NotFoundException("Event not found"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail.toLowerCase())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        authorizeAdminAccess(actor, event);
+
+        return registrationRepository.findByEventAndStatusOrderByRegisteredAtAsc(event, RegistrationStatus.REGISTERED)
+                .stream()
+                .map(reg -> new EventParticipantResponse(
+                        reg.getId(),
+                        reg.getUser().getId(),
+                        reg.getUser().getFirstName(),
+                        reg.getUser().getLastName(),
+                        reg.getUser().getEmail(),
+                        reg.getUser().getDepartment() != null ? reg.getUser().getDepartment().getName() : null,
+                        reg.getRegisteredAt()
+                ))
+                .toList();
+    }
+
     private void validateRegistrationAllowed(Event event, User user) {
         if (event.getStatus() != EventStatus.PUBLISHED) {
             throw new BadRequestException("Registration is allowed only for published events");
@@ -139,5 +167,29 @@ public class EventRegistrationService {
                 registration.getCancelledAt()
         );
     }
+
+    private void authorizeAdminAccess(User user, Event event) {
+        boolean isHr = user.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
+        if (isHr) return; // HR can access all events
+
+        boolean isManager = user.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
+        if (!isManager) {
+            throw new NotFoundException("Event not found");
+        }
+
+        Long actorDeptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
+        Long eventDeptId = null;
+
+        if (event.getCreatedBy() != null && event.getCreatedBy().getDepartment() != null) {
+            eventDeptId = event.getCreatedBy().getDepartment().getId();
+        }
+
+        if (actorDeptId == null || eventDeptId == null || !actorDeptId.equals(eventDeptId)) {
+            throw new NotFoundException("Event not found");
+        }
+
+    }
+
+
 
 }
