@@ -200,6 +200,50 @@
                 </div>
             }
 
+            <section class="participants-section">
+                <span class="detail-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="7" r="4"/>
+                    <path d="M5.5 21a6.5 6.5 0 0113 0"/>
+                    <circle cx="4" cy="10" r="2"/>
+                    <path d="M2 21a4 4 0 016-3"/>
+                    <circle cx="20" cy="10" r="2"/>
+                    <path d="M22 21a4 4 0 00-6-3"/>
+                    </svg>
+                </span>
+                <div class="section-header">
+                    <h2>Participants</h2>
+                    @if (event) {
+                    <span>
+                        @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
+                        {{ event.registeredCount }} inscrits / {{ event.capacity }} places — reste {{ event.remainingCapacity }}
+                        } @else {
+                        Capacité max : {{ event.capacity }}
+                        }
+                    </span>
+                    }
+                </div>
+
+                @if (participantsLoading) {
+                    <p class="info-message">Chargement des participants...</p>
+                }
+
+                @if (!participantsLoading && participants.length === 0) {
+                    <p class="info-message">Aucun participant inscrit pour le moment.</p>
+                }
+
+                <div class="participants-grid">
+                    @for (participant of participants; track participant.registrationId) {
+                    <article class="participant-card">
+                        <h3>{{ participant.firstName }} {{ participant.lastName }}</h3>
+                        <p>{{ participant.email }}</p>
+                        <p>{{ participant.departmentName || 'Département non renseigné' }}</p>
+                        <p>Inscrit le : {{ participant.registeredAt | date:'medium' }}</p>
+                    </article>
+                    }
+                </div>
+            </section>
+
         </article>
     }
 </div>

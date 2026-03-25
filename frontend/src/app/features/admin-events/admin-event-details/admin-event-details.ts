@@ -6,6 +6,8 @@ import { finalize } from 'rxjs';
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
 
+import {EventParticipantResponse} from '../../../core/models/participant.model'
+
 @Component({
   selector: 'app-admin-event-details',
   standalone: true,
@@ -22,6 +24,10 @@ export class AdminEventDetails {
   event: EventResponse | null = null;
   loading = false;
   errorMessage = '';
+
+  participants: EventParticipantResponse[]= [];
+  participantsLoading = false;
+
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -44,6 +50,7 @@ export class AdminEventDetails {
       .subscribe({
         next: (event) => {
           this.event = event;
+          this.loadParticipants(event.id);
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -54,6 +61,28 @@ export class AdminEventDetails {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  private loadParticipants(eventId: string): void{
+    this.participantsLoading = true;
+    this.cdr.markForCheck();
+
+    this.eventService.getEventParticipants(eventId)
+      .pipe(finalize(()=> {
+        this.participantsLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (participants) => {
+          this.participants = participants;
+          this.cdr.markForCheck();
+        },
+        error: () =>{
+          this.participants =[];
+          this.cdr.markForCheck();
+        }
+      });
+
   }
 
   goBack(): void {

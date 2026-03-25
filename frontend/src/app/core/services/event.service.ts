@@ -4,8 +4,12 @@ import { PageResponse } from '../models/page-response.model';
 import { EventResponse } from '../models/event.model';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
+
 import { CreateEventRequest } from '../models/create-event.model';
+
 import {RegistrationResponse} from '../models/registration.model'
+
+import {EventParticipantResponse} from '../models/participant.model'
 
 @Injectable({
   providedIn: 'root'
@@ -90,7 +94,7 @@ export class EventService {
   }
 
 
-  
+
   registerToEvent(id: string) {
     return this.http.post<RegistrationResponse>(`${this.apiUrl}/${id}/register`, {});
   }
@@ -105,6 +109,10 @@ export class EventService {
 
   getMyRegistrations() {
     return this.http.get<RegistrationResponse[]>(`${environment.apiBaseUrl}/api/me/registrations`);
+  }
+
+  getEventParticipants(id: string){
+    return this.http.get<EventParticipantResponse[]>(`${environment.apiBaseUrl}/api/events/admin/${id}/participants`);
   }
 
 }
