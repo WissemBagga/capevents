@@ -5,6 +5,7 @@ import { EventResponse } from '../models/event.model';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { CreateEventRequest } from '../models/create-event.model';
+import {RegistrationResponse} from '../models/registration.model'
 
 @Injectable({
   providedIn: 'root'
@@ -86,6 +87,24 @@ export class EventService {
 
   updateEvent(id: string, payload: CreateEventRequest) {
     return this.http.put<EventResponse>(`${this.apiUrl}/${id}`, payload);
+  }
+
+
+  
+  registerToEvent(id: string) {
+    return this.http.post<RegistrationResponse>(`${this.apiUrl}/${id}/register`, {});
+  }
+
+  unregisterFromEvent(id: string) {
+    return this.http.post<RegistrationResponse>(`${this.apiUrl}/${id}/unregister`, {});
+  }
+
+  getRegistrationStatus(id: string) {
+    return this.http.get<boolean>(`${this.apiUrl}/${id}/registration-status`);
+  }
+
+  getMyRegistrations() {
+    return this.http.get<RegistrationResponse[]>(`${environment.apiBaseUrl}/api/me/registrations`);
   }
 
 }

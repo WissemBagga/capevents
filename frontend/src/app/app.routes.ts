@@ -16,6 +16,8 @@ import { AppShell } from './shared/layout/app-shell/app-shell';
 import { VerifyEmail } from './features/auth/verify-email/verify-email';
 import { VerifyEmailPending } from './features/auth/verify-email-pending/verify-email-pending';
 import { AdminEventDetails } from './features/admin-events/admin-event-details/admin-event-details';
+import {MyEvents} from './features/events/my-events/my-events'
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -70,7 +72,13 @@ export const routes: Routes = [
         component: EditEvent,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] }
-      }
+      },
+      {
+        path: 'my-events',
+        component: MyEvents,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE'] }
+      },
     ]
   },
 

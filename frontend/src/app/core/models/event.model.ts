@@ -25,4 +25,12 @@ export interface EventResponse {
   createdAt: string | null;
   updatedAt: string | null;
   imageUrl: string | null;
+
+
+  
+  registeredCount?: number;
+  remainingCapacity?: number;
+  registeredByCurrentUser?: boolean;
+
+
 }

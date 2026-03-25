@@ -6,6 +6,7 @@ import { finalize } from 'rxjs';
 
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-event-details',
@@ -19,10 +20,20 @@ export class EventDetails {
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
   private location = inject(Location);
+  private authService = inject(AuthService)
+
 
   event: EventResponse | null = null;
-  loading = false;
+  loading = false; 
+  actionLoading = false;
   errorMessage = '';
+  successMessage = '';
+  isRegistered = false;
+
+
+  get isEmployee(): boolean{
+    return this.authService.isEmployeeOnly();
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -33,8 +44,13 @@ export class EventDetails {
       return;
     }
 
+    this.loadEvent(id);
+  }
+
+  private loadEvent(id: string): void {
     this.loading = true;
     this.errorMessage = '';
+    this.successMessage = '';
     this.cdr.markForCheck();
 
     this.eventService.getPublishedById(id)
@@ -46,9 +62,12 @@ export class EventDetails {
         next: (event) => {
           this.event = event;
           this.cdr.markForCheck();
+
+          if (this.authService.isLoggedIn() && this.isEmployee) {
+            this.loadRegistrationStatus(event.id);
+          }
         },
         error: (err) => {
-          console.error('event-details error', err);
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
@@ -57,6 +76,80 @@ export class EventDetails {
         }
       });
   }
+
+    private loadRegistrationStatus(eventId: string): void {
+    this.eventService.getRegistrationStatus(eventId).subscribe({
+      next: (registered) => {
+        this.isRegistered = registered;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.isRegistered = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+
+  register(): void {
+    if (!this.event) return;
+
+    this.actionLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.cdr.markForCheck();
+
+    this.eventService.registerToEvent(this.event.id)
+      .pipe(finalize(() => {
+        this.actionLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: () => {
+          this.isRegistered = true;
+          this.successMessage = 'Inscription réussie.';
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.errorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de vous inscrire à cet événement.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  unregister(): void {
+    if (!this.event) return;
+
+    this.actionLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.cdr.markForCheck();
+
+    this.eventService.unregisterFromEvent(this.event.id)
+      .pipe(finalize(() => {
+        this.actionLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: () => {
+          this.isRegistered = false;
+          this.successMessage = 'Désinscription effectuée.';
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.errorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de vous désinscrire de cet événement.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+
 
 
    statusLabel(status: string): string {
