@@ -3,6 +3,7 @@ package com.capevents.backend.registration;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.event.Event;
+import com.capevents.backend.event.EventAudience;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
 import com.capevents.backend.registration.dto.EventParticipantResponse;
@@ -23,7 +24,7 @@ public class EventRegistrationService {
     private final UserRepository userRepository;
     private final EventRegistrationRepository registrationRepository;
 
-    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository, AuthenticationManager authenticationManager) {
+    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.registrationRepository = registrationRepository;
@@ -145,9 +146,14 @@ public class EventRegistrationService {
             throw new BadRequestException("L'événement est complet.");
         }
 
-        // TODO later:
-        // check audience visibility for user
-        // check active user only if needed
+        if (event.getAudience() == EventAudience.DEPARTMENT) {
+            Long userDeptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
+            Long targetDeptId = event.getTargetDepartment() != null ? event.getTargetDepartment().getId() : null;
+
+            if (userDeptId == null || targetDeptId == null || !userDeptId.equals(targetDeptId)) {
+                throw new BadRequestException("Cet événement n'est pas visible pour votre département.");
+            }
+        }
     }
 
     private RegistrationResponse toResponse(EventRegistration registration) {
