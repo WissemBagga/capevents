@@ -33,6 +33,9 @@ public record EventResponse (
 
         Instant createdAt,
         Instant updatedAt,
-        String imageUrl
+        String imageUrl,
+
+        Long registeredCount,
+        Long remainingCapacity
 ) {}
 

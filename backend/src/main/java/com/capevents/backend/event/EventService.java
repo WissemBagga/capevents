@@ -8,6 +8,9 @@ import com.capevents.backend.department.DepartmentRepository;
 import com.capevents.backend.event.dto.CreateEventRequest;
 import com.capevents.backend.event.dto.EventResponse;
 import com.capevents.backend.event.dto.UpdateEventRequest;
+import com.capevents.backend.registration.EventRegistrationRepository;
+import com.capevents.backend.registration.EventRegistrationService;
+import com.capevents.backend.registration.RegistrationStatus;
 import com.capevents.backend.user.User;
 import com.capevents.backend.user.UserRepository;
 import org.springframework.data.domain.Page;
@@ -27,12 +30,14 @@ public class EventService {
     private final UserRepository userRepository;
     private final AuditService auditService;
     private final DepartmentRepository departmentRepository;
+    private  final EventRegistrationRepository registrationRepository;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository, AuditService auditService, DepartmentRepository departmentRepository) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository, AuditService auditService, DepartmentRepository departmentRepository, EventRegistrationRepository registrationRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.auditService = auditService;
         this.departmentRepository = departmentRepository;
+        this.registrationRepository = registrationRepository;
     }
 
     @Transactional
@@ -539,6 +544,13 @@ public class EventService {
             targetDepartmentName = e.getTargetDepartment().getName();
         }
 
+        long registeredCount = registrationRepository.countByEventAndStatus(e, RegistrationStatus.REGISTERED);
+
+        Long remainingCapacity = null;
+        if (e.getCapacity() != null) {
+            remainingCapacity = Math.max(0, e.getCapacity().longValue() - registeredCount);
+        }
+
         return new EventResponse(
                 e.getId(),
                 e.getTitle(),
@@ -564,7 +576,10 @@ public class EventService {
                 e.getCancelReason(),
                 e.getCreatedAt(),
                 e.getUpdatedAt(),
-                e.getImageUrl()
+                e.getImageUrl(),
+
+                registeredCount,
+                remainingCapacity
         );
     }
 
