@@ -1,40 +1,78 @@
 <div class="my-events-page">
+
+  <!-- Page Header -->
   <div class="page-header">
-    <div>
-      <h1>Mes événements</h1>
-      <p>Consultez les événements auxquels vous êtes actuellement inscrit.</p>
-    </div>
+    <h1>Mes événements</h1>
+    <p>Consultez les événements auxquels vous êtes actuellement inscrit.</p>
   </div>
 
+  <!-- State Messages -->
   @if (loading) {
-    <p class="info-message">Chargement de vos inscriptions...</p>
+    <div class="state-msg loading-msg">
+      <div class="spinner"></div>
+      <span>Chargement de vos inscriptions...</span>
+    </div>
   }
 
   @if (errorMessage) {
-    <p class="error-message">{{ errorMessage }}</p>
+    <div class="state-msg error-msg">
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>{{ errorMessage }}</span>
+    </div>
   }
 
   @if (!loading && registrations.length === 0) {
-    <p class="info-message">Vous n’êtes inscrit à aucun événement pour le moment.</p>
+    <div class="state-msg info-msg">
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+      <span>Vous n'êtes inscrit à aucun événement pour le moment.</span>
+    </div>
   }
 
+  <!-- Events Grid -->
   <div class="events-grid">
     @for (registration of registrations; track registration.id) {
       <article class="event-card">
-        <div class="event-top">
-          <span class="status">{{ registration.status }}</span>
+
+        <!-- Card Top: status badge + ref -->
+        <div class="card-top">
+          <span class="status-badge" [class.registered]="registration.status === 'REGISTERED'" [class.cancelled]="registration.status === 'CANCELLED'">
+            {{ registration.status === 'REGISTERED' ? 'Inscrit' : 'Annulé' }}
+          </span>
+          <span class="event-ref">Réf. #{{ registration.id }}</span>
         </div>
 
-        <h3>{{ registration.eventTitle }}</h3>
+        <!-- Event Title -->
+        <h3 class="event-title">{{ registration.eventTitle }}</h3>
 
-        <div class="meta">
-          <span>Inscrit le : {{ registration.registeredAt | date:'medium' }}</span>
+        <!-- Meta rows -->
+        <div class="meta-list">
+          <div class="meta-row">
+            <span class="meta-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </span>
+            <span class="meta-text">Inscrit le <strong>{{ registration.registeredAt | date:'mediumDate' }}</strong></span>
+          </div>
+
+          @if (registration.status === 'CANCELLED' && registration.cancelledAt) {
+            <div class="meta-row cancelled-row">
+              <span class="meta-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              </span>
+              <span class="meta-text">Annulé le <strong>{{ registration.cancelledAt | date:'mediumDate' }}</strong></span>
+            </div>
+          }
         </div>
 
-        <div class="actions">
-          <a [routerLink]="['/events', registration.eventId]" class="details-link">Voir l’événement</a>
+        <!-- Action -->
+        <div class="card-footer">
+          <a [routerLink]="['/events', registration.eventId]" class="btn-details">
+            Voir les détails
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
         </div>
+
       </article>
     }
   </div>
+
 </div>

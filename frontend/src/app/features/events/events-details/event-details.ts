@@ -35,6 +35,11 @@ export class EventDetails {
     return this.authService.isEmployeeOnly();
   }
 
+  get isDeadlinePassed(): boolean {
+    if (!this.event || !this.event.registrationDeadline) return false;
+    return new Date() > new Date(this.event.registrationDeadline);
+  }
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
 

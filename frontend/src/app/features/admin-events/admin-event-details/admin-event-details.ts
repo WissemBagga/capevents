@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe, Location } from '@angular/common';
+import { DatePipe, Location, UpperCasePipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
 import { EventService } from '../../../core/services/event.service';
@@ -11,7 +11,7 @@ import {EventParticipantResponse} from '../../../core/models/participant.model'
 @Component({
   selector: 'app-admin-event-details',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, UpperCasePipe],
   templateUrl: './admin-event-details.html',
   styleUrl: './admin-event-details.css'
 })

@@ -200,49 +200,64 @@
                 </div>
             }
 
-            <section class="participants-section">
-                <span class="detail-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="7" r="4"/>
-                    <path d="M5.5 21a6.5 6.5 0 0113 0"/>
-                    <circle cx="4" cy="10" r="2"/>
-                    <path d="M2 21a4 4 0 016-3"/>
-                    <circle cx="20" cy="10" r="2"/>
-                    <path d="M22 21a4 4 0 00-6-3"/>
-                    </svg>
-                </span>
-                <div class="section-header">
-                    <h2>Participants</h2>
+            <!-- Participants Info -->
+            <div class="section-block participants-section">
+                
+                <div class="participants-header">
+                    <h2 class="section-label">Participants</h2>
+                    
                     @if (event) {
-                    <span>
-                        @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
-                        {{ event.registeredCount }} inscrits / {{ event.capacity }} places — reste {{ event.remainingCapacity }}
-                        } @else {
-                        Capacité max : {{ event.capacity }}
-                        }
-                    </span>
+                        <div class="capacity-badges">
+                            @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
+                                <span class="badge-blue">{{ event.registeredCount }} inscrits / {{ event.capacity }} places</span>
+                                <span class="badge-green">Reste {{ event.remainingCapacity }} places</span>
+                            } @else {
+                                <span class="badge-blue">Capacité max : {{ event.capacity }}</span>
+                            }
+                        </div>
                     }
                 </div>
 
                 @if (participantsLoading) {
-                    <p class="info-message">Chargement des participants...</p>
+                    <div class="state-message loading-msg">
+                        <div class="spinner"></div>
+                        <p>Chargement des participants...</p>
+                    </div>
                 }
 
                 @if (!participantsLoading && participants.length === 0) {
-                    <p class="info-message">Aucun participant inscrit pour le moment.</p>
+                    <div class="state-message info-msg">
+                        <p>Aucun participant inscrit pour le moment.</p>
+                    </div>
                 }
 
-                <div class="participants-grid">
-                    @for (participant of participants; track participant.registrationId) {
-                    <article class="participant-card">
-                        <h3>{{ participant.firstName }} {{ participant.lastName }}</h3>
-                        <p>{{ participant.email }}</p>
-                        <p>{{ participant.departmentName || 'Département non renseigné' }}</p>
-                        <p>Inscrit le : {{ participant.registeredAt | date:'medium' }}</p>
-                    </article>
-                    }
-                </div>
-            </section>
+                @if (!participantsLoading && participants.length > 0) {
+                    <div class="participants-grid">
+                        @for (participant of participants; track participant.registrationId) {
+                            <article class="participant-card">
+                                <div class="participant-avatar">
+                                    {{ participant.firstName.charAt(0) | uppercase }}{{ participant.lastName.charAt(0) | uppercase }}
+                                </div>
+                                <div class="participant-info">
+                                    <h3>{{ participant.firstName }} {{ participant.lastName }}</h3>
+                                    <p>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                        {{ participant.email }}
+                                    </p>
+                                    <p>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                        {{ participant.departmentName || 'Département non renseigné' }}
+                                    </p>
+                                    <p>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        Inscrit le {{ participant.registeredAt | date:'mediumDate' }}
+                                    </p>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                }
+            </div>
 
         </article>
     }
