@@ -30,7 +30,6 @@ export interface EventResponse {
   
   registeredCount?: number;
   remainingCapacity?: number;
-  registeredByCurrentUser?: boolean;
 
 
 }
