@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class EventInvitationService {
@@ -49,7 +50,7 @@ public class EventInvitationService {
 
         authorizeInvitation(actor, event);
         validateEventInvitable(event);
-        validateRequest(req);
+        validateRequest(req, actor);
 
         List<User> targets = resolveTargets(req, actor);
 
@@ -96,18 +97,47 @@ public class EventInvitationService {
         }
     }
 
-    private void validateRequest(SendInvitationRequest req) {
+    private void validateRequest(SendInvitationRequest req, User actor) {
         if (req.targetType() == null) {
             throw new BadRequestException("Le type de cible est requis");
         }
 
-        if (req.targetType() == InvitationTargetType.DEPARTMENT && req.departmentId() == null) {
-            throw new BadRequestException("Le département est requis pour les invitations de type département");
-        }
+        boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
+        boolean isManager = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
 
-        if (req.targetType() == InvitationTargetType.INDIVIDUAL &&
-                (req.userEmails() == null || req.userEmails().isEmpty())) {
-            throw new BadRequestException("Au moins une adresse e-mail d’utilisateur est requise pour les invitations individuelles");
+
+        switch (req.targetType()){
+            case GLOBAL -> {
+                if (isManager && !isHr) {
+                    throw new BadRequestException("Un manager ne peut pas envoyer d’invitations GLOBAL");
+                }
+
+                if (req.departmentId() != null) {
+                    throw new BadRequestException("departmentId must be empty for a GLOBAL invitation");
+                }
+                if (req.userEmails() != null && !req.userEmails().isEmpty()) {
+                    throw new BadRequestException("userEmails must be empty for a GLOBAL invitation");
+                }
+            }
+            case DEPARTMENT -> {
+                if (req.departmentId() == null) {
+                    throw new BadRequestException("The department is required for department-type invitations");
+                }
+                if (req.userEmails() != null && !req.userEmails().isEmpty()) {
+                    throw new BadRequestException("userEmails must be empty for a DEPARTMENT invitation");
+                }
+            }
+
+            case INDIVIDUAL -> {
+                if (req.userEmails() == null || req.userEmails().isEmpty()) {
+                    throw new BadRequestException("Au moins une adresse e-mail d’utilisateur est requise pour les invitations individuelles");
+                }
+                if (req.departmentId() != null) {
+                    throw new BadRequestException("departmentId must be empty for an INDIVIDUAL invitation");
+                }
+            }
+
+            default -> throw new BadRequestException("Target type not supported");
         }
     }
 
@@ -152,12 +182,16 @@ public class EventInvitationService {
 
     private List<User> resolveIndividualTargets(List<String> userEmails, User actor) {
         Set<String> emails = userEmails.stream()
+                .filter(java.util.Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
                 .map(String::toLowerCase)
-                .collect(java.util.stream.Collectors.toSet());
+                .collect(Collectors.toSet());
 
         List<User> users = userRepository.findAll().stream()
                 .filter(User::isActive)
-                .filter(user -> emails.contains(user.getEmail().toLowerCase()))
+                .filter(user -> user.getEmail() != null)
+                .filter(user -> emails.contains(user.getEmail().trim().toLowerCase()))
                 .toList();
 
         boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
@@ -183,11 +217,7 @@ public class EventInvitationService {
         }
 
         Long actorDeptId = actor.getDepartment() != null ? actor.getDepartment().getId() : null;
-        Long eventDeptId = null;
-
-        if (event.getCreatedBy() != null && event.getCreatedBy().getDepartment() != null) {
-            eventDeptId = event.getCreatedBy().getDepartment().getId();
-        }
+        Long eventDeptId = event.getTargetDepartment() != null ? event.getTargetDepartment().getId() : null;
 
         if (actorDeptId == null || eventDeptId == null || !actorDeptId.equals(eventDeptId)) {
             throw new NotFoundException("Événement introuvable");
