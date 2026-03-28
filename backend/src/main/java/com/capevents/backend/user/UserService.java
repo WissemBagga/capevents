@@ -1,10 +1,12 @@
 package com.capevents.backend.user;
 
 import com.capevents.backend.common.dto.PageResponse;
+import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.role.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +22,33 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<UserSummaryDto> listUsers(Pageable pageable) {
-        Page<User> users = userRepository.findAll(pageable);
-        Page<UserSummaryDto> dtoPage = users.map(this::toSummaryDto);
+    public PageResponse<UserSummaryDto> listUsersForAdmin(String actorEmail, Pageable pageable) {
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail.toLowerCase())
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        boolean isHr = actor.getRoles().stream()
+                .anyMatch(role -> role.getCode().equals("ROLE_HR"));
+
+        Page<User> usersPage;
+
+        if (isHr) {
+            usersPage = userRepository.findAll(pageable);
+        } else {
+            boolean isManager = actor.getRoles().stream()
+                    .anyMatch(role -> role.getCode().equals("ROLE_MANAGER"));
+
+            if (!isManager) {
+                throw new BadRequestException("Action non autorisée");
+            }
+
+            if (actor.getDepartment() == null) {
+                throw new BadRequestException("Le manager n’a pas de département");
+            }
+
+            usersPage = userRepository.findByDepartment_Id(actor.getDepartment().getId(), pageable);
+        }
+
+        Page<UserSummaryDto> dtoPage = usersPage.map(this::toSummaryDto);
 
         return new PageResponse<>(
                 dtoPage.getContent(),

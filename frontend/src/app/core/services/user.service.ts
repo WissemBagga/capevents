@@ -23,7 +23,7 @@ export class UserService {
     return this.http.get<Department[]>(this.departmentsUrl);
   }
 
-  getAllUsers(page = 0, size = 200, sortBy = 'firstName', sortDir = 'asc') {
+  getAllUsers(page = 0, size = 1000, sortBy = 'firstName', sortDir = 'asc') {
     const params = new HttpParams()
       .set('page', page)
       .set('size', size)

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,13 +31,14 @@ public class UserController {
             "createdAt", "updatedAt", "email", "firstName", "lastName", "lastLoginAt"
     );
 
-    @PreAuthorize("hasAuthority('ROLE_HR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
     @GetMapping("/admin")
     public PageResponse<UserSummaryDto> listUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
+            @RequestParam(defaultValue = "desc") String sortDir,
+            Authentication authentication
     ) {
 
         if (!USER_SORT_FIELDS.contains(sortBy)) {
@@ -44,7 +46,7 @@ public class UserController {
         }
         Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         var pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-        return userService.listUsers(pageable);
+        return userService.listUsersForAdmin(authentication.getName(), pageable);
     }
 
 }
