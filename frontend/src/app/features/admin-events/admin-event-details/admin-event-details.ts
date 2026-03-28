@@ -8,10 +8,19 @@ import { EventResponse } from '../../../core/models/event.model';
 
 import {EventParticipantResponse} from '../../../core/models/participant.model'
 
+import { UserService } from '../../../core/services/user.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { SendInvitationRequest, InvitationTargetType } from '../../../core/models/invitation.model';
+import { UserSummary } from '../../../core/models/user-summary.model';
+import { Department } from '../../../core/models/department.model';
+import { FormsModule } from '@angular/forms';
+
+
+
 @Component({
   selector: 'app-admin-event-details',
   standalone: true,
-  imports: [RouterLink, DatePipe, UpperCasePipe],
+  imports: [RouterLink, DatePipe, UpperCasePipe, FormsModule],
   templateUrl: './admin-event-details.html',
   styleUrl: './admin-event-details.css'
 })
@@ -21,6 +30,9 @@ export class AdminEventDetails {
   private cdr = inject(ChangeDetectorRef);
   private location = inject(Location);
 
+  private userService = inject(UserService)
+  private authService = inject(AuthService)
+
   event: EventResponse | null = null;
   loading = false;
   errorMessage = '';
@@ -29,7 +41,79 @@ export class AdminEventDetails {
   participantsLoading = false;
 
 
+  showInvitationPanel = false;
+  invitationLoading = false;
+  invitationErrorMessage = '';
+  invitationSuccessMessage = '';
+
+  invitationTargetType: InvitationTargetType = 'GLOBAL';
+  selectedDepartmentId: number | null = null;
+  selectedUserEmails: string[] = [];
+  invitationMessage = '';
+
+  users : UserSummary[] = [];
+  departments : Department[] = [];
+
+  get isHr(): boolean{
+    return this.authService.isHr();
+  }
+
+  get isManager(): boolean{
+    return this.authService.isManager();
+  }
+
+  get currentUserDepartmentId(): number | null {
+    return this.authService.getCurrentUserSnapshot()?.departmentId ?? null;
+  }
+
+
+  get visibleUsersForInvitation(): UserSummary[] {
+    if (this.isHr) {
+      return this.users.filter(user => user.active);
+    }
+
+    return this.users.filter(
+      user => user.active && user.departmentId === this.currentUserDepartmentId
+    );
+  }
+
+  get selectedCount(): number {
+    if (this.invitationTargetType === 'GLOBAL') {
+      return this.visibleUsersForInvitation.length;
+    }
+  
+    if (this. invitationTargetType === 'DEPARTMENT') {
+      if (!this. selectedDepartmentId){
+        return 0
+      } ;
+      
+      return this.users.filter(
+        user => user.active && user.departmentId === this.selectedDepartmentId
+      ).length;
+    }  
+    return this.selectedUserEmails.length;
+  }
+
+  get canSendInvitations(): boolean {
+    if (this.invitationLoading || !this.event) {
+      return false;
+    }
+
+    if (this.invitationTargetType === 'DEPARTMENT') {
+      return this.selectedDepartmentId !== null;
+    }
+
+    if (this.invitationTargetType === 'INDIVIDUAL') {
+      return this.selectedUserEmails.length > 0;
+    }
+
+    return true;
+  }
+
+  
   ngOnInit(): void {
+    this.setDefaultInvitationState();
+
     const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
@@ -38,6 +122,25 @@ export class AdminEventDetails {
       return;
     }
 
+    this.loadEvent(id);
+    this.loadDepartments();
+    this.loadUsers();
+
+  }
+
+
+  private setDefaultInvitationState(): void {
+    if (this.isManager && !this.isHr) {
+      this.invitationTargetType = 'DEPARTMENT';
+      this.selectedDepartmentId = this.currentUserDepartmentId;
+    } else {
+      this.invitationTargetType = 'GLOBAL';
+      this.selectedDepartmentId = null;
+    }
+  }
+
+
+  private loadEvent(id: string): void{
     this.loading = true;
     this.errorMessage = '';
     this.cdr.markForCheck();
@@ -63,6 +166,147 @@ export class AdminEventDetails {
       });
   }
 
+  
+   private loadUsers(): void {
+    this.userService.getAllUsers(0, 200).subscribe({
+      next: (response) => {
+        this.users = response.items;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.users = [];
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+
+  private loadDepartments(): void {
+    this.userService.getDepartments().subscribe({
+      next: (departments) => {
+        this.departments = departments ?? [];
+
+        if (this.isManager && !this.isHr ) {
+          this.selectedDepartmentId = this.currentUserDepartmentId;
+        }
+
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.departments = [];
+        this.cdr.markForCheck();
+      }
+    });
+}
+
+  toggleInvitationPanel(): void {
+    this.showInvitationPanel = !this.showInvitationPanel;
+    this.invitationErrorMessage = '';
+    this.invitationSuccessMessage = '';
+
+    if (this.showInvitationPanel && this.isManager && !this.isHr) {
+      this.invitationTargetType = 'DEPARTMENT';
+      this.selectedDepartmentId = this.currentUserDepartmentId;
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  onTargetTypeChange(value: InvitationTargetType): void {
+    this.invitationTargetType = value;
+    this.invitationErrorMessage = '';
+    this.invitationSuccessMessage = '';
+
+    if (value !== 'DEPARTMENT') {
+      this.selectedDepartmentId = this.isManager && !this.isHr
+        ? this.currentUserDepartmentId
+        : null;
+    }
+
+    if (this.invitationTargetType !== 'INDIVIDUAL') {
+      this.selectedUserEmails = [];
+    }
+
+    if (this.isManager && !this.isHr && this.invitationTargetType !== 'DEPARTMENT' ) {
+      this.selectedDepartmentId = this.currentUserDepartmentId;
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  onIndividualSelectionChange(email: string, checked: boolean): void {
+    if (checked) {
+      if (!this.selectedUserEmails.includes(email)) {
+        this.selectedUserEmails = [...this.selectedUserEmails, email];
+      }
+    } else {
+      this.selectedUserEmails = this.selectedUserEmails.filter(e => e !== email);
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  sendInvitations(): void {
+    if (!this.event){
+      return;
+    }
+       
+
+    this.invitationErrorMessage = '';
+    this.invitationSuccessMessage = '';
+
+
+    if (this.invitationTargetType === 'DEPARTMENT' && !this.selectedDepartmentId){
+      this.invitationErrorMessage= 'Veuillez sélectionner un département.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    if (this.invitationTargetType === 'INDIVIDUAL' && this.selectedUserEmails.length === 0) {
+      this.invitationErrorMessage = 'Veuillez sélectionner au moins un utilisateur.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const payload: SendInvitationRequest = {
+      targetType: this.invitationTargetType,
+      departmentId: this.invitationTargetType === 'DEPARTMENT' ? this.selectedDepartmentId : null,
+      userEmails: this.invitationTargetType === 'INDIVIDUAL' ? this.selectedUserEmails : [],
+      message: this.invitationMessage?.trim() ? this.invitationMessage.trim() : null
+    };
+
+    this.invitationLoading = true;
+    this.cdr.markForCheck();
+
+    this.eventService.sendInvitations(this.event.id, payload)
+      .pipe(finalize(() => {
+        this.invitationLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.invitationSuccessMessage = response.message;
+
+          if (this.invitationTargetType === 'INDIVIDUAL') {
+            this.selectedUserEmails = [];
+          }
+
+          this.invitationMessage = '';
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.invitationErrorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible d’envoyer les invitations.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  
+  
+  
   private loadParticipants(eventId: string): void{
     this.participantsLoading = true;
     this.cdr.markForCheck();
@@ -84,6 +328,11 @@ export class AdminEventDetails {
       });
 
   }
+
+
+
+
+
 
   goBack(): void {
     this.location.back();

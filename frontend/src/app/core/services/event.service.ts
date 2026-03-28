@@ -11,6 +11,11 @@ import {RegistrationResponse} from '../models/registration.model'
 
 import {EventParticipantResponse} from '../models/participant.model'
 
+
+import { SendInvitationRequest, SendInvitationResponse } from '../models/invitation.model'
+
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -115,4 +120,7 @@ export class EventService {
     return this.http.get<EventParticipantResponse[]>(`${environment.apiBaseUrl}/api/events/admin/${id}/participants`);
   }
 
+  sendInvitations(eventId: string, payload: SendInvitationRequest){
+    return this.http.post<SendInvitationResponse>(`${this.apiUrl}/${eventId}/invite`, payload);
+  }
 }

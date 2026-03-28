@@ -262,3 +262,119 @@
         </article>
     }
 </div>
+
+
+@if (event && !loading) {
+  <section class="invitation-section">
+    <div class="section-header">
+      <h2>Inviter des employés</h2>
+
+      <button type="button" class="invite-toggle-btn" (click)="toggleInvitationPanel()">
+        {{ showInvitationPanel ? 'Fermer' : 'Inviter des employés' }}
+      </button>
+    </div>
+
+    @if (showInvitationPanel) {
+      <div class="invitation-panel">
+        <div class="form-group">
+          <label for="targetType">Type de cible</label>
+
+          <select
+            id="targetType"
+            [value]="invitationTargetType"
+            (change)="onTargetTypeChange($any($event.target).value)"
+          >
+            @if (isHr) {
+              <option value="GLOBAL">Global</option>
+            }
+
+            <option value="DEPARTMENT">Département</option>
+            <option value="INDIVIDUAL">Individuel</option>
+          </select>
+        </div>
+
+        @if (invitationTargetType === 'DEPARTMENT') {
+          <div class="form-group">
+            <label for="departmentId">Département</label>
+
+            <select
+              id="departmentId"
+              [(ngModel)]="selectedDepartmentId"
+              [disabled]="isManager && !isHr"
+            >
+              <option [ngValue]="null">Sélectionnez un département</option>
+
+              @for (department of departments; track department.id) {
+                <option [ngValue]="department.id">
+                  {{ department.name }}
+                </option>
+              }
+            </select>
+          </div>
+        }
+
+        @if (invitationTargetType === 'INDIVIDUAL') {
+          <div class="form-group">
+            <label>Employés</label>
+
+            @if (visibleUsersForInvitation.length === 0) {
+              <p class="helper-text">Aucun utilisateur disponible.</p>
+            } @else {
+              <div class="user-selection-list">
+                @for (user of visibleUsersForInvitation; track user.id) {
+                  <label class="user-option">
+                    <input
+                      type="checkbox"
+                      [checked]="selectedUserEmails.includes(user.email)"
+                      (change)="onIndividualSelectionChange(user.email, $any($event.target).checked)"
+                    />
+
+                    <span>
+                      {{ user.firstName }} {{ user.lastName }}
+                      @if (user.departmentName) {
+                        <small>({{ user.departmentName }})</small>
+                      }
+                    </span>
+                  </label>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <div class="form-group">
+          <label for="invitationMessage">Message personnalisé</label>
+
+          <textarea
+            id="invitationMessage"
+            rows="4"
+            [(ngModel)]="invitationMessage"
+            placeholder="Ajoutez un message personnalisé (optionnel)..."
+          ></textarea>
+        </div>
+
+        <div class="invitation-summary">
+          <strong>{{ selectedCount }}</strong> personne(s) ciblée(s)
+        </div>
+
+        @if (invitationErrorMessage) {
+          <p class="error-message">{{ invitationErrorMessage }}</p>
+        }
+
+        @if (invitationSuccessMessage) {
+          <p class="success-message">{{ invitationSuccessMessage }}</p>
+        }
+
+        <div class="invitation-actions">
+          <button
+            type="button"
+            (click)="sendInvitations()"
+            [disabled]="!canSendInvitations"
+          >
+            {{ invitationLoading ? 'Envoi...' : 'Envoyer les invitations' }}
+          </button>
+        </div>
+      </div>
+    }
+  </section>
+}
