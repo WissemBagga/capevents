@@ -168,7 +168,7 @@ export class AdminEventDetails {
 
   
    private loadUsers(): void {
-    this.userService.getAllUsers(0, 200).subscribe({
+    this.userService.getAllUsers(0, 1000).subscribe({
       next: (response) => {
         this.users = response.items;
         this.cdr.markForCheck();

@@ -107,6 +107,9 @@ export class HrDashboard {
   }
 
   publish(eventId: string): void {
+    if (!window.confirm('Voulez-vous vraiment publier cet événement ?')) {
+      return;
+    }
     this.actionLoading = true;
     this.cdr.markForCheck();
 

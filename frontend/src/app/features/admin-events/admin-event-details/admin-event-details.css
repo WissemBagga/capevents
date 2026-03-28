@@ -490,6 +490,31 @@
   cursor: not-allowed;
 }
 
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.helper-text {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.error-message {
+  margin: 12px 0 0;
+  color: #b42318;
+  font-weight: 600;
+}
+
+.success-message {
+  margin: 12px 0 0;
+  color: #027a48;
+  font-weight: 600;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .event-details-page {
