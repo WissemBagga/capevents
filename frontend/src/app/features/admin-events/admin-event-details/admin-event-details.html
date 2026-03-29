@@ -385,3 +385,47 @@
     }
   </section>
 }
+
+<section class="sent-invitations-section">
+  <div class="section-header">
+    <h2>Invitations envoyées</h2>
+  </div>
+
+  @if (invitationsLoading) {
+    <p class="helper-text">Chargement des invitations...</p>
+  } @else if (invitations.length === 0) {
+    <p class="helper-text">Aucune invitation envoyée pour cet événement.</p>
+  } @else {
+    <div class="invitation-cards">
+      @for (invitation of invitations; track invitation.email + invitation.sentAt) {
+        <article class="invitation-card">
+          <div class="invitation-card-top">
+            <div>
+              <h3>{{ invitation.fullName }}</h3>
+              <p>{{ invitation.email }}</p>
+            </div>
+
+            <span class="status-chip">
+              {{ statusLabel(invitation.status) }}
+            </span>
+          </div>
+
+          <div class="invitation-meta">
+            <p><strong>Type :</strong> {{ invitation.targetType }}</p>
+
+            @if (invitation.departmentName) {
+              <p><strong>Département :</strong> {{ invitation.departmentName }}</p>
+            }
+
+            <p><strong>Invité par :</strong> {{ invitation.invitedByFullName }}</p>
+            <p><strong>Envoyé le :</strong> {{ invitation.sentAt | date:'medium' }}</p>
+
+            @if (invitation.message) {
+              <p><strong>Message :</strong> {{ invitation.message }}</p>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

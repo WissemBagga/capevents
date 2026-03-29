@@ -10,11 +10,10 @@ import {EventParticipantResponse} from '../../../core/models/participant.model'
 
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { SendInvitationRequest, InvitationTargetType } from '../../../core/models/invitation.model';
+import { SendInvitationRequest, InvitationTargetType, AdminEventInvitationResponse } from '../../../core/models/invitation.model';
 import { UserSummary } from '../../../core/models/user-summary.model';
 import { Department } from '../../../core/models/department.model';
 import { FormsModule } from '@angular/forms';
-
 
 
 @Component({
@@ -53,6 +52,9 @@ export class AdminEventDetails {
 
   users : UserSummary[] = [];
   departments : Department[] = [];
+
+  invitations: AdminEventInvitationResponse[] = [];
+  invitationsLoading = false;
 
   get isHr(): boolean{
     return this.authService.isHr();
@@ -181,6 +183,7 @@ export class AdminEventDetails {
         next: (event) => {
           this.event = event;
           this.loadParticipants(event.id);
+          this.loadInvitations(event.id);
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -224,7 +227,7 @@ export class AdminEventDetails {
         this.cdr.markForCheck();
       }
     });
-}
+  }
 
   toggleInvitationPanel(): void {
     if (!this.canInviteNow) {
@@ -360,7 +363,26 @@ export class AdminEventDetails {
 
   }
 
+  private loadInvitations(eventId: string): void {
+    this.invitationsLoading = true;
+    this.cdr.markForCheck();
 
+    this.eventService.getEventInvitations(eventId)
+      .pipe(finalize(() => {
+        this.invitationsLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (invitations) => {
+          this.invitations = invitations ?? [];
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.invitations = [];
+          this.cdr.markForCheck();
+        }
+      });
+  }
 
 
 

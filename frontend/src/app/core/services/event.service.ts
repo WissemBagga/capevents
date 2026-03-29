@@ -12,8 +12,7 @@ import {RegistrationResponse} from '../models/registration.model'
 import {EventParticipantResponse} from '../models/participant.model'
 
 
-import { SendInvitationRequest, SendInvitationResponse } from '../models/invitation.model'
-
+import { SendInvitationRequest, SendInvitationResponse, AdminEventInvitationResponse } from '../models/invitation.model'
 
 
 @Injectable({
@@ -127,6 +126,10 @@ export class EventService {
 
   unpublishEvent(id: string) {
     return this.http.post<EventResponse>(`${this.apiUrl}/${id}/unpublish`, {});
+  }
+
+  getEventInvitations(eventId: string) {
+    return this.http.get<AdminEventInvitationResponse[]>(`${this.apiUrl}/${eventId}/invitations`);
   }
 
 }

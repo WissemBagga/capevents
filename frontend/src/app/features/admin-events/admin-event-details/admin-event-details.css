@@ -515,6 +515,68 @@
   font-weight: 600;
 }
 
+
+.sent-invitations-section {
+  margin-top: 32px;
+}
+
+.invitation-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.invitation-card {
+  background: #ffffff;
+  border: 1px solid #e5edf5;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(18, 26, 56, 0.06);
+}
+
+.invitation-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.invitation-card-top h3 {
+  margin: 0 0 4px;
+  color: #121a38;
+  font-size: 17px;
+}
+
+.invitation-card-top p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.invitation-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.invitation-meta p {
+  margin: 0;
+  color: #374151;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: #e6f4ff;
+  color: #005a8b;
+  font-weight: 700;
+  font-size: 12px;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .event-details-page {
