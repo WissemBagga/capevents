@@ -105,11 +105,15 @@
                             />
                         </div>
                         @if (registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['required']) {
-                            <p class="field-error">L'email est obligatoire.</p>
+                            <p class="field-error">L’adresse email est obligatoire.</p>
                         }
 
                         @if (registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['email']) {
-                            <p class="field-error">Veuillez saisir une adresse email valide.</p>
+                            <p class="field-error">Le format de l’adresse email est invalide.</p>
+                        }
+
+                        @if (registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['pattern']) {
+                            <p class="field-error">Utilisez une adresse email @capgemini.com.</p>
                         }
                     </div>
 

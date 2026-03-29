@@ -43,7 +43,15 @@ export class Register implements OnInit {
           Validators.pattern(/^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ' -]*$/)
         ]
       ],
-    email: ['', [Validators.required, Validators.email, Validators.maxLength(190)]],
+    email: [
+        '',
+        [
+          Validators.required,
+          Validators.email,
+          Validators.maxLength(190),
+          Validators.pattern(/^[A-Za-z0-9._%+-]+@capgemini\.com$/i)
+        ]
+      ],
     password: ['', [Validators.required, Validators.minLength(8), 
       Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)]],
     phone: [
