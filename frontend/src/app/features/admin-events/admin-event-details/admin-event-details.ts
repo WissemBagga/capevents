@@ -110,6 +110,33 @@ export class AdminEventDetails {
     return true;
   }
 
+  get showInvitationSection(): boolean {
+    return !!this.event && this.event.status === 'PUBLISHED';
+  }
+
+  get invitationBlockingMessage(): string {
+    if (!this.event || this.event.status !== 'PUBLISHED') {
+      return '';
+    }
+
+    if (this.event.remainingCapacity != null && this.event.remainingCapacity <= 0) {
+      return 'Invitations indisponibles : la capacité de l’événement est complète.';
+    }
+
+    if (this.event.registrationDeadline) {
+      const deadlinePassed = new Date(this.event.registrationDeadline).getTime() <= Date.now();
+      if (deadlinePassed) {
+        return 'Invitations indisponibles : la date limite d’inscription est dépassée.';
+      }
+    }
+
+    return '';
+  }
+
+  get canInviteNow(): boolean {
+    return this.showInvitationSection && this.invitationBlockingMessage === '';
+  }
+
   
   ngOnInit(): void {
     this.setDefaultInvitationState();
@@ -200,6 +227,10 @@ export class AdminEventDetails {
 }
 
   toggleInvitationPanel(): void {
+    if (!this.canInviteNow) {
+      return;
+    }
+
     this.showInvitationPanel = !this.showInvitationPanel;
     this.invitationErrorMessage = '';
     this.invitationSuccessMessage = '';

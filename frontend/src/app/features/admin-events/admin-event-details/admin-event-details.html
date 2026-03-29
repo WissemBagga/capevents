@@ -264,17 +264,24 @@
 </div>
 
 
-@if (event && !loading) {
+@if (event && !loading && showInvitationSection) {
   <section class="invitation-section">
     <div class="section-header">
       <h2>Inviter des employés</h2>
+      @if (canInviteNow) {
+        <button type="button" class="invite-toggle-btn" (click)="toggleInvitationPanel()">
+          {{ showInvitationPanel ? 'Fermer' : 'Inviter des employés' }}
+        </button>
+      }
 
-      <button type="button" class="invite-toggle-btn" (click)="toggleInvitationPanel()">
-        {{ showInvitationPanel ? 'Fermer' : 'Inviter des employés' }}
-      </button>
     </div>
+    @if (invitationBlockingMessage) {
+      <div class="state-message info-msg">
+        <p>{{ invitationBlockingMessage }}</p>
+      </div>
+    }
 
-    @if (showInvitationPanel) {
+    @if (showInvitationPanel && canInviteNow) {
       <div class="invitation-panel">
         <div class="form-group">
           <label for="targetType">Type de cible</label>
