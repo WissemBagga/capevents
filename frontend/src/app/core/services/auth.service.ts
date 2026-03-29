@@ -126,4 +126,8 @@ export class AuthService {
   isEmployeeOnly(): boolean {
     return this.getPrimaryRole() === 'ROLE_EMPLOYEE';
   }
+
+  hasEmployeeRole(): boolean {
+    return this.hasRole('ROLE_EMPLOYEE');
+  }
 }

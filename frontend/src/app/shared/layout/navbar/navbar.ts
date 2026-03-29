@@ -29,7 +29,7 @@ export class Navbar {
     return this.authService.isManager();
   }
 
-  isEmployeeOnly(): boolean {
-    return this.authService.isEmployeeOnly();
+  hasEmployeeRole(): boolean {
+    return this.authService.hasEmployeeRole();
   }
 }

@@ -31,8 +31,8 @@ export class EventDetails {
   isRegistered = false;
 
 
-  get isEmployee(): boolean{
-    return this.authService.isEmployeeOnly();
+  get canParticipate(): boolean {
+    return this.authService.hasEmployeeRole();
   }
 
   get isDeadlinePassed(): boolean {
@@ -68,7 +68,7 @@ export class EventDetails {
           this.event = event;
           this.cdr.markForCheck();
 
-          if (this.authService.isLoggedIn() && this.isEmployee) {
+          if (this.authService.isLoggedIn() && this.canParticipate) {
             this.loadRegistrationStatus(event.id);
           }
         },
@@ -148,7 +148,7 @@ export class EventDetails {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de vous désinscrire de cet événement.';
+            'Impossible de vous dés de cet événement.';
           this.cdr.markForCheck();
         }
       });
