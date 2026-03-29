@@ -52,9 +52,11 @@ export class CreateEvent {
   });
 
   ngOnInit(): void {
-    this.loadDepartments();
-    this.applyRoleRules();
-  }
+  this.loadDepartments();
+  this.applyRoleRules();
+  this.onLocationTypeChange();
+  this.onAudienceChange();
+}
 
   get isHr(): boolean {
     return this.authService.hasRole('ROLE_HR');

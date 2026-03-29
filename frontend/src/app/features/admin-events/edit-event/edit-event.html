@@ -49,11 +49,17 @@
                     <div class="form-group full-width">
                         <label for="title">Titre</label>
                         <input id="title" type="text" formControlName="title" placeholder="Nom de l'événement" />
+                        @if (form.get('title')?.touched && form.get('title')?.errors?.['required']) {
+                            <p class="field-error">Le titre est obligatoire.</p>
+                        }
                     </div>
 
                     <div class="form-group">
                         <label for="category">Catégorie</label>
                         <input id="category" type="text" formControlName="category" placeholder="WORK, TRAINING..." />
+                        @if (form.get('category')?.touched && form.get('category')?.errors?.['required']) {
+                            <p class="field-error">La catégorie est obligatoire.</p>
+                        }
                     </div>
 
                     <div class="form-group">
@@ -95,6 +101,9 @@
                     <div class="form-group">
                         <label for="startAt">Date de début</label>
                         <input id="startAt" type="datetime-local" formControlName="startAt" />
+                        @if (form.get('startAt')?.touched && form.get('startAt')?.errors?.['required']) {
+                            <p class="field-error">La date de début est obligatoire.</p>
+                        }
                     </div>
 
                     <div class="form-group">
@@ -146,6 +155,9 @@
                         <div class="form-group">
                             <label for="locationName">Lieu</label>
                             <input id="locationName" type="text" formControlName="locationName" placeholder="Salle, bâtiment..." />
+                            @if (form.get('locationName')?.touched && form.get('locationName')?.errors?.['required']) {
+                                <p class="field-error">Le lieu est obligatoire pour un événement sur site.</p>
+                            }
                         </div>
                     }
 
@@ -153,6 +165,9 @@
                         <div class="form-group">
                             <label for="meetingUrl">Meeting URL</label>
                             <input id="meetingUrl" type="text" formControlName="meetingUrl" placeholder="https://..." />
+                            @if (form.get('meetingUrl')?.touched && form.get('meetingUrl')?.errors?.['required']) {
+                                <p class="field-error">Le lien de réunion est obligatoire pour un événement en ligne.</p>
+                            }
                         </div>
                     }
 
@@ -160,6 +175,9 @@
                         <div class="form-group">
                             <label for="address">Adresse</label>
                             <input id="address" type="text" formControlName="address" placeholder="Adresse complète..." />
+                            @if (form.get('address')?.touched && form.get('address')?.errors?.['required']) {
+                                <p class="field-error">L’adresse est obligatoire pour un événement externe.</p>
+                            }
                         </div>
                     }
                 </div>

@@ -80,6 +80,8 @@ export class EditEvent {
     this.eventId = id;
     this.loadDepartments();
     this.loadEvent();
+    this.onLocationTypeChange();
+    this.onAudienceChange();
   }
 
   private loadDepartments(): void {
