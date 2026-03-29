@@ -1,5 +1,6 @@
 package com.capevents.backend.invitation;
 
+import com.capevents.backend.invitation.dto.AdminEventInvitationResponse;
 import com.capevents.backend.invitation.dto.SendInvitationRequest;
 import com.capevents.backend.invitation.dto.SendInvitationResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -7,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,5 +30,15 @@ public class EventInvitationController {
             Authentication auth
     ) {
         return invitationService.sendInvitations(id, req, auth.getName());
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
+    @GetMapping("/{id}/invitations")
+    public List<AdminEventInvitationResponse> getEventInvitations(
+            @PathVariable UUID id,
+            Authentication auth
+    ) {
+        return invitationService.getEventInvitations(id, auth.getName());
     }
 }

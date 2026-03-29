@@ -5,6 +5,7 @@ import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.event.Event;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
+import com.capevents.backend.invitation.dto.AdminEventInvitationResponse;
 import com.capevents.backend.invitation.dto.SendInvitationRequest;
 import com.capevents.backend.invitation.dto.SendInvitationResponse;
 import com.capevents.backend.registration.EventRegistrationRepository;
@@ -89,6 +90,53 @@ public class EventInvitationService {
                 skipped,
                 created + " invitation(s) created, " + skipped + " skipped"
         );
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<AdminEventInvitationResponse> getEventInvitations(UUID eventId, String actorEmail) {
+        Event event = eventRepository.findByIdWithCreatorDept(eventId)
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        authorizeInvitation(actor, event);
+
+        return invitationRepository.findByEventOrderBySentAtDesc(event).stream()
+                .map(this::toAdminInvitationResponse)
+                .toList();
+    }
+
+    private AdminEventInvitationResponse toAdminInvitationResponse(EventInvitation invitation) {
+        User invitedUser = invitation.getUser();
+
+        String departmentName = null;
+        if (invitedUser.getDepartment() != null) {
+            departmentName = invitedUser.getDepartment().getName();
+        }
+
+        return new AdminEventInvitationResponse(
+                buildFullName(invitedUser.getFirstName(), invitedUser.getLastName()),
+                invitedUser.getEmail(),
+                departmentName,
+                invitation.getTargetType(),
+                invitation.getStatus(),
+                invitation.getMessage(),
+                invitation.getSentAt(),
+                buildFullName(
+                        invitation.getInvitedBy().getFirstName(),
+                        invitation.getInvitedBy().getLastName()
+                )
+        );
+    }
+
+    private String buildFullName(String firstName, String lastName) {
+        String first = firstName == null ? "" : firstName.trim();
+        String last = lastName == null ? "" : lastName.trim();
+
+        String fullName = (first + " " + last).trim();
+        return fullName.isBlank() ? "-" : fullName;
     }
 
     private void validateEventInvitable(Event event) {
