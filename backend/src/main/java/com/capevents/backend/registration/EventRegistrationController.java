@@ -2,6 +2,7 @@ package com.capevents.backend.registration;
 
 import com.capevents.backend.registration.dto.EventParticipantResponse;
 import com.capevents.backend.registration.dto.RegistrationResponse;
+import com.capevents.backend.registration.dto.UpdateAttendanceRequest;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -53,5 +54,20 @@ public class EventRegistrationController {
     @GetMapping("/events/admin/{id}/participants")
     public List<EventParticipantResponse> eventParticipants(@PathVariable UUID id, Authentication auth) {
         return registrationService.eventParticipants(id, auth.getName());
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
+    @PostMapping("/api/registrations/{registrationId}/attendance")
+    public void markAttendance(
+            @PathVariable Long registrationId,
+            @RequestBody UpdateAttendanceRequest request,
+            Authentication auth
+    ) {
+        registrationService.markAttendance(
+                registrationId,
+                request.attendanceStatus(),
+                auth.getName()
+        );
     }
 }

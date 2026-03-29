@@ -1,5 +1,7 @@
 package com.capevents.backend.registration.dto;
 
+import com.capevents.backend.registration.AttendanceStatus;
+
 import java. time. Instant;
 import java.util.UUID;
 
@@ -10,5 +12,6 @@ public record EventParticipantResponse(
         String lastName,
         String email,
         String departmentName,
-        Instant registeredAt
+        Instant registeredAt,
+        AttendanceStatus attendanceStatus
 ) {}

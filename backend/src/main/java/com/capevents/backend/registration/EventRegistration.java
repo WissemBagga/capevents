@@ -37,6 +37,10 @@ public class EventRegistration {
     @Column(nullable = false, length = 20)
     private RegistrationStatus status = RegistrationStatus.REGISTERED;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "attendance_status", nullable = false, length = 20)
+    private AttendanceStatus attendanceStatus = AttendanceStatus.PENDING;
+
     @Column(name = "registered_at", nullable = false)
     private Instant registeredAt = Instant.now();
 

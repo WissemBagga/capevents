@@ -126,9 +126,49 @@ public class EventRegistrationService {
                         reg.getUser().getLastName(),
                         reg.getUser().getEmail(),
                         reg.getUser().getDepartment() != null ? reg.getUser().getDepartment().getName() : null,
-                        reg.getRegisteredAt()
+                        reg.getRegisteredAt(),
+                        reg.getAttendanceStatus()
                 ))
                 .toList();
+    }
+
+
+    @Transactional
+    public void markAttendance(Long registrationId, AttendanceStatus attendanceStatus, String actorEmail) {
+        if (attendanceStatus == null) {
+            throw new BadRequestException("Le statut de présence est requis");
+        }
+
+        EventRegistration registration = registrationRepository.findById(registrationId)
+                .orElseThrow(() -> new NotFoundException("Inscription introuvable"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        Event event = registration.getEvent();
+
+        boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
+        boolean isManager = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
+
+        if (!isHr && !isManager) {
+            throw new BadRequestException("Action non autorisée");
+        }
+
+        if (!isHr) {
+            Long actorDeptId = actor.getDepartment() != null ? actor.getDepartment().getId() : null;
+            Long eventDeptId = event.getTargetDepartment() != null ? event.getTargetDepartment().getId() : null;
+
+            if (actorDeptId == null || eventDeptId == null || !actorDeptId.equals(eventDeptId)) {
+                throw new NotFoundException("Événement introuvable");
+            }
+        }
+
+        if (registration.getStatus() != RegistrationStatus.REGISTERED) {
+            throw new BadRequestException("Seuls les participants inscrits peuvent avoir une présence");
+        }
+
+        registration.setAttendanceStatus(attendanceStatus);
+        registrationRepository.save(registration);
     }
 
     private void validateRegistrationAllowed(Event event, User user) {
