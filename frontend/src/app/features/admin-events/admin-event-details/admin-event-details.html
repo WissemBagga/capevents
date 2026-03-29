@@ -261,87 +261,138 @@
 
         </article>
     }
-</div>
-
-
 @if (event && !loading && showInvitationSection) {
   <section class="invitation-section">
-    <div class="section-header">
-      <h2>Inviter des employés</h2>
+
+    <!-- Section Header -->
+    <div class="inv-panel-header">
+      <div>
+        <h2 class="inv-panel-title">Inviter des employés</h2>
+        <p class="inv-panel-sub">Envoyez des invitations aux employés pour cet événement</p>
+      </div>
       @if (canInviteNow) {
         <button type="button" class="invite-toggle-btn" (click)="toggleInvitationPanel()">
-          {{ showInvitationPanel ? 'Fermer' : 'Inviter des employés' }}
+          @if (showInvitationPanel) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Fermer
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Inviter des employés
+          }
         </button>
       }
-
     </div>
+
+    <!-- Blocking Message -->
     @if (invitationBlockingMessage) {
       <div class="state-message info-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
         <p>{{ invitationBlockingMessage }}</p>
       </div>
     }
 
+    <!-- Invitation Panel -->
     @if (showInvitationPanel && canInviteNow) {
       <div class="invitation-panel">
-        <div class="form-group">
-          <label for="targetType">Type de cible</label>
 
-          <select
-            id="targetType"
-            [value]="invitationTargetType"
-            (change)="onTargetTypeChange($any($event.target).value)"
-          >
+        <!-- Step 1: Type de cible -->
+        <div class="panel-step">
+          <div class="step-label">
+            <span class="step-num">1</span>
+            <span class="step-title">Type d'invitation</span>
+          </div>
+          <div class="type-selector">
             @if (isHr) {
-              <option value="GLOBAL">Global</option>
+              <label class="type-option" [class.selected]="invitationTargetType === 'GLOBAL'">
+                <input type="radio" name="targetType" value="GLOBAL"
+                  [checked]="invitationTargetType === 'GLOBAL'"
+                  (change)="onTargetTypeChange('GLOBAL')" />
+                <span class="type-option-icon global">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+                </span>
+                <div>
+                  <span class="type-label">Global</span>
+                  <span class="type-desc">Tous les employés</span>
+                </div>
+              </label>
             }
-
-            <option value="DEPARTMENT">Département</option>
-            <option value="INDIVIDUAL">Individuel</option>
-          </select>
+            <label class="type-option" [class.selected]="invitationTargetType === 'DEPARTMENT'">
+              <input type="radio" name="targetType" value="DEPARTMENT"
+                [checked]="invitationTargetType === 'DEPARTMENT'"
+                (change)="onTargetTypeChange('DEPARTMENT')" />
+              <span class="type-option-icon department">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </span>
+              <div>
+                <span class="type-label">Département</span>
+                <span class="type-desc">Un département entier</span>
+              </div>
+            </label>
+            <label class="type-option" [class.selected]="invitationTargetType === 'INDIVIDUAL'">
+              <input type="radio" name="targetType" value="INDIVIDUAL"
+                [checked]="invitationTargetType === 'INDIVIDUAL'"
+                (change)="onTargetTypeChange('INDIVIDUAL')" />
+              <span class="type-option-icon individual">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              </span>
+              <div>
+                <span class="type-label">Individuel</span>
+                <span class="type-desc">Employés sélectionnés</span>
+              </div>
+            </label>
+          </div>
         </div>
 
+        <!-- Step 2: Departement or Users -->
         @if (invitationTargetType === 'DEPARTMENT') {
-          <div class="form-group">
-            <label for="departmentId">Département</label>
-
-            <select
-              id="departmentId"
-              [(ngModel)]="selectedDepartmentId"
-              [disabled]="isManager && !isHr"
-            >
-              <option [ngValue]="null">Sélectionnez un département</option>
-
-              @for (department of departments; track department.id) {
-                <option [ngValue]="department.id">
-                  {{ department.name }}
-                </option>
-              }
-            </select>
+          <div class="panel-step">
+            <div class="step-label">
+              <span class="step-num">2</span>
+              <span class="step-title">Sélectionnez un département</span>
+            </div>
+            <div class="form-group">
+              <select
+                id="departmentId"
+                [(ngModel)]="selectedDepartmentId"
+                [disabled]="isManager && !isHr"
+              >
+                <option [ngValue]="null">-- Choisir un département --</option>
+                @for (department of departments; track department.id) {
+                  <option [ngValue]="department.id">{{ department.name }}</option>
+                }
+              </select>
+            </div>
           </div>
         }
 
         @if (invitationTargetType === 'INDIVIDUAL') {
-          <div class="form-group">
-            <label>Employés</label>
-
+          <div class="panel-step">
+            <div class="step-label">
+              <span class="step-num">2</span>
+              <span class="step-title">Choisissez des employés</span>
+              @if (selectedUserEmails.length > 0) {
+                <span class="selected-count-pill">{{ selectedUserEmails.length }} sélectionné(s)</span>
+              }
+            </div>
             @if (visibleUsersForInvitation.length === 0) {
               <p class="helper-text">Aucun utilisateur disponible.</p>
             } @else {
               <div class="user-selection-list">
                 @for (user of visibleUsersForInvitation; track user.id) {
-                  <label class="user-option">
+                  <label class="user-option" [class.checked]="selectedUserEmails.includes(user.email)">
+                    <div class="user-avatar-small">{{ user.firstName.charAt(0) | uppercase }}</div>
+                    <div class="user-option-text">
+                      <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
+                      @if (user.departmentName) {
+                        <small>{{ user.departmentName }}</small>
+                      }
+                    </div>
                     <input
                       type="checkbox"
+                      class="user-checkbox"
                       [checked]="selectedUserEmails.includes(user.email)"
                       (change)="onIndividualSelectionChange(user.email, $any($event.target).checked)"
                     />
-
-                    <span>
-                      {{ user.firstName }} {{ user.lastName }}
-                      @if (user.departmentName) {
-                        <small>({{ user.departmentName }})</small>
-                      }
-                    </span>
                   </label>
                 }
               </div>
@@ -349,83 +400,152 @@
           </div>
         }
 
-        <div class="form-group">
-          <label for="invitationMessage">Message personnalisé</label>
-
-          <textarea
-            id="invitationMessage"
-            rows="4"
-            [(ngModel)]="invitationMessage"
-            placeholder="Ajoutez un message personnalisé (optionnel)..."
-          ></textarea>
+        <!-- Step 3: Message personnalisé -->
+        <div class="panel-step">
+          <div class="step-label">
+            <span class="step-num">{{ invitationTargetType === 'GLOBAL' ? '2' : '3' }}</span>
+            <span class="step-title">Message personnalisé <span class="optional-tag">optionnel</span></span>
+          </div>
+          <div class="form-group">
+            <textarea
+              id="invitationMessage"
+              rows="3"
+              [(ngModel)]="invitationMessage"
+              placeholder="Ajoutez un message personnalisé pour accompagner l'invitation..."
+            ></textarea>
+          </div>
         </div>
 
-        <div class="invitation-summary">
-          <strong>{{ selectedCount }}</strong> personne(s) ciblée(s)
-        </div>
+        <!-- Summary + Action -->
+        <div class="invitation-footer">
+          <div class="invitation-summary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            <strong>{{ selectedCount }}</strong> personne(s) ciblée(s)
+          </div>
 
-        @if (invitationErrorMessage) {
-          <p class="error-message">{{ invitationErrorMessage }}</p>
-        }
-
-        @if (invitationSuccessMessage) {
-          <p class="success-message">{{ invitationSuccessMessage }}</p>
-        }
-
-        <div class="invitation-actions">
           <button
             type="button"
+            class="btn-send"
             (click)="sendInvitations()"
             [disabled]="!canSendInvitations"
           >
-            {{ invitationLoading ? 'Envoi...' : 'Envoyer les invitations' }}
+            @if (invitationLoading) {
+              <span class="spinner-small"></span>
+              Envoi en cours...
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Envoyer les invitations
+            }
           </button>
         </div>
+
+        <!-- Feedback Messages -->
+        @if (invitationErrorMessage) {
+          <div class="inv-feedback error-feedback">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {{ invitationErrorMessage }}
+          </div>
+        }
+        @if (invitationSuccessMessage) {
+          <div class="inv-feedback success-feedback">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            {{ invitationSuccessMessage }}
+          </div>
+        }
+
       </div>
     }
   </section>
 }
 
 <section class="sent-invitations-section">
-  <div class="section-header">
-    <h2>Invitations envoyées</h2>
+  <!-- Section Header -->
+  <div class="inv-section-header">
+    <div>
+      <h2 class="inv-section-title">Invitations envoyées</h2>
+      <p class="inv-section-sub">Historique des invitations transmises pour cet événement</p>
+    </div>
+    @if (!invitationsLoading && invitations.length > 0) {
+      <span class="inv-count-badge">{{ invitations.length }} invitation{{ invitations.length > 1 ? 's' : '' }}</span>
+    }
   </div>
 
+  <!-- Loading State -->
   @if (invitationsLoading) {
-    <p class="helper-text">Chargement des invitations...</p>
-  } @else if (invitations.length === 0) {
-    <p class="helper-text">Aucune invitation envoyée pour cet événement.</p>
-  } @else {
-    <div class="invitation-cards">
-      @for (invitation of invitations; track invitation.email + invitation.sentAt) {
-        <article class="invitation-card">
-          <div class="invitation-card-top">
-            <div>
-              <h3>{{ invitation.fullName }}</h3>
-              <p>{{ invitation.email }}</p>
-            </div>
+    <div class="inv-state loading">
+      <div class="spinner"></div>
+      <span>Chargement des invitations...</span>
+    </div>
+  }
 
-            <span class="status-chip">
-              {{ statusLabel(invitation.status) }}
+  <!-- Empty State -->
+  @else if (invitations.length === 0) {
+    <div class="inv-empty">
+      <div class="inv-empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </div>
+      <p class="inv-empty-title">Aucune invitation envoyée</p>
+      <p class="inv-empty-sub">Les invitations transmises pour cet événement apparaîtront ici.</p>
+    </div>
+  }
+
+  <!-- Invitation Rows -->
+  @else {
+    <div class="inv-list">
+      @for (invitation of invitations; track invitation.email + invitation.sentAt) {
+        <article class="inv-row">
+
+          <!-- Left: Avatar + Identity -->
+          <div class="inv-identity">
+            <div class="inv-avatar">
+              {{ invitation.fullName.charAt(0) | uppercase }}
+            </div>
+            <div class="inv-identity-text">
+              <span class="inv-name">{{ invitation.fullName }}</span>
+              <span class="inv-email">{{ invitation.email }}</span>
+            </div>
+          </div>
+
+          <!-- Center: Type Badge -->
+          <div class="inv-type-col">
+            <span class="inv-type-badge"
+              [class.global]="invitation.targetType === 'GLOBAL'"
+              [class.department]="invitation.targetType === 'DEPARTMENT'"
+              [class.individual]="invitation.targetType === 'INDIVIDUAL'">
+              {{ invitation.targetType }}
+            </span>
+            @if (invitation.departmentName) {
+              <span class="inv-dept">{{ invitation.departmentName }}</span>
+            }
+          </div>
+
+          <!-- Right: Metadata -->
+          <div class="inv-meta-col">
+            <span class="inv-meta-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              {{ invitation.invitedByFullName }}
+            </span>
+            <span class="inv-meta-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              {{ invitation.sentAt | date:'mediumDate' }}
             </span>
           </div>
 
-          <div class="invitation-meta">
-            <p><strong>Type :</strong> {{ invitation.targetType }}</p>
+          <!-- Message (if present) -->
+          @if (invitation.message) {
+            <div class="inv-message">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              {{ invitation.message }}
+            </div>
+          }
 
-            @if (invitation.departmentName) {
-              <p><strong>Département :</strong> {{ invitation.departmentName }}</p>
-            }
-
-            <p><strong>Invité par :</strong> {{ invitation.invitedByFullName }}</p>
-            <p><strong>Envoyé le :</strong> {{ invitation.sentAt | date:'medium' }}</p>
-
-            @if (invitation.message) {
-              <p><strong>Message :</strong> {{ invitation.message }}</p>
-            }
-          </div>
         </article>
       }
     </div>
   }
 </section>
+
+</div>
