@@ -143,4 +143,15 @@ public class EventController {
         return eventService.listForDepartment(auth.getName());
     }
 
+
+    @PostMapping("/{id}/unpublish")
+    @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
+    public EventResponse unpublish(
+            @PathVariable UUID id,
+            Authentication authentication,
+            HttpServletRequest request
+    ) {
+        return eventService.unpublish(id, authentication.getName(), request.getRemoteAddr());
+    }
+
 }

@@ -123,4 +123,10 @@ export class EventService {
   sendInvitations(eventId: string, payload: SendInvitationRequest){
     return this.http.post<SendInvitationResponse>(`${this.apiUrl}/${eventId}/invite`, payload);
   }
+
+
+  unpublishEvent(id: string) {
+    return this.http.post<EventResponse>(`${this.apiUrl}/${id}/unpublish`, {});
+  }
+
 }

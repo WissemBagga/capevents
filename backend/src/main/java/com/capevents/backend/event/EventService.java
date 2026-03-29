@@ -512,6 +512,39 @@ public class EventService {
         );
     }
 
+
+    @Transactional
+    public EventResponse unpublish(UUID eventId, String actorEmail, String ip) {
+        Event e = eventRepository.findByIdWithCreatorDept(eventId)
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        authorizeManageEvent(actor, e);
+
+        if (e.getStatus() != EventStatus.PUBLISHED) {
+            throw new BadRequestException("Seuls les événements publiés peuvent revenir en brouillon");
+        }
+
+        if (e.getStartAt().isBefore(Instant.now())) {
+            throw new BadRequestException("Impossible d’annuler la publication d’un événement déjà commencé");
+        }
+
+        e.setStatus(EventStatus.DRAFT);
+
+        auditService.logByEmail(
+                actorEmail,
+                "EVENT_UNPUBLISHED",
+                "EVENT",
+                e.getId().toString(),
+                ip,
+                "{\"title\":\"" + escape(e.getTitle()) + "\"}"
+        );
+
+        return toResponse(e);
+    }
+
     private void validateBusiness(CreateEventRequest req){
         if (req.registrationDeadline().isAfter(req.startAt()) || req.registrationDeadline().equals(req.startAt())){
             throw new BadRequestException("La date limite d’inscription doit être antérieure à la date de début de l’événement");

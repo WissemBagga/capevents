@@ -105,7 +105,15 @@
                         }
 
                         @if (canPublish(event)) {
-                            <button type="button" class="btn-publish" (click)="publish(event.id)" [disabled]="actionLoading">Publier</button>
+                            <button type="button" class="btn-publish" (click)="publish(event.id)" [disabled]="actionLoading">
+                                Publier
+                            </button>
+                        }
+
+                        @if (canUnpublish(event)) {
+                            <button type="button" class="btn-edit" (click)="unpublish(event.id)" [disabled]="actionLoading">
+                                Annuler publication
+                            </button>
                         }
 
                         @if (canCancel(event)) {
