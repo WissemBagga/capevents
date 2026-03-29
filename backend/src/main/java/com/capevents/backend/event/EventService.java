@@ -460,12 +460,20 @@ public class EventService {
         Page<Event> page;
 
         if (isHr) {
-            page = eventRepository.searchPublishedPage(
-                    normalizedCategory,
-                    effectiveFrom,
-                    effectiveTo,
-                    pageable
-            );
+            if (normalizedCategory == null) {
+                page = eventRepository.searchPublishedPageWithoutCategory(
+                        effectiveFrom,
+                        effectiveTo,
+                        pageable
+                );
+            } else {
+                page = eventRepository.searchPublishedPageWithCategory(
+                        normalizedCategory,
+                        effectiveFrom,
+                        effectiveTo,
+                        pageable
+                );
+            }
         } else {
             if (actor.getDepartment() == null) {
                 throw new BadRequestException("L’utilisateur n’a pas de département");
@@ -473,13 +481,22 @@ public class EventService {
 
             Long deptId = actor.getDepartment().getId();
 
-            page = eventRepository.searchPublishedVisibleForDeptPage(
-                    deptId,
-                    category,
-                    effectiveFrom,
-                    effectiveTo,
-                    pageable
-            );
+            if (normalizedCategory == null) {
+                page = eventRepository.searchPublishedVisibleForDeptPageWithoutCategory(
+                        deptId,
+                        effectiveFrom,
+                        effectiveTo,
+                        pageable
+                );
+            } else {
+                page = eventRepository.searchPublishedVisibleForDeptPageWithCategory(
+                        deptId,
+                        normalizedCategory,
+                        effectiveFrom,
+                        effectiveTo,
+                        pageable
+                );
+            }
         }
 
         Page<EventResponse> dtoPage = page.map(this::toResponse);

@@ -44,10 +44,10 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
       left join fetch e.createdBy
       left join fetch e.targetDepartment td
       where e.id = :id
-        and e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+        and e.status = 'PUBLISHED'
         and (
-          e.audience = com.capevents.backend.event.EventAudience.GLOBAL
-          or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :deptId)
+          e.audience = 'GLOBAL'
+          or (e.audience = 'DEPARTMENT' and td.id = :deptId)
         )
     """)
     Optional<Event> findPublishedByIdVisibleForDept(@Param("id") UUID id, @Param("deptId") Long deptId);
@@ -55,15 +55,15 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
 
     @Query("""
-  select e from Event e
-  left join e.targetDepartment td
-  where e.status = 'PUBLISHED'
-    and e.startAt >= :now
-    and (
-      e.audience = 'GLOBAL'
-      or (e.audience = 'DEPARTMENT' and td.id = :deptId)
-    )
-""")
+      select e from Event e
+      left join e.targetDepartment td
+      where e.status = 'PUBLISHED'
+        and e.startAt >= :now
+        and (
+          e.audience = 'GLOBAL'
+          or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+        )
+    """)
     Page<Event> findPublishedVisibleForDeptPage(
             @Param("now") Instant now,
             @Param("deptId") Long deptId,
@@ -78,9 +78,9 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
       e.audience = 'GLOBAL'
       or (e.audience = 'DEPARTMENT' and td.id = :deptId)
     )
-    and (:category is null or e.category = :category)
     and e.startAt >= :from
     and e.startAt <= :to
+    and lower(e.category) like lower(concat('%', :category, '%'))
 """)
     Page<Event> searchPublishedVisibleForDeptPage(
             @Param("deptId") Long deptId,
@@ -89,6 +89,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             @Param("to") Instant to,
             Pageable pageable
     );
+
     @Query("""
       select e from Event e
       where e.status = 'PUBLISHED'
@@ -103,5 +104,80 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             @Param("to") Instant to,
             Pageable pageable
     );
+
+
+
+    // =========================
+    // RECHERCHE RH
+    // =========================
+
+    @Query("""
+      select e from Event e
+      where e.status = 'PUBLISHED'
+        and e.startAt >= :from
+        and e.startAt <= :to
+    """)
+    Page<Event> searchPublishedPageWithoutCategory(
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
+    @Query("""
+      select e from Event e
+      where e.status = 'PUBLISHED'
+        and e.startAt >= :from
+        and e.startAt <= :to
+        and lower(e.category) like lower(concat('%', :category, '%'))
+    """)
+    Page<Event> searchPublishedPageWithCategory(
+            @Param("category") String category,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
+    // =========================
+    // RECHERCHE MANAGER / EMPLOYEE
+    // =========================
+
+    @Query("""
+      select e from Event e
+      left join e.targetDepartment td
+      where e.status = 'PUBLISHED'
+        and (
+          e.audience = 'GLOBAL'
+          or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+        )
+        and e.startAt >= :from
+        and e.startAt <= :to
+    """)
+    Page<Event> searchPublishedVisibleForDeptPageWithoutCategory(
+            @Param("deptId") Long deptId,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
+    @Query("""
+      select e from Event e
+      left join e.targetDepartment td
+      where e.status = 'PUBLISHED'
+        and (
+          e.audience = 'GLOBAL'
+          or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+        )
+        and e.startAt >= :from
+        and e.startAt <= :to
+        and lower(e.category) like lower(concat('%', :category, '%'))
+    """)
+    Page<Event> searchPublishedVisibleForDeptPageWithCategory(
+            @Param("deptId") Long deptId,
+            @Param("category") String category,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
 
 }
