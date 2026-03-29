@@ -32,4 +32,8 @@ export class Navbar {
   hasEmployeeRole(): boolean {
     return this.authService.hasEmployeeRole();
   }
+
+  isAdmin(): boolean {
+    return this.isHr() || this.isManager();
+  }
 }

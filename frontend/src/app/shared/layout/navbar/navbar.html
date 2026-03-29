@@ -4,11 +4,14 @@
   </div>
 
   <div class="navbar-center">
-    @if (hasEmployeeRole()) {
+    @if (hasEmployeeRole() && !isAdmin()) {
       <a routerLink="/dashboard/employee">Dashboard</a>
+    }
+    
+    @if (hasEmployeeRole()) {
       <a routerLink="/events">Événements</a>
       <a routerLink="/my-events">Mes événements</a>
-  } 
+    } 
 
     @if (isManager()) {
       <a routerLink="/admin/manager">Dashboard Manager</a>
