@@ -145,12 +145,15 @@ public class EventRegistrationService {
             throw new BadRequestException("L'événement est complet.");
         }
 
-        if (event.getAudience() == EventAudience.DEPARTMENT) {
-            Long userDeptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
-            Long targetDeptId = event.getTargetDepartment() != null ? event.getTargetDepartment().getId() : null;
+        boolean isHr = user.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
 
-            if (userDeptId == null || targetDeptId == null || !userDeptId.equals(targetDeptId)) {
-                throw new BadRequestException("Cet événement n'est pas visible pour votre département.");
+        if (!isHr) {
+            if (event.getAudience() == EventAudience.DEPARTMENT) {
+                if (user.getDepartment() == null
+                        || event.getTargetDepartment() == null
+                        || !user.getDepartment().getId().equals(event.getTargetDepartment().getId())) {
+                    throw new BadRequestException("Cet événement n'est pas visible pour votre département.");
+                }
             }
         }
     }
