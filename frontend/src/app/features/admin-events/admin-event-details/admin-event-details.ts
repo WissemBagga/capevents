@@ -6,7 +6,7 @@ import { finalize } from 'rxjs';
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
 
-import {EventParticipantResponse} from '../../../core/models/participant.model'
+import {EventParticipantResponse, AttendanceStatus} from '../../../core/models/participant.model'
 
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -56,6 +56,8 @@ export class AdminEventDetails {
   invitations: AdminEventInvitationResponse[] = [];
   invitationsLoading = false;
 
+  attendanceLoadingById: Record<number, boolean> = {};
+
   get isHr(): boolean{
     return this.authService.isHr();
   }
@@ -83,16 +85,16 @@ export class AdminEventDetails {
     if (this.invitationTargetType === 'GLOBAL') {
       return this.visibleUsersForInvitation.length;
     }
-  
+
     if (this. invitationTargetType === 'DEPARTMENT') {
       if (!this. selectedDepartmentId){
         return 0
       } ;
-      
+
       return this.users.filter(
         user => user.active && user.departmentId === this.selectedDepartmentId
       ).length;
-    }  
+    }
     return this.selectedUserEmails.length;
   }
 
@@ -139,7 +141,7 @@ export class AdminEventDetails {
     return this.showInvitationSection && this.invitationBlockingMessage === '';
   }
 
-  
+
   ngOnInit(): void {
     this.setDefaultInvitationState();
 
@@ -155,6 +157,31 @@ export class AdminEventDetails {
     this.loadDepartments();
     this.loadUsers();
 
+  }
+
+  markAttendance(registrationId: number, attendanceStatus: AttendanceStatus): void {
+    this.attendanceLoadingById[registrationId] = true;
+    this.cdr.markForCheck();
+
+    this.eventService.markAttendance(registrationId, attendanceStatus)
+      .pipe(finalize(() => {
+        this.attendanceLoadingById[registrationId] = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: () => {
+          this.participants = this.participants.map(participant =>
+            participant.registrationId === registrationId
+              ? { ...participant, attendanceStatus }
+              : participant
+          );
+
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.cdr.markForCheck();
+        }
+      });
   }
 
 
@@ -196,8 +223,8 @@ export class AdminEventDetails {
       });
   }
 
-  
-   private loadUsers(): void {
+
+  private loadUsers(): void {
     this.userService.getAllUsers(0, 1000).subscribe({
       next: (response) => {
         this.users = response.items ?? [];
@@ -284,7 +311,7 @@ export class AdminEventDetails {
     if (!this.event){
       return;
     }
-       
+
 
     this.invitationErrorMessage = '';
     this.invitationSuccessMessage = '';
@@ -338,9 +365,9 @@ export class AdminEventDetails {
       });
   }
 
-  
-  
-  
+
+
+
   private loadParticipants(eventId: string): void{
     this.participantsLoading = true;
     this.cdr.markForCheck();
@@ -403,6 +430,10 @@ export class AdminEventDetails {
         return 'Archivé';
       case 'PENDING':
         return 'En attente';
+      case 'PRESENT':
+        return 'Présent';
+      case 'ABSENT':
+        return 'Absent';
       default:
         return status;
     }

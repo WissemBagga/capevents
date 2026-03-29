@@ -387,6 +387,46 @@
   flex-shrink: 0;
 }
 
+.attendance-block {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e5edf5;
+}
+
+.attendance-current {
+  margin: 0 0 10px;
+  color: #374151;
+  font-size: 14px;
+}
+
+.attendance-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.attendance-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.attendance-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.present-btn {
+  background: #0f9f6e;
+}
+
+.absent-btn {
+  background: #d92d20;
+}
+
 
 
 /* ===== Invitation Section ===== */
@@ -1074,6 +1114,67 @@
   flex-shrink: 0;
   color: #94a3b8;
   margin-top: 2px;
+}
+
+/* Attendance Block */
+.attendance-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 16px;
+  border-left: 1px solid #e2e8f0;
+}
+
+.attendance-current {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
+  color: #5a6a80;
+  margin: 0;
+}
+
+.attendance-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.attendance-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.attendance-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.attendance-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.present-btn {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.present-btn:hover:not(:disabled) {
+  background: #bbf7d0;
+}
+
+.absent-btn {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.absent-btn:hover:not(:disabled) {
+  background: #fecaca;
 }
 
 /* ===== Responsive ===== */

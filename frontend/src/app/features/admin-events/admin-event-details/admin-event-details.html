@@ -202,10 +202,10 @@
 
             <!-- Participants Info -->
             <div class="section-block participants-section">
-                
+
                 <div class="participants-header">
                     <h2 class="section-label">Participants</h2>
-                    
+
                     @if (event) {
                         <div class="capacity-badges">
                             @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
@@ -252,6 +252,31 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                         Inscrit le {{ participant.registeredAt | date:'mediumDate' }}
                                     </p>
+                                </div>
+                                <div class="attendance-block">
+                                  <p class="attendance-current">
+                                    <strong>Présence :</strong> {{ statusLabel(participant.attendanceStatus) }}
+                                  </p>
+
+                                  <div class="attendance-actions">
+                                    <button
+                                      type="button"
+                                      class="attendance-btn present-btn"
+                                      [disabled]="attendanceLoadingById[participant.registrationId]"
+                                      (click)="markAttendance(participant.registrationId, 'PRESENT')"
+                                    >
+                                      Présent
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      class="attendance-btn absent-btn"
+                                      [disabled]="attendanceLoadingById[participant.registrationId]"
+                                      (click)="markAttendance(participant.registrationId, 'ABSENT')"
+                                    >
+                                      Absent
+                                    </button>
+                                  </div>
                                 </div>
                             </article>
                         }
