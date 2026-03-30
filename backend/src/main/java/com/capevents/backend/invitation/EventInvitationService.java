@@ -137,6 +137,7 @@ public class EventInvitationService {
         Event event = invitation.getEvent();
 
         return new MyInvitationResponse(
+                invitation.getId(),
                 event.getId(),
                 event.getTitle(),
                 event.getStartAt(),

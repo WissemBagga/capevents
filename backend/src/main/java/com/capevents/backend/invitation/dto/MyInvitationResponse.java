@@ -8,12 +8,13 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record MyInvitationResponse(
+        Long invitationId,
         UUID eventId,
         String eventTitle,
         Instant eventStartAt,
         InvitationTargetType targetType,
         InvitationStatus status,
-        InvitationResponseStatus  rsvpResponse,
+        InvitationResponseStatus rsvpResponse,
         String message,
         Instant sentAt
 ) {
