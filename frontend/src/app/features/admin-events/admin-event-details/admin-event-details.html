@@ -234,46 +234,57 @@
                 @if (!participantsLoading && participants.length > 0) {
                     <div class="participants-grid">
                         @for (participant of participants; track participant.registrationId) {
-                            <article class="participant-card">
-                                <div class="participant-avatar">
-                                    {{ participant.firstName.charAt(0) | uppercase }}{{ participant.lastName.charAt(0) | uppercase }}
+                            <article class="participant-card" [class.is-present]="participant.attendanceStatus === 'PRESENT'" [class.is-absent]="participant.attendanceStatus === 'ABSENT'">
+                                <div class="participant-main">
+                                    <div class="participant-avatar">
+                                        {{ participant.firstName.charAt(0) | uppercase }}{{ participant.lastName.charAt(0) | uppercase }}
+                                    </div>
+                                    <div class="participant-info">
+                                        <h3>{{ participant.firstName }} {{ participant.lastName }}</h3>
+                                        <p>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                            {{ participant.email }}
+                                        </p>
+                                        <p>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                            {{ participant.departmentName || 'Département non renseigné' }}
+                                        </p>
+                                        <p>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                            Inscrit le {{ participant.registeredAt | date:'mediumDate' }}
+                                        </p>
+                                    </div>
+                                    <div class="participant-status-badge">
+                                        <span class="attendance-chip"
+                                              [class.present]="participant.attendanceStatus === 'PRESENT'"
+                                              [class.absent]="participant.attendanceStatus === 'ABSENT'"
+                                              [class.pending]="participant.attendanceStatus === 'PENDING'">
+                                            {{ statusLabel(participant.attendanceStatus) }}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="participant-info">
-                                    <h3>{{ participant.firstName }} {{ participant.lastName }}</h3>
-                                    <p>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                                        {{ participant.email }}
-                                    </p>
-                                    <p>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                                        {{ participant.departmentName || 'Département non renseigné' }}
-                                    </p>
-                                    <p>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                        Inscrit le {{ participant.registeredAt | date:'mediumDate' }}
-                                    </p>
-                                </div>
-                                <div class="attendance-block">
-                                  <p class="attendance-current">
-                                    <strong>Présence :</strong> {{ statusLabel(participant.attendanceStatus) }}
-                                  </p>
 
+                                <div class="attendance-block">
                                   <div class="attendance-actions">
                                     <button
                                       type="button"
                                       class="attendance-btn present-btn"
+                                      [class.active]="participant.attendanceStatus === 'PRESENT'"
                                       [disabled]="attendanceLoadingById[participant.registrationId]"
                                       (click)="markAttendance(participant.registrationId, 'PRESENT')"
                                     >
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                       Présent
                                     </button>
 
                                     <button
                                       type="button"
                                       class="attendance-btn absent-btn"
+                                      [class.active]="participant.attendanceStatus === 'ABSENT'"
                                       [disabled]="attendanceLoadingById[participant.registrationId]"
                                       (click)="markAttendance(participant.registrationId, 'ABSENT')"
                                     >
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                       Absent
                                     </button>
                                   </div>

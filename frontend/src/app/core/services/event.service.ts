@@ -132,4 +132,10 @@ export class EventService {
     return this.http.get<AdminEventInvitationResponse[]>(`${this.apiUrl}/${eventId}/invitations`);
   }
 
+  markAttendance(registrationId: number, attendanceStatus: 'PENDING' | 'PRESENT' | 'ABSENT') {
+    return this.http.post<void>(`${environment.apiBaseUrl}/api/registrations/${registrationId}/attendance`, {
+      attendanceStatus
+    });
+  }
+
 }

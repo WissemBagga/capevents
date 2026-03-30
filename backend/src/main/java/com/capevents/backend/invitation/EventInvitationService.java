@@ -6,6 +6,7 @@ import com.capevents.backend.event.Event;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
 import com.capevents.backend.invitation.dto.AdminEventInvitationResponse;
+import com.capevents.backend.invitation.dto.MyInvitationResponse;
 import com.capevents.backend.invitation.dto.SendInvitationRequest;
 import com.capevents.backend.invitation.dto.SendInvitationResponse;
 import com.capevents.backend.registration.EventRegistrationRepository;
@@ -106,6 +107,31 @@ public class EventInvitationService {
         return invitationRepository.findByEventOrderBySentAtDesc(event).stream()
                 .map(this::toAdminInvitationResponse)
                 .toList();
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<MyInvitationResponse> getMyInvitations(String userEmail) {
+        User user = userRepository.findByEmailWithRolesAndDepartment(userEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        return invitationRepository.findByUserOrderBySentAtDesc(user).stream()
+                .map(this::toMyInvitationResponse)
+                .toList();
+    }
+
+    private MyInvitationResponse toMyInvitationResponse(EventInvitation invitation) {
+        Event event = invitation.getEvent();
+
+        return new MyInvitationResponse(
+                event.getId(),
+                event.getTitle(),
+                event.getStartAt(),
+                invitation.getTargetType(),
+                invitation.getStatus(),
+                invitation.getMessage(),
+                invitation.getSentAt()
+        );
     }
 
     private AdminEventInvitationResponse toAdminInvitationResponse(EventInvitation invitation) {

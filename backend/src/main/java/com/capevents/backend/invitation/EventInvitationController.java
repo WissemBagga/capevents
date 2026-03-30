@@ -1,6 +1,7 @@
 package com.capevents.backend.invitation;
 
 import com.capevents.backend.invitation.dto.AdminEventInvitationResponse;
+import com.capevents.backend.invitation.dto.MyInvitationResponse;
 import com.capevents.backend.invitation.dto.SendInvitationRequest;
 import com.capevents.backend.invitation.dto.SendInvitationResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -40,5 +41,12 @@ public class EventInvitationController {
             Authentication auth
     ) {
         return invitationService.getEventInvitations(id, auth.getName());
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping
+    public List<MyInvitationResponse> getMyInvitations(Authentication auth) {
+        return invitationService.getMyInvitations(auth.getName());
     }
 }

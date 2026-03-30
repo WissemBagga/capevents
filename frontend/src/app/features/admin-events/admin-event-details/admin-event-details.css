@@ -322,18 +322,35 @@
 
 .participant-card {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  flex-direction: column;
   background: #ffffff;
-  border: 1px solid #edf1f7;
-  border-radius: 14px;
-  padding: 18px;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  border: 1.5px solid #edf1f7;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .participant-card:hover {
   border-color: #bfdbfe;
   box-shadow: 0 4px 14px rgba(10, 110, 189, 0.08);
+  transform: translateY(-2px);
+}
+
+.participant-card.is-present {
+  border-color: #bbf7d0;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.08);
+}
+
+.participant-card.is-absent {
+  border-color: #fecaca;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.08);
+}
+
+.participant-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 20px;
 }
 
 .participant-avatar {
@@ -347,7 +364,7 @@
   align-items: center;
   justify-content: center;
   font-family: 'Ubuntu', sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.5px;
 }
@@ -358,21 +375,22 @@
 }
 
 .participant-info h3 {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   font-family: 'Ubuntu', sans-serif;
   font-size: 15.5px;
-  font-weight: 700;
+  font-weight: 800;
   color: #0f1b2d;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.2px;
 }
 
 .participant-info p {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 0 0 6px;
+  margin: 0 0 5px;
   font-family: Verdana, Geneva, sans-serif;
   font-size: 12px;
   color: #5a6a80;
@@ -387,44 +405,111 @@
   flex-shrink: 0;
 }
 
-.attendance-block {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid #e5edf5;
+/* Status Chip */
+.participant-status-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
-.attendance-current {
-  margin: 0 0 10px;
-  color: #374151;
-  font-size: 14px;
+.attendance-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.attendance-chip.present {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.attendance-chip.absent {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.attendance-chip.pending {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+/* Attendance Actions */
+.attendance-block {
+  padding: 14px 20px;
+  background: #f8fafc;
+  border-top: 1px solid #edf1f7;
 }
 
 .attendance-actions {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .attendance-btn {
-  border: none;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1.5px solid transparent;
   border-radius: 10px;
   padding: 10px 14px;
   cursor: pointer;
-  font-weight: 600;
-  color: #ffffff;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  background: #ffffff;
 }
 
 .attendance-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
+/* Present Button */
 .present-btn {
-  background: #0f9f6e;
+  color: #16a34a;
+  border-color: #bbf7d0;
 }
 
+.present-btn:hover:not(:disabled) {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.present-btn.active {
+  background: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+}
+
+/* Absent Button */
 .absent-btn {
-  background: #d92d20;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.absent-btn:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.absent-btn.active {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
 }
 
 
