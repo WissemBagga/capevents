@@ -5,10 +5,7 @@ import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.event.Event;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
-import com.capevents.backend.invitation.dto.AdminEventInvitationResponse;
-import com.capevents.backend.invitation.dto.MyInvitationResponse;
-import com.capevents.backend.invitation.dto.SendInvitationRequest;
-import com.capevents.backend.invitation.dto.SendInvitationResponse;
+import com.capevents.backend.invitation.dto.*;
 import com.capevents.backend.registration.EventRegistrationRepository;
 import com.capevents.backend.registration.RegistrationStatus;
 import com.capevents.backend.user.User;
@@ -120,6 +117,22 @@ public class EventInvitationService {
                 .toList();
     }
 
+    @Transactional
+    public void respondToInvitation(Long invitationId, UpdateInvitationResponseRequest request, String userEmail) {
+        if (request.response() == null) {
+            throw new BadRequestException("La réponse RSVP est requise");
+        }
+
+        User user = userRepository.findByEmailWithRolesAndDepartment(userEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        EventInvitation invitation = invitationRepository.findByIdAndUser(invitationId, user)
+                .orElseThrow(() -> new NotFoundException("Invitation introuvable"));
+
+        invitation.setRsvpResponse(request.response());
+        invitationRepository.save(invitation);
+    }
+
     private MyInvitationResponse toMyInvitationResponse(EventInvitation invitation) {
         Event event = invitation.getEvent();
 
@@ -129,6 +142,7 @@ public class EventInvitationService {
                 event.getStartAt(),
                 invitation.getTargetType(),
                 invitation.getStatus(),
+                invitation.getRsvpResponse(),
                 invitation.getMessage(),
                 invitation.getSentAt()
         );

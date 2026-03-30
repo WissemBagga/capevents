@@ -45,6 +45,10 @@ public class EventInvitation {
     @Column(nullable = false, length = 20)
     private InvitationStatus status = InvitationStatus.PENDING;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "rsvp_response", length = 20)
+    private InvitationResponseStatus rsvpResponse;
+
     @Column(name = "message", length = 1000)
     private String message;
 
