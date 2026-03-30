@@ -290,6 +290,50 @@
   box-shadow: 0 6px 16px rgba(10, 110, 189, 0.3);
 }
 
+.rsvp-section {
+  margin-bottom: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #e5edf5;
+}
+
+.rsvp-current {
+  margin: 0 0 10px;
+  color: #374151;
+  font-size: 14px;
+}
+
+.rsvp-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rsvp-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.rsvp-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.yes-btn {
+  background: #0f9f6e;
+}
+
+.maybe-btn {
+  background: #1d7cf2;
+}
+
+.no-btn {
+  background: #d92d20;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
   .invitation-grid {

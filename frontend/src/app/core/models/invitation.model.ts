@@ -24,12 +24,16 @@ export interface AdminEventInvitationResponse {
   invitedByFullName: string;
 }
 
+export type InvitationResponseStatus  = 'YES' | 'MAYBE' | 'NO';
+
 export interface MyInvitationResponse {
+  invitationId: number;
   eventId: string;
   eventTitle: string;
   eventStartAt: string;
   targetType: InvitationTargetType;
   status: 'PENDING';
+  rsvpResponse: InvitationResponseStatus | null;
   message: string | null;
   sentAt: string;
 }

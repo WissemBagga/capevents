@@ -72,7 +72,40 @@
                             </div>
                         }
                     </div>
+                    <div class="rsvp-section">
+                        <p class="rsvp-current">
+                            <strong>Votre réponse :</strong> {{ responseLabel(invitation.rsvpResponse) }}
+                        </p>
 
+                        <div class="rsvp-actions">
+                            <button
+                            type="button"
+                            class="rsvp-btn yes-btn"
+                            [disabled]="responseLoadingById[invitation.invitationId]"
+                            (click)="respond(invitation.invitationId, 'YES')"
+                            >
+                            Oui
+                            </button>
+
+                            <button
+                            type="button"
+                            class="rsvp-btn maybe-btn"
+                            [disabled]="responseLoadingById[invitation.invitationId]"
+                            (click)="respond(invitation.invitationId, 'MAYBE')"
+                            >
+                            Peut-être
+                            </button>
+
+                            <button
+                            type="button"
+                            class="rsvp-btn no-btn"
+                            [disabled]="responseLoadingById[invitation.invitationId]"
+                            (click)="respond(invitation.invitationId, 'NO')"
+                            >
+                            Non
+                            </button>
+                        </div>
+                    </div>
                     <div class="inv-card-footer">
                         <a class="btn-primary" [routerLink]="['/events', invitation.eventId]">
                             Voir l’événement

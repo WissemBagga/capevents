@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { EventService } from '../../../core/services/event.service';
 
 import { inject } from '@angular/core';
-import { MyInvitationResponse } from '../../../core/models/invitation.model';
+import { MyInvitationResponse, InvitationResponseStatus } from '../../../core/models/invitation.model';
 import { finalize } from 'rxjs';
 
 
@@ -22,6 +22,8 @@ export class MyInvitations implements OnInit{
   invitations: MyInvitationResponse[] =[];
   loading = false;
   errorMessage="";
+
+  responseLoadingById: Record<number, boolean> = {};
 
   ngOnInit(): void {
       this.loadInvitations();
@@ -52,6 +54,34 @@ export class MyInvitations implements OnInit{
     });
   }
 
+  respond(invitationId: number, response: InvitationResponseStatus): void {
+    this.responseLoadingById[invitationId] = true;
+    this.cdr.markForCheck();
+
+    this.eventService.respondToInvitation(invitationId, response)
+      .pipe(finalize(() => {
+        this.responseLoadingById[invitationId] = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: () => {
+          this.invitations = this.invitations.map(invitation =>
+            invitation.invitationId === invitationId
+              ? { ...invitation, rsvpResponse: response }
+              : invitation
+          );
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.errorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible d’enregistrer votre réponse.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
   targetTypeLabel(targetType: string): string {
     switch (targetType) {
       case 'GLOBAL':
@@ -73,4 +103,17 @@ export class MyInvitations implements OnInit{
         return status;
     }
   }
+
+  responseLabel(response: string | null): string {
+  switch (response) {
+    case 'YES':
+      return 'Oui';
+    case 'MAYBE':
+      return 'Peut-être';
+    case 'NO':
+      return 'Non';
+    default:
+      return 'Pas encore répondu';
+  }
+}
 }
