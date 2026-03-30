@@ -43,10 +43,5 @@ public class EventInvitationController {
         return invitationService.getEventInvitations(id, auth.getName());
     }
 
-    @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping
-    public List<MyInvitationResponse> getMyInvitations(Authentication auth) {
-        return invitationService.getMyInvitations(auth.getName());
-    }
+
 }

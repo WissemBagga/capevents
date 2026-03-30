@@ -58,7 +58,7 @@ public class EventRegistrationController {
 
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
-    @PostMapping("/api/registrations/{registrationId}/attendance")
+    @PostMapping("/registrations/{registrationId}/attendance")
     public void markAttendance(
             @PathVariable Long registrationId,
             @RequestBody UpdateAttendanceRequest request,
