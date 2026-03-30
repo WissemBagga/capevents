@@ -11,6 +11,9 @@
     @if (hasEmployeeRole()) {
       <a routerLink="/events">Événements</a>
       <a routerLink="/my-events">Mes événements</a>
+      <a routerLink="/my-invitations" routerLinkActive="active-link">
+        Mes invitations
+      </a>
     } 
 
     @if (isManager()) {

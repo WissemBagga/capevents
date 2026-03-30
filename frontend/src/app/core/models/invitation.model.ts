@@ -23,3 +23,13 @@ export interface AdminEventInvitationResponse {
   sentAt: string;
   invitedByFullName: string;
 }
+
+export interface MyInvitationResponse {
+  eventId: string;
+  eventTitle: string;
+  eventStartAt: string;
+  targetType: InvitationTargetType;
+  status: 'PENDING';
+  message: string | null;
+  sentAt: string;
+}

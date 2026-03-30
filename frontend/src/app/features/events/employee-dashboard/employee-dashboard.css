@@ -130,6 +130,27 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
 }
 
+.dashboard-shortcut-card {
+  display: block;
+  text-decoration: none;
+  background: #ffffff;
+  border: 1px solid #e5edf5;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(18, 26, 56, 0.06);
+  color: inherit;
+}
+
+.dashboard-shortcut-card h3 {
+  margin: 0 0 8px;
+  color: #121a38;
+}
+
+.dashboard-shortcut-card p {
+  margin: 0;
+  color: #5b6476;
+}
+
 /* ===== Section Header ===== */
 .section-header {
   display: flex;

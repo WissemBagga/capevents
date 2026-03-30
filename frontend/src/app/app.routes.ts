@@ -18,6 +18,8 @@ import { VerifyEmailPending } from './features/auth/verify-email-pending/verify-
 import { AdminEventDetails } from './features/admin-events/admin-event-details/admin-event-details';
 import {MyEvents} from './features/events/my-events/my-events'
 
+import { MyInvitations } from './features/events/my-invitations/my-invitations'
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -79,6 +81,12 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['ROLE_EMPLOYEE'] }
       },
+      {
+        path: 'my-invitations',
+        component: MyInvitations,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE'] }
+      }
     ]
   },
 
