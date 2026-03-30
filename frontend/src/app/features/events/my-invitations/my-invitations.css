@@ -1,135 +1,311 @@
+/* ===== Page Container ===== */
 .my-invitations-page {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 28px 20px 40px;
+  padding: 36px 24px 60px;
 }
 
+/* ===== Header ===== */
 .page-header {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .page-header h1 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f1b2d;
   margin: 0 0 8px;
-  color: #121a38;
-  font-size: 30px;
-  font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
 .page-header p {
-  margin: 0;
-  color: #5b6476;
+  font-family: Verdana, Geneva, sans-serif;
   font-size: 15px;
+  color: #5a6a80;
+  margin: 0;
 }
 
-.invitation-list {
+/* ===== State Messages ===== */
+.state-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 22px;
+  border-radius: 14px;
+  margin-top: 18px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+}
+
+.state-message p { margin: 0; }
+
+.loading-msg {
+  background: #f8fafc;
+  border: 1px solid #e8ecf1;
+  color: #5a6a80;
+}
+
+.error-msg {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 3px solid #e8ecf1;
+  border-top-color: #0a6ebd;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Empty State ===== */
+.empty-state {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-}
-
-.invitation-card {
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
   background: #ffffff;
-  border: 1px solid #e5edf5;
+  border: 1px dashed #cbd5e1;
   border-radius: 20px;
-  padding: 22px;
-  box-shadow: 0 10px 30px rgba(18, 26, 56, 0.06);
+  text-align: center;
+  margin-top: 24px;
 }
 
-.invitation-top {
+.empty-icon {
+  width: 64px;
+  height: 64px;
+  background: #f0f7ff;
+  color: #93c5fd;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.empty-state h2 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f1b2d;
+  margin: 0 0 8px;
+}
+
+.empty-state p {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  max-width: 380px;
+}
+
+/* ===== Grid Layout ===== */
+.invitation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+/* ===== Invitation Card ===== */
+.inv-card {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1.5px solid #edf1f7;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 40, 80, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.inv-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 40, 80, 0.08);
+  border-color: #bfdbfe;
+}
+
+/* Card Header */
+.inv-card-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 16px;
+  padding: 24px 24px 18px;
+  border-bottom: 1px solid #f0f3f7;
 }
 
-.invitation-top h2 {
-  margin: 0 0 6px;
-  color: #121a38;
-  font-size: 22px;
+.inv-card-title {
+  flex: 1;
+}
+
+.inv-card-title h2 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #0f1b2d;
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.event-date-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .event-date {
-  margin: 0;
-  color: #5b6476;
-  font-size: 14px;
-}
-
-.invitation-meta {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 18px;
+  align-items: center;
+  gap: 6px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12.5px;
+  color: #5a6a80;
+  margin: 0;
 }
 
-.invitation-meta p {
-  margin: 0;
-  color: #374151;
-  font-size: 14px;
+.event-date svg {
+  color: #94a3b8;
 }
 
 .status-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  padding: 7px 12px;
-  background: #e6f4ff;
-  color: #005a8b;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #0f1b2d;
+  border: 1px solid #e2e8f0;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
   font-weight: 700;
-  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.invitation-actions {
+/* Card Body */
+.inv-card-body {
+  padding: 18px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.inv-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.type-badge.global { background: #ede9fe; color: #6d28d9; }
+.type-badge.department { background: #fefce8; color: #b45309; border: 1px solid #fde68a; }
+.type-badge.individual { background: #eff6ff; color: #0a6ebd; }
+
+.sent-date {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.inv-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #edf1f7;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-top: auto;
+}
+
+.inv-message svg {
+  flex-shrink: 0;
+  color: #0a6ebd;
+  margin-top: 2px;
+}
+
+.inv-message p {
+  margin: 0;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  color: #5a6a80;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* Card Footer */
+.inv-card-footer {
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #edf1f7;
   display: flex;
   justify-content: flex-end;
 }
 
-.details-link {
+.btn-primary {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  border-radius: 12px;
-  padding: 10px 16px;
-  background: #005a8b;
+  gap: 8px;
+  background: linear-gradient(135deg, #0a6ebd 0%, #0d8ae0 100%);
   color: #ffffff;
-  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  cursor: pointer;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(10, 110, 189, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.state-message {
-  border-radius: 16px;
-  padding: 18px;
-  margin-top: 18px;
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(10, 110, 189, 0.3);
 }
 
-.loading-msg {
-  background: #f4f8fb;
-  color: #1f2937;
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .invitation-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.info-msg {
-  background: #f4f8fb;
-  color: #1f2937;
-}
+@media (max-width: 480px) {
+  .my-invitations-page {
+    padding: 24px 16px;
+  }
 
-.error-msg {
-  background: #fff1f2;
-  color: #b42318;
-}
-
-.spinner {
-  width: 26px;
-  height: 26px;
-  border: 3px solid #dbe7f3;
-  border-top-color: #1db8f2;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-  margin-bottom: 10px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+  .inv-card-header,
+  .inv-card-body,
+  .inv-card-footer {
+    padding-left: 18px;
+    padding-right: 18px;
   }
 }

@@ -130,25 +130,69 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
 }
 
-.dashboard-shortcut-card {
-  display: block;
-  text-decoration: none;
-  background: #ffffff;
-  border: 1px solid #e5edf5;
+/* ===== Invitations Banner ===== */
+.invitations-banner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: linear-gradient(135deg, #0a6ebd 0%, #0d8ae0 100%);
   border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 10px 30px rgba(18, 26, 56, 0.06);
-  color: inherit;
+  padding: 22px 28px;
+  margin-bottom: 36px;
+  text-decoration: none;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(10, 110, 189, 0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.dashboard-shortcut-card h3 {
-  margin: 0 0 8px;
-  color: #121a38;
+.invitations-banner:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(10, 110, 189, 0.25);
 }
 
-.dashboard-shortcut-card p {
+.inv-banner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+}
+
+.inv-banner-content {
+  flex: 1;
+}
+
+.inv-banner-content h3 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  letter-spacing: -0.2px;
+}
+
+.inv-banner-content p {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
   margin: 0;
-  color: #5b6476;
+  line-height: 1.4;
+}
+
+.inv-banner-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #0a6ebd;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 /* ===== Section Header ===== */

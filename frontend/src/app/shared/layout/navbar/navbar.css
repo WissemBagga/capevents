@@ -25,13 +25,25 @@
 }
 
 .navbar-center a {
-  color: #121a38;
+  color: #5a6a80;
   text-decoration: none;
-  font-weight: 500;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .navbar-center a:hover {
-  color: #1db8f2;
+  color: #0a6ebd;
+  background: #f0f7ff;
+}
+
+.navbar-center a.active-link {
+  color: #0a6ebd;
+  background: #eff6ff;
+  font-weight: 700;
 }
 
 .user-name {
