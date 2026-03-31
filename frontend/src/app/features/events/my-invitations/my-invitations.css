@@ -290,48 +290,125 @@
   box-shadow: 0 6px 16px rgba(10, 110, 189, 0.3);
 }
 
+/* ===== RSVP Section ===== */
 .rsvp-section {
-  margin-bottom: 18px;
-  padding-top: 12px;
-  border-top: 1px solid #e5edf5;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px dashed #cbd5e1;
 }
 
-.rsvp-current {
-  margin: 0 0 10px;
-  color: #374151;
-  font-size: 14px;
+.rsvp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+
+.rsvp-label {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f1b2d;
+}
+
+.rsvp-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.rsvp-status-badge.yes { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.rsvp-status-badge.maybe { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+.rsvp-status-badge.no { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; }
+.rsvp-status-badge.pending { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
 
 .rsvp-actions {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
 .rsvp-btn {
-  border: none;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1.5px solid transparent;
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 10px 8px;
   cursor: pointer;
-  font-weight: 600;
-  color: #ffffff;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s ease;
 }
 
 .rsvp-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
+/* Oui Button */
 .yes-btn {
-  background: #0f9f6e;
+  color: #16a34a;
+  border-color: #bbf7d0;
 }
 
+.yes-btn:hover:not(:disabled) {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.yes-btn.active {
+  background: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+}
+
+/* Peut-être Button */
 .maybe-btn {
-  background: #1d7cf2;
+  color: #d97706;
+  border-color: #fde68a;
 }
 
+.maybe-btn:hover:not(:disabled) {
+  background: #fffbeb;
+  border-color: #fcd34d;
+}
+
+.maybe-btn.active {
+  background: #d97706;
+  color: #ffffff;
+  border-color: #d97706;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+}
+
+/* Non Button */
 .no-btn {
-  background: #d92d20;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.no-btn:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.no-btn.active {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
 }
 
 /* ===== Responsive ===== */
