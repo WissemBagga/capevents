@@ -284,43 +284,59 @@
 /* Cancel Reason Box */
 .cancel-reason {
   background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 10px;
-  padding: 10px 14px;
+  border: 1px dashed #fca5a5;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 4px;
 }
 
-.cancel-reason h4 {
-  font-family: Verdana, Geneva, sans-serif;
-  font-size: 11px;
-  font-weight: 700;
+.cancel-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
   color: #dc2626;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin: 0 0 4px;
+}
+
+.cancel-header h4 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  margin: 0;
 }
 
 .cancel-reason p {
   font-family: Verdana, Geneva, sans-serif;
-  font-size: 12.5px;
-  color: #991b1b;
+  font-size: 13px;
+  color: #7f1d1d;
   margin: 0;
-  line-height: 1.45;
+  line-height: 1.5;
+  font-style: italic;
 }
 
 /* State Notes */
 .state-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: Verdana, Geneva, sans-serif;
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 600;
-  padding: 6px 10px;
-  border-radius: 8px;
-  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+.cancelled-note {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px dashed #fca5a5;
 }
 
 .archived-note {
-  background: #f1f5f9;
+  background: #f8fafc;
   color: #64748b;
-  border: 1px solid #e2e8f0;
+  border: 1px dashed #cbd5e1;
 }
 
 /* ===== Actions ===== */

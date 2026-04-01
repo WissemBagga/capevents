@@ -131,8 +131,8 @@ public class EventService {
         authorizeManageEvent(actor, e);
 
 
-        if (e.getStatus() == EventStatus.ARCHIVED || e.getStatus() == EventStatus.CANCELLED){
-            throw new BadRequestException("Impossible de publier un événement archivé ou annulé");
+        if (e.getStatus() == EventStatus.ARCHIVED){
+            throw new BadRequestException("Impossible de publier un événement archivé");
         }
 
         if (e.getStartAt().isBefore(Instant.now())){
@@ -180,7 +180,7 @@ public class EventService {
                 .orElseThrow(()-> new NotFoundException("Événement introuvable"));
 
         if (e.getStatus() != EventStatus.PUBLISHED){
-            throw new NotFoundException("Événement introuvable"); // pour chachee les non-published
+            throw new NotFoundException("Événement introuvable");
         }
         return toResponse(e);
     }
@@ -245,8 +245,8 @@ public class EventService {
 
         authorizeManageEvent(actor, e);
 
-        if (e.getStatus() == EventStatus.ARCHIVED || e.getStatus() == EventStatus.CANCELLED){
-            throw new BadRequestException("Impossible de modifier un événement archivé ou annulé");
+        if (e.getStatus() == EventStatus.ARCHIVED){
+            throw new BadRequestException("Impossible de modifier un événement archivé");
         }
 
         e.setTitle(req.title());

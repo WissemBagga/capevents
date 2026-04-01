@@ -58,6 +58,15 @@ export class AdminEventDetails {
 
   attendanceLoadingById: Record<number, boolean> = {};
 
+
+  showRescheduleModal = false;
+  rescheduleLoading = false;
+  rescheduleErrorMessage = '';
+
+  rescheduleStartAt = '';
+  rescheduleRegistrationDeadline = '';
+  successMessage = '';
+
   get isHr(): boolean{
     return this.authService.isHr();
   }
@@ -411,6 +420,145 @@ export class AdminEventDetails {
       });
   }
 
+
+  get isCancelled(): boolean {
+    return this.event?.status === 'CANCELLED';
+  }
+
+  get isArchived(): boolean {
+    return this.event?.status === 'ARCHIVED';
+  }
+
+  get canShowParticipationSections(): boolean {
+    return !!this.event && !this.isCancelled && !this.isArchived;
+  }
+
+  openRescheduleModal(): void {
+  if (!this.event) return;
+
+  this.rescheduleErrorMessage = '';
+  this.rescheduleStartAt = this.toDateTimeLocal(this.event.startAt);
+  this.rescheduleRegistrationDeadline = this.toDateTimeLocal(this.event.registrationDeadline);
+  this.showRescheduleModal = true;
+  this.cdr.markForCheck();
+}
+
+closeRescheduleModal(): void {
+  this.showRescheduleModal = false;
+  this.rescheduleLoading = false;
+  this.rescheduleErrorMessage = '';
+  this.cdr.markForCheck();
+}
+
+private toDateTimeLocal(value: string | null | undefined): string {
+  if (!value) return '';
+
+  const date = new Date(value);
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+private validateReschedule(): string | null {
+  if (!this.rescheduleStartAt) {
+    return 'La nouvelle date de l’événement est obligatoire.';
+  }
+
+  if (!this.rescheduleRegistrationDeadline) {
+    return 'La nouvelle date limite d’inscription est obligatoire.';
+  }
+
+  const startAt = new Date(this.rescheduleStartAt);
+  const deadline = new Date(this.rescheduleRegistrationDeadline);
+  const now = new Date();
+
+  if (startAt <= now) {
+    return 'La nouvelle date de l’événement doit être dans le futur.';
+  }
+
+  if (deadline <= now) {
+    return 'La nouvelle date limite doit être dans le futur.';
+  }
+
+  if (deadline >= startAt) {
+    return 'La date limite d’inscription doit être avant la date de l’événement.';
+  }
+
+  return null;
+}
+
+private buildReschedulePayload() {
+  if (!this.event) return null;
+
+  return {
+    title: this.event.title,
+    category: this.event.category || '',
+    description: this.event.description || '' ,
+    startAt: new Date(this.rescheduleStartAt).toISOString(),
+    durationMinutes: this.event.durationMinutes,
+    locationType: this.event.locationType,
+    locationName: this.event.locationName || '',
+    address: this.event.address || '',
+    meetingUrl: this.event.meetingUrl || '',
+    capacity: this.event.capacity,
+    registrationDeadline: new Date(this.rescheduleRegistrationDeadline).toISOString(),
+    imageUrl: this.event.imageUrl || '',
+    audience: this.event.audience,
+    targetDepartmentId: this.event.targetDepartmentId
+  };
+}
+
+submitReschedule(): void {
+  if (!this.event) return;
+
+  this.rescheduleErrorMessage = '';
+
+  const validationError = this.validateReschedule();
+  if (validationError) {
+    this.rescheduleErrorMessage = validationError;
+    this.cdr.markForCheck();
+    return;
+  }
+
+  const payload = this.buildReschedulePayload();
+  if (!payload) return;
+
+  this.rescheduleLoading = true;
+  this.cdr.markForCheck();
+
+  this.eventService.updateEvent(this.event.id, payload).subscribe({
+    next: () => {
+      this.eventService.publishEvent(this.event!.id)
+        .pipe(finalize(() => {
+          this.rescheduleLoading = false;
+          this.cdr.markForCheck();
+        }))
+        .subscribe({
+          next: () => {
+            this.showRescheduleModal = false;
+            this.successMessage = 'Événement reprogrammé et publié avec succès.';
+            this.loadEvent(this.event!.id);
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            this.rescheduleErrorMessage =
+              err?.error?.message ||
+              err?.error ||
+              'Impossible de publier l’événement après le reschedule.';
+            this.cdr.markForCheck();
+          }
+        });
+    },
+    error: (err) => {
+      this.rescheduleLoading = false;
+      this.rescheduleErrorMessage =
+        err?.error?.message ||
+        err?.error ||
+        'Impossible de mettre à jour les nouvelles dates.';
+      this.cdr.markForCheck();
+    }
+  });
+}
 
 
 

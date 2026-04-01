@@ -178,36 +178,6 @@ export class HrDashboard {
       });
   }
 
-
-  canUnpublish(event: EventResponse): boolean {
-    return event.status === 'PUBLISHED' && this.isBeforeStart(event);
-  }
-
-  unpublish(eventId: string): void {
-    if (!window.confirm('Voulez-vous vraiment annuler la publication de cet événement ?')) {
-      return;
-    }
-
-    this.actionLoading = true;
-    this.cdr.markForCheck();
-
-    this.eventService.unpublishEvent(eventId)
-      .pipe(finalize(() => {
-        this.actionLoading = false;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: () => this.loadEvents(this.currentPage),
-        error: (err) => {
-          this.errorMessage =
-            err?.error?.message ||
-            err?.error ||
-            'Impossible d’annuler la publication de cet événement.';
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
    statusLabel(status: string): string {
     switch (status) {
       case 'DRAFT':

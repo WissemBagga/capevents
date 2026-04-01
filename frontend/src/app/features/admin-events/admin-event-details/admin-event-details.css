@@ -1262,6 +1262,182 @@
   background: #fecaca;
 }
 
+.admin-actions-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 20px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #edf1f7;
+  border-radius: 0 0 20px 20px;
+}
+
+.btn-reschedule {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0a6ebd;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(10, 110, 189, 0.05);
+}
+
+.btn-reschedule:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 27, 45, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 20px 40px rgba(0, 40, 80, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.modal-header h2 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f1b2d;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.modal-subtitle {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  color: #5a6a80;
+  margin: 0 0 28px;
+  line-height: 1.5;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f1b2d;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  border: 1.5px solid #dce3ed;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #0f1b2d;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.input-wrapper input:focus {
+  outline: none;
+  border-color: #0a6ebd;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(10, 110, 189, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #edf1f7;
+}
+
+.btn-cancel-modal {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid #dce3ed;
+  background: #ffffff;
+  color: #475467;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel-modal:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .event-details-page {

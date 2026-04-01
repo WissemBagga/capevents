@@ -190,6 +190,83 @@
                 </div>
             </div>
 
+            <div class="admin-actions-bar">
+              @if (event?.status === 'CANCELLED') {
+                <button
+                  type="button"
+                  class="btn-reschedule"
+                  (click)="openRescheduleModal()"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M5 10H3"/><path d="M21 10h-2"/><path d="M7.5 4.5L6 3"/><path d="M18 3l-1.5 1.5"/><path d="M18 17l-1.5-1.5"/><path d="M7.5 15.5L6 17"/></svg>
+                  Reprogrammer l'événement
+                </button>
+              }
+            </div>
+
+            @if (showRescheduleModal) {
+              <div class="modal-overlay">
+                <div class="modal-card">
+                  <div class="modal-header">
+                    <h2>Reprogrammer l'événement</h2>
+                    <button type="button" class="modal-close" (click)="closeRescheduleModal()">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+
+                  <p class="modal-subtitle">
+                    Définissez les nouvelles dates pour cet événement annulé. Une fois validé, il sera republié automatiquement.
+                  </p>
+
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label for="rescheduleStartAt">Nouvelle date et heure de l'événement</label>
+                      <div class="input-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <input
+                          id="rescheduleStartAt"
+                          type="datetime-local"
+                          [(ngModel)]="rescheduleStartAt"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="rescheduleDeadline">Nouvelle date limite d'inscription</label>
+                      <div class="input-wrapper">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <input
+                          id="rescheduleDeadline"
+                          type="datetime-local"
+                          [(ngModel)]="rescheduleRegistrationDeadline"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  @if (rescheduleErrorMessage) {
+                    <div class="state-message error-msg">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                      <p>{{ rescheduleErrorMessage }}</p>
+                    </div>
+                  }
+
+                  <div class="modal-actions">
+                    <button type="button" class="btn-cancel-modal" (click)="closeRescheduleModal()" [disabled]="rescheduleLoading">
+                      Annuler
+                    </button>
+
+                    <button type="button" class="btn-primary" (click)="submitReschedule()" [disabled]="rescheduleLoading">
+                      @if (rescheduleLoading) {
+                        Reprogrammation...
+                      } @else {
+                        Reprogrammer & Publier
+                      }
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+
             <!-- Image -->
             @if (event.imageUrl) {
                 <div class="section-block">
@@ -200,104 +277,123 @@
                 </div>
             }
 
-            <!-- Participants Info -->
-            <div class="section-block participants-section">
 
-                <div class="participants-header">
-                    <h2 class="section-label">Participants</h2>
+            @if (event?.status === 'CANCELLED') {
+              <div class="state-message info-msg">
+                <p>
+                  Cet événement est annulé. Vous pouvez utiliser l’action Reschedule pour modifier les dates et le republier.
+                </p>
+              </div>
+            }
 
-                    @if (event) {
-                        <div class="capacity-badges">
-                            @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
-                                <span class="badge-blue">{{ event.registeredCount }} inscrits / {{ event.capacity }} places</span>
-                                <span class="badge-green">Reste {{ event.remainingCapacity }} places</span>
-                            } @else {
-                                <span class="badge-blue">Capacité max : {{ event.capacity }}</span>
-                            }
-                        </div>
-                    }
-                </div>
+            @if (event?.status === 'ARCHIVED') {
+              <div class="state-message info-msg">
+                <p>
+                  Cet événement est archivé. Les sections Participants et Invitations ne sont plus affichées.
+                </p>
+              </div>
+            }
 
-                @if (participantsLoading) {
-                    <div class="state-message loading-msg">
-                        <div class="spinner"></div>
-                        <p>Chargement des participants...</p>
-                    </div>
-                }
+            @if (canShowParticipationSections) {
+              <!-- Participants Info -->
+              <div class="section-block participants-section">
 
-                @if (!participantsLoading && participants.length === 0) {
-                    <div class="state-message info-msg">
-                        <p>Aucun participant inscrit pour le moment.</p>
-                    </div>
-                }
+                  <div class="participants-header">
+                      <h2 class="section-label">Participants</h2>
 
-                @if (!participantsLoading && participants.length > 0) {
-                    <div class="participants-grid">
-                        @for (participant of participants; track participant.registrationId) {
-                            <article class="participant-card" [class.is-present]="participant.attendanceStatus === 'PRESENT'" [class.is-absent]="participant.attendanceStatus === 'ABSENT'">
-                                <div class="participant-main">
-                                    <div class="participant-avatar">
-                                        {{ participant.firstName.charAt(0) | uppercase }}{{ participant.lastName.charAt(0) | uppercase }}
-                                    </div>
-                                    <div class="participant-info">
-                                        <h3>{{ participant.firstName }} {{ participant.lastName }}</h3>
-                                        <p>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                                            {{ participant.email }}
-                                        </p>
-                                        <p>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                                            {{ participant.departmentName || 'Département non renseigné' }}
-                                        </p>
-                                        <p>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                            Inscrit le {{ participant.registeredAt | date:'mediumDate' }}
-                                        </p>
-                                    </div>
-                                    <div class="participant-status-badge">
-                                        <span class="attendance-chip"
-                                              [class.present]="participant.attendanceStatus === 'PRESENT'"
-                                              [class.absent]="participant.attendanceStatus === 'ABSENT'"
-                                              [class.pending]="participant.attendanceStatus === 'PENDING'">
-                                            {{ statusLabel(participant.attendanceStatus) }}
-                                        </span>
-                                    </div>
-                                </div>
+                      @if (event) {
+                          <div class="capacity-badges">
+                              @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
+                                  <span class="badge-blue">{{ event.registeredCount }} inscrits / {{ event.capacity }} places</span>
+                                  <span class="badge-green">Reste {{ event.remainingCapacity }} places</span>
+                              } @else {
+                                  <span class="badge-blue">Capacité max : {{ event.capacity }}</span>
+                              }
+                          </div>
+                      }
+                  </div>
 
-                                <div class="attendance-block">
-                                  <div class="attendance-actions">
-                                    <button
-                                      type="button"
-                                      class="attendance-btn present-btn"
-                                      [class.active]="participant.attendanceStatus === 'PRESENT'"
-                                      [disabled]="attendanceLoadingById[participant.registrationId]"
-                                      (click)="markAttendance(participant.registrationId, 'PRESENT')"
-                                    >
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                      Présent
-                                    </button>
+                  @if (participantsLoading) {
+                      <div class="state-message loading-msg">
+                          <div class="spinner"></div>
+                          <p>Chargement des participants...</p>
+                      </div>
+                  }
 
-                                    <button
-                                      type="button"
-                                      class="attendance-btn absent-btn"
-                                      [class.active]="participant.attendanceStatus === 'ABSENT'"
-                                      [disabled]="attendanceLoadingById[participant.registrationId]"
-                                      (click)="markAttendance(participant.registrationId, 'ABSENT')"
-                                    >
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                      Absent
-                                    </button>
+                  @if (!participantsLoading && participants.length === 0) {
+                      <div class="state-message info-msg">
+                          <p>Aucun participant inscrit pour le moment.</p>
+                      </div>
+                  }
+
+                  @if (!participantsLoading && participants.length > 0) {
+                      <div class="participants-grid">
+                          @for (participant of participants; track participant.registrationId) {
+                              <article class="participant-card" [class.is-present]="participant.attendanceStatus === 'PRESENT'" [class.is-absent]="participant.attendanceStatus === 'ABSENT'">
+                                  <div class="participant-main">
+                                      <div class="participant-avatar">
+                                          {{ participant.firstName.charAt(0) | uppercase }}{{ participant.lastName.charAt(0) | uppercase }}
+                                      </div>
+                                      <div class="participant-info">
+                                          <h3>{{ participant.firstName }} {{ participant.lastName }}</h3>
+                                          <p>
+                                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                              {{ participant.email }}
+                                          </p>
+                                          <p>
+                                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                              {{ participant.departmentName || 'Département non renseigné' }}
+                                          </p>
+                                          <p>
+                                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                              Inscrit le {{ participant.registeredAt | date:'mediumDate' }}
+                                          </p>
+                                      </div>
+                                      <div class="participant-status-badge">
+                                          <span class="attendance-chip"
+                                                [class.present]="participant.attendanceStatus === 'PRESENT'"
+                                                [class.absent]="participant.attendanceStatus === 'ABSENT'"
+                                                [class.pending]="participant.attendanceStatus === 'PENDING'">
+                                              {{ statusLabel(participant.attendanceStatus) }}
+                                          </span>
+                                      </div>
                                   </div>
-                                </div>
-                            </article>
-                        }
-                    </div>
-                }
-            </div>
+
+                                  <div class="attendance-block">
+                                    <div class="attendance-actions">
+                                      <button
+                                        type="button"
+                                        class="attendance-btn present-btn"
+                                        [class.active]="participant.attendanceStatus === 'PRESENT'"
+                                        [disabled]="attendanceLoadingById[participant.registrationId]"
+                                        (click)="markAttendance(participant.registrationId, 'PRESENT')"
+                                      >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Présent
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        class="attendance-btn absent-btn"
+                                        [class.active]="participant.attendanceStatus === 'ABSENT'"
+                                        [disabled]="attendanceLoadingById[participant.registrationId]"
+                                        (click)="markAttendance(participant.registrationId, 'ABSENT')"
+                                      >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                        Absent
+                                      </button>
+                                    </div>
+                                  </div>
+                              </article>
+                          }
+                      </div>
+                  }
+              </div>
+            }
 
         </article>
     }
-@if (event && !loading && showInvitationSection) {
+@if (event && !loading && showInvitationSection && canShowParticipationSections) {
   <section class="invitation-section">
 
     <!-- Section Header -->
