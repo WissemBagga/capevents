@@ -30,7 +30,7 @@ export const routes: Routes = [
   { path: 'verify-email-pending', component: VerifyEmailPending },
   { path: 'verify-email', component: VerifyEmail },
 
-  
+
  {
     path: '',
     component: AppShell,
@@ -38,7 +38,7 @@ export const routes: Routes = [
     children: [
       { path: 'events', component: EventsList },
       { path: 'events/:id', component: EventDetails },
-      
+
       { path: 'admin/events/:id',
         component: AdminEventDetails,
         canActivate: [roleGuard],
@@ -48,7 +48,7 @@ export const routes: Routes = [
         path: 'dashboard/employee',
         component: EmployeeDashboard,
         canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE'] }
+        data: { roles: ['ROLE_EMPLOYEE'], employeeOnly: true }
       },
       {
         path: 'admin/hr',

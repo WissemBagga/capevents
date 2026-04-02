@@ -6,9 +6,10 @@ import { inject } from '@angular/core';
 export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  
+
   const currentUser = authService.getCurrentUserSnapshot();
   const expectedRoles = route.data['roles'] as string[] | undefined;
+  const employeeOnly = route.data['employeeOnly'] === true;
 
   if(!currentUser){
     return router.createUrlTree(['/login']);
@@ -23,6 +24,19 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   if (hasRole){
     return true;
   }
-  
+
   return router.createUrlTree(['/login']);
+
+  if (employeeOnly && (authService.isHr() || authService.isManager())) {
+    if (authService.isHr()) {
+      return router.createUrlTree(['/admin/hr']);
+    }
+
+    if (authService.isManager()) {
+      return router.createUrlTree(['/admin/manager']);
+    }
+  }
+
+  return true;
+
 };
