@@ -6,6 +6,28 @@
     <p>Consultez les événements auxquels vous êtes actuellement inscrit.</p>
   </div>
 
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <button
+      class="filter-btn"
+      [class.active]="selectedFilter === 'ALL'"
+      (click)="selectedFilter = 'ALL'; onFilterChange()">
+      Tous
+    </button>
+    <button
+      class="filter-btn"
+      [class.active]="selectedFilter === 'UPCOMING'"
+      (click)="selectedFilter = 'UPCOMING'; onFilterChange()">
+      À venir
+    </button>
+    <button
+      class="filter-btn"
+      [class.active]="selectedFilter === 'PAST'"
+      (click)="selectedFilter = 'PAST'; onFilterChange()">
+      Passés
+    </button>
+  </div>
+
   <!-- State Messages -->
   @if (loading) {
     <div class="state-msg loading-msg">
@@ -21,24 +43,35 @@
     </div>
   }
 
-  @if (!loading && registrations.length === 0) {
+  @if (!loading && filteredRegistrations.length === 0) {
     <div class="state-msg info-msg">
       <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
-      <span>Vous n'êtes inscrit à aucun événement pour le moment.</span>
+      <span>Aucun événement à afficher pour ce filtre.</span>
     </div>
   }
 
   <!-- Events Grid -->
   <div class="events-grid">
-    @for (registration of registrations; track registration.id) {
-      <article class="event-card">
+    @for (registration of filteredRegistrations; track registration.id) {
+      <article class="event-card" [class.upcoming]="isUpcoming(registration)">
 
         <!-- Card Top: status badge + ref -->
         <div class="card-top">
-          <span class="status-badge" [class.registered]="registration.status === 'REGISTERED'" [class.cancelled]="registration.status === 'CANCELLED'">
+          <span class="status-badge"
+            [class.registered]="registration.status === 'REGISTERED'"
+            [class.cancelled]="registration.status === 'CANCELLED'">
             {{ registration.status === 'REGISTERED' ? 'Inscrit' : 'Annulé' }}
           </span>
-          <span class="event-ref">Réf. #{{ registration.id }}</span>
+
+        </div>
+
+        <!-- Event Date Block (primary focus) -->
+        <div class="event-date-block">
+          <span class="meta-icon date-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </span>
+          <span class="event-date-value">{{ registration.eventStartAt | date:'EEEE d MMMM yyyy' : '' : 'fr' }}</span>
+          <span class="event-time-value">{{ registration.eventStartAt | date:'HH:mm' }}</span>
         </div>
 
         <!-- Event Title -->

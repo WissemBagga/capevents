@@ -9,6 +9,7 @@ public record RegistrationResponse(
         Long id,
         UUID eventId,
         String eventTitle,
+        Instant eventStartAt,
         RegistrationStatus status,
         Instant registeredAt,
         Instant cancelledAt

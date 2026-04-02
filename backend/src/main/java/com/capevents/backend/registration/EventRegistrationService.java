@@ -91,6 +91,8 @@ public class EventRegistrationService {
         return registrationRepository
                 .findByUserIdAndStatusOrderByRegisteredAtDesc(user.getId(), RegistrationStatus.REGISTERED)
                 .stream()
+                .filter(registration -> registration.getEvent() != null)
+                .filter(registration -> registration.getEvent().getStatus() == EventStatus.PUBLISHED)
                 .map(this::toResponse)
                 .toList();
     }
@@ -203,6 +205,7 @@ public class EventRegistrationService {
                 registration.getId(),
                 registration.getEvent().getId(),
                 registration.getEvent().getTitle(),
+                registration.getEvent().getStartAt(),
                 registration.getStatus(),
                 registration.getRegisteredAt(),
                 registration.getCancelledAt()
