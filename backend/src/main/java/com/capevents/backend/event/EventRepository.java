@@ -23,7 +23,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
       where d.id = :deptId
       order by e.createdAt desc
     """)
-    List<Event> findAllByCreatorDepartment(@Param("deptId") Long deptId);
+    Page<Event> findAllByCreatorDepartment(@Param("deptId") Long deptId, Pageable pageable);
 
 
     @Query("""

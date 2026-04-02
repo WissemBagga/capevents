@@ -59,7 +59,7 @@ export class EventService {
   }
 
   getDepartmentAdminEvents(): Observable<EventResponse[]> {
-    return this.http.get<EventResponse[]>(`${this.apiUrl}/admin/department`);
+    return this.http.get<EventResponse[]>(`${this.apiUrl}/admin`);
   }
 
   publishEvent(id: string) {

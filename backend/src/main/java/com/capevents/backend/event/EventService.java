@@ -9,7 +9,6 @@ import com.capevents.backend.event.dto.CreateEventRequest;
 import com.capevents.backend.event.dto.EventResponse;
 import com.capevents.backend.event.dto.UpdateEventRequest;
 import com.capevents.backend.registration.EventRegistrationRepository;
-import com.capevents.backend.registration.EventRegistrationService;
 import com.capevents.backend.registration.RegistrationStatus;
 import com.capevents.backend.user.User;
 import com.capevents.backend.user.UserRepository;
@@ -223,15 +222,6 @@ public class EventService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public List<EventResponse> listAllForHr() {
-        return eventRepository
-                .findAllByOrderByCreatedAtDesc()
-                .stream()
-                .map(this::toResponse)
-                .toList();
-    }
-
 
     @Transactional
     public EventResponse update(UUID id, UpdateEventRequest req, String actorEmail, String ip){
@@ -389,14 +379,14 @@ public class EventService {
 
 
     @Transactional(readOnly = true)
-    public List<EventResponse> listForDepartment(String actorEmail) {
+    public PageResponse<EventResponse> listEvents(Pageable pageable, String actorEmail) {
         var actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         // HR : option 1 → voir tout
         boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
         if (isHr) {
-            return listAllForHr();
+            return listAllForHr(pageable);
         }
 
         // Manager : doit avoir un dept
@@ -411,10 +401,18 @@ public class EventService {
 
         Long deptId = actor.getDepartment().getId();
 
-        return eventRepository.findAllByCreatorDepartment(deptId)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        Page<EventResponse> page = eventRepository.findAllByCreatorDepartment(deptId, pageable).map(this::toResponse);
+
+        return new PageResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
+
     }
 
     @Transactional(readOnly = true)

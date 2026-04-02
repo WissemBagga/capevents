@@ -2,60 +2,113 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
+import { PageResponse } from '../../../core/models/page-response.model';
 
 @Component({
-  selector: 'app-manager-dashboard',
+  selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [DatePipe, RouterLink],
-  templateUrl: './manager-dashboard.html',
-  styleUrl: './manager-dashboard.css'
+  imports: [DatePipe, RouterLink, FormsModule],
+  templateUrl: './admin-dashboard.html',
+  styleUrl: './admin-dashboard.css'
 })
-export class ManagerDashboard {
+export class AdminDashboard {
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
 
   events: EventResponse[] = [];
+  filteredEvents: EventResponse[] = [];
+  selectedStatus= 'ALL';
+
   loading = false;
   actionLoading = false;
   errorMessage = '';
+
+  currentPage = 0;
+  pageSize = 8;
+  totalPages = 0;
+  totalItems = 0;
+  hasNext = false;
+  hasPrevious = false;
 
   ngOnInit(): void {
     this.loadEvents();
   }
 
-  loadEvents(): void {
-
+  loadEvents(page = 0): void {
     this.loading = true;
     this.errorMessage = '';
     this.cdr.markForCheck();
 
-    this.eventService.getDepartmentAdminEvents()
+    this.eventService.getHrAdminEvents(page, this.pageSize)
       .pipe(finalize(() => {
         this.loading = false;
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next: (response: EventResponse[]) => {
-          this.events = response;
+        next: (response: PageResponse<EventResponse>) => {
+          this.events = response.items;
+          this.currentPage = response.currentPage;
+          this.pageSize = response.pageSize;
+          this.totalPages = response.totalPages;
+          this.totalItems = response.totalItems;
+          this.hasNext = response.hasNext;
+          this.hasPrevious = response.hasPrevious;
+          this.onStatusChange();
           this.cdr.markForCheck();
         },
         error: (err) => {
-          this.events = [];
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de charger les événements du département.';
+            'Impossible de charger les événements.';
           this.cdr.markForCheck();
         }
       });
   }
 
+  previousPage(): void {
+    if (this.hasPrevious) {
+      this.loadEvents(this.currentPage - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.hasNext) {
+      this.loadEvents(this.currentPage + 1);
+    }
+  }
+
   goToEdit(eventId: string): void {
     this.router.navigate(['/admin/edit-event', eventId]);
+  }
+
+  private isBeforeStart(event: EventResponse): boolean {
+    return new Date(event.startAt).getTime() > Date.now();
+  }
+
+  private isAfterStart(event: EventResponse): boolean {
+    return new Date(event.startAt).getTime() <= Date.now();
+  }
+
+  canEdit(event: EventResponse): boolean {
+    return event.status === 'DRAFT' || event.status === 'PUBLISHED';
+  }
+
+  canPublish(event: EventResponse): boolean {
+    return event.status === 'DRAFT';
+  }
+
+  canCancel(event: EventResponse): boolean {
+    return (event.status === 'DRAFT' || event.status === 'PUBLISHED') && this.isBeforeStart(event);
+  }
+
+  canArchive(event: EventResponse): boolean {
+    return (event.status === 'DRAFT' || event.status === 'PUBLISHED') && this.isAfterStart(event);
   }
 
   publish(eventId: string): void {
@@ -71,7 +124,7 @@ export class ManagerDashboard {
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next: () => this.loadEvents(),
+        next: () => this.loadEvents(this.currentPage),
         error: (err) => {
           this.errorMessage =
             err?.error?.message ||
@@ -83,9 +136,6 @@ export class ManagerDashboard {
   }
 
   archive(eventId: string): void {
-    if (!window.confirm('Voulez-vous vraiment archiver cet événement ?')) {
-      return;
-    }
     this.actionLoading = true;
     this.cdr.markForCheck();
 
@@ -95,7 +145,7 @@ export class ManagerDashboard {
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next: () => this.loadEvents(),
+        next: () => this.loadEvents(this.currentPage),
         error: (err) => {
           this.errorMessage =
             err?.error?.message ||
@@ -122,7 +172,7 @@ export class ManagerDashboard {
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next: () => this.loadEvents(),
+        next: () => this.loadEvents(this.currentPage),
         error: (err) => {
           this.errorMessage =
             err?.error?.message ||
@@ -133,29 +183,15 @@ export class ManagerDashboard {
       });
   }
 
-  canEdit(event: EventResponse): boolean {
-  return event.status === 'DRAFT' || event.status === 'PUBLISHED';
+
+
+  onStatusChange(): void {
+    const status = this.selectedStatus;
+    this.filteredEvents = this.events.filter(event => event.status === status || status === 'ALL');
+
   }
 
-  canPublish(event: EventResponse): boolean {
-    return event.status === 'DRAFT';
-  }
 
-  private isBeforeStart(event: EventResponse): boolean {
-    return new Date(event.startAt).getTime() > Date.now();
-  }
-
-  private isAfterStart(event: EventResponse): boolean {
-    return new Date(event.startAt).getTime() <= Date.now();
-  }
-
-  canCancel(event: EventResponse): boolean {
-    return (event.status === 'DRAFT' || event.status === 'PUBLISHED') && this.isBeforeStart(event);
-  }
-
-  canArchive(event: EventResponse): boolean {
-    return (event.status === 'DRAFT' || event.status === 'PUBLISHED') && this.isAfterStart(event);
-  }
 
    statusLabel(status: string): string {
     switch (status) {
@@ -173,6 +209,4 @@ export class ManagerDashboard {
         return status;
     }
   }
-
-
 }

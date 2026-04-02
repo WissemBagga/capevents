@@ -4,7 +4,7 @@
 }
 
 /* ===== Page ===== */
-.manager-page {
+.admin-page {
   padding: 28px 36px;
   max-width: 1200px;
   margin: 0 auto;
@@ -281,6 +281,39 @@
   margin: 0 1px;
 }
 
+/* Cancel Reason Box */
+.cancel-reason {
+  background: #fef2f2;
+  border: 1px dashed #fca5a5;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 4px;
+}
+
+.cancel-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  color: #dc2626;
+}
+
+.cancel-header h4 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.cancel-reason p {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  color: #7f1d1d;
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
 /* State Notes */
 .state-note {
   display: flex;
@@ -415,6 +448,62 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* ===== Pagination ===== */
+.pagination-bar {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.page-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  border: 1.5px solid #dce3ed;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f1b2d;
+  padding: 0 16px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: #0a6ebd;
+  background: #f0f7ff;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f1b2d;
+}
+
+.page-total {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  color: #7a8599;
+  margin: 0;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 1100px) {
   .events-grid {
@@ -423,7 +512,7 @@ button:disabled {
 }
 
 @media (max-width: 700px) {
-  .manager-page {
+  .admin-page {
     padding: 20px 16px;
   }
 
@@ -448,5 +537,14 @@ button:disabled {
 
   .meta {
     grid-template-columns: 1fr;
+  }
+
+  .pagination-controls {
+    gap: 8px;
+  }
+
+  .page-btn {
+    padding: 0 12px;
+    font-size: 12px;
   }
 }

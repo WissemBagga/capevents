@@ -12,16 +12,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,7 +38,7 @@ public class EventController {
     public PageResponse<EventResponse> listPublished(
             Authentication auth,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "8") int size,
             @RequestParam(defaultValue = "startAt") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir
     ) {
@@ -74,19 +71,6 @@ public class EventController {
         return eventService.getPublishedForUserDept(id, auth.getName());
     }
 
-    // Liste de tous les events : pour HR
-    @PreAuthorize("hasAuthority('ROLE_HR')")
-    @GetMapping("/admin")
-    public PageResponse<EventResponse> listAllForHr(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
-    ) {
-        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        var pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-        return eventService.listAllForHr(pageable);
-    }
 
     @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
     @PutMapping("/{id}")
@@ -121,7 +105,7 @@ public class EventController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "8") int size,
             @RequestParam(defaultValue = "startAt") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir
     ) {
@@ -138,9 +122,16 @@ public class EventController {
 
 
     @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
-    @GetMapping("/admin/department")
-    public List<EventResponse> listForDepartment(Authentication auth) {
-        return eventService.listForDepartment(auth.getName());
+    @GetMapping("/admin")
+    public PageResponse<EventResponse> listEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            Authentication auth) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        var pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        return eventService.listEvents(pageable, auth.getName());
     }
 
 

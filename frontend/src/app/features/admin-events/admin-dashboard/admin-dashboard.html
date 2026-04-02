@@ -1,11 +1,11 @@
-<div class="manager-page">
+<div class="admin-page">
 
     <!-- Header -->
     <div class="page-header">
         <div class="header-text">
             <p class="breadcrumb">ACCUEIL › TABLEAU DE BORD</p>
-            <h1>Tableau de Bord Gestionnaire</h1>
-            <p class="header-sub">Gérez les événements et formations de votre département en temps réel.</p>
+            <h1>Tableau de bord</h1>
+            <p class="header-sub">Gérez tous les événements de l'entreprise.</p>
         </div>
         <a routerLink="/admin/create-event" class="create-btn">
             + Créer un événement
@@ -13,10 +13,10 @@
     </div>
 
     <!-- State Messages -->
-    @if (loading && events.length === 0) {
+    @if (loading && filteredEvents.length === 0) {
         <div class="state-message loading-msg">
             <div class="spinner"></div>
-            <p>Chargement des événements du département...</p>
+            <p>Chargement des événements...</p>
         </div>
     }
 
@@ -26,15 +26,26 @@
         </div>
     }
 
-    @if (!loading && events.length === 0) {
+    @if (!loading && filteredEvents.length === 0) {
         <div class="state-message empty-msg">
-            <p>Aucun événement trouvé pour votre département.</p>
+            <p>Aucun événement trouvé.</p>
         </div>
     }
 
+    <div class="filter-container" style="margin-bottom: 22px; display: flex; align-items: center; gap: 12px;">
+        <label for="status" style="font-family: 'Ubuntu', sans-serif; font-size: 14px; font-weight: 700; color: #0f1b2d;">Filtrer par statut :</label>
+        <select id="status" [(ngModel)]="selectedStatus" (change)="onStatusChange()" style="padding: 8px 12px; border: 1.5px solid #dce3ed; border-radius: 8px; font-family: Verdana, Geneva, sans-serif; font-size: 13px; color: #0f1b2d; outline: none; cursor: pointer; min-width: 180px;">
+            <option value="ALL">Tous les événements</option>
+            <option value="DRAFT">Brouillon</option>
+            <option value="PUBLISHED">Publié</option>
+            <option value="ARCHIVED">Archivé</option>
+            <option value="CANCELLED">Annulé</option>
+        </select>                   
+    </div>
+
     <!-- Events Grid -->
     <div class="events-grid">
-        @for (event of events; track event.id) {
+        @for (event of filteredEvents; track event.id) {
             <article class="event-card">
                 <!-- Visual Left -->
                 <div class="card-visual">
@@ -83,13 +94,18 @@
                         }
                     </div>
 
-                    <!-- State Notes -->
-                    @if (event.status === 'CANCELLED') {
-                        <div class="state-note cancelled-note">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            <span>Événement annulé — aucune action disponible.</span>
+                    <!-- Cancel Reason -->
+                    @if (event.status === 'CANCELLED' && event.cancelReason) {
+                        <div class="cancel-reason">
+                            <div class="cancel-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                <h4>Motif d'annulation</h4>
+                            </div>
+                            <p>{{ event.cancelReason }}</p>
                         </div>
                     }
+
+                    <!-- Archived Note -->
                     @if (event.status === 'ARCHIVED') {
                         <div class="state-note archived-note">
                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="5" rx="2"/><path d="M4 9v9a2 2 0 002 2h12a2 2 0 002-2V9"/><line x1="10" y1="13" x2="14" y2="13"/></svg>
@@ -109,7 +125,7 @@
                             <button type="button" class="btn-publish" (click)="publish(event.id)" [disabled]="actionLoading">
                                 Publier
                             </button>
-                        }
+                        }   
 
                         @if (canCancel(event)) {
                             <button type="button" class="btn-cancel" (click)="cancel(event.id)" [disabled]="actionLoading">Annuler</button>
@@ -123,4 +139,23 @@
             </article>
         }
     </div>
+
+    <!-- Pagination -->
+    @if (totalItems > 0) {
+        <div class="pagination-bar">
+            <div class="pagination-controls">
+                <button type="button" class="page-btn" (click)="previousPage()" [disabled]="!hasPrevious">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    Précédent
+                </button>
+                <span class="page-info">Page {{ currentPage + 1 }} / {{ totalPages }}</span>
+                <button type="button" class="page-btn" (click)="nextPage()" [disabled]="!hasNext">
+                    Suivant
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </div>
+            <p class="page-total">{{ totalItems }} événements au total</p>
+        </div>
+    }
+
 </div>
