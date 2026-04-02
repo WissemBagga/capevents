@@ -10,7 +10,7 @@ import {EventParticipantResponse, AttendanceStatus} from '../../../core/models/p
 
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { SendInvitationRequest, InvitationTargetType, AdminEventInvitationResponse } from '../../../core/models/invitation.model';
+import { SendInvitationRequest, InvitationTargetType, AdminEventInvitationResponse, InvitationResponseStatus } from '../../../core/models/invitation.model';
 import { UserSummary } from '../../../core/models/user-summary.model';
 import { Department } from '../../../core/models/department.model';
 import { FormsModule } from '@angular/forms';
@@ -56,6 +56,10 @@ export class AdminEventDetails {
   invitations: AdminEventInvitationResponse[] = [];
   invitationsLoading = false;
 
+  individualSearchTerm = '';
+  individualDepartmentFilter: number | null = null;
+
+
   attendanceLoadingById: Record<number, boolean> = {};
 
 
@@ -88,6 +92,36 @@ export class AdminEventDetails {
     return this.users.filter(
       user => user.active && user.departmentId === this.currentUserDepartmentId
     );
+  }
+
+  get filteredSelectableUsers(): UserSummary[] {
+  const search = this.individualSearchTerm.trim().toLowerCase();
+
+  let users = [...this.visibleUsersForInvitation];
+
+  if (this.isHr && this.individualDepartmentFilter !== null) {
+    users = users.filter(user => user.departmentId === this.individualDepartmentFilter);
+  }
+
+  if (!search) {
+    return users;
+  }
+
+  return users.filter(user => {
+    const firstName = user.firstName?.toLowerCase() ?? '';
+    const lastName = user.lastName?.toLowerCase() ?? '';
+    const email = user.email?.toLowerCase() ?? '';
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    return firstName.includes(search)
+      || lastName.includes(search)
+      || fullName.includes(search)
+      || email.includes(search);
+  });
+}
+
+  get canShowDepartmentInSentInvitations(): boolean {
+    return this.isHr;
   }
 
   get selectedCount(): number {

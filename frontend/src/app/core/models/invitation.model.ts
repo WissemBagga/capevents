@@ -19,6 +19,7 @@ export interface AdminEventInvitationResponse {
   departmentName: string | null;
   targetType: InvitationTargetType;
   status: 'PENDING';
+  rsvpResponse: InvitationResponseStatus | null;
   message: string | null;
   sentAt: string;
   invitedByFullName: string;

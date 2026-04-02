@@ -1,5 +1,6 @@
 package com.capevents.backend.invitation.dto;
 
+import com.capevents.backend.invitation.InvitationResponseStatus;
 import com.capevents.backend.invitation.InvitationStatus;
 import com.capevents.backend.invitation.InvitationTargetType;
 
@@ -11,6 +12,7 @@ public record AdminEventInvitationResponse(
         String departmentName,
         InvitationTargetType targetType,
         InvitationStatus status,
+        InvitationResponseStatus rsvpResponse,
         String message,
         Instant sentAt,
         String invitedByFullName

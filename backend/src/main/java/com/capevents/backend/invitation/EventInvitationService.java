@@ -168,6 +168,7 @@ public class EventInvitationService {
                 departmentName,
                 invitation.getTargetType(),
                 invitation.getStatus(),
+                invitation.getRsvpResponse(),
                 invitation.getMessage(),
                 invitation.getSentAt(),
                 buildFullName(
