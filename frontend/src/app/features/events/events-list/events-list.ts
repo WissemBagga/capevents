@@ -157,5 +157,9 @@ export class EventsList {
     if (isNaN(date.getTime())) return null;
 
     return date.toISOString();
-}
+  }
+
+  isFull(event: EventResponse): boolean {
+    return event.remainingCapacity === 0;
+  }
 }

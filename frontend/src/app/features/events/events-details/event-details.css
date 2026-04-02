@@ -67,6 +67,12 @@
   color: #16a34a;
 }
 
+.state-message.full-state {
+  background: rgba(254, 242, 242, 0.6);
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
 .spinner {
   width: 20px;
   height: 20px;
@@ -161,6 +167,22 @@
   font-weight: 700;
   letter-spacing: 0.4px;
   text-transform: uppercase;
+}
+
+.full-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+  border: 1.5px solid rgba(220, 38, 38, 0.2);
+  padding: 4px 14px;
+  border-radius: 8px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
 }
 
 .date-pill {
@@ -435,9 +457,13 @@
 }
 
 .registration-actions button:disabled {
-  opacity: 0.6;
+  opacity: 0.65;
   cursor: not-allowed;
   transform: none;
+  background: #e2e8f0;
+  color: #64748b;
+  border: none;
+  box-shadow: none;
 }
 
 .spinner-small {
@@ -452,6 +478,17 @@
 .btn-danger .spinner-small {
   border: 2px solid #fecaca;
   border-top-color: #dc2626;
+}
+
+
+.capacity-state {
+  margin-top: 6px;
+  font-weight: 700;
+  color: #027a48;
+}
+
+.capacity-state.full {
+  color: #d92d20;
 }
 
 /* ===== Responsive ===== */
@@ -498,11 +535,11 @@
     text-align: center;
     padding: 20px;
   }
-  
+
   .status-registered {
     justify-content: center;
   }
-  
+
   .registration-actions {
     flex-direction: column;
   }

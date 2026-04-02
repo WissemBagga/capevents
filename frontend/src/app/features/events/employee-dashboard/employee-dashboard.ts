@@ -64,4 +64,8 @@ export class EmployeeDashboard {
         }
       });
   }
+
+  isFull(event: EventResponse): boolean {
+    return event.remainingCapacity === 0;
+  }
 }

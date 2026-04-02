@@ -24,7 +24,7 @@ export class EventDetails {
 
 
   event: EventResponse | null = null;
-  loading = false; 
+  loading = false;
   actionLoading = false;
   errorMessage = '';
   successMessage = '';
@@ -155,6 +155,17 @@ export class EventDetails {
   }
 
 
+  get isFull(): boolean {
+    return !!this.event && this.event.remainingCapacity === 0;
+  }
+
+  get canRegisterNow(): boolean {
+    return !!this.event
+      && this.canParticipate
+      && !this.isRegistered
+      && !this.isDeadlinePassed
+      && !this.isFull;
+  }
 
 
    statusLabel(status: string): string {

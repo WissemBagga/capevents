@@ -6,7 +6,9 @@
             <h1>Explorez nos activités</h1>
             <p>Découvrez et inscrivez-vous aux événements organisés par CapEvents.</p>
         </div>
+
     </div>
+
 
     <!-- Filters Bar -->
     <div class="filters-card">
@@ -63,6 +65,9 @@
         @for (event of events; track event.id) {
             <article class="event-card">
                 <div class="event-image">
+                    @if (isFull(event)) {
+                        <span class="full-badge">Complet</span>
+                    }
                     <span class="status-badge">{{ statusLabel(event.status) }}</span>
                 </div>
 
@@ -82,7 +87,13 @@
                         </div>
                         <div class="meta-row">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                            <span>Capacité : {{ event.capacity }}</span>
+                            <span [class.capacity-full]="isFull(event)">
+                                @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
+                                    {{ event.registeredCount }} / {{ event.capacity }} inscrits
+                                } @else {
+                                    Capacité: {{ event.capacity }}
+                                }
+                            </span>
                         </div>
                     </div>
 
