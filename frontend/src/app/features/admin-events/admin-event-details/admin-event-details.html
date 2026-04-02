@@ -507,16 +507,40 @@
                 <span class="selected-count-pill">{{ selectedUserEmails.length }} sélectionné(s)</span>
               }
             </div>
-            @if (visibleUsersForInvitation.length === 0) {
+
+            <div class="individual-filters">
+              <input
+                type="text"
+                [(ngModel)]="individualSearchTerm"
+                placeholder="Rechercher par nom, prénom ou email"
+              />
+
+              @if (isHr) {
+                <select [(ngModel)]="individualDepartmentFilter">
+                  <option [ngValue]="null">Tous les départements</option>
+                  @for (department of departments; track department.id) {
+                    <option [ngValue]="department.id">{{ department.name }}</option>
+                  }
+                </select>
+              }
+
+              <button type="button" class="btn-clear-filter" (click)="clearIndividualFilters()">
+                Réinitialiser
+              </button>
+            </div>
+
+            @if (filteredSelectableUsers.length === 0 && visibleUsersForInvitation.length > 0) {
+              <p class="helper-text">Aucun employé ne correspond à votre recherche.</p>
+            } @else if (visibleUsersForInvitation.length === 0) {
               <p class="helper-text">Aucun utilisateur disponible.</p>
             } @else {
               <div class="user-selection-list">
-                @for (user of visibleUsersForInvitation; track user.id) {
+                @for (user of filteredSelectableUsers; track user.id) {
                   <label class="user-option" [class.checked]="selectedUserEmails.includes(user.email)">
                     <div class="user-avatar-small">{{ user.firstName.charAt(0) | uppercase }}</div>
                     <div class="user-option-text">
                       <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
-                      @if (user.departmentName) {
+                      @if (isHr && user.departmentName) {
                         <small>{{ user.departmentName }}</small>
                       }
                     </div>
@@ -591,6 +615,7 @@
   </section>
 }
 
+
 <section class="sent-invitations-section">
   <!-- Section Header -->
   <div class="inv-section-header">
@@ -655,8 +680,16 @@
             }
           </div>
 
-          <!-- Right: Metadata -->
+          <!-- RSVP + Metadata -->
           <div class="inv-meta-col">
+            <span class="inv-rsvp-badge"
+              [class.rsvp-yes]="invitation.rsvpResponse === 'YES'"
+              [class.rsvp-maybe]="invitation.rsvpResponse === 'MAYBE'"
+              [class.rsvp-no]="invitation.rsvpResponse === 'NO'"
+              [class.rsvp-pending]="!invitation.rsvpResponse"
+            >
+              {{ invitationResponseLabel(invitation.rsvpResponse) }}
+            </span>
             <span class="inv-meta-item">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
               {{ invitation.invitedByFullName }}

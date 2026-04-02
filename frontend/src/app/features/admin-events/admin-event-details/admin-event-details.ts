@@ -95,16 +95,16 @@ export class AdminEventDetails {
   }
 
   get filteredSelectableUsers(): UserSummary[] {
-  const search = this.individualSearchTerm.trim().toLowerCase();
+    const search = this.individualSearchTerm.trim().toLowerCase();
 
-  let users = [...this.visibleUsersForInvitation];
+    let users = [...this.visibleUsersForInvitation];
 
-  if (this.isHr && this.individualDepartmentFilter !== null) {
-    users = users.filter(user => user.departmentId === this.individualDepartmentFilter);
-  }
+    if (this.isHr && this.individualDepartmentFilter !== null) {
+      users = users.filter(user => user.departmentId === this.individualDepartmentFilter);
+    }
 
-  if (!search) {
-    return users;
+    if (!search) {
+      return users;
   }
 
   return users.filter(user => {
@@ -197,6 +197,7 @@ export class AdminEventDetails {
     }
 
     this.loadEvent(id);
+    this.loadInvitations(id);
     this.loadDepartments();
     this.loadUsers();
 
@@ -320,6 +321,8 @@ export class AdminEventDetails {
     this.invitationTargetType = value;
     this.invitationErrorMessage = '';
     this.invitationSuccessMessage = '';
+    this.individualSearchTerm = '';
+    this.individualDepartmentFilter = null;
 
     if (value !== 'DEPARTMENT') {
       this.selectedDepartmentId = this.isManager && !this.isHr
@@ -393,9 +396,11 @@ export class AdminEventDetails {
 
           if (this.invitationTargetType === 'INDIVIDUAL') {
             this.selectedUserEmails = [];
+            this.individualSearchTerm = '';
+            this.individualDepartmentFilter = null;
           }
 
-          this.invitationMessage = '';
+          this.loadInvitations(this.event!.id);
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -455,6 +460,15 @@ export class AdminEventDetails {
   }
 
 
+  clearIndividualFilters(): void {
+    this.individualSearchTerm = '';
+    this.individualDepartmentFilter = null;
+    this.cdr.markForCheck();
+  }
+
+
+
+
   get isCancelled(): boolean {
     return this.event?.status === 'CANCELLED';
   }
@@ -468,156 +482,156 @@ export class AdminEventDetails {
   }
 
   openRescheduleModal(): void {
-  if (!this.event) return;
+    if (!this.event) return;
 
-  this.rescheduleErrorMessage = '';
-  this.rescheduleStartAt = this.toDateTimeLocal(this.event.startAt);
-  this.rescheduleRegistrationDeadline = this.toDateTimeLocal(this.event.registrationDeadline);
-  this.showRescheduleModal = true;
-  this.cdr.markForCheck();
-}
-
-closeRescheduleModal(): void {
-  this.showRescheduleModal = false;
-  this.rescheduleLoading = false;
-  this.rescheduleErrorMessage = '';
-  this.cdr.markForCheck();
-}
-
-private toDateTimeLocal(value: string | null | undefined): string {
-  if (!value) return '';
-
-  const date = new Date(value);
-  const pad = (n: number) => String(n).padStart(2, '0');
-
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-private validateReschedule(): string | null {
-  if (!this.rescheduleStartAt) {
-    return 'La nouvelle date de l’événement est obligatoire.';
-  }
-
-  if (!this.rescheduleRegistrationDeadline) {
-    return 'La nouvelle date limite d’inscription est obligatoire.';
-  }
-
-  const startAt = new Date(this.rescheduleStartAt);
-  const deadline = new Date(this.rescheduleRegistrationDeadline);
-  const now = new Date();
-
-  if (startAt <= now) {
-    return 'La nouvelle date de l’événement doit être dans le futur.';
-  }
-
-  if (deadline <= now) {
-    return 'La nouvelle date limite doit être dans le futur.';
-  }
-
-  if (deadline >= startAt) {
-    return 'La date limite d’inscription doit être avant la date de l’événement.';
-  }
-
-  return null;
-}
-
-private buildReschedulePayload() {
-  if (!this.event) return null;
-
-  return {
-    title: this.event.title,
-    category: this.event.category || '',
-    description: this.event.description || '' ,
-    startAt: new Date(this.rescheduleStartAt).toISOString(),
-    durationMinutes: this.event.durationMinutes,
-    locationType: this.event.locationType,
-    locationName: this.event.locationName || '',
-    address: this.event.address || '',
-    meetingUrl: this.event.meetingUrl || '',
-    capacity: this.event.capacity,
-    registrationDeadline: new Date(this.rescheduleRegistrationDeadline).toISOString(),
-    imageUrl: this.event.imageUrl || '',
-    audience: this.event.audience,
-    targetDepartmentId: this.event.targetDepartmentId
-  };
-}
-
-submitReschedule(): void {
-  if (!this.event) return;
-
-  this.rescheduleErrorMessage = '';
-
-  const validationError = this.validateReschedule();
-  if (validationError) {
-    this.rescheduleErrorMessage = validationError;
+    this.rescheduleErrorMessage = '';
+    this.rescheduleStartAt = this.toDateTimeLocal(this.event.startAt);
+    this.rescheduleRegistrationDeadline = this.toDateTimeLocal(this.event.registrationDeadline);
+    this.showRescheduleModal = true;
     this.cdr.markForCheck();
-    return;
   }
 
-  const payload = this.buildReschedulePayload();
-  if (!payload) return;
+  closeRescheduleModal(): void {
+    this.showRescheduleModal = false;
+    this.rescheduleLoading = false;
+    this.rescheduleErrorMessage = '';
+    this.cdr.markForCheck();
+  }
 
-  this.rescheduleLoading = true;
-  this.cdr.markForCheck();
+  private toDateTimeLocal(value: string | null | undefined): string {
+    if (!value) return '';
 
-  this.eventService.updateEvent(this.event.id, payload).subscribe({
-    next: () => {
-      this.eventService.publishEvent(this.event!.id)
-        .pipe(finalize(() => {
-          this.rescheduleLoading = false;
-          this.cdr.markForCheck();
-        }))
-        .subscribe({
-          next: () => {
-            this.showRescheduleModal = false;
-            this.successMessage = 'Événement reprogrammé et publié avec succès.';
-            this.loadEvent(this.event!.id);
-            this.cdr.markForCheck();
-          },
-          error: (err) => {
-            this.rescheduleErrorMessage =
-              err?.error?.message ||
-              err?.error ||
-              'Impossible de publier l’événement après le reschedule.';
-            this.cdr.markForCheck();
-          }
-        });
-    },
-    error: (err) => {
-      this.rescheduleLoading = false;
-      this.rescheduleErrorMessage =
-        err?.error?.message ||
-        err?.error ||
-        'Impossible de mettre à jour les nouvelles dates.';
-      this.cdr.markForCheck();
+    const date = new Date(value);
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+
+  private validateReschedule(): string | null {
+    if (!this.rescheduleStartAt) {
+      return 'La nouvelle date de l’événement est obligatoire.';
     }
-  });
-}
+
+    if (!this.rescheduleRegistrationDeadline) {
+      return 'La nouvelle date limite d’inscription est obligatoire.';
+    }
+
+    const startAt = new Date(this.rescheduleStartAt);
+    const deadline = new Date(this.rescheduleRegistrationDeadline);
+    const now = new Date();
+
+    if (startAt <= now) {
+      return 'La nouvelle date de l’événement doit être dans le futur.';
+    }
+
+    if (deadline <= now) {
+      return 'La nouvelle date limite doit être dans le futur.';
+    }
+
+    if (deadline >= startAt) {
+      return 'La date limite d’inscription doit être avant la date de l’événement.';
+    }
+
+    return null;
+  }
+
+  private buildReschedulePayload() {
+    if (!this.event) return null;
+
+    return {
+      title: this.event.title,
+      category: this.event.category || '',
+      description: this.event.description || '' ,
+      startAt: new Date(this.rescheduleStartAt).toISOString(),
+      durationMinutes: this.event.durationMinutes,
+      locationType: this.event.locationType,
+      locationName: this.event.locationName || '',
+      address: this.event.address || '',
+      meetingUrl: this.event.meetingUrl || '',
+      capacity: this.event.capacity,
+      registrationDeadline: new Date(this.rescheduleRegistrationDeadline).toISOString(),
+      imageUrl: this.event.imageUrl || '',
+      audience: this.event.audience,
+      targetDepartmentId: this.event.targetDepartmentId
+    };
+  }
+
+  submitReschedule(): void {
+    if (!this.event) return;
+
+    this.rescheduleErrorMessage = '';
+
+    const validationError = this.validateReschedule();
+    if (validationError) {
+      this.rescheduleErrorMessage = validationError;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const payload = this.buildReschedulePayload();
+    if (!payload) return;
+
+    this.rescheduleLoading = true;
+    this.cdr.markForCheck();
+
+    this.eventService.updateEvent(this.event.id, payload).subscribe({
+      next: () => {
+        this.eventService.publishEvent(this.event!.id)
+          .pipe(finalize(() => {
+            this.rescheduleLoading = false;
+            this.cdr.markForCheck();
+          }))
+          .subscribe({
+            next: () => {
+              this.showRescheduleModal = false;
+              this.successMessage = 'Événement reprogrammé et publié avec succès.';
+              this.loadEvent(this.event!.id);
+              this.cdr.markForCheck();
+            },
+            error: (err) => {
+              this.rescheduleErrorMessage =
+                err?.error?.message ||
+                err?.error ||
+                'Impossible de publier l’événement après le reschedule.';
+              this.cdr.markForCheck();
+            }
+          });
+      },
+      error: (err) => {
+        this.rescheduleLoading = false;
+        this.rescheduleErrorMessage =
+          err?.error?.message ||
+          err?.error ||
+          'Impossible de mettre à jour les nouvelles dates.';
+        this.cdr.markForCheck();
+      }
+    });
+  }
 
 
+  invitationResponseLabel(response: InvitationResponseStatus | null): string {
+    switch (response) {
+      case 'YES':   return 'Accepté';
+      case 'MAYBE': return 'Peut-être';
+      case 'NO':    return 'Refusé';
+      default:      return 'En attente';
+    }
+  }
 
   goBack(): void {
     this.location.back();
   }
 
-   statusLabel(status: string): string {
+  statusLabel(status: string): string {
     switch (status) {
-      case 'DRAFT':
-        return 'Brouillon';
-      case 'PUBLISHED':
-        return 'Publié';
-      case 'CANCELLED':
-        return 'Annulé';
-      case 'ARCHIVED':
-        return 'Archivé';
-      case 'PENDING':
-        return 'En attente';
-      case 'PRESENT':
-        return 'Présent';
-      case 'ABSENT':
-        return 'Absent';
-      default:
-        return status;
+      case 'DRAFT':     return 'Brouillon';
+      case 'PUBLISHED': return 'Publié';
+      case 'CANCELLED': return 'Annulé';
+      case 'ARCHIVED':  return 'Archivé';
+      case 'PENDING':   return 'En attente';
+      case 'PRESENT':   return 'Présent';
+      case 'ABSENT':    return 'Absent';
+      default:          return status;
     }
   }
 
