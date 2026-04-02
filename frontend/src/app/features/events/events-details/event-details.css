@@ -163,6 +163,22 @@
   text-transform: uppercase;
 }
 
+.full-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(254, 242, 242, 0.9);
+  color: #dc2626;
+  border: 1px solid rgba(252, 165, 165, 0.8);
+  padding: 4px 14px;
+  border-radius: 8px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+}
+
 .date-pill {
   display: inline-flex;
   align-items: center;
@@ -454,6 +470,17 @@
   border-top-color: #dc2626;
 }
 
+
+.capacity-state {
+  margin-top: 6px;
+  font-weight: 700;
+  color: #027a48;
+}
+
+.capacity-state.full {
+  color: #d92d20;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
   .event-details-page {
@@ -498,11 +525,11 @@
     text-align: center;
     padding: 20px;
   }
-  
+
   .status-registered {
     justify-content: center;
   }
-  
+
   .registration-actions {
     flex-direction: column;
   }

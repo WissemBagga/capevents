@@ -40,6 +40,27 @@
   letter-spacing: 0.4px;
 }
 
+.full-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(254, 242, 242, 0.9);
+  color: #dc2626;
+  border: 1px solid rgba(252, 165, 165, 0.8);
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+}
+
+.capacity-full {
+  color: #d92d20;
+  font-weight: 700;
+}
+
 .dept-badge {
   background: #eff6ff;
   color: #0a6ebd;
@@ -281,6 +302,7 @@
   align-items: flex-start;
   justify-content: flex-start;
   padding: 12px;
+  gap: 8px;
 }
 
 .event-card:nth-child(2n) .event-image {

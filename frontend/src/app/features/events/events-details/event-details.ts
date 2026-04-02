@@ -24,7 +24,7 @@ export class EventDetails {
 
 
   event: EventResponse | null = null;
-  loading = false; 
+  loading = false;
   actionLoading = false;
   errorMessage = '';
   successMessage = '';
@@ -113,6 +113,10 @@ export class EventDetails {
         next: () => {
           this.isRegistered = true;
           this.successMessage = 'Inscription réussie.';
+          if (this.event) {
+            if (this.event.registeredCount !== undefined) this.event.registeredCount++;
+            if (this.event.remainingCapacity !== undefined) this.event.remainingCapacity--;
+          }
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -142,6 +146,10 @@ export class EventDetails {
         next: () => {
           this.isRegistered = false;
           this.successMessage = 'Désinscription effectuée.';
+          if (this.event) {
+            if (this.event.registeredCount !== undefined) this.event.registeredCount--;
+            if (this.event.remainingCapacity !== undefined) this.event.remainingCapacity++;
+          }
           this.cdr.markForCheck();
         },
         error: (err) => {
