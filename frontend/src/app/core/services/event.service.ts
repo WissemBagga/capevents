@@ -7,7 +7,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { CreateEventRequest } from '../models/create-event.model';
 
-import {RegistrationResponse} from '../models/registration.model'
+import {RegistrationResponse, UnregisterRequest} from '../models/registration.model'
 
 import {EventParticipantResponse} from '../models/participant.model'
 
@@ -103,8 +103,8 @@ export class EventService {
     return this.http.post<RegistrationResponse>(`${this.apiUrl}/${id}/register`, {});
   }
 
-  unregisterFromEvent(id: string) {
-    return this.http.post<RegistrationResponse>(`${this.apiUrl}/${id}/unregister`, {});
+  unregisterFromEvent(id: string, payload: UnregisterRequest) {
+    return this.http.post<RegistrationResponse>(`${this.apiUrl}/${id}/unregister`, payload);
   }
 
   getRegistrationStatus(id: string) {

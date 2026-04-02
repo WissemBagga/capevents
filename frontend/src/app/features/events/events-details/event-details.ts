@@ -7,11 +7,13 @@ import { finalize } from 'rxjs';
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { FormsModule } from '@angular/forms';
+import {UnregisterRequest} from '../../../core/models/registration.model'
 
 @Component({
   selector: 'app-event-details',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, FormsModule],
   templateUrl: './event-details.html',
   styleUrl: './event-details.css'
 })
@@ -24,11 +26,26 @@ export class EventDetails {
 
 
   event: EventResponse | null = null;
-  loading = false; 
+  loading = false;
   actionLoading = false;
   errorMessage = '';
   successMessage = '';
   isRegistered = false;
+
+  showUnregisterModal = false;
+  unregisterLoading = false;
+  unregisterErrorMessage = '';
+
+  unregisterReason = '';
+  unregisterComment = '';
+
+  readonly unregisterReasons: string[] = [
+    'Conflit d’horaire',
+    'Changement de priorité',
+    'Je ne peux plus participer',
+    'Erreur d’inscription',
+    'Autre'
+  ];
 
 
   get canParticipate(): boolean {
@@ -125,30 +142,60 @@ export class EventDetails {
       });
   }
 
-  unregister(): void {
+  openUnregisterModal(): void {
+    if (!this.event || !this.isRegistered) return;
+
+    this.unregisterErrorMessage = '';
+    this.unregisterReason = '';
+    this.unregisterComment = '';
+    this.showUnregisterModal = true;
+    this.cdr.markForCheck();
+  }
+
+  closeUnregisterModal(): void {
+    this.showUnregisterModal = false;
+    this.unregisterLoading = false;
+    this.unregisterErrorMessage = '';
+    this.cdr.markForCheck();
+  }
+
+  confirmUnregister(): void {
     if (!this.event) return;
 
-    this.actionLoading = true;
+    if (!this.unregisterReason.trim()) {
+      this.unregisterErrorMessage = 'Veuillez sélectionner une raison de désinscription.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const payload: UnregisterRequest = {
+      reason: this.unregisterReason.trim(),
+      comment: this.unregisterComment.trim() ? this.unregisterComment.trim() : null
+    };
+
+    this.unregisterLoading = true;
+    this.unregisterErrorMessage = '';
     this.errorMessage = '';
     this.successMessage = '';
     this.cdr.markForCheck();
 
-    this.eventService.unregisterFromEvent(this.event.id)
+    this.eventService.unregisterFromEvent(this.event.id, payload)
       .pipe(finalize(() => {
-        this.actionLoading = false;
+        this.unregisterLoading = false;
         this.cdr.markForCheck();
       }))
       .subscribe({
         next: () => {
           this.isRegistered = false;
+          this.showUnregisterModal = false;
           this.successMessage = 'Désinscription effectuée.';
           this.cdr.markForCheck();
         },
         error: (err) => {
-          this.errorMessage =
+          this.unregisterErrorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de vous dés de cet événement.';
+            'Impossible de vous désinscrire de cet événement.';
           this.cdr.markForCheck();
         }
       });

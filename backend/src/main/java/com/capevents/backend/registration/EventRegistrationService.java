@@ -8,6 +8,7 @@ import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
 import com.capevents.backend.registration.dto.EventParticipantResponse;
 import com.capevents.backend.registration.dto.RegistrationResponse;
+import com.capevents.backend.registration.dto.UnregisterRequest;
 import com.capevents.backend.user.User;
 import com.capevents.backend.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -61,12 +62,19 @@ public class EventRegistrationService {
     }
 
     @Transactional
-    public RegistrationResponse unregister(UUID eventId, String userEmail) {
+    public RegistrationResponse unregister(UUID eventId, String userEmail, UnregisterRequest request) {
         Event event = eventRepository.findByIdWithCreatorDept(eventId)
                 .orElseThrow(() -> new NotFoundException("Événement introuvable"));
 
         User user = userRepository.findByEmailWithRolesAndDepartment(userEmail.toLowerCase())
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        if (request == null || request.reason() == null ||  request.reason().isEmpty()) {
+            throw new BadRequestException("La raison de désinscription est obligatoire.");
+        }
+
+
+
 
         EventRegistration registration = registrationRepository
                 .findByEventIdAndUserId(event.getId(), user.getId())
@@ -78,6 +86,12 @@ public class EventRegistrationService {
 
         registration.setStatus(RegistrationStatus.CANCELLED);
         registration.setCancelledAt(Instant.now());
+        registration.setCancelReason(request.reason().trim());
+        registration.setCancelComment(
+                request.comment() != null && !request.comment().trim().isEmpty()
+                    ? request.comment().trim()
+                    : null
+        );
 
         EventRegistration saved = registrationRepository.save(registration);
         return toResponse(saved);
