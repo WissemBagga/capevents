@@ -40,7 +40,7 @@
             <option value="PUBLISHED">Publié</option>
             <option value="ARCHIVED">Archivé</option>
             <option value="CANCELLED">Annulé</option>
-        </select>                   
+        </select>
     </div>
 
     <!-- Events Grid -->
@@ -125,7 +125,7 @@
                             <button type="button" class="btn-publish" (click)="publish(event.id)" [disabled]="actionLoading">
                                 Publier
                             </button>
-                        }   
+                        }
 
                         @if (canCancel(event)) {
                             <button type="button" class="btn-cancel" (click)="cancel(event.id)" [disabled]="actionLoading">Annuler</button>

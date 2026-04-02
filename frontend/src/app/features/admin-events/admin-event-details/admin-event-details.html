@@ -190,19 +190,6 @@
                 </div>
             </div>
 
-            <div class="admin-actions-bar">
-              @if (event?.status === 'CANCELLED') {
-                <button
-                  type="button"
-                  class="btn-reschedule"
-                  (click)="openRescheduleModal()"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M5 10H3"/><path d="M21 10h-2"/><path d="M7.5 4.5L6 3"/><path d="M18 3l-1.5 1.5"/><path d="M18 17l-1.5-1.5"/><path d="M7.5 15.5L6 17"/></svg>
-                  Reprogrammer l'événement
-                </button>
-              }
-            </div>
-
             @if (showRescheduleModal) {
               <div class="modal-overlay">
                 <div class="modal-card">
@@ -279,10 +266,24 @@
 
 
             @if (event?.status === 'CANCELLED') {
-              <div class="state-message info-msg">
-                <p>
-                  Cet événement est annulé. Vous pouvez utiliser l’action Reschedule pour modifier les dates et le republier.
-                </p>
+              <div class="state-message cancel-banner">
+                <div class="cancel-banner-content">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <div>
+                    <h4>Événement annulé</h4>
+                    <p>
+                      Cet événement a été annulé par un administrateur et retiré du catalogue. Les autres sections ont été masquées. Vous pouvez utiliser l'action de reprogrammation pour définir de nouvelles dates et le republier.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn-reschedule btn-reschedule-banner"
+                  (click)="openRescheduleModal()"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M5 10H3"/><path d="M21 10h-2"/><path d="M7.5 4.5L6 3"/><path d="M18 3l-1.5 1.5"/><path d="M18 17l-1.5-1.5"/><path d="M7.5 15.5L6 17"/></svg>
+                  Reprogrammer
+                </button>
               </div>
             }
 
