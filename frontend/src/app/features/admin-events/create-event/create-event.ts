@@ -24,8 +24,8 @@ export class CreateEvent {
 
   departments: Department[] = [];
   loading = false;
-  submitting = false;
-  errorMessage = '';
+  savingDraft = false;
+  publishing = false;  errorMessage = '';
   successMessage = '';
   currentUser = this.authService.getCurrentUserSnapshot();
 
@@ -162,20 +162,96 @@ export class CreateEvent {
     return new Date(value).toISOString();
   }
 
-  onSubmit(): void {
+  private getAdminDashboardRoute(): string {
+    return this.isHr ? '/admin/hr' : '/admin/manager';
+  }
+
+  saveAsDraft(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.submitting = true;
+    this.savingDraft = true;
     this.errorMessage = '';
     this.successMessage = '';
     this.cdr.markForCheck();
 
+    const payload = this.buildPayload();
+
+    this.eventService.createEvent(payload).subscribe({
+      next: () => {
+        this.savingDraft = false;
+        this.successMessage = 'Événement enregistré en brouillon.';
+        this.cdr.markForCheck();
+
+        setTimeout(() => {
+          this.router.navigate([this.getAdminDashboardRoute()]);
+        }, 1000);
+      },
+      error: (err) => {
+        this.savingDraft = false;
+        this.errorMessage =
+          err?.error?.message ||
+          err?.error ||
+          'Impossible d’enregistrer l’événement en brouillon.';
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  createAndPublish(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.publishing = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.cdr.markForCheck();
+
+    const payload = this.buildPayload();
+
+    this.eventService.createEvent(payload).subscribe({
+      next: (createdEvent) => {
+        this.eventService.publishEvent(createdEvent.id)
+          .subscribe({
+            next: () => {
+              this.publishing = false;
+              this.successMessage = 'Événement créé et publié avec succès.';
+              this.cdr.markForCheck();
+
+              setTimeout(() => {
+                this.router.navigate([this.getAdminDashboardRoute()]);
+              }, 1000);
+            },
+            error: (err) => {
+              this.publishing = false;
+              this.errorMessage =
+                err?.error?.message ||
+                err?.error ||
+                'Événement créé, mais impossible de le publier.';
+              this.cdr.markForCheck();
+            }
+          });
+      },
+      error: (err) => {
+        this.publishing = false;
+        this.errorMessage =
+          err?.error?.message ||
+          err?.error ||
+          'Impossible de créer puis publier l’événement.';
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+
+  private buildPayload() {
     const formValue = this.form.getRawValue();
 
-    const payload = {
+    return {
       title: formValue.title ?? '',
       category: formValue.category ?? '',
       description: formValue.description ?? '',
@@ -191,30 +267,6 @@ export class CreateEvent {
       audience: (formValue.audience ?? 'DEPARTMENT') as 'GLOBAL' | 'DEPARTMENT',
       targetDepartmentId: formValue.audience === 'GLOBAL' ? null : formValue.targetDepartmentId
     };
-
-    this.eventService.createEvent(payload).subscribe({
-      next: () => {
-        this.submitting = false;
-        this.successMessage = 'Événement créé avec succès.';
-        this.cdr.markForCheck();
-
-        setTimeout(() => {
-          if (this.isHr) {
-            this.router.navigate(['/admin/hr']);
-          } else {
-            this.router.navigate(['/admin/manager']);
-          }
-        }, 1000);
-      },
-      error: (err) => {
-        this.submitting = false;
-        this.errorMessage =
-          err?.error?.message ||
-          err?.error ||
-          'Impossible de créer l’événement.';
-        this.cdr.markForCheck();
-      }
-    });
   }
 
   onImageSelected(event: Event): void {
