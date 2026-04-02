@@ -41,6 +41,12 @@ public class EventRegistration {
     @Column(name = "attendance_status", nullable = false, length = 20)
     private AttendanceStatus attendanceStatus = AttendanceStatus.PENDING;
 
+    @Column(name = "cancel_reason", length = 120)
+    private String cancelReason;
+
+    @Column(name = "cancel_comment", columnDefinition = "TEXT")
+    private String cancelComment;
+
     @Column(name = "registered_at", nullable = false)
     private Instant registeredAt = Instant.now();
 

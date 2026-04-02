@@ -7,3 +7,9 @@ export interface RegistrationResponse {
   registeredAt: string;
   cancelledAt: string | null;
 }
+
+
+export interface UnregisterRequest {
+  reason: string;
+  comment: string | null;
+}

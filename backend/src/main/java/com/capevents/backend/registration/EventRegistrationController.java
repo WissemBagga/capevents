@@ -2,6 +2,7 @@ package com.capevents.backend.registration;
 
 import com.capevents.backend.registration.dto.EventParticipantResponse;
 import com.capevents.backend.registration.dto.RegistrationResponse;
+import com.capevents.backend.registration.dto.UnregisterRequest;
 import com.capevents.backend.registration.dto.UpdateAttendanceRequest;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,8 +32,8 @@ public class EventRegistrationController {
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
     @PostMapping("/events/{id}/unregister")
-    public RegistrationResponse unregister(@PathVariable UUID id, Authentication auth) {
-        return registrationService.unregister(id, auth.getName());
+    public RegistrationResponse unregister(@PathVariable UUID id, @RequestBody UnregisterRequest request, Authentication auth) {
+        return registrationService.unregister(id, auth.getName(), request);
     }
 
     @SecurityRequirement(name = "bearerAuth")
