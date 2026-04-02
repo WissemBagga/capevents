@@ -32,6 +32,8 @@
         <div class="invitation-grid">
             @for (invitation of invitations; track invitation.eventId + invitation.sentAt) {
                 <article class="inv-card">
+
+                    <!-- Card Header: event title + status badge -->
                     <div class="inv-card-header">
                         <div class="inv-card-title">
                             <h2>{{ invitation.eventTitle }}</h2>
@@ -52,7 +54,10 @@
                         </span>
                     </div>
 
+                    <!-- Card Body -->
                     <div class="inv-card-body">
+
+                        <!-- Meta: type + sent date + inviter -->
                         <div class="inv-meta">
                             <span class="type-badge"
                                 [class.global]="invitation.targetType === 'GLOBAL'"
@@ -65,6 +70,13 @@
                             </span>
                         </div>
 
+                        <!-- Inviter -->
+                        <div class="inviter-row">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span>Invité par <strong>{{ invitation.invitedByFullName }}</strong></span>
+                        </div>
+
+                        <!-- Message -->
                         @if (invitation.message) {
                             <div class="inv-message">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
@@ -72,18 +84,14 @@
                             </div>
                         }
 
+                        <!-- RSVP Section -->
                         <div class="rsvp-section">
                             <div class="rsvp-header">
                                 <span class="rsvp-label">Votre réponse :</span>
-                                <span class="rsvp-status-badge"
-                                      [class.yes]="invitation.rsvpResponse === 'YES'"
-                                      [class.no]="invitation.rsvpResponse === 'NO'"
-                                      [class.maybe]="invitation.rsvpResponse === 'MAYBE'"
-                                      [class.pending]="!invitation.rsvpResponse">
-                                    {{ responseLabel(invitation.rsvpResponse) }}
-                                </span>
+                                @if (!hasResponse(invitation)) {
+                                    <span class="rsvp-status-badge pending">Pas encore répondu</span>
+                                }
                             </div>
-
                             <div class="rsvp-actions">
                                 <button
                                     type="button"
@@ -92,7 +100,7 @@
                                     [disabled]="responseLoadingById[invitation.invitationId]"
                                     (click)="respond(invitation.invitationId, 'YES')"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                     Oui
                                 </button>
 
@@ -103,7 +111,7 @@
                                     [disabled]="responseLoadingById[invitation.invitationId]"
                                     (click)="respond(invitation.invitationId, 'MAYBE')"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                                     Peut-être
                                 </button>
 
@@ -114,15 +122,17 @@
                                     [disabled]="responseLoadingById[invitation.invitationId]"
                                     (click)="respond(invitation.invitationId, 'NO')"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                     Non
                                 </button>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Card Footer -->
                     <div class="inv-card-footer">
                         <a class="btn-primary" [routerLink]="['/events', invitation.eventId]">
-                            Voir l’événement
+                            Voir l'événement
                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                         </a>
                     </div>

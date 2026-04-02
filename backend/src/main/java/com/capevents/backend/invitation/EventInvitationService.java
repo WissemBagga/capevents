@@ -145,7 +145,12 @@ public class EventInvitationService {
                 invitation.getStatus(),
                 invitation.getRsvpResponse(),
                 invitation.getMessage(),
-                invitation.getSentAt()
+                invitation.getSentAt(),
+                buildFullName(
+                invitation.getInvitedBy().getFirstName(),
+                invitation.getInvitedBy().getLastName()
+                )
+
         );
     }
 

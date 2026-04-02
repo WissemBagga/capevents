@@ -16,7 +16,8 @@ public record MyInvitationResponse(
         InvitationStatus status,
         InvitationResponseStatus rsvpResponse,
         String message,
-        Instant sentAt
+        Instant sentAt,
+        String invitedByFullName
 ) {
 
 }

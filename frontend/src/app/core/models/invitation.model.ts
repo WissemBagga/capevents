@@ -36,4 +36,5 @@ export interface MyInvitationResponse {
   rsvpResponse: InvitationResponseStatus | null;
   message: string | null;
   sentAt: string;
+  invitedByFullName: string;
 }

@@ -45,11 +45,11 @@ export class MyInvitations implements OnInit{
         this.cdr.markForCheck();
       },
       error: (err) => {
-        this.errorMessage = 
+        this.errorMessage =
           err?.error.message ||
           err?.error ||
           'Impossible de charger vos invitations.';
-        this.cdr.markForCheck();  
+        this.cdr.markForCheck();
       }
     });
   }
@@ -95,6 +95,12 @@ export class MyInvitations implements OnInit{
     }
   }
 
+  hasResponse(invitation: MyInvitationResponse): boolean {
+    return invitation.rsvpResponse === 'YES'
+      || invitation.rsvpResponse === 'MAYBE'
+      || invitation.rsvpResponse === 'NO';
+  }
+
   statusLabel(status: string): string {
     switch (status) {
       case 'PENDING':
@@ -104,16 +110,4 @@ export class MyInvitations implements OnInit{
     }
   }
 
-  responseLabel(response: string | null): string {
-  switch (response) {
-    case 'YES':
-      return 'Oui';
-    case 'MAYBE':
-      return 'Peut-être';
-    case 'NO':
-      return 'Non';
-    default:
-      return 'Pas encore répondu';
-  }
-}
 }
