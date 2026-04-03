@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -56,19 +57,38 @@ public class EventInvitationService {
         int created = 0;
         int skipped = 0;
 
+        List<InvitationCreatedItemResponse> invitedItems = new ArrayList<>();
+        List<InvitationSkippedItemResponse> skippedItems = new ArrayList<>();
+
         for (User target : targets) {
+            String fullName = buildFullName(target.getFirstName(), target.getLastName());
+            String email = target.getEmail();
+
             if (invitationRepository.existsByEventAndUser(event, target)) {
                 skipped++;
+                skippedItems.add(new InvitationSkippedItemResponse(
+                        fullName,
+                        email,
+                        "Déjà invité"
+                ));
                 continue;
             }
+
 
             boolean alreadyRegistered = registrationRepository.existsByEventAndUserAndStatus(
                     event, target, RegistrationStatus.REGISTERED
             );
+
             if (alreadyRegistered) {
                 skipped++;
+                skippedItems.add(new InvitationSkippedItemResponse(
+                        fullName,
+                        email,
+                        "Déjà inscrit"
+                ));
                 continue;
             }
+
 
             EventInvitation invitation = new EventInvitation();
             invitation.setEvent(event);
@@ -81,12 +101,18 @@ public class EventInvitationService {
 
             invitationRepository.save(invitation);
             created++;
+            invitedItems.add(new InvitationCreatedItemResponse(
+                    fullName,
+                    email
+            ));
         }
 
         return new SendInvitationResponse(
                 created,
                 skipped,
-                created + " invitation(s) created, " + skipped + " skipped"
+                created + " invitation(s) créée(s), " + skipped + "  ignorée(s)",
+                invitedItems,
+                skippedItems
         );
     }
 

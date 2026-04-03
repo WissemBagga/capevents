@@ -10,10 +10,11 @@ import {EventParticipantResponse, AttendanceStatus} from '../../../core/models/p
 
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { SendInvitationRequest, InvitationTargetType, AdminEventInvitationResponse, InvitationResponseStatus } from '../../../core/models/invitation.model';
+import { SendInvitationRequest, InvitationTargetType, AdminEventInvitationResponse, InvitationResponseStatus, InvitationCreatedItemResponse, InvitationSkippedItemResponse, } from '../../../core/models/invitation.model';
 import { UserSummary } from '../../../core/models/user-summary.model';
 import { Department } from '../../../core/models/department.model';
 import { FormsModule } from '@angular/forms';
+
 
 
 @Component({
@@ -70,6 +71,9 @@ export class AdminEventDetails {
   rescheduleStartAt = '';
   rescheduleRegistrationDeadline = '';
   successMessage = '';
+
+  lastInvitedItems: InvitationCreatedItemResponse[] = [];
+  lastSkippedItems: InvitationSkippedItemResponse[] = [];
 
   get isHr(): boolean{
     return this.authService.isHr();
@@ -359,6 +363,9 @@ export class AdminEventDetails {
     this.invitationErrorMessage = '';
     this.invitationSuccessMessage = '';
 
+    this.lastInvitedItems = [];
+    this.lastSkippedItems = [];
+
 
     if (this.invitationTargetType === 'DEPARTMENT' && !this.selectedDepartmentId){
       this.invitationErrorMessage= 'Veuillez sélectionner un département.';
@@ -390,12 +397,17 @@ export class AdminEventDetails {
       .subscribe({
         next: (response) => {
           this.invitationSuccessMessage = response.message;
+          this.lastInvitedItems = response.invitedItems ?? [];
+          this.lastSkippedItems = response.skippedItems ?? [];
 
           if (this.invitationTargetType === 'INDIVIDUAL') {
             this.selectedUserEmails = [];
+            this.individualSearchTerm = '';
+            this.individualDepartmentFilter = null;
           }
 
           this.invitationMessage = '';
+          this.loadInvitations(this.event!.id);
           this.cdr.markForCheck();
         },
         error: (err) => {

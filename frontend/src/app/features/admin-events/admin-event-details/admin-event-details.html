@@ -586,6 +586,53 @@
           </div>
         }
 
+        @if (lastInvitedItems.length > 0 || lastSkippedItems.length > 0) {
+          <div class="invitation-result-panel">
+
+            <div class="invitation-result-summary">
+              <span class="result-badge success-badge">
+                {{ lastInvitedItems.length }} invité{{ lastInvitedItems.length > 1 ? 's' : '' }}
+              </span>
+
+              <span class="result-badge warning-badge">
+                {{ lastSkippedItems.length }} ignoré{{ lastSkippedItems.length > 1 ? 's' : '' }}
+              </span>
+            </div>
+
+            @if (lastInvitedItems.length > 0) {
+              <div class="result-block">
+                <h3>Invités</h3>
+                <div class="result-list">
+                  @for (item of lastInvitedItems; track item.email) {
+                    <div class="result-row">
+                      <span class="result-name">{{ item.fullName }}</span>
+                      <span class="result-email">{{ item.email }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (lastSkippedItems.length > 0) {
+              <div class="result-block">
+                <h3>Ignorés</h3>
+                <div class="result-list">
+                  @for (item of lastSkippedItems; track item.email + item.reason) {
+                    <div class="result-row skipped-row">
+                      <div>
+                        <span class="result-name">{{ item.fullName }}</span>
+                        <span class="result-email">{{ item.email }}</span>
+                      </div>
+                      <span class="skip-reason">{{ item.reason }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+          </div>
+        }
+
       </div>
     }
   </section>

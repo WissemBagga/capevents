@@ -1,16 +1,18 @@
 export type InvitationTargetType = 'GLOBAL' | 'DEPARTMENT' | 'INDIVIDUAL';
 
 export interface SendInvitationRequest {
-targetType: InvitationTargetType;
-departmentId: number | null;
-userEmails: string[];
-message: string | null;
+  targetType: InvitationTargetType;
+  departmentId: number | null;
+  userEmails: string[];
+  message: string | null;
 }
 
 export interface SendInvitationResponse {
-createdCount: number;
-skippedCount: number;
-message: string;
+  createdCount: number;
+  skippedCount: number;
+  message: string;
+  invitedItems: InvitationCreatedItemResponse[];
+  skippedItems: InvitationSkippedItemResponse[];
 }
 
 export interface AdminEventInvitationResponse {
@@ -38,4 +40,15 @@ export interface MyInvitationResponse {
   message: string | null;
   sentAt: string;
   invitedByFullName: string;
+}
+
+export interface InvitationCreatedItemResponse {
+  fullName: string;
+  email: string;
+}
+
+export interface InvitationSkippedItemResponse {
+  fullName: string;
+  email: string;
+  reason: string;
 }
