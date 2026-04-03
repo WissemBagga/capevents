@@ -213,6 +213,14 @@
                 }
             </div>
         }
+
+        @if (canShowInviteHint) {
+            <div class="state-message info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <p>Vous devez être inscrit à l’événement pour inviter des collègues.</p>
+            </div>
+        }
+
         @if (canInviteColleagues) {
             <section class="invitation-section">
                 <!-- Section Header -->
@@ -257,7 +265,7 @@
                         </div>
                       </div>
 
-                      @if (event?.audience === 'DEPARTMENT') {
+                      @if (event.audience === 'DEPARTMENT') {
                         <div class="state-message info">
                             <p>Vous pouvez inviter uniquement les collaborateurs du département cible de cet événement.</p>
                         </div>

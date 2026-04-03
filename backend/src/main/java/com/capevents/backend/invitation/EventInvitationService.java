@@ -108,7 +108,7 @@ public class EventInvitationService {
         return new SendInvitationResponse(
                 created,
                 skipped,
-                created + " invitation(s) created, " + skipped + " skipped",
+                created + " invitation(s) créée(s), " + skipped + " ignorée(s)",
                 invitedItems,
                 skippedItems
         );
@@ -122,6 +122,16 @@ public class EventInvitationService {
 
         User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        boolean actorRegistered = registrationRepository.existsByEventAndUserAndStatus(
+                event,
+                actor,
+                RegistrationStatus.REGISTERED
+        );
+
+        if (!actorRegistered) {
+            throw new BadRequestException("Vous devez être inscrit à cet événement pour inviter des collègues.");
+        }
 
         if (event.getStatus() != EventStatus.PUBLISHED) {
             throw new BadRequestException("Seuls les événements publiés peuvent être partagés.");
@@ -205,7 +215,7 @@ public class EventInvitationService {
         return new SendInvitationResponse(
                 created,
                 skipped,
-                created + " invitation(s) created, " + skipped + " skipped",
+                created + " invitation(s) créée(s), " + skipped + " ignorée(s)",
                 invitedItems,
                 skippedItems
         );

@@ -243,8 +243,21 @@ export class EventDetails {
       });
   }
 
+  get isEventFull(): boolean {
+    return !!this.event && (this.event.registeredCount || 0) >= this.event.capacity;
+  }
+
+  get isEventOpenForInvites(): boolean {
+    if (!this.event) return false;
+    return this.event.status === 'PUBLISHED' && !this.isEventFull;
+  }
+
   get canInviteColleagues(): boolean {
-    return this.authService.hasEmployeeRole() && !!this.event;
+    return this.authService.hasEmployeeRole() && this.isEventOpenForInvites && this.isRegistered;
+  }
+
+  get canShowInviteHint(): boolean {
+    return this.authService.hasEmployeeRole() && this.isEventOpenForInvites && !this.isRegistered;
   }
 
   get invitableUsers(): UserSummary[] {
