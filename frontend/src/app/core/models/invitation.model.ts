@@ -40,6 +40,7 @@ export interface MyInvitationResponse {
   message: string | null;
   sentAt: string;
   invitedByFullName: string;
+  invitationSource: 'ADMIN' | 'COLLEAGUE';
 }
 
 

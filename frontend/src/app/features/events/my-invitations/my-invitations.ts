@@ -95,6 +95,10 @@ export class MyInvitations implements OnInit{
     }
   }
 
+  invitationSourceLabel(source: 'ADMIN' | 'COLLEAGUE'): string {
+    return source === 'ADMIN' ? 'Administration' : 'Collègue';
+  }
+
   hasResponse(invitation: MyInvitationResponse): boolean {
     return invitation.rsvpResponse === 'YES'
       || invitation.rsvpResponse === 'MAYBE'

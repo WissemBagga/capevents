@@ -300,6 +300,7 @@ public class EventInvitationService {
 
     private MyInvitationResponse toMyInvitationResponse(EventInvitation invitation) {
         Event event = invitation.getEvent();
+        User invitedBy = invitation.getInvitedBy();
 
         return new MyInvitationResponse(
                 invitation.getId(),
@@ -314,9 +315,18 @@ public class EventInvitationService {
                 buildFullName(
                 invitation.getInvitedBy().getFirstName(),
                 invitation.getInvitedBy().getLastName()
-                )
-
+                ),
+                resolveInvitationSource(invitedBy)
         );
+    }
+
+    private String resolveInvitationSource(User invitedBy) {
+        boolean isAdmin = invitedBy.getRoles().stream()
+                .anyMatch(role ->
+                        "ROLE_HR".equals(role.getCode()) || "ROLE_MANAGER".equals(role.getCode())
+                );
+
+        return isAdmin ? "ADMIN" : "COLLEAGUE";
     }
 
     private AdminEventInvitationResponse toAdminInvitationResponse(EventInvitation invitation) {

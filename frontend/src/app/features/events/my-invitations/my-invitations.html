@@ -57,23 +57,47 @@
                     <!-- Card Body -->
                     <div class="inv-card-body">
 
-                        <!-- Meta: type + sent date + inviter -->
+                        <!-- Meta: type + source + sent date -->
                         <div class="inv-meta">
                             <span class="type-badge"
                                 [class.global]="invitation.targetType === 'GLOBAL'"
                                 [class.department]="invitation.targetType === 'DEPARTMENT'"
                                 [class.individual]="invitation.targetType === 'INDIVIDUAL'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                                 {{ targetTypeLabel(invitation.targetType) }}
                             </span>
+
+                            <span
+                                class="source-badge"
+                                [class.admin-source]="invitation.invitationSource === 'ADMIN'"
+                                [class.colleague-source]="invitation.invitationSource === 'COLLEAGUE'">
+                                @if (invitation.invitationSource === 'ADMIN') {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                } @else {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                }
+                                {{ invitationSourceLabel(invitation.invitationSource) }}
+                            </span>
+
                             <span class="sent-date">
-                                Reçue le {{ invitation.sentAt | date:'mediumDate' }}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                {{ invitation.sentAt | date:'mediumDate' }}
                             </span>
                         </div>
 
                         <!-- Inviter -->
-                        <div class="inviter-row">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            <span>Invité par <strong>{{ invitation.invitedByFullName }}</strong></span>
+                        <div class="inviter-section">
+                            <div class="inviter-row">
+                                <span class="inviter-label">Invité par</span>
+                                <span class="inviter-name">{{ invitation.invitedByFullName }}</span>
+                            </div>
+                            <div class="origin-explanation">
+                                @if (invitation.invitationSource === 'ADMIN') {
+                                    <span>Invitation envoyée par l’administration</span>
+                                } @else {
+                                    <span>Invitation envoyée par un collègue</span>
+                                }
+                            </div>
                         </div>
 
                         <!-- Message -->
