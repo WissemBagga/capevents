@@ -688,35 +688,70 @@
   border-top-color: #dc2626;
 }
 
-.employee-invite-section {
-  margin-top: 36px;
+/* ===== Invitation Section ===== */
+.invitation-section {
+  margin-top: 32px;
   background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 40, 80, 0.04);
   border: 1px solid #edf1f7;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0, 40, 80, 0.04);
   overflow: hidden;
 }
 
-.employee-invite-section .section-header {
+.inv-panel-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: 18px 24px;
-  background: linear-gradient(to right, #ffffff, #f8fafc);
-  border-bottom: 1px solid #edf1f7;
+  gap: 16px;
+  padding: 22px 26px 18px;
+  border-bottom: 1px solid #f0f3f7;
 }
 
-.employee-invite-section h2 {
+.inv-panel-title {
   font-family: 'Ubuntu', sans-serif;
-  font-size: 19px;
+  font-size: 16.5px;
   font-weight: 800;
   color: #0f1b2d;
+  margin: 0 0 4px;
+  letter-spacing: -0.2px;
+}
+
+.inv-panel-sub {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12.5px;
+  color: #94a3b8;
   margin: 0;
 }
 
-.employee-invite-panel {
-  padding: 24px 30px;
-  background: #fdfdfe;
+.invite-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0a6ebd;
+  padding: 9px 16px;
+  cursor: pointer;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.invite-toggle-btn:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+/* ===== Invitation Panel ===== */
+.invitation-panel {
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 /* ===== Step Structure (Copied from Admin) ===== */
@@ -781,31 +816,49 @@
   margin-left: auto;
 }
 
-.invite-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #0a6ebd 0%, #1db8f2 100%);
-  color: #ffffff;
-  padding: 10px 20px;
+/* ===== Form Group ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.search-group {
+  margin-bottom: 8px;
+}
+
+.form-group label {
   font-family: 'Ubuntu', sans-serif;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-  box-shadow: 0 4px 12px rgba(10, 110, 189, 0.25);
+  color: #0f1b2d;
 }
 
-.invite-toggle-btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-  box-shadow: 0 6px 16px rgba(10, 110, 189, 0.35);
+.form-group select,
+.form-group textarea {
+  border: 1.5px solid #dce3ed;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  color: #0f1b2d;
+  background: #f8fafc;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.invite-toggle-btn:active {
-  transform: translateY(1px);
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #0a6ebd;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(10, 110, 189, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
 }
 
 /* ===== Inputs inside Invite Panel ===== */
@@ -823,7 +876,23 @@
 }
 
 .input-with-icon input {
-  padding-left: 42px !important;
+  width: 100%;
+  padding: 12px 14px 12px 40px !important;
+  border: 1.5px solid #dce3ed;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #0f1b2d;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input-with-icon input:focus {
+  outline: none;
+  border-color: #0a6ebd;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(10, 110, 189, 0.1);
 }
 
 .user-selection-list {

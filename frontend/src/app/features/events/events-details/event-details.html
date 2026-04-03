@@ -214,17 +214,26 @@
             </div>
         }
         @if (canInviteColleagues) {
-            <section class="employee-invite-section">
-                <div class="section-header">
-                <h2>Inviter des collègues</h2>
-
-                <button type="button" class="invite-toggle-btn" (click)="toggleEmployeeInvitePanel()">
-                    {{ showEmployeeInvitePanel ? 'Fermer' : 'Inviter' }}
-                </button>
+            <section class="invitation-section">
+                <!-- Section Header -->
+                <div class="inv-panel-header">
+                  <div>
+                    <h2 class="inv-panel-title">Inviter des collègues</h2>
+                    <p class="inv-panel-sub">Envoyez des invitations à vos collègues pour cet événement</p>
+                  </div>
+                  <button type="button" class="invite-toggle-btn" (click)="toggleEmployeeInvitePanel()">
+                    @if (showEmployeeInvitePanel) {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      Fermer
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                      Inviter
+                    }
+                  </button>
                 </div>
 
                 @if (showEmployeeInvitePanel) {
-                <div class="employee-invite-panel">
+                <div class="invitation-panel">
 
                     <!-- Step 1: Choisissez des employés -->
                     <div class="panel-step">
