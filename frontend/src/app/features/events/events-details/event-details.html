@@ -154,158 +154,327 @@
         </article>
 
         @if (event && canParticipate) {
-        <div class="registration-section">
-            <div class="registration-card">
-                <div class="registration-text">
-                    <h3>Participation à l'événement</h3>
-                    @if (isRegistered) {
-                        <p class="status-registered">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                            Vous êtes inscrit à cet événement
-                        </p>
-                    } @else {
-                        <p class="status-unregistered">Rejoignez vos collègues et participez !</p>
-                    }
+            <div class="registration-section">
+                <div class="registration-card">
+                    <div class="registration-text">
+                        <h3>Participation à l'événement</h3>
+                        @if (isRegistered) {
+                            <p class="status-registered">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                Vous êtes inscrit à cet événement
+                            </p>
+                        } @else {
+                            <p class="status-unregistered">Rejoignez vos collègues et participez !</p>
+                        }
+                    </div>
+
+                    <div class="registration-actions">
+                        @if (!isRegistered) {
+                            <button class="btn-primary" type="button" (click)="register()" [disabled]="actionLoading || isDeadlinePassed">
+                                @if (actionLoading) {
+                                    <span class="spinner-small"></span> Inscription...
+                                } @else {
+                                    S'inscrire
+                                }
+                            </button>
+                        }
+
+                        @if (isRegistered) {
+                            <button class="btn-danger" type="button" (click)="openUnregisterModal()" [disabled]="actionLoading || isDeadlinePassed">                                @if (actionLoading) {
+                                    <span class="spinner-small"></span> Traitement...
+                                } @else {
+                                    Se désinscrire
+                                }
+                            </button>
+                        }
+                    </div>
                 </div>
 
-                <div class="registration-actions">
-                    @if (!isRegistered) {
-                        <button class="btn-primary" type="button" (click)="register()" [disabled]="actionLoading || isDeadlinePassed">
-                            @if (actionLoading) {
-                                <span class="spinner-small"></span> Inscription...
-                            } @else {
-                                S'inscrire
-                            }
-                        </button>
-                    }
+                <!-- Feedback Messages -->
+                @if (isDeadlinePassed) {
+                    <div class="state-message error">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <p>La date limite d'inscription a été dépassée.</p>
+                    </div>
+                }
 
-                    @if (isRegistered) {
-                        <button class="btn-danger" type="button" (click)="openUnregisterModal()" [disabled]="actionLoading || isDeadlinePassed">                                @if (actionLoading) {
-                                <span class="spinner-small"></span> Traitement...
-                            } @else {
-                                Se désinscrire
-                            }
-                        </button>
-                    }
-                </div>
+                @if (successMessage && !isDeadlinePassed) {
+                    <div class="state-message success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <p>{{ successMessage }}</p>
+                    </div>
+                }
+
+                @if (errorMessage && !loading && !isDeadlinePassed) {
+                    <div class="state-message error">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <p>{{ errorMessage }}</p>
+                    </div>
+                }
             </div>
-
-            <!-- Feedback Messages -->
-            @if (isDeadlinePassed) {
-                <div class="state-message error">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    <p>La date limite d'inscription a été dépassée.</p>
-                </div>
-            }
-
-            @if (successMessage && !isDeadlinePassed) {
-                <div class="state-message success">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    <p>{{ successMessage }}</p>
-                </div>
-            }
-
-            @if (errorMessage && !loading && !isDeadlinePassed) {
-                <div class="state-message error">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    <p>{{ errorMessage }}</p>
-                </div>
-            }
-        </div>
         }
+        @if (canInviteColleagues) {
+            <section class="employee-invite-section">
+                <div class="section-header">
+                <h2>Inviter des collègues</h2>
+
+                <button type="button" class="invite-toggle-btn" (click)="toggleEmployeeInvitePanel()">
+                    {{ showEmployeeInvitePanel ? 'Fermer' : 'Inviter' }}
+                </button>
+                </div>
+
+                @if (showEmployeeInvitePanel) {
+                <div class="employee-invite-panel">
+
+                    <!-- Step 1: Choisissez des employés -->
+                    <div class="panel-step">
+                      <div class="step-label">
+                        <span class="step-num">1</span>
+                        <span class="step-title">Choisissez des collègues</span>
+                        @if (selectedEmployeeInviteEmails.length > 0) {
+                          <span class="selected-count-pill">{{ selectedEmployeeInviteEmails.length }} sélectionné(s)</span>
+                        }
+                      </div>
+
+                      <div class="form-group search-group">
+                        <div class="input-with-icon">
+                          <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                          <input
+                              id="employeeInviteSearch"
+                              type="text"
+                              [(ngModel)]="employeeInviteSearchTerm"
+                              placeholder="Entrez un nom, prénom ou email..."
+                          />
+                        </div>
+                      </div>
+
+                      @if (event?.audience === 'DEPARTMENT') {
+                        <div class="state-message info">
+                            <p>Vous pouvez inviter uniquement les collaborateurs du département cible de cet événement.</p>
+                        </div>
+                      }
+
+                      @if (filteredInvitableUsers.length === 0) {
+                        <p class="helper-text">Aucun collaborateur ne correspond à votre recherche.</p>
+                      } @else {
+                        <div class="user-selection-list">
+                            @for (user of filteredInvitableUsers; track user.id) {
+                            <label class="user-option" [class.checked]="selectedEmployeeInviteEmails.includes(user.email)">
+                                <div class="user-avatar-small">{{ user.firstName.charAt(0) | uppercase }}</div>
+                                <div class="user-option-text">
+                                    <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
+                                    @if (user.departmentName) {
+                                        <small>{{ user.departmentName }}</small>
+                                    }
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    class="user-checkbox"
+                                    [checked]="selectedEmployeeInviteEmails.includes(user.email)"
+                                    (change)="onEmployeeInviteSelectionChange(user.email, $any($event.target).checked)"
+                                />
+                            </label>
+                            }
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Step 2: Message personnalisé -->
+                    <div class="panel-step">
+                      <div class="step-label">
+                        <span class="step-num">2</span>
+                        <span class="step-title">Message personnalisé <span class="optional-tag">optionnel</span></span>
+                      </div>
+                      <div class="form-group">
+                        <textarea
+                            id="employeeInviteMessage"
+                            rows="3"
+                            [(ngModel)]="employeeInviteMessage"
+                            placeholder="Ajoutez un message pour accompagner l'invitation..."
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    @if (employeeInviteErrorMessage) {
+                    <div class="inv-feedback error-feedback">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        {{ employeeInviteErrorMessage }}
+                    </div>
+                    }
+
+                    @if (employeeInviteSuccessMessage) {
+                    <div class="inv-feedback success-feedback">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        {{ employeeInviteSuccessMessage }}
+                    </div>
+                    }
+
+                    <!-- Summary + Action -->
+                    <div class="invitation-footer">
+                      <div class="invitation-summary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                        <strong>{{ selectedEmployeeInviteCount }}</strong> collègue(s) ciblé(s)
+                      </div>
+
+                      <button
+                          type="button"
+                          class="btn-send"
+                          (click)="sendEmployeeInvites()"
+                          [disabled]="employeeInviteLoading || selectedEmployeeInviteEmails.length === 0"
+                      >
+                        @if (employeeInviteLoading) {
+                          <span class="spinner-small"></span>
+                          Envoi...
+                        } @else {
+                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                          Envoyer les invitations
+                        }
+                      </button>
+                    </div>
+
+                    @if (employeeInvitedItems.length > 0 || employeeSkippedItems.length > 0) {
+                    <div class="invitation-result-panel">
+                        <div class="invitation-result-summary">
+                        <span class="result-badge success-badge">
+                            {{ employeeInvitedItems.length }} invité{{ employeeInvitedItems.length > 1 ? 's' : '' }}
+                        </span>
+
+                        <span class="result-badge warning-badge">
+                            {{ employeeSkippedItems.length }} ignoré{{ employeeSkippedItems.length > 1 ? 's' : '' }}
+                        </span>
+                        </div>
+
+                        @if (employeeInvitedItems.length > 0) {
+                        <div class="result-block">
+                            <h3>Invités</h3>
+                            <div class="result-list">
+                            @for (item of employeeInvitedItems; track item.email) {
+                                <div class="result-row">
+                                <span class="result-name">{{ item.fullName }}</span>
+                                <span class="result-email">{{ item.email }}</span>
+                                </div>
+                            }
+                            </div>
+                        </div>
+                        }
+
+                        @if (employeeSkippedItems.length > 0) {
+                        <div class="result-block">
+                            <h3>Ignorés</h3>
+                            <div class="result-list">
+                            @for (item of employeeSkippedItems; track item.email + item.reason) {
+                                <div class="result-row skipped-row">
+                                <div>
+                                    <span class="result-name">{{ item.fullName }}</span>
+                                    <span class="result-email">{{ item.email }}</span>
+                                </div>
+                                <span class="skip-reason">{{ item.reason }}</span>
+                                </div>
+                            }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+
+                </div>
+                }
+            </section>
+            }
+
     }
 
     @if (showUnregisterModal) {
-  <div class="modal-overlay" (click)="closeUnregisterModal()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-overlay" (click)="closeUnregisterModal()">
+            <div class="modal-card" (click)="$event.stopPropagation()">
 
-      <!-- Header -->
-      <div class="modal-header">
-        <div class="modal-header-text">
-          <h2>Se désinscrire</h2>
-          <p class="modal-subtitle">Merci d'indiquer la raison de votre désinscription avant de confirmer.</p>
+            <!-- Header -->
+            <div class="modal-header">
+                <div class="modal-header-text">
+                <h2>Se désinscrire</h2>
+                <p class="modal-subtitle">Merci d'indiquer la raison de votre désinscription avant de confirmer.</p>
+                </div>
+                <button type="button" class="modal-close" (click)="closeUnregisterModal()" title="Fermer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <!-- Form Body -->
+            <div class="modal-body">
+
+                <!-- Reason (required) -->
+                <div class="form-group">
+                <label for="unregisterReason">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Raison de la désinscription
+                    <span class="required-star">*</span>
+                </label>
+                <select
+                    id="unregisterReason"
+                    [(ngModel)]="unregisterReason"
+                    [class.input-invalid]="unregisterErrorMessage && !unregisterReason"
+                >
+                    <option value="">-- Sélectionnez une raison --</option>
+                    @for (reason of unregisterReasons; track reason) {
+                    <option [value]="reason">{{ reason }}</option>
+                    }
+                </select>
+                </div>
+
+                <!-- Comment (optional) -->
+                <div class="form-group">
+                <label for="unregisterComment">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                    Commentaire
+                    <span class="optional-label">(optionnel)</span>
+                </label>
+                <textarea
+                    id="unregisterComment"
+                    rows="3"
+                    [(ngModel)]="unregisterComment"
+                    placeholder="Précisez si vous le souhaitez..."
+                ></textarea>
+                </div>
+
+                <!-- Validation error -->
+                @if (unregisterErrorMessage) {
+                <div class="modal-validation-msg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>{{ unregisterErrorMessage }}</span>
+                </div>
+                }
+
+            </div>
+
+            <!-- Actions -->
+            <div class="modal-actions">
+                <button
+                type="button"
+                class="btn-cancel-modal"
+                (click)="closeUnregisterModal()"
+                [disabled]="unregisterLoading"
+                >
+                Annuler
+                </button>
+
+                <button
+                type="button"
+                class="btn-confirm-danger"
+                (click)="confirmUnregister()"
+                [disabled]="unregisterLoading"
+                >
+                @if (unregisterLoading) {
+                    <span class="spinner-small"></span>
+                    Traitement...
+                } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Confirmer la désinscription
+                }
+                </button>
+            </div>
+
+            </div>
         </div>
-        <button type="button" class="modal-close" (click)="closeUnregisterModal()" title="Fermer">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-
-      <!-- Form Body -->
-      <div class="modal-body">
-
-        <!-- Reason (required) -->
-        <div class="form-group">
-          <label for="unregisterReason">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Raison de la désinscription
-            <span class="required-star">*</span>
-          </label>
-          <select
-            id="unregisterReason"
-            [(ngModel)]="unregisterReason"
-            [class.input-invalid]="unregisterErrorMessage && !unregisterReason"
-          >
-            <option value="">-- Sélectionnez une raison --</option>
-            @for (reason of unregisterReasons; track reason) {
-              <option [value]="reason">{{ reason }}</option>
-            }
-          </select>
-        </div>
-
-        <!-- Comment (optional) -->
-        <div class="form-group">
-          <label for="unregisterComment">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-            Commentaire
-            <span class="optional-label">(optionnel)</span>
-          </label>
-          <textarea
-            id="unregisterComment"
-            rows="3"
-            [(ngModel)]="unregisterComment"
-            placeholder="Précisez si vous le souhaitez..."
-          ></textarea>
-        </div>
-
-        <!-- Validation error -->
-        @if (unregisterErrorMessage) {
-          <div class="modal-validation-msg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span>{{ unregisterErrorMessage }}</span>
-          </div>
-        }
-
-      </div>
-
-      <!-- Actions -->
-      <div class="modal-actions">
-        <button
-          type="button"
-          class="btn-cancel-modal"
-          (click)="closeUnregisterModal()"
-          [disabled]="unregisterLoading"
-        >
-          Annuler
-        </button>
-
-        <button
-          type="button"
-          class="btn-confirm-danger"
-          (click)="confirmUnregister()"
-          [disabled]="unregisterLoading"
-        >
-          @if (unregisterLoading) {
-            <span class="spinner-small"></span>
-            Traitement...
-          } @else {
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            Confirmer la désinscription
-          }
-        </button>
-      </div>
-
-    </div>
-  </div>
-}
+    }
 
 </div>

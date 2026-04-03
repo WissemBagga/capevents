@@ -8,9 +8,11 @@ message: string | null;
 }
 
 export interface SendInvitationResponse {
-createdCount: number;
-skippedCount: number;
-message: string;
+  createdCount: number;
+  skippedCount: number;
+  message: string;
+  invitedItems: InvitationCreatedItemResponse[];
+  skippedItems: InvitationSkippedItemResponse[];
 }
 
 export interface AdminEventInvitationResponse {
@@ -38,4 +40,21 @@ export interface MyInvitationResponse {
   message: string | null;
   sentAt: string;
   invitedByFullName: string;
+}
+
+
+export interface InvitationCreatedItemResponse {
+  fullName: string;
+  email: string;
+}
+
+export interface InvitationSkippedItemResponse {
+  fullName: string;
+  email: string;
+  reason: string;
+}
+
+export interface EmployeeInviteRequest {
+  userEmails: string[];
+  message: string | null;
 }

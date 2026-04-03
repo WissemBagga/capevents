@@ -10,7 +10,7 @@ import {EventParticipantResponse, AttendanceStatus} from '../../../core/models/p
 
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { SendInvitationRequest, InvitationTargetType, AdminEventInvitationResponse, InvitationResponseStatus } from '../../../core/models/invitation.model';
+import { SendInvitationRequest, InvitationTargetType, AdminEventInvitationResponse, InvitationCreatedItemResponse, InvitationSkippedItemResponse,  InvitationResponseStatus } from '../../../core/models/invitation.model';
 import { UserSummary } from '../../../core/models/user-summary.model';
 import { Department } from '../../../core/models/department.model';
 import { FormsModule } from '@angular/forms';
@@ -55,6 +55,9 @@ export class AdminEventDetails {
 
   invitations: AdminEventInvitationResponse[] = [];
   invitationsLoading = false;
+
+  lastInvitedItems: InvitationCreatedItemResponse[] = [];
+  lastSkippedItems: InvitationSkippedItemResponse[] = [];
 
   individualSearchTerm = '';
   individualDepartmentFilter: number | null = null;
@@ -358,6 +361,8 @@ export class AdminEventDetails {
 
     this.invitationErrorMessage = '';
     this.invitationSuccessMessage = '';
+    this.lastInvitedItems = [];
+    this.lastSkippedItems = [];
 
 
     if (this.invitationTargetType === 'DEPARTMENT' && !this.selectedDepartmentId){
@@ -390,7 +395,9 @@ export class AdminEventDetails {
       .subscribe({
         next: (response) => {
           this.invitationSuccessMessage = response.message;
-
+          this.lastInvitedItems = response.invitedItems ?? [];
+          this.lastSkippedItems = response.skippedItems ?? [];
+        
           if (this.invitationTargetType === 'INDIVIDUAL') {
             this.selectedUserEmails = [];
           }

@@ -1,9 +1,6 @@
 package com.capevents.backend.invitation;
 
-import com.capevents.backend.invitation.dto.AdminEventInvitationResponse;
-import com.capevents.backend.invitation.dto.MyInvitationResponse;
-import com.capevents.backend.invitation.dto.SendInvitationRequest;
-import com.capevents.backend.invitation.dto.SendInvitationResponse;
+import com.capevents.backend.invitation.dto.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -43,5 +40,25 @@ public class EventInvitationController {
         return invitationService.getEventInvitations(id, auth.getName());
     }
 
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
+    @PostMapping("/{id}/employee-invite")
+    public SendInvitationResponse sendEmployeeInvitations(
+            @PathVariable UUID id,
+            @RequestBody EmployeeInviteRequest req,
+            Authentication auth
+    ) {
+        return invitationService.sendEmployeeInvitations(id, req, auth.getName());
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
+    @GetMapping("/{id}/employee-invitable-users")
+    public List<EmployeeInvitableUserResponse> getEmployeeInvitableUsers(
+            @PathVariable UUID id,
+            Authentication auth
+    ) {
+        return invitationService.getEmployeeInvitableUsers(id, auth.getName());
+    }
 
 }

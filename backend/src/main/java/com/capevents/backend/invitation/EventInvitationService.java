@@ -3,6 +3,7 @@ package com.capevents.backend.invitation;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.event.Event;
+import com.capevents.backend.event.EventAudience;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
 import com.capevents.backend.invitation.dto.*;
@@ -56,9 +57,20 @@ public class EventInvitationService {
         int created = 0;
         int skipped = 0;
 
+        List<InvitationCreatedItemResponse> invitedItems = new java.util.ArrayList<>();
+        List<InvitationSkippedItemResponse> skippedItems = new java.util.ArrayList<>();
+
         for (User target : targets) {
+            String fullName = buildFullName(target.getFirstName(), target.getLastName());
+            String email = target.getEmail();
+
             if (invitationRepository.existsByEventAndUser(event, target)) {
                 skipped++;
+                skippedItems.add(new InvitationSkippedItemResponse(
+                        fullName,
+                        email,
+                        "Déjà invité"
+                ));
                 continue;
             }
 
@@ -67,6 +79,11 @@ public class EventInvitationService {
             );
             if (alreadyRegistered) {
                 skipped++;
+                skippedItems.add(new InvitationSkippedItemResponse(
+                        fullName,
+                        email,
+                        "Déjà inscrit"
+                ));
                 continue;
             }
 
@@ -81,12 +98,116 @@ public class EventInvitationService {
 
             invitationRepository.save(invitation);
             created++;
+
+            invitedItems.add(new InvitationCreatedItemResponse(
+                    fullName,
+                    email
+            ));
         }
 
         return new SendInvitationResponse(
                 created,
                 skipped,
-                created + " invitation(s) created, " + skipped + " skipped"
+                created + " invitation(s) created, " + skipped + " skipped",
+                invitedItems,
+                skippedItems
+        );
+    }
+
+
+    @Transactional
+    public SendInvitationResponse sendEmployeeInvitations(UUID eventId, EmployeeInviteRequest req, String actorEmail) {
+        Event event = eventRepository.findByIdWithCreatorDept(eventId)
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        if (event.getStatus() != EventStatus.PUBLISHED) {
+            throw new BadRequestException("Seuls les événements publiés peuvent être partagés.");
+        }
+
+        if (req == null || req.userEmails() == null || req.userEmails().isEmpty()) {
+            throw new BadRequestException("Au moins un collaborateur doit être sélectionné.");
+        }
+
+        if (!canUserSeeEvent(actor, event)) {
+            throw new NotFoundException("Événement introuvable");
+        }
+
+        List<User> targets = resolveEmployeeIndividualTargets(req.userEmails(), event);
+
+        int created = 0;
+        int skipped = 0;
+
+        List<InvitationCreatedItemResponse> invitedItems = new java.util.ArrayList<>();
+        List<InvitationSkippedItemResponse> skippedItems = new java.util.ArrayList<>();
+
+        for (User target : targets) {
+            String fullName = buildFullName(target.getFirstName(), target.getLastName());
+            String email = target.getEmail();
+
+            if (actor.getId().equals(target.getId())) {
+                skipped++;
+                skippedItems.add(new InvitationSkippedItemResponse(
+                        fullName,
+                        email,
+                        "Impossible de vous inviter vous-même"
+                ));
+                continue;
+            }
+
+            if (invitationRepository.existsByEventAndUser(event, target)) {
+                skipped++;
+                skippedItems.add(new InvitationSkippedItemResponse(
+                        fullName,
+                        email,
+                        "Déjà invité"
+                ));
+                continue;
+            }
+
+            boolean alreadyRegistered = registrationRepository.existsByEventAndUserAndStatus(
+                    event, target, RegistrationStatus.REGISTERED
+            );
+            if (alreadyRegistered) {
+                skipped++;
+                skippedItems.add(new InvitationSkippedItemResponse(
+                        fullName,
+                        email,
+                        "Déjà inscrit"
+                ));
+                continue;
+            }
+
+            EventInvitation invitation = new EventInvitation();
+            invitation.setEvent(event);
+            invitation.setUser(target);
+            invitation.setInvitedBy(actor);
+            invitation.setTargetType(InvitationTargetType.INDIVIDUAL);
+            invitation.setStatus(InvitationStatus.PENDING);
+            invitation.setMessage(
+                    req.message() != null && !req.message().trim().isEmpty()
+                            ? req.message().trim()
+                            : null
+            );
+            invitation.setSentAt(Instant.now());
+
+            invitationRepository.save(invitation);
+            created++;
+
+            invitedItems.add(new InvitationCreatedItemResponse(
+                    fullName,
+                    email
+            ));
+        }
+
+        return new SendInvitationResponse(
+                created,
+                skipped,
+                created + " invitation(s) created, " + skipped + " skipped",
+                invitedItems,
+                skippedItems
         );
     }
 
@@ -132,6 +253,50 @@ public class EventInvitationService {
         invitation.setRsvpResponse(request.response());
         invitationRepository.save(invitation);
     }
+
+    @Transactional(readOnly = true)
+    public List<EmployeeInvitableUserResponse> getEmployeeInvitableUsers(UUID eventId, String actorEmail) {
+        Event event = eventRepository.findByIdWithCreatorDept(eventId)
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        if (event.getStatus() != EventStatus.PUBLISHED) {
+            throw new BadRequestException("Seuls les événements publiés peuvent être partagés.");
+        }
+
+        if (!canUserSeeEvent(actor, event)) {
+            throw new NotFoundException("Événement introuvable");
+        }
+
+        List<User> users = userRepository.findAll().stream()
+                .filter(User::isActive)
+                .filter(user -> user.getEmail() != null)
+                .filter(user -> !user.getId().equals(actor.getId()))
+                .toList();
+
+        if (event.getAudience() == EventAudience.DEPARTMENT) {
+            Long targetDeptId = event.getTargetDepartment() != null ? event.getTargetDepartment().getId() : null;
+
+            users = users.stream()
+                    .filter(user -> user.getDepartment() != null)
+                    .filter(user -> targetDeptId != null && targetDeptId.equals(user.getDepartment().getId()))
+                    .toList();
+        }
+
+        return users.stream()
+                .map(user -> new EmployeeInvitableUserResponse(
+                        user.getId(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getEmail(),
+                        user.getDepartment() != null ? user.getDepartment().getId() : null,
+                        user.getDepartment() != null ? user.getDepartment().getName() : null
+                ))
+                .toList();
+    }
+
 
     private MyInvitationResponse toMyInvitationResponse(EventInvitation invitation) {
         Event event = invitation.getEvent();
@@ -317,5 +482,56 @@ public class EventInvitationService {
         if (actorDeptId == null || eventDeptId == null || !actorDeptId.equals(eventDeptId)) {
             throw new NotFoundException("Événement introuvable");
         }
+    }
+
+
+    private List<User> resolveEmployeeIndividualTargets(List<String> userEmails, Event event) {
+        Set<String> emails = userEmails.stream()
+                .filter(java.util.Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .map(String::toLowerCase)
+                .collect(java.util.stream.Collectors.toSet());
+
+        List<User> users = userRepository.findAll().stream()
+                .filter(User::isActive)
+                .filter(user -> user.getEmail() != null)
+                .filter(user -> emails.contains(user.getEmail().trim().toLowerCase()))
+                .toList();
+
+        if (event.getAudience() == EventAudience.GLOBAL) {
+            return users;
+        }
+
+        if (event.getAudience() == EventAudience.DEPARTMENT) {
+            Long targetDeptId = event.getTargetDepartment() != null ? event.getTargetDepartment().getId() : null;
+
+            return users.stream()
+                    .filter(user -> user.getDepartment() != null)
+                    .filter(user -> targetDeptId != null && targetDeptId.equals(user.getDepartment().getId()))
+                    .toList();
+        }
+
+        return List.of();
+    }
+
+    private boolean canUserSeeEvent(User user, Event event) {
+        if (event.getStatus() != EventStatus.PUBLISHED) {
+            return false;
+        }
+
+        if (event.getAudience() == EventAudience.GLOBAL) {
+            return true;
+        }
+
+        if (event.getAudience() == EventAudience.DEPARTMENT) {
+            if (user.getDepartment() == null || event.getTargetDepartment() == null) {
+                return false;
+            }
+
+            return user.getDepartment().getId().equals(event.getTargetDepartment().getId());
+        }
+
+        return false;
     }
 }

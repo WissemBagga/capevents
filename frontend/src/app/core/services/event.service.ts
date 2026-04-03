@@ -12,8 +12,10 @@ import {RegistrationResponse, UnregisterRequest} from '../models/registration.mo
 import {EventParticipantResponse} from '../models/participant.model'
 
 
-import { SendInvitationRequest, SendInvitationResponse, AdminEventInvitationResponse, MyInvitationResponse, InvitationResponseStatus } from '../models/invitation.model'
+import { SendInvitationRequest, SendInvitationResponse, AdminEventInvitationResponse, MyInvitationResponse, InvitationResponseStatus, EmployeeInviteRequest } from '../models/invitation.model'
 
+
+import {UserSummary} from '../models/user-summary.model'
 
 @Injectable({
   providedIn: 'root'
@@ -121,6 +123,14 @@ export class EventService {
 
   sendInvitations(eventId: string, payload: SendInvitationRequest){
     return this.http.post<SendInvitationResponse>(`${this.apiUrl}/${eventId}/invite`, payload);
+  }
+
+  sendEmployeeInvitations(eventId: string, payload: EmployeeInviteRequest) {
+    return this.http.post<SendInvitationResponse>(`${this.apiUrl}/${eventId}/employee-invite`, payload);
+  }
+
+  getEmployeeInvitableUsers(eventId: string) {
+    return this.http.get<UserSummary[]>(`${this.apiUrl}/${eventId}/employee-invitable-users`);
   }
 
 

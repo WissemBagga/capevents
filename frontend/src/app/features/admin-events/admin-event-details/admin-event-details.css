@@ -1296,7 +1296,6 @@
   justify-content: center;
   padding: 24px;
   z-index: 1000;
-  backdrop-filter: blur(4px);
 }
 
 .modal-card {
@@ -1500,6 +1499,90 @@
 .btn-reschedule-banner {
   align-self: flex-start;
   background: #ffffff;
+}
+
+.invitation-result-panel {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #e5edf5;
+  border-radius: 18px;
+  background: #f8fbff;
+}
+
+.invitation-result-summary {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.result-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.success-badge {
+  background: #e8f7ee;
+  color: #027a48;
+}
+
+.warning-badge {
+  background: #fff4e5;
+  color: #b54708;
+}
+
+.result-block {
+  margin-top: 14px;
+}
+
+.result-block h3 {
+  margin: 0 0 10px;
+  color: #121a38;
+  font-size: 16px;
+}
+
+.result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e5edf5;
+}
+
+.skipped-row {
+  background: #fffaf5;
+}
+
+.result-name {
+  display: block;
+  font-weight: 700;
+  color: #121a38;
+}
+
+.result-email {
+  display: block;
+  color: #667085;
+  font-size: 13px;
+}
+
+.skip-reason {
+  white-space: nowrap;
+  font-weight: 700;
+  color: #b54708;
+  font-size: 13px;
 }
 
 /* ===== Responsive ===== */
