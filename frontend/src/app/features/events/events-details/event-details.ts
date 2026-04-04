@@ -109,7 +109,12 @@ export class EventDetails {
           if (this.authService.isLoggedIn() && this.canParticipate) {
             this.loadMySentInvitations();
             this.loadRegistrationStatus(event.id);
-            this.loadInvitableUsers();
+            if (!this.isDeadlinePassed) {
+              this.loadInvitableUsers();
+            } else {
+              this.users = [];
+              this.showEmployeeInvitePanel = false;
+            }
           }
         },
         error: (err) => {
@@ -274,6 +279,23 @@ export class EventDetails {
   get canInviteColleagues(): boolean {
     return this.authService.hasEmployeeRole() && !!this.event;
   }
+
+  get showInviteSection(): boolean {
+    return this.authService.hasEmployeeRole() && !!this.event;
+  }
+
+  get invitationBlockingMessage(): string {
+    if (!this.event) {
+      return '';
+    }
+
+    if (this.isDeadlinePassed) {
+      return 'Les invitations aux collègues sont fermées : la date limite d’inscription est dépassée.';
+    }
+
+    return '';
+  }
+
 
   get invitableUsers(): UserSummary[] {
     return this.users ?? [];
