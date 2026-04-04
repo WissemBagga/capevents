@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, UpperCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
@@ -11,7 +11,7 @@ import { PageResponse } from '../../../core/models/page-response.model';
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, UpperCasePipe],
   templateUrl: './employee-dashboard.html',
   styleUrl: './employee-dashboard.css'
 })

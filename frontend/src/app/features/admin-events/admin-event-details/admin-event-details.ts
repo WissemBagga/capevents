@@ -19,7 +19,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-admin-event-details',
   standalone: true,
-  imports: [RouterLink, DatePipe, UpperCasePipe, FormsModule],
+  imports: [DatePipe, UpperCasePipe, FormsModule],
   templateUrl: './admin-event-details.html',
   styleUrl: './admin-event-details.css'
 })

@@ -1,15 +1,21 @@
 <div class="employee-dashboard-page">
 
   <!-- Greeting Bar -->
-  <section class="greeting-bar">
+  <header class="greeting-bar">
     <div class="greeting-left">
-      <h1>Bonjour, {{ firstName }} 👋</h1>
+      <h1>Bonjour, {{ firstName }} <span class="wave">👋</span></h1>
       <div class="stat-badges">
-        <span class="badge dept-badge">DÉPARTEMENT: {{ departmentName }}</span>
-        <span class="badge count-badge">ÉVÉNEMENTS DISPONIBLES: {{ totalItems }}</span>
+        <span class="badge dept-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          {{ departmentName }}
+        </span>
+        <span class="badge count-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          {{ totalItems }} événements
+        </span>
       </div>
     </div>
-  </section>
+  </header>
 
   <!-- Hero Card -->
   <section class="hero-card">
@@ -40,11 +46,14 @@
     </div>
   </a>
 
-  <!-- Events Section -->
+  <!-- Upcoming Events Section -->
   <section class="upcoming-section">
     <div class="section-header">
       <h2>Prochains événements</h2>
-      <a routerLink="/events">Voir tout</a>
+      <a routerLink="/events" class="view-all-link">
+        Voir tout
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
     </div>
 
     @if (loading) {
@@ -63,29 +72,41 @@
       @for (event of events; track event.id) {
         <article class="event-card">
           <div class="event-image">
+            <div class="image-overlay"></div>
             @if (isFull(event)) {
               <span class="full-badge">Complet</span>
             }
-            <span class="event-date-badge">{{ event.startAt | date:'mediumDate' }}</span>
+            <span class="event-date-badge">
+              <span class="day">{{ event.startAt | date:'dd' }}</span>
+              <span class="month">{{ event.startAt | date:'MMM' | uppercase }}</span>
+            </span>
           </div>
 
           <div class="event-body">
-            <h3>{{ event.title }}</h3>
+            <h3 title="{{ event.title }}">{{ event.title }}</h3>
 
-            <div class="meta">
-              <div class="meta-row">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
+            <div class="meta-list">
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <span class="meta-value">{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
               </div>
-              <div class="meta-row">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span>{{ event.startAt | date:'shortTime' }}</span>
+              
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <span class="meta-value">{{ event.startAt | date:'shortTime' }}</span>
               </div>
-              <div class="meta-row">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                <span [class.capacity-full]="isFull(event)">
+
+              <div class="meta-item" [class.is-full]="isFull(event)">
+                <div class="meta-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                </div>
+                <span class="meta-value">
                   @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
-                    {{ event.registeredCount }} / {{ event.capacity }} inscrits
+                    <strong>{{ event.registeredCount }}</strong> / {{ event.capacity }} inscrits
                   } @else {
                     Capacité: {{ event.capacity }}
                   }
@@ -93,8 +114,11 @@
               </div>
             </div>
 
-            <div class="actions">
-              <a [routerLink]="['/events', event.id]" class="details-link">Voir détails</a>
+            <div class="card-footer">
+              <a [routerLink]="['/events', event.id]" class="btn-details">
+                Voir détails
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
             </div>
           </div>
         </article>
