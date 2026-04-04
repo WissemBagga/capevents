@@ -380,7 +380,7 @@
 .status-badge {
   display: inline-flex;
   align-items: center;
-  background: rgba(22, 163, 74, 0.85);
+  background: rgba(100, 116, 139, 0.9);
   padding: 4px 14px;
   border-radius: 8px;
   font-family: Verdana, Geneva, sans-serif;
@@ -389,6 +389,11 @@
   letter-spacing: 0.4px;
   text-transform: uppercase;
 }
+
+.status-badge.published { background: rgba(22, 163, 74, 0.9); }
+.status-badge.cancelled { background: rgba(220, 38, 38, 0.9); }
+.status-badge.archived { background: rgba(71, 85, 105, 0.9); }
+.status-badge.draft { background: rgba(202, 138, 4, 0.9); }
 
 .date-pill {
   display: inline-flex;
@@ -453,8 +458,9 @@
 }
 
 .detail-box:hover {
-  border-color: #bfdbfe;
-  box-shadow: 0 2px 8px rgba(10, 110, 189, 0.06);
+  border-color: #0a6ebd;
+  box-shadow: 0 4px 12px rgba(10, 110, 189, 0.08);
+  transform: translateY(-1px);
 }
 
 .detail-icon {
@@ -1208,9 +1214,8 @@
 }
 
 .inv-history-card:hover {
-  transform: translateY(-2px);
-  border-color: #dbeafe;
-  box-shadow: 0 6px 20px rgba(10, 110, 189, 0.06);
+  border-color: #0a6ebd;
+  box-shadow: 0 8px 24px rgba(10, 110, 189, 0.08);
 }
 
 .inv-card-header {

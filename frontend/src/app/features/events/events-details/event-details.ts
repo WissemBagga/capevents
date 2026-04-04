@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { DatePipe, Location, UpperCasePipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
@@ -67,8 +67,6 @@ export class EventDetails {
     'Erreur d’inscription',
     'Autre'
   ];
-
-
   get canParticipate(): boolean {
     return this.authService.hasEmployeeRole();
   }
@@ -145,9 +143,6 @@ export class EventDetails {
     });
   }
 
-  get currentUserDepartmentId(): number | null {
-    return this.authService.getCurrentUserSnapshot()?.departmentId ?? null;
-  }
 
   private loadMySentInvitations(): void {
     if (!this.event) return;
@@ -278,26 +273,10 @@ export class EventDetails {
   }
 
   get canInviteColleagues(): boolean {
-    return this.authService.hasEmployeeRole() && !!this.event && !this.isDeadlinePassed;
+    return this.authService.hasEmployeeRole() && !!this.event && this.isRegistered && !this.isDeadlinePassed;
   }
 
-  get invitableUsers(): UserSummary[] {
-    return this.users ?? [];
-  }
 
-  get targetDepartmentIdForInvitation(): number | null {
-    if (!this.event) return null;
-
-    if (this.event.targetDepartmentId !== null && this.event.targetDepartmentId !== undefined) {
-      return Number(this.event.targetDepartmentId);
-    }
-
-    if (this.event.audience === 'DEPARTMENT') {
-      return this.currentUserDepartmentId;
-    }
-
-    return null;
-  }
 
   get invitationBlockingMessage(): string {
     if (!this.event) {
@@ -315,10 +294,10 @@ export class EventDetails {
     const search = this.employeeInviteSearchTerm.trim().toLowerCase();
 
     if (!search) {
-      return this.invitableUsers;
+      return this.users;
     }
 
-    return this.invitableUsers.filter(user => {
+    return this.users.filter(user => {
       const firstName = user.firstName?.toLowerCase() ?? '';
       const lastName = user.lastName?.toLowerCase() ?? '';
       const email = user.email?.toLowerCase() ?? '';
