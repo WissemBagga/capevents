@@ -572,6 +572,16 @@
   border-color: #fecaca;
 }
 
+.capacity-state {
+  margin-top: 6px;
+  font-weight: 700;
+  color: #027a48;
+}
+
+.capacity-state.full {
+  color: #d92d20;
+}
+
 /* ===== Registration Section ===== */
 .registration-section {
   margin-top: 32px;

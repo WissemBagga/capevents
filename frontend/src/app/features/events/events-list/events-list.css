@@ -241,6 +241,23 @@
   backdrop-filter: blur(4px);
 }
 
+.full-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #fdecec;
+  color: #d92d20;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.capacity-full {
+  color: #d92d20;
+  font-weight: 700;
+}
+
 /* Event Body */
 .event-body {
   padding: 18px 20px 20px;

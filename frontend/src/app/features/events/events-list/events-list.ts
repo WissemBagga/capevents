@@ -120,6 +120,10 @@ export class EventsList {
     });
   }
 
+  isFull(event: EventResponse): boolean {
+    return event.remainingCapacity === 0;
+  }
+
   previousPage(): void {
     if (this.hasPrevious) {
       this.loadEvents(this.currentPage - 1);

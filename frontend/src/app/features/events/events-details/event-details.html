@@ -115,7 +115,12 @@
                                     <div class="capacity-info">
                                         @if (event.remainingCapacity !== undefined && event.registeredCount !== undefined) {
                                             <span class="capacity-text">{{ event.registeredCount }} / {{ event.capacity }} inscrits</span>
-                                            <span class="capacity-badge" [class.full]="event.remainingCapacity === 0">Reste {{ event.remainingCapacity }} places</span>
+                                            <span class="capacity-state" [class.full]="event.remainingCapacity === 0">
+                                                @if (event.remainingCapacity === 0) {                                                
+                                                    Complet
+                                                } @else {
+                                                    Reste {{ event.remainingCapacity }} place(s) }
+                                            </span>
                                         } @else {
                                             <span class="capacity-text">{{ event.capacity }} participants max</span>
                                         }
@@ -169,8 +174,8 @@
                     </div>
 
                     <div class="registration-actions">
-                        @if (!isRegistered) {
-                            <button class="btn-primary" type="button" (click)="register()" [disabled]="actionLoading || isDeadlinePassed">
+                        @if (canRegisterNow) {
+                            <button class="btn-primary" type="button" (click)="register()" [disabled]="actionLoading">
                                 @if (actionLoading) {
                                     <span class="spinner-small"></span> Inscription...
                                 } @else {
@@ -190,11 +195,22 @@
                     </div>
                 </div>
 
+                @if (isFull && !isRegistered) {
+                    <div class="state-message error">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <p>Cet événement est complet. Aucune place n’est disponible.</p>
+                    </div>
+                }
+
                 <!-- Feedback Messages -->
                 @if (isDeadlinePassed) {
                     <div class="state-message error">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        <p>La date limite d'inscription a été dépassée.</p>
+                        <p>Les invitations aux collègues sont fermées : la date limite d’inscription est dépassée.</p>
                     </div>
                 }
 
@@ -222,7 +238,7 @@
                     <p class="inv-panel-sub">Envoyez des invitations à vos collègues pour cet événement</p>
                   </div>
                   <button type="button" class="invite-toggle-btn" (click)="toggleEmployeeInvitePanel()">
-                    @if (showEmployeeInvitePanel) {
+                    @if (showEmployeeInvitePanel  && !isDeadlinePassed) {
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                       Fermer
                     } @else {
@@ -232,7 +248,7 @@
                   </button>
                 </div>
 
-                @if (showEmployeeInvitePanel) {
+                @if (showEmployeeInvitePanel  && !isDeadlinePassed) {
                 <div class="invitation-panel">
 
                     <!-- Step 1: Choisissez des employés -->
@@ -329,7 +345,7 @@
                           type="button"
                           class="btn-send"
                           (click)="sendEmployeeInvites()"
-                          [disabled]="employeeInviteLoading || selectedEmployeeInviteEmails.length === 0"
+                          [disabled]="employeeInviteLoading || selectedEmployeeInviteEmails.length === 0 || isDeadlinePassed"
                       >
                         @if (employeeInviteLoading) {
                           <span class="spinner-small"></span>

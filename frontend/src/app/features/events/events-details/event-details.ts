@@ -109,7 +109,13 @@ export class EventDetails {
           if (this.authService.isLoggedIn() && this.canParticipate) {
             this.loadMySentInvitations();
             this.loadRegistrationStatus(event.id);
-            this.loadInvitableUsers();
+
+            if (!this.isDeadlinePassed) {
+              this.loadInvitableUsers();
+            } else {
+              this.users = [];
+              this.showEmployeeInvitePanel = false;
+            }
           }
         },
         error: (err) => {
@@ -272,7 +278,7 @@ export class EventDetails {
   }
 
   get canInviteColleagues(): boolean {
-    return this.authService.hasEmployeeRole() && !!this.event;
+    return this.authService.hasEmployeeRole() && !!this.event && !this.isDeadlinePassed;
   }
 
   get invitableUsers(): UserSummary[] {
@@ -291,6 +297,18 @@ export class EventDetails {
     }
 
     return null;
+  }
+
+  get invitationBlockingMessage(): string {
+    if (!this.event) {
+      return '';
+    }
+
+    if (this.isDeadlinePassed) {
+      return 'Les invitations aux collègues sont fermées : la date limite d’inscription est dépassée.';
+    }
+
+    return '';
   }
 
   get filteredInvitableUsers(): UserSummary[] {
@@ -317,6 +335,15 @@ export class EventDetails {
   }
 
   toggleEmployeeInvitePanel(): void {
+    if (this.isDeadlinePassed) {
+      this.showEmployeeInvitePanel = false;
+      this.employeeInviteErrorMessage =
+        'Les invitations aux collègues sont fermées : la date limite d’inscription est dépassée.';
+      this.employeeInviteSuccessMessage = '';
+      this.cdr.markForCheck();
+      return;
+    }
+
     this.showEmployeeInvitePanel = !this.showEmployeeInvitePanel;
     this.employeeInviteErrorMessage = '';
     this.employeeInviteSuccessMessage = '';
@@ -336,6 +363,13 @@ export class EventDetails {
   }
 
   sendEmployeeInvites(): void {
+    if (this.isDeadlinePassed) {
+      this.showEmployeeInvitePanel = false;
+      this.employeeInviteErrorMessage =
+        'Impossible d’envoyer des invitations après la date limite d’inscription.';
+      this.cdr.markForCheck();
+      return;
+    }
     if (!this.event) return;
 
     if (this.selectedEmployeeInviteEmails.length === 0) {
@@ -393,6 +427,18 @@ export class EventDetails {
       default:
         return 'En attente';
     }
+  }
+
+  get isFull(): boolean {
+  return !!this.event && this.event.remainingCapacity === 0;
+}
+
+  get canRegisterNow(): boolean {
+    return !!this.event
+      && this.canParticipate
+      && !this.isRegistered
+      && !this.isDeadlinePassed
+      && !this.isFull;
   }
 
   getRsvpStatusClass(response: InvitationResponseStatus | null): string {

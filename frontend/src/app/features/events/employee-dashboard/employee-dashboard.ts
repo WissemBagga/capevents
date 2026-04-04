@@ -39,6 +39,10 @@ export class EmployeeDashboard {
     this.loadUpcomingEvents();
   }
 
+  isFull(event: EventResponse): boolean {
+    return event.remainingCapacity === 0;
+  }
+
   loadUpcomingEvents(): void {
     this.loading = true;
     this.errorMessage = '';
