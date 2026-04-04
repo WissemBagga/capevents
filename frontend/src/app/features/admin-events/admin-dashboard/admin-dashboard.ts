@@ -22,6 +22,7 @@ export class AdminDashboard {
 
   events: EventResponse[] = [];
   filteredEvents: EventResponse[] = [];
+  pagedEvents: EventResponse[] = [];
   selectedStatus= 'ALL';
 
   loading = false;
@@ -39,26 +40,21 @@ export class AdminDashboard {
     this.loadEvents();
   }
 
-  loadEvents(page = 0): void {
+  loadEvents(): void {
     this.loading = true;
     this.errorMessage = '';
     this.cdr.markForCheck();
 
-    this.eventService.getHrAdminEvents(page, this.pageSize)
+    this.eventService.getHrAdminEvents(0, 1000, 'createdAt', 'desc')
       .pipe(finalize(() => {
         this.loading = false;
         this.cdr.markForCheck();
       }))
       .subscribe({
         next: (response: PageResponse<EventResponse>) => {
-          this.events = response.items;
-          this.currentPage = response.currentPage;
-          this.pageSize = response.pageSize;
-          this.totalPages = response.totalPages;
-          this.totalItems = response.totalItems;
-          this.hasNext = response.hasNext;
-          this.hasPrevious = response.hasPrevious;
-          this.onStatusChange();
+          this.events = response.items ?? [];
+          this.currentPage = 0 ;
+          this.applyStatusFilter();
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -71,16 +67,53 @@ export class AdminDashboard {
       });
   }
 
-  previousPage(): void {
-    if (this.hasPrevious) {
-      this.loadEvents(this.currentPage - 1);
+  private applyStatusFilter(): void {
+    if (this.selectedStatus === 'ALL') {
+      this.filteredEvents = [...this.events];
+    } else {
+      this.filteredEvents = this.events.filter(
+        event => event.status === this.selectedStatus
+      );
     }
+
+    this.totalItems = this.filteredEvents.length;
+    this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.pageSize));
+
+    if (this.totalItems === 0) {
+      this.currentPage = 0;
+    } else if (this.currentPage >= this.totalPages) {
+      this.currentPage = this.totalPages - 1;
+    }
+    this.updatePagedEvents();
+  }
+
+  onStatusChange(): void {
+    this.currentPage = 0; 
+    this.applyStatusFilter();
+    this.cdr.markForCheck();
+  }
+
+  private updatePagedEvents(): void {
+    const start = this.currentPage * this.pageSize;
+    const end = start + this.pageSize;
+
+    this.pagedEvents = this.filteredEvents.slice(start, end);
+    this.hasPrevious = this.currentPage > 0;
+    this.hasNext = this.currentPage + 1 < this.totalPages;
+  }
+
+  previousPage(): void {
+    if (!this.hasPrevious) return;
+    this.currentPage--;
+    this.updatePagedEvents();
+    this.cdr.markForCheck();
   }
 
   nextPage(): void {
-    if (this.hasNext) {
-      this.loadEvents(this.currentPage + 1);
-    }
+    if (!this.hasNext) return;
+    this.currentPage++;
+    this.updatePagedEvents();
+    this.cdr.markForCheck();
   }
 
   goToEdit(eventId: string): void {
@@ -124,7 +157,7 @@ export class AdminDashboard {
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next: () => this.loadEvents(this.currentPage),
+        next: () => this.loadEvents(),
         error: (err) => {
           this.errorMessage =
             err?.error?.message ||
@@ -145,7 +178,7 @@ export class AdminDashboard {
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next: () => this.loadEvents(this.currentPage),
+        next: () => this.loadEvents(),
         error: (err) => {
           this.errorMessage =
             err?.error?.message ||
@@ -172,7 +205,7 @@ export class AdminDashboard {
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next: () => this.loadEvents(this.currentPage),
+        next: () => this.loadEvents(),
         error: (err) => {
           this.errorMessage =
             err?.error?.message ||
@@ -184,16 +217,7 @@ export class AdminDashboard {
   }
 
 
-
-  onStatusChange(): void {
-    const status = this.selectedStatus;
-    this.filteredEvents = this.events.filter(event => event.status === status || status === 'ALL');
-
-  }
-
-
-
-   statusLabel(status: string): string {
+  statusLabel(status: string): string {
     switch (status) {
       case 'DRAFT':
         return 'Brouillon';
