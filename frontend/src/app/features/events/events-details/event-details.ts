@@ -204,6 +204,7 @@ export class EventDetails {
       .subscribe({
         next: () => {
           this.isRegistered = true;
+          this.incrementCapacity();
           this.successMessage = 'Inscription réussie.';
           this.loadMySentInvitations();
           this.cdr.markForCheck();
@@ -217,6 +218,36 @@ export class EventDetails {
         }
       });
   }
+
+  private incrementCapacity(): void {
+    if (!this.event) return;
+
+    const currentRegistered = this.event.registeredCount ?? 0;
+    const capacity = this.event.capacity ?? 0;
+    const nextRegistered = Math.min(currentRegistered + 1, capacity);
+
+    this.event = {
+      ...this.event,
+      registeredCount: nextRegistered,
+      remainingCapacity: Math.max(capacity - nextRegistered, 0)
+    };
+  }
+
+  private decrementCapacity(): void {
+    if (!this.event) return;
+
+    const currentRegistered = this.event.registeredCount ?? 0;
+    const capacity = this.event.capacity ?? 0;
+    const nextRegistered = Math.max(currentRegistered - 1, 0);
+
+    this.event = {
+      ...this.event,
+      registeredCount: nextRegistered,
+      remainingCapacity: Math.max(capacity - nextRegistered, 0)
+    };
+  }
+
+
 
   openUnregisterModal(): void {
     if (!this.event || !this.isRegistered) return;
@@ -263,6 +294,7 @@ export class EventDetails {
       .subscribe({
         next: () => {
           this.isRegistered = false;
+          this.decrementCapacity();
           this.showUnregisterModal = false;
           this.successMessage = 'Désinscription effectuée.';
           this.cdr.markForCheck();
