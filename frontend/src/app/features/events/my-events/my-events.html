@@ -52,7 +52,7 @@
 
   <!-- Events Grid -->
   <div class="events-grid">
-    @for (registration of filteredRegistrations; track registration.id) {
+    @for (registration of filteredRegistrations; track registration.eventId) {
       <article class="event-card" [class.upcoming]="isUpcoming(registration)">
 
         <!-- Card Top: status badge + ref -->
