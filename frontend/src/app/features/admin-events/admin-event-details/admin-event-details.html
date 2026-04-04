@@ -510,13 +510,38 @@
             @if (visibleUsersForInvitation.length === 0) {
               <p class="helper-text">Aucun utilisateur disponible.</p>
             } @else {
+              <div class="individual-filters">
+                <input
+                  type="text"
+                  [(ngModel)]="individualSearchTerm"
+                  placeholder="Rechercher par nom, prénom ou email"
+                />
+
+                @if (isHr) {
+                  <select [(ngModel)]="individualDepartmentFilter">
+                    <option [ngValue]="null">Tous les départements</option>
+                    @for (department of departments; track department.id) {
+                      <option [ngValue]="department.id">{{ department.name }}</option>
+                    }
+                  </select>
+                }
+
+                <button type="button" class="btn-clear-filter" (click)="clearIndividualFilters()">
+                  Réinitialiser
+                </button>
+              </div>
+              @if (filteredSelectableUsers.length === 0) {
+                <div class="state-message info-msg">
+                  <p>Aucun employé ne correspond à votre recherche.</p>
+                </div>
+              } @else {
               <div class="user-selection-list">
-                @for (user of visibleUsersForInvitation; track user.id) {
+                @for (user of filteredSelectableUsers; track user.id) {
                   <label class="user-option" [class.checked]="selectedUserEmails.includes(user.email)">
                     <div class="user-avatar-small">{{ user.firstName.charAt(0) | uppercase }}</div>
                     <div class="user-option-text">
                       <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
-                      @if (user.departmentName) {
+                      @if (isHr && user.departmentName) {
                         <small>{{ user.departmentName }}</small>
                       }
                     </div>
@@ -529,6 +554,7 @@
                   </label>
                 }
               </div>
+              }
             }
           </div>
         }
@@ -659,7 +685,7 @@
   }
 
   <!-- Empty State -->
-  @else if (invitations.length === 0) {
+  @else if (!invitationLoading && invitations.length === 0) {
     <div class="inv-empty">
       <div class="inv-empty-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -687,6 +713,11 @@
               <span class="inv-name">{{ invitation.fullName }}</span>
               <span class="inv-email">{{ invitation.email }}</span>
             </div>
+            <div>
+              <span class="state-badge">
+                {{statusLabel(invitation.status)}}
+              </span>
+            </div>
           </div>
 
           <!-- Center: Type Badge -->
@@ -697,7 +728,7 @@
               [class.individual]="invitation.targetType === 'INDIVIDUAL'">
               {{ invitation.targetType }}
             </span>
-            @if (invitation.departmentName) {
+            @if (canShowDepartmentInSentInvitations && invitation.departmentName) {
               <span class="inv-dept">{{ invitation.departmentName }}</span>
             }
           </div>
@@ -707,6 +738,9 @@
             <span class="inv-meta-item">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
               {{ invitation.invitedByFullName }}
+            </span>
+            <span>
+              {{ invitationResponseLabel(invitation.rsvpResponse)}}
             </span>
             <span class="inv-meta-item">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
