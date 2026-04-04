@@ -212,10 +212,8 @@
   position: relative;
   height: 150px;
   background: linear-gradient(135deg, #c8dff5 0%, #a3c4e8 50%, #8eb8de 100%);
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
   padding: 12px;
+  overflow: hidden;
 }
 
 .event-card:nth-child(3n+2) .event-image {
@@ -227,30 +225,48 @@
 }
 
 .status-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
   display: inline-flex;
   align-items: center;
-  background: rgba(22, 163, 74, 0.9);
+  background: rgba(100, 116, 139, 0.9); /* Default fallback */
   color: #ffffff;
   padding: 4px 12px;
   border-radius: 8px;
   font-family: Verdana, Geneva, sans-serif;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   backdrop-filter: blur(4px);
+  z-index: 2;
 }
 
+.status-badge.published { background: rgba(22, 163, 74, 0.9); }
+.status-badge.cancelled { background: rgba(220, 38, 38, 0.9); }
+.status-badge.archived { background: rgba(71, 85, 105, 0.9); }
+.status-badge.draft { background: rgba(202, 138, 4, 0.9); }
+.status-badge.pending { background: rgba(100, 116, 139, 0.8); }
+
 .full-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  padding: 6px 10px;
-  background: #fdecec;
-  color: #d92d20;
+  border-radius: 20px;
+  padding: 4px 12px;
+  background: rgba(220, 38, 38, 0.9);
+  color: #ffffff;
+  font-family: 'Ubuntu', sans-serif;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(4px);
+  z-index: 2;
 }
 
 .capacity-full {
