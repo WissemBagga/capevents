@@ -45,7 +45,7 @@
 
     <!-- Events Grid -->
     <div class="events-grid">
-        @for (event of filteredEvents; track event.id) {
+        @for (event of pagedEvents; track event.id) {
             <article class="event-card">
                 <!-- Visual Left -->
                 <div class="card-visual">
