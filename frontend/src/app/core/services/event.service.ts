@@ -152,6 +152,10 @@ export class EventService {
     return this.http.get<MyInvitationResponse[]>(`${environment.apiBaseUrl}/api/me/invitations`);
   }
 
+  getMySentInvitations(eventId: string) {
+    return this.http.get<AdminEventInvitationResponse[]>(`${this.apiUrl}/${eventId}/my-sent-invitations`);
+  }
+
   respondToInvitation(invitationId: number, response: InvitationResponseStatus) {
     return this.http.post<void>(`${environment.apiBaseUrl}/api/me/invitations/${invitationId}/response`, {
       response

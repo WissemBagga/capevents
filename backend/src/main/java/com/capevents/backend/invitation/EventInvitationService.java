@@ -297,6 +297,37 @@ public class EventInvitationService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<AdminEventInvitationResponse> getMySentInvitations(UUID eventId, String actorEmail) {
+        Event event = eventRepository.findByIdWithCreatorDept(eventId)
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        if (event.getStatus() != EventStatus.PUBLISHED) {
+            throw new BadRequestException("Seuls les événements publiés peuvent être consultés.");
+        }
+
+        if (!canUserSeeEvent(actor, event)) {
+            throw new NotFoundException("Événement introuvable");
+        }
+
+        boolean actorRegistered = registrationRepository.existsByEventAndUserAndStatus(
+                event,
+                actor,
+                RegistrationStatus.REGISTERED
+        );
+
+        if (!actorRegistered) {
+            throw new BadRequestException("Vous devez être inscrit à cet événement pour consulter vos invitations envoyées.");
+        }
+
+        return invitationRepository.findByEventAndInvitedByOrderBySentAtDesc(event, actor).stream()
+                .map(this::toAdminInvitationResponse)
+                .toList();
+    }
+
 
     private MyInvitationResponse toMyInvitationResponse(EventInvitation invitation) {
         Event event = invitation.getEvent();

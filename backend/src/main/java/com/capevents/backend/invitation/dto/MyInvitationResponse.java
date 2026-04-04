@@ -18,7 +18,7 @@ public record MyInvitationResponse(
         String message,
         Instant sentAt,
         String invitedByFullName,
-        String invitaionSource
+        String invitationSource
 ) {
 
 }

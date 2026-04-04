@@ -61,4 +61,14 @@ public class EventInvitationController {
         return invitationService.getEmployeeInvitableUsers(id, auth.getName());
     }
 
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
+    @GetMapping("/{id}/my-sent-invitations")
+    public List<AdminEventInvitationResponse> getMySentInvitations(
+            @PathVariable UUID id,
+            Authentication auth
+    ) {
+        return invitationService.getMySentInvitations(id, auth.getName());
+    }
+
 }

@@ -10,14 +10,14 @@ import { AuthService } from '../../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import {UnregisterRequest} from '../../../core/models/registration.model'
 
-import {EmployeeInviteRequest, InvitationCreatedItemResponse, InvitationSkippedItemResponse} from '../../../core/models/invitation.model'
+import {EmployeeInviteRequest, InvitationCreatedItemResponse, InvitationSkippedItemResponse, AdminEventInvitationResponse, InvitationResponseStatus} from '../../../core/models/invitation.model'
 import { UserSummary } from '../../../core/models/user-summary.model';
 import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-event-details',
   standalone: true,
-  imports: [RouterLink, DatePipe, FormsModule, UpperCasePipe],
+  imports: [DatePipe, FormsModule, UpperCasePipe],
   templateUrl: './event-details.html',
   styleUrl: './event-details.css'
 })
@@ -56,6 +56,9 @@ export class EventDetails {
 
   employeeInvitedItems: InvitationCreatedItemResponse[] = [];
   employeeSkippedItems: InvitationSkippedItemResponse[] = [];
+
+  sentInvitations: AdminEventInvitationResponse[] = [];
+  sentInvitationsLoading = false;
 
   readonly unregisterReasons: string[] = [
     'Conflit d’horaire',
@@ -104,6 +107,7 @@ export class EventDetails {
           this.cdr.markForCheck();
 
           if (this.authService.isLoggedIn() && this.canParticipate) {
+            this.loadMySentInvitations();
             this.loadRegistrationStatus(event.id);
             this.loadInvitableUsers();
           }
@@ -139,6 +143,29 @@ export class EventDetails {
     return this.authService.getCurrentUserSnapshot()?.departmentId ?? null;
   }
 
+  private loadMySentInvitations(): void {
+    if (!this.event) return;
+
+    this.sentInvitationsLoading = true;
+    this.cdr.markForCheck();
+
+    this.eventService.getMySentInvitations(this.event.id)
+      .pipe(finalize(() => {
+        this.sentInvitationsLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (invitations) => {
+          this.sentInvitations = invitations ?? [];
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.sentInvitations = [];
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
 
 
   private loadRegistrationStatus(eventId: string): void {
@@ -172,6 +199,7 @@ export class EventDetails {
         next: () => {
           this.isRegistered = true;
           this.successMessage = 'Inscription réussie.';
+          this.loadMySentInvitations();
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -341,6 +369,7 @@ export class EventDetails {
           this.selectedEmployeeInviteEmails = [];
           this.employeeInviteMessage = '';
           this.employeeInviteSearchTerm = '';
+          this.loadMySentInvitations();
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -351,6 +380,32 @@ export class EventDetails {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  invitationResponseLabel(response: InvitationResponseStatus | null): string {
+    switch (response) {
+      case 'YES':
+        return 'Acceptée';
+      case 'MAYBE':
+        return 'Peut-être';
+      case 'NO':
+        return 'Déclinée';
+      default:
+        return 'En attente';
+    }
+  }
+
+  getRsvpStatusClass(response: InvitationResponseStatus | null): string {
+    switch (response) {
+      case 'YES':
+        return 'rsvp-yes';
+      case 'MAYBE':
+        return 'rsvp-maybe';
+      case 'NO':
+        return 'rsvp-no';
+      default:
+        return 'rsvp-pending';
+    }
   }
 
 

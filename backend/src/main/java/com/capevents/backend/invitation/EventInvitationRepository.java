@@ -16,4 +16,6 @@ public interface EventInvitationRepository extends JpaRepository<EventInvitation
     List<EventInvitation> findByEventOrderBySentAtDesc(Event event);
 
     List<EventInvitation> findByUserOrderBySentAtDesc(User user);
+
+    List<EventInvitation> findByEventAndInvitedByOrderBySentAtDesc(Event event, User invitedBy);
 }
