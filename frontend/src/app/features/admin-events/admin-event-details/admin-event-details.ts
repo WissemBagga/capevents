@@ -82,19 +82,40 @@ export class AdminEventDetails {
     return this.authService.isManager();
   }
 
+  currentUser = this.authService.getCurrentUserSnapshot();
+
   get currentUserDepartmentId(): number | null {
-    return this.authService.getCurrentUserSnapshot()?.departmentId ?? null;
+    return this.currentUser?.departmentId ?? null;
+  }
+
+  get currentUserEmail(): string {
+    return (this.currentUser?.email ?? '').trim().toLowerCase();
+  }
+
+  private isCurrentUser(user: UserSummary): boolean {
+    const currentId = this.currentUser?.id ?? null;
+    const userId = user.id ?? null;
+
+    if (currentId !== null && userId !== null) {
+      return userId === currentId;
+    }
+
+    return (user.email ?? '').trim().toLowerCase() === this.currentUserEmail;
+  }
+
+  private excludeCurrentUser(users: UserSummary[]): UserSummary[] {
+    return users.filter(user => !this.isCurrentUser(user));
   }
 
 
   get visibleUsersForInvitation(): UserSummary[] {
-    if (this.isHr) {
-      return this.users.filter(user => user.active);
-    }
+    const baseUsers = this.isHr
+      ? this.users.filter(user => user.active)
+      : this.users.filter(
+          user => user.active && user.departmentId === this.currentUserDepartmentId
+        );
 
-    return this.users.filter(
-      user => user.active && user.departmentId === this.currentUserDepartmentId
-    );
+    return this.excludeCurrentUser(baseUsers);
   }
 
   get filteredSelectableUsers(): UserSummary[] {
@@ -143,11 +164,16 @@ export class AdminEventDetails {
         return 0
       } ;
 
-      return this.users.filter(
-        user => user.active && user.departmentId === this.selectedDepartmentId
+      return this.excludeCurrentUser(
+        this.users.filter(
+          user => user.active && user.departmentId === this.selectedDepartmentId
+        )
       ).length;
     }
-    return this.selectedUserEmails.length;
+
+    return this.selectedUserEmails.filter(
+      email => email.trim().toLowerCase() !== this.currentUserEmail
+    ).length;
   }
 
   get canSendInvitations(): boolean {
@@ -280,6 +306,11 @@ export class AdminEventDetails {
     this.userService.getAllUsers(0, 1000).subscribe({
       next: (response) => {
         this.users = response.items ?? [];
+
+        this.selectedUserEmails = this.selectedUserEmails.filter(
+          email => email.trim().toLowerCase() !== this.currentUserEmail
+        );
+
         this.cdr.markForCheck();
       },
       error: () => {
@@ -350,36 +381,46 @@ export class AdminEventDetails {
   }
 
   onIndividualSelectionChange(email: string, checked: boolean): void {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (normalizedEmail === this.currentUserEmail) {
+      return;
+    }
+
     if (checked) {
-      if (!this.selectedUserEmails.includes(email)) {
+      if (!this.selectedUserEmails.some(e => e.trim().toLowerCase() === normalizedEmail)) {
         this.selectedUserEmails = [...this.selectedUserEmails, email];
       }
     } else {
-      this.selectedUserEmails = this.selectedUserEmails.filter(e => e !== email);
+      this.selectedUserEmails = this.selectedUserEmails.filter(
+        e => e.trim().toLowerCase() !== normalizedEmail
+      );
     }
 
     this.cdr.markForCheck();
   }
 
   sendInvitations(): void {
-    if (!this.event){
+    if (!this.event) {
       return;
     }
-
 
     this.invitationErrorMessage = '';
     this.invitationSuccessMessage = '';
     this.lastInvitedItems = [];
     this.lastSkippedItems = [];
 
+    const sanitizedUserEmails = this.selectedUserEmails.filter(
+      email => email.trim().toLowerCase() !== this.currentUserEmail
+    );
 
-    if (this.invitationTargetType === 'DEPARTMENT' && !this.selectedDepartmentId){
-      this.invitationErrorMessage= 'Veuillez sélectionner un département.';
+    if (this.invitationTargetType === 'DEPARTMENT' && !this.selectedDepartmentId) {
+      this.invitationErrorMessage = 'Veuillez sélectionner un département.';
       this.cdr.markForCheck();
       return;
     }
 
-    if (this.invitationTargetType === 'INDIVIDUAL' && this.selectedUserEmails.length === 0) {
+    if (this.invitationTargetType === 'INDIVIDUAL' && sanitizedUserEmails.length === 0) {
       this.invitationErrorMessage = 'Veuillez sélectionner au moins un utilisateur.';
       this.cdr.markForCheck();
       return;
@@ -388,7 +429,7 @@ export class AdminEventDetails {
     const payload: SendInvitationRequest = {
       targetType: this.invitationTargetType,
       departmentId: this.invitationTargetType === 'DEPARTMENT' ? this.selectedDepartmentId : null,
-      userEmails: this.invitationTargetType === 'INDIVIDUAL' ? this.selectedUserEmails : [],
+      userEmails: this.invitationTargetType === 'INDIVIDUAL' ? sanitizedUserEmails : [],
       message: this.invitationMessage?.trim() ? this.invitationMessage.trim() : null
     };
 
