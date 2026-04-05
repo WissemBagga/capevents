@@ -67,13 +67,28 @@ export class AdminDashboard {
       });
   }
 
+  statusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      'DRAFT': 'Brouillon',
+      'PUBLISHED': 'Publié',
+      'CANCELLED': 'Annulé',
+      'ARCHIVED': 'Archivé',
+      'PENDING': 'En attente'
+    };
+    return labels[status] || status;
+  }
+
+  onStatusChange(): void {
+    this.currentPage = 0;
+    this.applyStatusFilter();
+    this.cdr.markForCheck();
+  }
+
   private applyStatusFilter(): void {
     if (this.selectedStatus === 'ALL') {
       this.filteredEvents = [...this.events];
     } else {
-      this.filteredEvents = this.events.filter(
-        event => event.status === this.selectedStatus
-      );
+      this.filteredEvents = this.events.filter(e => e.status === this.selectedStatus);
     }
 
     this.totalItems = this.filteredEvents.length;
@@ -87,16 +102,9 @@ export class AdminDashboard {
     this.updatePagedEvents();
   }
 
-  onStatusChange(): void {
-    this.currentPage = 0; 
-    this.applyStatusFilter();
-    this.cdr.markForCheck();
-  }
-
   private updatePagedEvents(): void {
     const start = this.currentPage * this.pageSize;
     const end = start + this.pageSize;
-
     this.pagedEvents = this.filteredEvents.slice(start, end);
     this.hasPrevious = this.currentPage > 0;
     this.hasNext = this.currentPage + 1 < this.totalPages;
@@ -159,10 +167,7 @@ export class AdminDashboard {
       .subscribe({
         next: () => this.loadEvents(),
         error: (err) => {
-          this.errorMessage =
-            err?.error?.message ||
-            err?.error ||
-            'Impossible de publier cet événement.';
+          this.errorMessage = err?.error?.message || err?.error || 'Impossible de publier cet événement.';
           this.cdr.markForCheck();
         }
       });
@@ -180,10 +185,7 @@ export class AdminDashboard {
       .subscribe({
         next: () => this.loadEvents(),
         error: (err) => {
-          this.errorMessage =
-            err?.error?.message ||
-            err?.error ||
-            'Impossible d’archiver cet événement.';
+          this.errorMessage = err?.error?.message || err?.error || 'Impossible d’archiver cet événement.';
           this.cdr.markForCheck();
         }
       });
@@ -191,10 +193,7 @@ export class AdminDashboard {
 
   cancel(eventId: string): void {
     const reason = window.prompt('Entrez la raison de l’annulation :');
-
-    if (!reason || !reason.trim()) {
-      return;
-    }
+    if (!reason || !reason.trim()) return;
 
     this.actionLoading = true;
     this.cdr.markForCheck();
@@ -207,30 +206,9 @@ export class AdminDashboard {
       .subscribe({
         next: () => this.loadEvents(),
         error: (err) => {
-          this.errorMessage =
-            err?.error?.message ||
-            err?.error ||
-            'Impossible d’annuler cet événement.';
+          this.errorMessage = err?.error?.message || err?.error || 'Impossible d’annuler cet événement.';
           this.cdr.markForCheck();
         }
       });
-  }
-
-
-  statusLabel(status: string): string {
-    switch (status) {
-      case 'DRAFT':
-        return 'Brouillon';
-      case 'PUBLISHED':
-        return 'Publié';
-      case 'CANCELLED':
-        return 'Annulé';
-      case 'ARCHIVED':
-        return 'Archivé';
-      case 'PENDING':
-        return 'En attente';
-      default:
-        return status;
-    }
   }
 }
