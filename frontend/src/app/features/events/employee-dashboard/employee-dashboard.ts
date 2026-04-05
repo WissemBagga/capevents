@@ -48,7 +48,7 @@ export class EmployeeDashboard {
     this.errorMessage = '';
     this.cdr.markForCheck();
 
-    this.eventService.getPublished(0, 4, 'startAt', 'asc')
+    this.eventService.getPublished(0, 3, 'startAt', 'asc')
       .pipe(finalize(() => {
         this.loading = false;
         this.cdr.markForCheck();
