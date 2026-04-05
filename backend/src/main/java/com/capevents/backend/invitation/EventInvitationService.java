@@ -7,6 +7,7 @@ import com.capevents.backend.event.EventAudience;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
 import com.capevents.backend.invitation.dto.*;
+import com.capevents.backend.notification.NotificationService;
 import com.capevents.backend.registration.EventRegistrationRepository;
 import com.capevents.backend.registration.RegistrationStatus;
 import com.capevents.backend.user.User;
@@ -27,17 +28,20 @@ public class EventInvitationService {
     private final UserRepository userRepository;
     private final EventInvitationRepository invitationRepository;
     private final EventRegistrationRepository registrationRepository;
+    private final NotificationService notificationService;
 
     public EventInvitationService(
             EventRepository eventRepository,
             UserRepository userRepository,
             EventInvitationRepository invitationRepository,
-            EventRegistrationRepository registrationRepository
+            EventRegistrationRepository registrationRepository,
+            NotificationService notificationService
     ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.invitationRepository = invitationRepository;
         this.registrationRepository = registrationRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -97,6 +101,11 @@ public class EventInvitationService {
             invitation.setSentAt(Instant.now());
 
             invitationRepository.save(invitation);
+            notificationService.notifyInvitationReceived(
+                    target,
+                    event,
+                    buildFullName(actor.getFirstName(), actor.getLastName())
+            );
             created++;
 
             invitedItems.add(new InvitationCreatedItemResponse(
@@ -194,6 +203,11 @@ public class EventInvitationService {
             invitation.setSentAt(Instant.now());
 
             invitationRepository.save(invitation);
+            notificationService.notifyInvitationReceived(
+                    target,
+                    event,
+                    buildFullName(actor.getFirstName(), actor.getLastName())
+            );
             created++;
 
             invitedItems.add(new InvitationCreatedItemResponse(

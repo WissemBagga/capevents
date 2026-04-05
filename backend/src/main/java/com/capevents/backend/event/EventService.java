@@ -8,6 +8,8 @@ import com.capevents.backend.department.DepartmentRepository;
 import com.capevents.backend.event.dto.CreateEventRequest;
 import com.capevents.backend.event.dto.EventResponse;
 import com.capevents.backend.event.dto.UpdateEventRequest;
+import com.capevents.backend.notification.NotificationService;
+import com.capevents.backend.registration.EventRegistration;
 import com.capevents.backend.registration.EventRegistrationRepository;
 import com.capevents.backend.registration.RegistrationStatus;
 import com.capevents.backend.user.User;
@@ -30,13 +32,15 @@ public class EventService {
     private final AuditService auditService;
     private final DepartmentRepository departmentRepository;
     private  final EventRegistrationRepository registrationRepository;
+    private final NotificationService notificationService;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository, AuditService auditService, DepartmentRepository departmentRepository, EventRegistrationRepository registrationRepository) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository, AuditService auditService, DepartmentRepository departmentRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.auditService = auditService;
         this.departmentRepository = departmentRepository;
         this.registrationRepository = registrationRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -51,7 +55,6 @@ public class EventService {
 
         EventAudience audience = req.audience();
 
-        // Règles audience
         if (audience == EventAudience.GLOBAL && !isHr) {
             throw new BadRequestException("Seuls les RH peuvent créer des événements globaux");
         }
@@ -60,7 +63,6 @@ public class EventService {
 
         if (audience == EventAudience.DEPARTMENT) {
             if (isManager) {
-                // manager : forcé sur son département
                 if (creator.getDepartment() == null) throw new BadRequestException("Le manager n’a pas de département");
 
                 Long managerDeptId = creator.getDepartment().getId();
@@ -72,7 +74,6 @@ public class EventService {
 
                 targetDept = creator.getDepartment();
             } else {
-                // HR : doit préciser targetDepartmentId
                 if (req.targetDepartmentId() == null) {
                     throw new BadRequestException("Le champ targetDepartmentId est requis pour les événements de type DÉPARTEMENT");
                 }
@@ -80,7 +81,6 @@ public class EventService {
                         .orElseThrow(() -> new NotFoundException("Département cible introuvable"));
             }
         } else {
-            // GLOBAL
             if (req.targetDepartmentId() != null) {
                 throw new BadRequestException("Le champ targetDepartmentId doit être nul pour les événements globaux");
             }
@@ -138,6 +138,10 @@ public class EventService {
             throw new BadRequestException("Impossible de publier un événement déjà commencé");
         }
 
+        EventStatus previousStatus = e.getStatus();
+        List<User> registeredUsers = previousStatus == EventStatus.CANCELLED
+                ? getRegisteredUsers(e)
+                : List.of();
 
         e.setStatus(EventStatus.PUBLISHED);
 
@@ -149,6 +153,10 @@ public class EventService {
                 null,
                 "{\"title\":\"" + e.getTitle() + "\"}"
         );
+
+        if (previousStatus == EventStatus.CANCELLED) {
+            notificationService.notifyEventRescheduled(registeredUsers, e);
+        }
 
         return  toResponse(e);
     }
@@ -283,6 +291,8 @@ public class EventService {
         if (e.getStatus() == EventStatus.CANCELLED){
             throw new BadRequestException("Événement déjà annulé");
         }
+        List<User> registeredUsers = getRegisteredUsers(e);
+
         e.setStatus(EventStatus.CANCELLED);
         e.setCancelReason(reason);
 
@@ -295,12 +305,25 @@ public class EventService {
                 ip,
                 "{\"reason\":\"" + escape(reason) + "\"}"
         );
+        notificationService.notifyEventCancelled(registeredUsers, e);
+
         return toResponse(e);
     }
 
     private String escape(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private List<User> getRegisteredUsers(Event event) {
+        return registrationRepository.findByEventAndStatusOrderByRegisteredAtAsc(
+                        event,
+                        RegistrationStatus.REGISTERED
+                )
+                .stream()
+                .map(EventRegistration::getUser)
+                .distinct()
+                .toList();
     }
 
     @Transactional

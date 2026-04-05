@@ -6,6 +6,7 @@ import com.capevents.backend.event.Event;
 import com.capevents.backend.event.EventAudience;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
+import com.capevents.backend.notification.NotificationService;
 import com.capevents.backend.registration.dto.EventParticipantResponse;
 import com.capevents.backend.registration.dto.RegistrationResponse;
 import com.capevents.backend.registration.dto.UnregisterRequest;
@@ -23,11 +24,13 @@ public class EventRegistrationService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EventRegistrationRepository registrationRepository;
+    private final NotificationService notificationService;
 
-    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository) {
+    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.registrationRepository = registrationRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -58,7 +61,9 @@ public class EventRegistrationService {
         registration.setCancelledAt(null);
 
         EventRegistration saved = registrationRepository.save(registration);
+        notificationService.notifyRegistrationSaved(user, event);
         return toResponse(saved);
+
     }
 
     @Transactional
