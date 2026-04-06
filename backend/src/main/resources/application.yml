@@ -11,18 +11,6 @@ spring:
       ddl-auto: validate
     open-in-view: false
 
-  mail:
-    host: sandbox.smtp.mailtrap.io
-    port: 2525
-    username: USERNAME_MAILTRAP
-    password: PASSWORD_MAILTRAP
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
   profiles:
     active: dev
 

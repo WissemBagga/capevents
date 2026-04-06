@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: mailtrap
+
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 3d9a96690dfcc2
+    password: fc4935edc87530
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
