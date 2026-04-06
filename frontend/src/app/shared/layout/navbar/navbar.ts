@@ -1,50 +1,55 @@
-import { ChangeDetectorRef, Component, HostListener, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  inject
+} from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NotificationResponse } from '../../../core/models/notification.model';
-import { HtmlParser } from '@angular/compiler';
-import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, AsyncPipe, DatePipe, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, AsyncPipe, DatePipe],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
 export class Navbar {
   private authService = inject(AuthService);
   private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef)
-  private notificationService = inject(NotificationService)
+  private cdr = inject(ChangeDetectorRef);
+  private notificationService = inject(NotificationService);
 
   currentUser$ = this.authService.currentUser$;
 
   notifications: NotificationResponse[] = [];
-  unreadCount =0;
+  unreadCount = 0;
 
   notificationsOpen = false;
   notificationsLoading = false;
   notificationsErrorMessage = '';
   markAllLoading = false;
 
-
-  ngOnInit(): void{
-    if (this.authService.isLoggedIn()){
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
       this.loadUnreadCount();
     }
   }
 
   @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void{
+  onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement | null;
 
-    if (target?.closest('.notification-wrapper')){
+    if (target?.closest('.notification-wrapper')) {
       return;
     }
-    if (this.notificationsOpen){
+
+    if (this.notificationsOpen) {
       this.notificationsOpen = false;
       this.cdr.markForCheck();
     }
@@ -71,29 +76,29 @@ export class Navbar {
     return this.isHr() || this.isManager();
   }
 
-  toggleNotifications(event: MouseEvent): void{
+  toggleNotifications(event: MouseEvent): void {
     event.stopPropagation();
 
-    this.notificationsOpen != this.notificationsOpen;
+    this.notificationsOpen = !this.notificationsOpen;
     this.notificationsErrorMessage = '';
 
-    if (this.notificationsOpen){
+    if (this.notificationsOpen) {
       this.refreshNotifications();
     }
 
     this.cdr.markForCheck();
   }
 
-  refreshNotifications(): void{
+  refreshNotifications(): void {
     this.loadUnreadCount();
     this.loadNotifications();
   }
 
-  private loadUnreadCount(): void{
+  private loadUnreadCount(): void {
     this.notificationService.getUnreadCount().subscribe({
-      next: (response)=>{
-          this.unreadCount = response.unreadCount ?? 0;
-          this.cdr.markForCheck();
+      next: (response) => {
+        this.unreadCount = response.unreadCount ?? 0;
+        this.cdr.markForCheck();
       },
       error: () => {
         this.unreadCount = 0;
@@ -102,28 +107,28 @@ export class Navbar {
     });
   }
 
-  private loadNotifications(): void{
-    this.notificationsLoading = false;
+  private loadNotifications(): void {
+    this.notificationsLoading = true;
     this.notificationsErrorMessage = '';
     this.cdr.markForCheck();
 
-    this.notificationService.getMyNotifications(10).
-      pipe(finalize(()=>{
+    this.notificationService.getMyNotifications(10)
+      .pipe(finalize(() => {
         this.notificationsLoading = false;
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next:(items) => {
+        next: (items) => {
           this.notifications = items ?? [];
           this.cdr.markForCheck();
         },
-        error: (err)=>{
+        error: (err) => {
           this.notifications = [];
           this.notificationsErrorMessage =
             err?.error?.message ||
             err?.error ||
             'Impossible de charger les notifications.';
-          this.cdr.markForCheck();  
+          this.cdr.markForCheck();
         }
       });
   }
