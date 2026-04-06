@@ -3,10 +3,7 @@ package com.capevents.backend.event;
 
 import com.capevents.backend.common.dto.PageResponse;
 import com.capevents.backend.common.exception.BadRequestException;
-import com.capevents.backend.event.dto.CancelEventRequest;
-import com.capevents.backend.event.dto.CreateEventRequest;
-import com.capevents.backend.event.dto.EventResponse;
-import com.capevents.backend.event.dto.UpdateEventRequest;
+import com.capevents.backend.event.dto.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -143,6 +140,48 @@ public class EventController {
             HttpServletRequest request
     ) {
         return eventService.unpublish(id, authentication.getName(), request.getRemoteAddr());
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
+    @PostMapping("/employee-submit")
+    public EmployeeEventSubmissionResponse submitByEmployee(
+            @Valid @RequestBody CreateEventRequest req,
+            Authentication auth,
+            HttpServletRequest http
+    ) {
+        return eventService.submitByEmployee(req, auth.getName(), http.getRemoteAddr());
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
+    @GetMapping("/admin/pending")
+    public PageResponse<EventResponse> listPendingApprovals(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            Authentication auth
+    ) {
+        var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return eventService.listPendingApprovals(pageable, auth.getName());
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
+    @PostMapping("/admin/{id}/approve-publish")
+    public EventResponse approvePendingAndPublish(
+            @PathVariable UUID id,
+            Authentication auth,
+            HttpServletRequest http
+    ) {
+        return eventService.approvePendingAndPublish(id, auth.getName(), http.getRemoteAddr());
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
+    @PostMapping("/admin/{id}/reject")
+    public EventResponse rejectPending(
+            @PathVariable UUID id,
+            @Valid @RequestBody RejectPendingEventRequest req,
+            Authentication auth,
+            HttpServletRequest http
+    ) {
+        return eventService.rejectPending(id, req.reason(), auth.getName(), http.getRemoteAddr());
     }
 
 }

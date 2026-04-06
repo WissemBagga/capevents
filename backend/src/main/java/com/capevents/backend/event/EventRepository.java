@@ -107,10 +107,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
 
 
-    // =========================
-    // RECHERCHE RH
-    // =========================
-
     @Query("""
       select e from Event e
       where e.status = 'PUBLISHED'
@@ -137,9 +133,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             Pageable pageable
     );
 
-    // =========================
-    // RECHERCHE MANAGER / EMPLOYEE
-    // =========================
 
     @Query("""
       select e from Event e
@@ -179,5 +172,18 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             Pageable pageable
     );
 
+    Page<Event> findByStatusOrderByCreatedAtDesc(EventStatus status, Pageable pageable);
 
+    @Query("""
+    select e from Event e
+    left join e.targetDepartment td
+    where e.status = 'PENDING'
+      and e.audience = 'DEPARTMENT'
+      and td.id = :departmentId
+    order by e.createdAt desc
+    """)
+    Page<Event> findPendingForManagerDepartment(
+            @Param("departmentId") Long departmentId,
+            Pageable pageable
+    );
 }

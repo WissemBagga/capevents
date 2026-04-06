@@ -4,8 +4,10 @@ import com.capevents.backend.audit.AuditService;
 import com.capevents.backend.common.dto.PageResponse;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
+import com.capevents.backend.department.Department;
 import com.capevents.backend.department.DepartmentRepository;
 import com.capevents.backend.event.dto.CreateEventRequest;
+import com.capevents.backend.event.dto.EmployeeEventSubmissionResponse;
 import com.capevents.backend.event.dto.EventResponse;
 import com.capevents.backend.event.dto.UpdateEventRequest;
 import com.capevents.backend.mail.EmailService;
@@ -169,7 +171,6 @@ public class EventService {
 
 
 
-    //
     @Transactional(readOnly = true)
     public List<EventResponse> listPublishedUpcoming(){
         List<Event> events = eventRepository.findByStatusAndStartAtAfterOrderByCreatedAtAsc(
@@ -575,6 +576,280 @@ public class EventService {
         );
 
         return toResponse(e);
+    }
+
+    @Transactional
+    public EmployeeEventSubmissionResponse submitByEmployee(CreateEventRequest req, String creatorEmail, String ip) {
+        validateBusiness(req);
+        User creator = userRepository.findByEmailWithRolesAndDepartment(creatorEmail)
+                .orElseThrow(() -> new NotFoundException("Créateur introuvable"));
+
+        boolean isHr = creator.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
+        boolean isManager = creator.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
+
+        if (isHr || isManager) {
+            throw new BadRequestException("Les administrateurs doivent utiliser le flux normal de création");
+        }
+
+        var targetDept = resolveEmployeeTargetDepartment(req, creator);
+
+        Event event = new Event();
+        event.setTitle(req.title());
+        event.setCategory(req.category());
+        event.setDescription(req.description());
+        event.setStartAt(req.startAt());
+        event.setDurationMinutes(req.durationMinutes());
+        event.setLocationType(req.locationType());
+        event.setLocationName(req.locationName());
+        event.setMeetingUrl(req.meetingUrl());
+        event.setAddress(req.address());
+        event.setCapacity(req.capacity());
+        event.setRegistrationDeadline(req.registrationDeadline());
+        event.setImageUrl(req.imageUrl());
+        event.setCreatedBy(creator);
+        event.setAudience(req.audience());
+        event.setTargetDepartment(targetDept);
+
+        boolean directPublish = canEmployeePublishDirectly(req);
+        event.setStatus(directPublish ? EventStatus.PUBLISHED : EventStatus.PENDING);
+
+        Event saved = eventRepository.save(event);
+
+        auditService.logByEmail(
+                creatorEmail,
+                directPublish ? "EMPLOYEE_EVENT_DIRECT_PUBLISHED" : "EMPLOYEE_EVENT_SUBMITTED",
+                "EVENT",
+                saved.getId().toString(),
+                ip,
+                "{\"title\":\"" + escape(saved.getTitle()) + "\",\"status\":\"" + saved.getStatus() + "\"}"
+        );
+
+        if (!directPublish) {
+            List<User> approvers = resolveApprovers(saved);
+            notificationService.notifyEventProposalSubmitted(approvers, saved, creator);
+            for (User approver : approvers) {
+                emailService.sendEventProposalSubmittedEmail(approver.getEmail(), saved, creator);
+            }
+        }
+
+        return new EmployeeEventSubmissionResponse(
+                saved.getId(),
+                saved.getStatus(),
+                directPublish,
+                directPublish
+                        ? "Événement partagé directement."
+                        : "Demande envoyée aux administrateurs."
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<EventResponse> listPendingApprovals(Pageable pageable, String actorEmail) {
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
+        Page<Event> page;
+
+        if (isHr) {
+            page = eventRepository.findByStatusOrderByCreatedAtDesc(EventStatus.PENDING, pageable);
+        } else {
+            boolean isManager = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
+            if (!isManager || actor.getDepartment() == null) {
+                throw new BadRequestException("Action non autorisée");
+            }
+
+            page = eventRepository.findPendingForManagerDepartment(actor.getDepartment().getId(), pageable);
+        }
+
+        Page<EventResponse> dtoPage = page.map(this::toResponse);
+
+        return new PageResponse<>(
+                dtoPage.getContent(),
+                dtoPage.getNumber(),
+                dtoPage.getSize(),
+                dtoPage.getTotalPages(),
+                dtoPage.getTotalElements(),
+                dtoPage.hasNext(),
+                dtoPage.hasPrevious()
+        );
+    }
+
+    @Transactional
+    public EventResponse approvePendingAndPublish(UUID eventId, String actorEmail, String ip) {
+        Event event = eventRepository.findByIdWithCreatorDept(eventId)
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        if (event.getStatus() != EventStatus.PENDING) {
+            throw new BadRequestException("Seuls les événements en attente peuvent être approuvés");
+        }
+
+        authorizeReviewPendingEvent(actor, event);
+
+        event.setStatus(EventStatus.PUBLISHED);
+        event.setReviewedBy(actor);
+        event.setReviewedAt(Instant.now());
+        event.setReviewComment(null);
+
+        auditService.logByEmail(
+                actorEmail,
+                "EVENT_APPROVED_AND_PUBLISHED",
+                "EVENT",
+                event.getId().toString(),
+                ip,
+                "{\"title\":\"" + escape(event.getTitle()) + "\"}"
+        );
+
+        notificationService.notifyEventProposalApproved(event.getCreatedBy(), event);
+        emailService.sendEventProposalApprovedEmail(event.getCreatedBy().getEmail(), event);
+
+        return toResponse(event);
+    }
+
+
+    @Transactional
+    public EventResponse approvePendingAndPublish(UUID eventId, String actorEmail, String ip) {
+        Event event = eventRepository.findByIdWithCreatorDept(eventId)
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        if (event.getStatus() != EventStatus.PENDING) {
+            throw new BadRequestException("Seuls les événements en attente peuvent être approuvés");
+        }
+
+        authorizeReviewPendingEvent(actor, event);
+
+        event.setStatus(EventStatus.PUBLISHED);
+        event.setReviewedBy(actor);
+        event.setReviewedAt(Instant.now());
+        event.setReviewComment(null);
+
+        auditService.logByEmail(
+                actorEmail,
+                "EVENT_APPROVED_AND_PUBLISHED",
+                "EVENT",
+                event.getId().toString(),
+                ip,
+                "{\"title\":\"" + escape(event.getTitle()) + "\"}"
+        );
+
+        notificationService.notifyEventProposalApproved(event.getCreatedBy(), event);
+        emailService.sendEventProposalApprovedEmail(event.getCreatedBy().getEmail(), event);
+
+        return toResponse(event);
+    }
+
+
+    @Transactional
+    public EventResponse rejectPending(UUID eventId, String reason, String actorEmail, String ip) {
+        Event event = eventRepository.findByIdWithCreatorDept(eventId)
+                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
+
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        if (event.getStatus() != EventStatus.PENDING) {
+            throw new BadRequestException("Seuls les événements en attente peuvent être refusés");
+        }
+
+        authorizeReviewPendingEvent(actor, event);
+
+        event.setStatus(EventStatus.REJECTED);
+        event.setReviewedBy(actor);
+        event.setReviewedAt(Instant.now());
+        event.setReviewComment(reason);
+
+        auditService.logByEmail(
+                actorEmail,
+                "EVENT_REJECTED",
+                "EVENT",
+                event.getId().toString(),
+                ip,
+                "{\"reason\":\"" + escape(reason) + "\"}"
+        );
+
+        notificationService.notifyEventProposalRejected(event.getCreatedBy(), event, reason);
+        emailService.sendEventProposalRejectedEmail(event.getCreatedBy().getEmail(), event, reason);
+
+        return toResponse(event);
+    }
+
+    private boolean canEmployeePublishDirectly(CreateEventRequest req) {
+        return req.durationMinutes() != null
+                && req.capacity() != null
+                && req.durationMinutes() <= 35
+                && req.capacity() <= 5;
+    }
+
+    private Department resolveEmployeeTargetDepartment( CreateEventRequest req, User creator ) {
+        if (req.audience() == EventAudience.GLOBAL) {
+            if (req.targetDepartmentId() != null) {
+                throw new BadRequestException("Le champ targetDepartmentId doit être nul pour les événements globaux");
+            }
+            return null;
+        }
+
+        if (creator.getDepartment() == null) {
+            throw new BadRequestException("L’employé n’a pas de département");
+        }
+
+        Long employeeDeptId = creator.getDepartment().getId();
+
+        if (req.targetDepartmentId() != null && !req.targetDepartmentId().equals(employeeDeptId)) {
+            throw new BadRequestException("Un employé ne peut proposer un événement départemental que pour son département");
+        }
+
+        return creator.getDepartment();
+    }
+
+
+    private void authorizeReviewPendingEvent(User actor, Event event) {
+        boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
+        if (isHr) {
+            return;
+        }
+
+        boolean isManager = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
+        if (!isManager) {
+            throw new NotFoundException("Événement introuvable");
+        }
+
+        if (event.getAudience() != EventAudience.DEPARTMENT) {
+            throw new NotFoundException("Événement introuvable");
+        }
+
+        Long actorDeptId = actor.getDepartment() != null ? actor.getDepartment().getId() : null;
+        Long targetDeptId = event.getTargetDepartment() != null ? event.getTargetDepartment().getId() : null;
+
+        if (actorDeptId == null || targetDeptId == null || !actorDeptId.equals(targetDeptId)) {
+            throw new NotFoundException("Événement introuvable");
+        }
+    }
+
+    private List<User> resolveApprovers(Event event) {
+        List<User> hrUsers = userRepository.findActiveHrUsers();
+
+        if (event.getAudience() == EventAudience.GLOBAL) {
+            return hrUsers;
+        }
+
+        Long targetDeptId = event.getTargetDepartment() != null
+                ? event.getTargetDepartment().getId()
+                : null;
+
+        if (targetDeptId == null) {
+            return hrUsers;
+        }
+
+        List<User> managers = userRepository.findActiveManagersByDepartmentId(targetDeptId);
+
+        return java.util.stream.Stream.concat(hrUsers.stream(), managers.stream())
+                .distinct()
+                .toList();
     }
 
     private void validateBusiness(CreateEventRequest req){

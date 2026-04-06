@@ -83,6 +83,16 @@ public class Event {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewed_by")
+    private User reviewedBy;
+
+    @Column(name = "reviewed_at")
+    private Instant reviewedAt;
+
+    @Column(name = "review_comment", length = 1000)
+    private String reviewComment;
+
     @PrePersist
     public void prePersist() {
         if (id == null) {
