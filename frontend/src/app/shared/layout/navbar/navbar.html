@@ -5,7 +5,7 @@
 
   <div class="navbar-center">
     @if (hasEmployeeRole() && !isAdmin()) {
-      <a routerLink="/dashboard/employee">Dashboard</a>
+      <a routerLink="/dashboard/employee" routerLinkActive="active-link">Dashboard</a>
     }
     
     @if (hasEmployeeRole()) {
@@ -27,6 +27,119 @@
 
   <div class="navbar-right">
     @if (currentUser$ | async; as user) {
+      <div class="notification-wrapper">
+        <button
+          type="button"
+          class="notification-bell"
+          (click)="toggleNotifications($event)"
+          aria-label="Ouvrir les notifications"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"/>
+            <path d="M9 17a3 3 0 0 0 6 0"/>
+          </svg>
+
+          @if (unreadCount > 0) {
+            <span class="notification-badge">
+              {{ unreadCount > 99 ? '99+' : unreadCount }}
+            </span>
+          }
+        </button>
+
+        @if (notificationsOpen) {
+          <div class="notification-panel" (click)="$event.stopPropagation()">
+            <div class="notification-panel-header">
+              <div>
+                <h4>Notifications</h4>
+                <p>{{ unreadCount }} non lue{{ unreadCount > 1 ? 's' : '' }}</p>
+              </div>
+
+              <button type="button" class="panel-link-btn" (click)="refreshNotifications()">
+                Actualiser
+              </button>
+            </div>
+
+            @if (notificationsLoading) {
+              <div class="notification-state">
+                <span>Chargement des notifications...</span>
+              </div>
+            }
+
+            @if (!notificationsLoading && notificationsErrorMessage) {
+              <div class="notification-state error-state">
+                <span>{{ notificationsErrorMessage }}</span>
+              </div>
+            }
+
+            @if (!notificationsLoading && !notificationsErrorMessage && notifications.length === 0) {
+              <div class="notification-state">
+                <span>Aucune notification pour le moment.</span>
+              </div>
+            }
+
+            @if (!notificationsLoading && notifications.length > 0) {
+              <div class="notification-list">
+                @for (notification of notifications; track trackByNotificationId($index, notification)) {
+                  <article class="notification-item" [class.unread]="!notification.read">
+                    <div class="notification-item-top">
+                      <h5>{{ notification.title }}</h5>
+
+                      @if (!notification.read) {
+                        <span class="unread-dot"></span>
+                      }
+                    </div>
+
+                    <p class="notification-message">{{ notification.message }}</p>
+
+                    <div class="notification-meta">
+                      <span>{{ notification.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+
+                      <div class="notification-actions">
+                        @if (notification.actionPath) {
+                          <button
+                            type="button"
+                            class="panel-link-btn"
+                            (click)="openNotification(notification, $event)"
+                          >
+                            Ouvrir
+                          </button>
+                        }
+
+                        @if (!notification.read) {
+                          <button
+                            type="button"
+                            class="panel-link-btn"
+                            (click)="markAsRead(notification, $event)"
+                          >
+                            Marquer comme lu
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+
+            <div class="notification-panel-footer">
+              <button
+                type="button"
+                class="panel-link-btn"
+                (click)="markAllAsRead($event)"
+                [disabled]="markAllLoading || unreadCount === 0"
+              >
+                @if (markAllLoading) {
+                  Traitement...
+                } @else {
+                  Tout marquer comme lu
+                }
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
       <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
       <button type="button" (click)="logout()">Déconnexion</button>
     }
