@@ -1,6 +1,7 @@
 package com.capevents.backend.mail;
 
 import com.capevents.backend.event.Event;
+import com.capevents.backend.user.User;
 
 public interface EmailService {
     void sendVerificationEmail(String to, String rawToken);
@@ -10,4 +11,8 @@ public interface EmailService {
     void sendRegistrationSavedEmail(String to, Event event);
     void sendEventCancelledEmail(String to, Event event);
     void sendEventRescheduledEmail(String to, Event event);
+
+    void sendEventProposalSubmittedEmail(String to, Event event, User creator);
+    void sendEventProposalApprovedEmail(String to, Event event);
+    void sendEventProposalRejectedEmail(String to, Event event, String reason);
 }

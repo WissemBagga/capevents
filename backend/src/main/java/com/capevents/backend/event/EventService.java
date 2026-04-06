@@ -710,41 +710,6 @@ public class EventService {
 
 
     @Transactional
-    public EventResponse approvePendingAndPublish(UUID eventId, String actorEmail, String ip) {
-        Event event = eventRepository.findByIdWithCreatorDept(eventId)
-                .orElseThrow(() -> new NotFoundException("Événement introuvable"));
-
-        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
-                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
-
-        if (event.getStatus() != EventStatus.PENDING) {
-            throw new BadRequestException("Seuls les événements en attente peuvent être approuvés");
-        }
-
-        authorizeReviewPendingEvent(actor, event);
-
-        event.setStatus(EventStatus.PUBLISHED);
-        event.setReviewedBy(actor);
-        event.setReviewedAt(Instant.now());
-        event.setReviewComment(null);
-
-        auditService.logByEmail(
-                actorEmail,
-                "EVENT_APPROVED_AND_PUBLISHED",
-                "EVENT",
-                event.getId().toString(),
-                ip,
-                "{\"title\":\"" + escape(event.getTitle()) + "\"}"
-        );
-
-        notificationService.notifyEventProposalApproved(event.getCreatedBy(), event);
-        emailService.sendEventProposalApprovedEmail(event.getCreatedBy().getEmail(), event);
-
-        return toResponse(event);
-    }
-
-
-    @Transactional
     public EventResponse rejectPending(UUID eventId, String reason, String actorEmail, String ip) {
         Event event = eventRepository.findByIdWithCreatorDept(eventId)
                 .orElseThrow(() -> new NotFoundException("Événement introuvable"));

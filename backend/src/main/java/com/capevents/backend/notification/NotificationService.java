@@ -180,4 +180,60 @@ public class NotificationService {
                 notification.getReadAt()
         );
     }
+
+    @Transactional
+    public void notifyEventProposalSubmitted(List<User> approvers, Event event, User creator) {
+        if (approvers == null || approvers.isEmpty()) return;
+
+        String creatorFullName = buildFullName(creator.getFirstName(), creator.getLastName());
+
+        String audienceLabel = event.getAudience() != null ? event.getAudience().name() : "UNKNOWN";
+
+        String message = creatorFullName
+                + " a soumis une demande d’événement \"" + event.getTitle() + "\"."
+                + " Audience : " + audienceLabel + ".";
+
+        createNotifications(
+                approvers,
+                NotificationType.EVENT_PROPOSAL_SUBMITTED,
+                "Nouvelle demande d’événement",
+                message,
+                "/admin/events/" + event.getId()
+        );
+    }
+
+    @Transactional
+    public void notifyEventProposalApproved(User creator, Event event) {
+        createNotification(
+                creator,
+                NotificationType.EVENT_PROPOSAL_APPROVED,
+                "Demande approuvée",
+                "Votre événement \"" + event.getTitle() + "\" a été approuvé et publié.",
+                "/events/" + event.getId()
+        );
+    }
+
+    @Transactional
+    public void notifyEventProposalRejected(User creator, Event event, String reason) {
+        String safeReason = (reason != null && !reason.isBlank())
+                ? reason.trim()
+                : "Aucune raison précisée.";
+
+        createNotification(
+                creator,
+                NotificationType.EVENT_PROPOSAL_REJECTED,
+                "Demande refusée",
+                "Votre événement \"" + event.getTitle() + "\" a été refusé. Raison : " + safeReason,
+                null
+        );
+    }
+
+    private String buildFullName(String firstName, String lastName) {
+        String safeFirstName = firstName != null ? firstName.trim() : "";
+        String safeLastName = lastName != null ? lastName.trim() : "";
+        return (safeFirstName + " " + safeLastName).trim();
+    }
+
+
+
 }

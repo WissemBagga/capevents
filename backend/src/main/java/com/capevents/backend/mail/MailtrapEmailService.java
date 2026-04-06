@@ -2,6 +2,7 @@ package com.capevents.backend.mail;
 
 import com.capevents.backend.config.AppMailProperties;
 import com.capevents.backend.event.Event;
+import com.capevents.backend.user.User;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -140,4 +141,71 @@ public class MailtrapEmailService implements EmailService {
 
         mailSender.send(message);
     }
+
+    @Override
+    public void sendEventProposalSubmittedEmail(String to, Event event, User creator) {
+        String eventUrl = mailProperties.getFrontendBaseUrl() + "/admin/events/" + event.getId();
+        String creatorFullName = buildFullName(creator.getFirstName(), creator.getLastName());
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailProperties.getFrom());
+        message.setTo(to);
+        message.setSubject("Nouvelle demande d’événement - CapEvents");
+        message.setText(
+                "Bonjour,\n\n" +
+                        creatorFullName + " a soumis une demande d’événement.\n\n" +
+                        "Titre : " + event.getTitle() + "\n" +
+                        "Date : " + DATE_TIME_FORMATTER.format(event.getStartAt()) + "\n" +
+                        "Audience : " + event.getAudience() + "\n" +
+                        "Voir la demande : " + eventUrl + "\n\n" +
+                        "CapEvents"
+        );
+
+        mailSender.send(message);
+    }
+
+    @Override
+    public void sendEventProposalApprovedEmail(String to, Event event) {
+        String eventUrl = mailProperties.getFrontendBaseUrl() + "/events/" + event.getId();
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailProperties.getFrom());
+        message.setTo(to);
+        message.setSubject("Demande approuvée - CapEvents");
+        message.setText(
+                "Bonjour,\n\n" +
+                        "Votre événement \"" + event.getTitle() + "\" a été approuvé et publié.\n" +
+                        "Voir l’événement : " + eventUrl + "\n\n" +
+                        "CapEvents"
+        );
+
+        mailSender.send(message);
+    }
+
+    @Override
+    public void sendEventProposalRejectedEmail(String to, Event event, String reason) {
+        String safeReason = (reason != null && !reason.isBlank())
+                ? reason.trim()
+                : "Aucune raison précisée.";
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailProperties.getFrom());
+        message.setTo(to);
+        message.setSubject("Demande refusée - CapEvents");
+        message.setText(
+                "Bonjour,\n\n" +
+                        "Votre événement \"" + event.getTitle() + "\" a été refusé.\n" +
+                        "Raison : " + safeReason + "\n\n" +
+                        "CapEvents"
+        );
+
+        mailSender.send(message);
+    }
+
+    private String buildFullName(String firstName, String lastName) {
+        String safeFirstName = firstName != null ? firstName.trim() : "";
+        String safeLastName = lastName != null ? lastName.trim() : "";
+        return (safeFirstName + " " + safeLastName).trim();
+    }
+
 }

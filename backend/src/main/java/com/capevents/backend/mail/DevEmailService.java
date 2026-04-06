@@ -2,6 +2,7 @@ package com.capevents.backend.mail;
 
 import com.capevents.backend.config.AppMailProperties;
 import com.capevents.backend.event.Event;
+import com.capevents.backend.user.User;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -53,5 +54,35 @@ public class DevEmailService implements EmailService {
         System.out.println("[DEV EMAIL] Event rescheduled for " + to
                 + " | event=" + event.getTitle()
                 + " | link=" + mailProperties.getFrontendBaseUrl() + "/events/" + event.getId());
+    }
+
+    @Override
+    public void sendEventProposalSubmittedEmail(String to, Event event, User creator) {
+        String creatorFullName = buildFullName(creator.getFirstName(), creator.getLastName());
+
+        System.out.println("[DEV EMAIL] Event proposal submitted to " + to
+                + " | creator=" + creatorFullName
+                + " | event=" + event.getTitle()
+                + " | link=" + mailProperties.getFrontendBaseUrl() + "/admin/events/" + event.getId());
+    }
+
+    @Override
+    public void sendEventProposalApprovedEmail(String to, Event event) {
+        System.out.println("[DEV EMAIL] Event proposal approved for " + to
+                + " | event=" + event.getTitle()
+                + " | link=" + mailProperties.getFrontendBaseUrl() + "/events/" + event.getId());
+    }
+
+    @Override
+    public void sendEventProposalRejectedEmail(String to, Event event, String reason) {
+        System.out.println("[DEV EMAIL] Event proposal rejected for " + to
+                + " | event=" + event.getTitle()
+                + " | reason=" + reason);
+    }
+
+    private String buildFullName(String firstName, String lastName) {
+        String safeFirstName = firstName != null ? firstName.trim() : "";
+        String safeLastName = lastName != null ? lastName.trim() : "";
+        return (safeFirstName + " " + safeLastName).trim();
     }
 }
