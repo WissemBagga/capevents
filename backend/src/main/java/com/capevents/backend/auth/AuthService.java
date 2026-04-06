@@ -2,7 +2,7 @@ package com.capevents.backend.auth;
 
 import com.capevents.backend.audit.AuditService;
 import com.capevents.backend.auth.dto.*;
-import com.capevents.backend.auth.mail.EmailService;
+import com.capevents.backend.mail.EmailService;
 import com.capevents.backend.auth.token.*;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.config.AppSecurityProperties;

@@ -7,6 +7,7 @@ import com.capevents.backend.event.EventAudience;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
 import com.capevents.backend.invitation.dto.*;
+import com.capevents.backend.mail.EmailService;
 import com.capevents.backend.notification.NotificationService;
 import com.capevents.backend.registration.EventRegistrationRepository;
 import com.capevents.backend.registration.RegistrationStatus;
@@ -29,19 +30,22 @@ public class EventInvitationService {
     private final EventInvitationRepository invitationRepository;
     private final EventRegistrationRepository registrationRepository;
     private final NotificationService notificationService;
+    private final EmailService emailService;
 
     public EventInvitationService(
             EventRepository eventRepository,
             UserRepository userRepository,
             EventInvitationRepository invitationRepository,
             EventRegistrationRepository registrationRepository,
-            NotificationService notificationService
-    ) {
+            NotificationService notificationService,
+            EmailService emailService
+            ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.invitationRepository = invitationRepository;
         this.registrationRepository = registrationRepository;
         this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -112,6 +116,12 @@ public class EventInvitationService {
                     fullName,
                     email
             ));
+
+            emailService.sendEventInvitationEmail(
+                    target.getEmail(),
+                    event,
+                    buildFullName(actor.getFirstName(), actor.getLastName())
+            );
         }
 
         return new SendInvitationResponse(
@@ -214,6 +224,12 @@ public class EventInvitationService {
                     fullName,
                     email
             ));
+
+            emailService.sendEventInvitationEmail(
+                    target.getEmail(),
+                    event,
+                    buildFullName(actor.getFirstName(), actor.getLastName())
+            );
         }
 
         return new SendInvitationResponse(

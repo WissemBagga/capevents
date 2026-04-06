@@ -8,6 +8,7 @@ import com.capevents.backend.department.DepartmentRepository;
 import com.capevents.backend.event.dto.CreateEventRequest;
 import com.capevents.backend.event.dto.EventResponse;
 import com.capevents.backend.event.dto.UpdateEventRequest;
+import com.capevents.backend.mail.EmailService;
 import com.capevents.backend.notification.NotificationService;
 import com.capevents.backend.registration.EventRegistration;
 import com.capevents.backend.registration.EventRegistrationRepository;
@@ -33,14 +34,16 @@ public class EventService {
     private final DepartmentRepository departmentRepository;
     private  final EventRegistrationRepository registrationRepository;
     private final NotificationService notificationService;
+    private final EmailService emailService;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository, AuditService auditService, DepartmentRepository departmentRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository, AuditService auditService, DepartmentRepository departmentRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.auditService = auditService;
         this.departmentRepository = departmentRepository;
         this.registrationRepository = registrationRepository;
         this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -156,6 +159,9 @@ public class EventService {
 
         if (previousStatus == EventStatus.CANCELLED) {
             notificationService.notifyEventRescheduled(registeredUsers, e);
+            for (User registeredUser : registeredUsers) {
+                emailService.sendEventRescheduledEmail(registeredUser.getEmail(), e);
+            }
         }
 
         return  toResponse(e);
@@ -293,6 +299,10 @@ public class EventService {
         }
         List<User> registeredUsers = getRegisteredUsers(e);
 
+        for (User registeredUser : registeredUsers) {
+            emailService.sendEventCancelledEmail(registeredUser.getEmail(), e);
+        }
+
         e.setStatus(EventStatus.CANCELLED);
         e.setCancelReason(reason);
 
@@ -306,6 +316,7 @@ public class EventService {
                 "{\"reason\":\"" + escape(reason) + "\"}"
         );
         notificationService.notifyEventCancelled(registeredUsers, e);
+
 
         return toResponse(e);
     }

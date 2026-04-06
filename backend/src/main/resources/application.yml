@@ -38,9 +38,7 @@ app:
       refresh-expiration-days: 7
     allowed-email-domains:
       - capgemini.com
-      - entreprise.local
-      - test.com
 
   mail:
     from: noreply@capevents.local
-    frontend-base-url: http://localhost:8080
+    frontend-base-url: http://localhost:4200
