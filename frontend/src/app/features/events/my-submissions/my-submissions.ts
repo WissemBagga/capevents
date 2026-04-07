@@ -17,7 +17,7 @@ export class MySubmissions {
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
 
-  items: EventResponse[] = [];
+  submissions: EventResponse[] = [];
   loading = false;
   errorMessage = '';
 
@@ -37,11 +37,11 @@ export class MySubmissions {
       }))
       .subscribe({
         next: (page) => {
-          this.items = page.items ?? [];
+          this.submissions = page.items ?? [];
           this.cdr.markForCheck();
         },
         error: (err) => {
-          this.items = [];
+          this.submissions = [];
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
@@ -51,14 +51,12 @@ export class MySubmissions {
       });
   }
 
-  getStatusLabel(status: EventResponse['status']): string {
+  statusLabel(status: EventResponse['status']): string {
     switch (status) {
       case 'PUBLISHED':
         return 'Publié';
       case 'PENDING':
         return 'En attente';
-      case 'REJECTED':
-        return 'Refusé';
       case 'DRAFT':
         return 'Brouillon';
       case 'CANCELLED':
@@ -68,6 +66,10 @@ export class MySubmissions {
       default:
         return status;
     }
+  }
+
+  canOpenEvent(status: EventResponse['status']): boolean {
+    return status === 'PUBLISHED';
   }
 
   trackByEventId(_: number, item: EventResponse): string {

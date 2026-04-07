@@ -1,72 +1,88 @@
-<div class="page-shell">
+<div class="my-submissions-page">
   <div class="page-header">
-    <div>
-      <h1>Mes demandes</h1>
-      <p>Suivez les événements que vous avez partagés ou proposés.</p>
-    </div>
-
-    <button type="button" class="refresh-btn" (click)="loadMySubmissions()">
-      Actualiser
-    </button>
+    <h1>Mes demandes</h1>
+    <p>Suivez les événements que vous avez partagés ou proposés.</p>
   </div>
 
-  @if (errorMessage) {
-    <div class="state-message error-msg">
-      <p>{{ errorMessage }}</p>
-    </div>
-  }
-
   @if (loading) {
-    <div class="state-message loading-msg">
-      <p>Chargement...</p>
+    <div class="state-msg loading-msg">
+      <span>Chargement de vos demandes...</span>
     </div>
   }
 
-  @if (!loading && items.length === 0) {
-    <div class="state-message success-msg">
-      <p>Aucune demande pour le moment.</p>
+  @if (errorMessage) {
+    <div class="state-msg error-msg">
+      <span>{{ errorMessage }}</span>
     </div>
   }
 
-  @if (!loading && items.length > 0) {
-    <div class="cards-grid">
-      @for (event of items; track trackByEventId($index, event)) {
-        <article class="submission-card">
-          <div class="submission-header">
-            <div>
-              <h2>{{ event.title }}</h2>
-              <p>{{ event.category || '—' }}</p>
+  @if (!loading && submissions.length === 0) {
+    <div class="state-msg info-msg">
+      <span>Aucune demande à afficher.</span>
+    </div>
+  }
+
+  <div class="submissions-grid">
+    @for (event of submissions; track trackByEventId($index, event)) {
+      <article class="submission-card">
+        <div class="card-top">
+          <span class="status-badge" [class.pending]="event.status === 'PENDING'"
+                                     [class.published]="event.status === 'PUBLISHED'"
+                                     [class.draft]="event.status === 'DRAFT'"
+                                     [class.cancelled]="event.status === 'CANCELLED'"
+                                     [class.archived]="event.status === 'ARCHIVED'">
+            {{ statusLabel(event.status) }}
+          </span>
+        </div>
+
+        <h3 class="event-title">{{ event.title }}</h3>
+
+        <div class="meta-list">
+          <div class="meta-row">
+            <span class="meta-label">Catégorie</span>
+            <span>{{ event.category || '—' }}</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Date</span>
+            <span>{{ event.startAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Audience</span>
+            <span>{{ event.audience }}</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Capacité</span>
+            <span>{{ event.capacity }}</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Durée</span>
+            <span>{{ event.durationMinutes }} min</span>
+          </div>
+
+          @if (event.targetDepartmentName) {
+            <div class="meta-row">
+              <span class="meta-label">Département</span>
+              <span>{{ event.targetDepartmentName }}</span>
             </div>
+          }
+        </div>
 
-            <span class="status-badge" [class]="'status-' + event.status.toLowerCase()">
-              {{ getStatusLabel(event.status) }}
-            </span>
-          </div>
+        @if (event.description) {
+          <p class="description">{{ event.description }}</p>
+        }
 
-          <div class="submission-body">
-            <p><strong>Date :</strong> {{ event.startAt | date:'dd/MM/yyyy HH:mm' }}</p>
-            <p><strong>Audience :</strong> {{ event.audience }}</p>
-            <p><strong>Capacité :</strong> {{ event.capacity }}</p>
-            <p><strong>Durée :</strong> {{ event.durationMinutes }} min</p>
-
-            @if (event.targetDepartmentName) {
-              <p><strong>Département :</strong> {{ event.targetDepartmentName }}</p>
-            }
-
-            @if (event.description) {
-              <p class="description">{{ event.description }}</p>
-            }
-          </div>
-
-          <div class="submission-actions">
-            @if (event.status === 'PUBLISHED') {
-              <a [routerLink]="['/events', event.id]" class="link-btn">
-                Voir l’événement
-              </a>
-            }
-          </div>
-        </article>
-      }
-    </div>
-  }
+        <div class="card-footer">
+          @if (canOpenEvent(event.status)) {
+            <a [routerLink]="['/events', event.id]" class="details-link">
+              Voir l’événement
+            </a>
+          }
+        </div>
+      </article>
+    }
+  </div>
 </div>
