@@ -184,4 +184,13 @@ export class EventService {
   rejectPending(id: string, reason: string) {
     return this.http.post<EventResponse>(`${this.apiUrl}/admin/${id}/reject`, { reason });
   }
+
+  getMySubmissions(page = 0, size = 8) {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    return this.http.get<PageResponse<EventResponse>>(`${this.apiUrl}/me/submissions`, { params });
+  }
+  
 }

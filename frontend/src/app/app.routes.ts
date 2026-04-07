@@ -21,6 +21,8 @@ import { MyInvitations } from './features/events/my-invitations/my-invitations'
 import { SubmitEvent } from './features/events/submit-event/submit-event';
 import { PendingEvents } from './features/admin-events/pending-events/pending-events';
 
+import { MySubmissions } from './features/events/my-submissions/my-submissions';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -99,6 +101,12 @@ export const routes: Routes = [
         component: PendingEvents,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] }
+      },
+      {
+        path: 'my-submissions',
+        component: MySubmissions,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE'] }
       }
     ]
   },

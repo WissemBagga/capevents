@@ -1,5 +1,6 @@
 package com.capevents.backend.event;
 
+import com.capevents.backend.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     List<Event> findByStatusAndStartAtAfterOrderByCreatedAtAsc(EventStatus status, Instant now);
 
     List<Event> findAllByOrderByCreatedAtDesc();
+    Page<Event> findByCreatedByOrderByCreatedAtDesc(User createdBy, Pageable pageable);
 
     @Query("""
       select e from Event e

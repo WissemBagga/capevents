@@ -1,0 +1,76 @@
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import { EventService } from '../../../core/services/event.service';
+import { EventResponse } from '../../../core/models/event.model';
+
+@Component({
+  selector: 'app-my-submissions',
+  standalone: true,
+  imports: [DatePipe, RouterLink],
+  templateUrl: './my-submissions.html',
+  styleUrl: './my-submissions.css'
+})
+export class MySubmissions {
+  private eventService = inject(EventService);
+  private cdr = inject(ChangeDetectorRef);
+
+  items: EventResponse[] = [];
+  loading = false;
+  errorMessage = '';
+
+  ngOnInit(): void {
+    this.loadMySubmissions();
+  }
+
+  loadMySubmissions(): void {
+    this.loading = true;
+    this.errorMessage = '';
+    this.cdr.markForCheck();
+
+    this.eventService.getMySubmissions()
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (page) => {
+          this.items = page.items ?? [];
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.items = [];
+          this.errorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de charger vos demandes.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  getStatusLabel(status: EventResponse['status']): string {
+    switch (status) {
+      case 'PUBLISHED':
+        return 'Publié';
+      case 'PENDING':
+        return 'En attente';
+      case 'REJECTED':
+        return 'Refusé';
+      case 'DRAFT':
+        return 'Brouillon';
+      case 'CANCELLED':
+        return 'Annulé';
+      case 'ARCHIVED':
+        return 'Archivé';
+      default:
+        return status;
+    }
+  }
+
+  trackByEventId(_: number, item: EventResponse): string {
+    return item.id;
+  }
+}

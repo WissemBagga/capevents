@@ -7,6 +7,7 @@
     @if (hasEmployeeRole() && !isAdmin()) {
       <a routerLink="/dashboard/employee" routerLinkActive="active-link">Dashboard</a>
       <a routerLink="/employee/submit-event" routerLinkActive="active-link">Partager un événement</a>
+      <a routerLink="/my-submissions" routerLinkActive="active-link">Mes demandes</a>
     }
     
     @if (hasEmployeeRole()) {

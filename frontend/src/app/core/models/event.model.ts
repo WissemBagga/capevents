@@ -11,7 +11,7 @@ export interface EventResponse {
   address: string | null;
   capacity: number;
   registrationDeadline: string;
-  status: 'DRAFT' | 'PUBLISHED' | 'PENDING' | 'CANCELLED' | 'ARCHIVED';
+  status: 'DRAFT' | 'PUBLISHED' | 'PENDING' | 'REJECTED' | 'CANCELLED' | 'ARCHIVED';
 
   createdByEmail: string | null;
   createdByFullName: string | null;

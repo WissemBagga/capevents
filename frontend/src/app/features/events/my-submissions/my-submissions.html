@@ -1,0 +1,72 @@
+<div class="page-shell">
+  <div class="page-header">
+    <div>
+      <h1>Mes demandes</h1>
+      <p>Suivez les événements que vous avez partagés ou proposés.</p>
+    </div>
+
+    <button type="button" class="refresh-btn" (click)="loadMySubmissions()">
+      Actualiser
+    </button>
+  </div>
+
+  @if (errorMessage) {
+    <div class="state-message error-msg">
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="state-message loading-msg">
+      <p>Chargement...</p>
+    </div>
+  }
+
+  @if (!loading && items.length === 0) {
+    <div class="state-message success-msg">
+      <p>Aucune demande pour le moment.</p>
+    </div>
+  }
+
+  @if (!loading && items.length > 0) {
+    <div class="cards-grid">
+      @for (event of items; track trackByEventId($index, event)) {
+        <article class="submission-card">
+          <div class="submission-header">
+            <div>
+              <h2>{{ event.title }}</h2>
+              <p>{{ event.category || '—' }}</p>
+            </div>
+
+            <span class="status-badge" [class]="'status-' + event.status.toLowerCase()">
+              {{ getStatusLabel(event.status) }}
+            </span>
+          </div>
+
+          <div class="submission-body">
+            <p><strong>Date :</strong> {{ event.startAt | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p><strong>Audience :</strong> {{ event.audience }}</p>
+            <p><strong>Capacité :</strong> {{ event.capacity }}</p>
+            <p><strong>Durée :</strong> {{ event.durationMinutes }} min</p>
+
+            @if (event.targetDepartmentName) {
+              <p><strong>Département :</strong> {{ event.targetDepartmentName }}</p>
+            }
+
+            @if (event.description) {
+              <p class="description">{{ event.description }}</p>
+            }
+          </div>
+
+          <div class="submission-actions">
+            @if (event.status === 'PUBLISHED') {
+              <a [routerLink]="['/events', event.id]" class="link-btn">
+                Voir l’événement
+              </a>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

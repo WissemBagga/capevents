@@ -184,4 +184,15 @@ public class EventController {
         return eventService.rejectPending(id, req.reason(), auth.getName(), http.getRemoteAddr());
     }
 
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
+    @GetMapping("/me/submissions")
+    public PageResponse<EventResponse> listMySubmissions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            Authentication auth
+    ) {
+        var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return eventService.listMySubmissions(pageable, auth.getName());
+    }
+
 }

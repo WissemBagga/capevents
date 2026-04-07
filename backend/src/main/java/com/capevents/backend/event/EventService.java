@@ -743,6 +743,27 @@ public class EventService {
         return toResponse(event);
     }
 
+
+    @Transactional(readOnly = true)
+    public PageResponse<EventResponse> listMySubmissions(Pageable pageable, String actorEmail) {
+        User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        Page<EventResponse> page = eventRepository
+                .findByCreatedByOrderByCreatedAtDesc(actor, pageable)
+                .map(this::toResponse);
+
+        return new PageResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
+    }
+
     private boolean canEmployeePublishDirectly(CreateEventRequest req) {
         return req.durationMinutes() != null
                 && req.capacity() != null
