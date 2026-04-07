@@ -17,6 +17,8 @@ import { SendInvitationRequest, SendInvitationResponse, AdminEventInvitationResp
 
 import {UserSummary} from '../models/user-summary.model'
 
+import {EmployeeEventSubmissionResponse} from '../models/employee-event-submission.model'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -162,4 +164,24 @@ export class EventService {
     });
   }
 
+
+  submitEventByEmployee(payload: CreateEventRequest) {
+    return this.http.post<EmployeeEventSubmissionResponse>(`${this.apiUrl}/employee-submit`, payload);
+  }
+
+  getPendingApprovals(page = 0, size = 8) {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    return this.http.get<PageResponse<EventResponse>>(`${this.apiUrl}/admin/pending`, { params });
+  }
+
+  approvePendingAndPublish(id: string) {
+    return this.http.post<EventResponse>(`${this.apiUrl}/admin/${id}/approve-publish`, {});
+  }
+
+  rejectPending(id: string, reason: string) {
+    return this.http.post<EventResponse>(`${this.apiUrl}/admin/${id}/reject`, { reason });
+  }
 }
