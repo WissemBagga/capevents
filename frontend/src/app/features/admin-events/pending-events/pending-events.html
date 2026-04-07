@@ -1,0 +1,70 @@
+<div class="page-shell">
+  <div class="page-header">
+    <div>
+      <h1>Demandes en attente</h1>
+      <p>Validez ou refusez les événements proposés par les employés.</p>
+    </div>
+
+    <button type="button" (click)="loadPendingEvents()">Actualiser</button>
+  </div>
+
+  @if (errorMessage) {
+    <div class="state-message error-msg">
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="state-message loading-msg">
+      <p>Chargement...</p>
+    </div>
+  }
+
+  @if (!loading && pendingEvents.length === 0) {
+    <div class="state-message success-msg">
+      <p>Aucune demande en attente.</p>
+    </div>
+  }
+
+  @if (!loading && pendingEvents.length > 0) {
+    <div class="events-grid">
+      @for (event of pendingEvents; track trackByEventId($index, event)) {
+        <article class="event-card">
+          <h2>{{ event.title }}</h2>
+          <p><strong>Proposé par :</strong> {{ event.createdByFullName || '—' }}</p>
+          <p><strong>Catégorie :</strong> {{ event.category || '—' }}</p>
+          <p><strong>Date :</strong> {{ event.startAt | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p><strong>Audience :</strong> {{ event.audience }}</p>
+          <p><strong>Capacité :</strong> {{ event.capacity }}</p>
+          <p><strong>Durée :</strong> {{ event.durationMinutes }} min</p>
+
+          @if (event.targetDepartmentName) {
+            <p><strong>Département cible :</strong> {{ event.targetDepartmentName }}</p>
+          }
+
+          <p>{{ event.description || '' }}</p>
+
+          <div class="event-actions">
+            <a [routerLink]="['/admin/events', event.id]">Voir détail</a>
+            <button type="button" (click)="approve(event.id)">Approuver & Publier</button>
+            <button type="button" (click)="toggleRejectBox(event.id)">Refuser</button>
+          </div>
+
+          @if (showRejectBoxById[event.id]) {
+            <div class="reject-box">
+              <textarea
+                rows="3"
+                [(ngModel)]="rejectReasonById[event.id]"
+                placeholder="Raison du refus"
+              ></textarea>
+
+              <button type="button" (click)="reject(event.id)">
+                Confirmer le refus
+              </button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</div>

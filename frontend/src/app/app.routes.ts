@@ -18,6 +18,8 @@ import { AdminEventDetails } from './features/admin-events/admin-event-details/a
 import {MyEvents} from './features/events/my-events/my-events'
 
 import { MyInvitations } from './features/events/my-invitations/my-invitations'
+import { SubmitEvent } from './features/events/submit-event/submit-event';
+import { PendingEvents } from './features/admin-events/pending-events/pending-events';
 
 
 export const routes: Routes = [
@@ -85,6 +87,18 @@ export const routes: Routes = [
         component: MyInvitations,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_EMPLOYEE'] }
+      },
+      {
+        path: 'employee/submit-event',
+        component: SubmitEvent,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE'] }
+      },
+      {
+        path: 'admin/pending-events',
+        component: PendingEvents,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] }
       }
     ]
   },

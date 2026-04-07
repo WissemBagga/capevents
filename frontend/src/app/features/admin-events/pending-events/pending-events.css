@@ -1,0 +1,174 @@
+.page-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.page-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.refresh-btn {
+  border: 1px solid #dbe3ea;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.alert {
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.error-alert {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.state-box {
+  padding: 18px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.cards-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.event-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.event-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.event-card-header h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+}
+
+.event-card-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.status-badge {
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #c2410c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.event-card-body {
+  display: grid;
+  gap: 10px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.meta-row span {
+  color: #64748b;
+}
+
+.description {
+  margin: 6px 0 0;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.event-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.secondary-link,
+.approve-btn,
+.reject-btn,
+.confirm-reject-btn {
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.secondary-link {
+  border: 1px solid #dbe3ea;
+  color: #0f172a;
+  background: #fff;
+}
+
+.approve-btn {
+  border: none;
+  background: #2563eb;
+  color: #fff;
+}
+
+.reject-btn,
+.confirm-reject-btn {
+  border: none;
+  background: #dc2626;
+  color: #fff;
+}
+
+.reject-box {
+  margin-top: 16px;
+  border-top: 1px solid #eef2f7;
+  padding-top: 16px;
+}
+
+.reject-box label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.reject-box textarea {
+  width: 100%;
+  border: 1px solid #dbe3ea;
+  border-radius: 12px;
+  padding: 12px;
+  font: inherit;
+}
+
+.reject-actions {
+  margin-top: 12px;
+}

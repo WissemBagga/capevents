@@ -1,0 +1,127 @@
+<div class="create-event-page">
+  <div class="page-header">
+    <div class="header-text">
+      <p class="breadcrumb">ACCUEIL › ÉVÉNEMENTS › PARTAGE</p>
+      <h1>Partager un événement</h1>
+      <p class="header-sub">{{ helperMessage }}</p>
+    </div>
+    <a routerLink="/dashboard/employee" class="back-link">Retour</a>
+  </div>
+
+  @if (errorMessage) {
+    <div class="state-message error-msg">
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="state-message success-msg">
+      <p>{{ successMessage }}</p>
+    </div>
+  }
+
+  <form class="event-form" [formGroup]="form">
+    <div class="form-section">
+      <h2 class="section-title">Informations générales</h2>
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="title">Titre</label>
+          <input id="title" type="text" formControlName="title" />
+        </div>
+
+        <div class="form-group">
+          <label for="category">Catégorie</label>
+          <input id="category" type="text" formControlName="category" />
+        </div>
+
+        <div class="form-group">
+          <label for="audience">Audience</label>
+          <select id="audience" formControlName="audience" (change)="onAudienceChange()">
+            <option value="DEPARTMENT">Département</option>
+            <option value="GLOBAL">Global</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="description">Description</label>
+          <textarea id="description" rows="4" formControlName="description"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="section-title">Date et capacité</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="startAt">Date de début</label>
+          <input id="startAt" type="datetime-local" formControlName="startAt" />
+        </div>
+
+        <div class="form-group">
+          <label for="registrationDeadline">Date limite d'inscription</label>
+          <input id="registrationDeadline" type="datetime-local" formControlName="registrationDeadline" />
+        </div>
+
+        <div class="form-group">
+          <label for="durationMinutes">Durée (minutes)</label>
+          <input id="durationMinutes" type="number" min="30" formControlName="durationMinutes" />
+        </div>
+
+        <div class="form-group">
+          <label for="capacity">Capacité</label>
+          <input id="capacity" type="number" min="2" formControlName="capacity" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="section-title">Lieu</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="locationType">Type de lieu</label>
+          <select id="locationType" formControlName="locationType" (change)="onLocationTypeChange()">
+            <option value="ONSITE">SUR SITE</option>
+            <option value="ONLINE">EN LIGNE</option>
+            <option value="EXTERNAL">EXTERNE</option>
+          </select>
+        </div>
+
+        @if (form.getRawValue().locationType === 'ONSITE') {
+          <div class="form-group">
+            <label for="locationName">Lieu</label>
+            <input id="locationName" type="text" formControlName="locationName" />
+          </div>
+        }
+
+        @if (form.getRawValue().locationType === 'ONLINE') {
+          <div class="form-group">
+            <label for="meetingUrl">Meeting URL</label>
+            <input id="meetingUrl" type="text" formControlName="meetingUrl" />
+          </div>
+        }
+
+        @if (form.getRawValue().locationType === 'EXTERNAL') {
+          <div class="form-group">
+            <label for="address">Adresse</label>
+            <input id="address" type="text" formControlName="address" />
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="submit()"
+        [disabled]="loading"
+      >
+        @if (loading) {
+          Envoi...
+        } @else {
+          {{ submitLabel }}
+        }
+      </button>
+    </div>
+  </form>
+</div>

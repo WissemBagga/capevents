@@ -6,6 +6,7 @@
   <div class="navbar-center">
     @if (hasEmployeeRole() && !isAdmin()) {
       <a routerLink="/dashboard/employee" routerLinkActive="active-link">Dashboard</a>
+      <a routerLink="/employee/submit-event" routerLinkActive="active-link">Partager un événement</a>
     }
     
     @if (hasEmployeeRole()) {
@@ -17,11 +18,13 @@
     @if (isManager()) {
       <a routerLink="/admin/manager">Dashboard Manager</a>
       <a routerLink="/admin/create-event">Créer un événement</a>
+      <a routerLink="/admin/pending-events" routerLinkActive="active-link">Demandes en attente</a>
     }
 
     @if (isHr()) {
       <a routerLink="/admin/hr">Dashboard RH</a>
       <a routerLink="/admin/create-event">Créer un événement</a>
+      <a routerLink="/admin/pending-events" routerLinkActive="active-link">Demandes en attente</a>
     }
   </div>
 
