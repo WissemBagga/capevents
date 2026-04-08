@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -7,11 +7,14 @@ import { FormsModule } from '@angular/forms';
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
 import { PageResponse } from '../../../core/models/page-response.model';
+import { AdminAnalyticsOverviewResponse, EventEngagementResponse } from '../../../core/models/admin-analytics.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { AdminAnalyticsService } from '../../../core/services/admin-analytics.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [DatePipe, RouterLink, FormsModule],
+  imports: [DatePipe, RouterLink, FormsModule, DecimalPipe],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })
@@ -19,6 +22,10 @@ export class AdminDashboard {
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
+  
+  private authService = inject(AuthService)
+  private adminAnalyticsService = inject(AdminAnalyticsService)
+
 
   events: EventResponse[] = [];
   filteredEvents: EventResponse[] = [];
@@ -35,9 +42,12 @@ export class AdminDashboard {
   totalItems = 0;
   hasNext = false;
   hasPrevious = false;
+  
+  analytics: AdminAnalyticsOverviewResponse | null = null;
 
   ngOnInit(): void {
     this.loadEvents();
+    this.loadAnalytics();
   }
 
   loadEvents(): void {
@@ -210,5 +220,45 @@ export class AdminDashboard {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  get dashboardTitle(): string {
+    return this.authService.isHr() ? 'Dashboard RH' : 'Dashboard Manager';
+  }
+
+  get dashboardSubtitle(): string {
+    return this.authService.isHr()
+      ? 'Vue d’ensemble des performances des événements.'
+      : 'Vue d’ensemble des événements de votre périmètre.';
+  }
+
+  loadAnalytics(): void {
+    this.loading = true;
+    this.errorMessage = '';
+    this.cdr.markForCheck();
+
+    this.adminAnalyticsService.getOverview()
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.analytics = response;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.analytics = null;
+          this.errorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de charger les analytics.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  trackByEventId(_: number, item: EventEngagementResponse): string {
+    return item.eventId;
   }
 }

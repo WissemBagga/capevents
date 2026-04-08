@@ -1,3 +1,122 @@
+<div class="admin-dashboard-page">
+
+  @if (loading) {
+    <div class="state-message loading-msg">
+      <p>Chargement des analytics...</p>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-message error-msg">
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @if (!loading && analytics) {
+    <div class="kpi-grid">
+      <article class="kpi-card">
+        <span class="kpi-label">Événements</span>
+        <strong class="kpi-value">{{ analytics.totalEvents }}</strong>
+        <span class="kpi-sub">tous statuts</span>
+      </article>
+
+      <article class="kpi-card">
+        <span class="kpi-label">Événements publiés</span>
+        <strong class="kpi-value">{{ analytics.publishedEvents }}</strong>
+        <span class="kpi-sub">actifs / réalisés</span>
+      </article>
+
+      <article class="kpi-card">
+        <span class="kpi-label">Taux d’inscription</span>
+        <strong class="kpi-value">{{ analytics.registrationRate | number:'1.0-2' }}%</strong>
+        <span class="kpi-sub">
+          {{ analytics.totalRegistrations }} / {{ analytics.totalCapacity }}
+        </span>
+      </article>
+
+      <article class="kpi-card">
+        <span class="kpi-label">Taux de présence</span>
+        <strong class="kpi-value">{{ analytics.attendanceRate | number:'1.0-2' }}%</strong>
+        <span class="kpi-sub">
+          {{ analytics.totalPresent }} présents
+        </span>
+      </article>
+
+      <article class="kpi-card secondary-card">
+        <span class="kpi-label">Total inscrits</span>
+        <strong class="kpi-value">{{ analytics.totalRegistrations }}</strong>
+        <span class="kpi-sub">participants enregistrés</span>
+      </article>
+
+      <article class="kpi-card secondary-card">
+        <span class="kpi-label">Total absents</span>
+        <strong class="kpi-value">{{ analytics.totalAbsent }}</strong>
+        <span class="kpi-sub">no-show constatés</span>
+      </article>
+    </div>
+
+    <section class="top-events-section">
+      <div class="section-header">
+        <h2>Événements les plus engageants</h2>
+        <p>Top 5 selon les inscriptions puis la présence.</p>
+      </div>
+
+      @if (analytics.topEngagingEvents.length === 0) {
+        <div class="state-message info-msg">
+          <p>Aucune donnée d’engagement disponible pour le moment.</p>
+        </div>
+      }
+
+      @if (analytics.topEngagingEvents.length > 0) {
+        <div class="top-events-list">
+          @for (item of analytics.topEngagingEvents; track trackByEventId($index, item)) {
+            <article class="top-event-card">
+              <div class="top-event-main">
+                <h3>{{ item.title }}</h3>
+                <p class="top-event-status">Statut : {{ item.status }}</p>
+              </div>
+
+              <div class="top-event-metrics">
+                <div class="metric-box">
+                  <span>Inscrits</span>
+                  <strong>{{ item.registeredCount }}</strong>
+                </div>
+
+                <div class="metric-box">
+                  <span>Capacité</span>
+                  <strong>{{ item.capacity }}</strong>
+                </div>
+
+                <div class="metric-box">
+                  <span>Présents</span>
+                  <strong>{{ item.presentCount }}</strong>
+                </div>
+
+                <div class="metric-box">
+                  <span>Absents</span>
+                  <strong>{{ item.absentCount }}</strong>
+                </div>
+
+                <div class="metric-box highlight-box">
+                  <span>Présence</span>
+                  <strong>{{ item.attendanceRate | number:'1.0-2' }}%</strong>
+                </div>
+              </div>
+
+              <div class="top-event-actions">
+                <a [routerLink]="['/admin/events', item.eventId]" class="details-link">
+                  Voir détail
+                </a>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
+</div>
+
+
 <div class="admin-page">
 
     <!-- Header -->
