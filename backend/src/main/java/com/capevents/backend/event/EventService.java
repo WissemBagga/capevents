@@ -708,7 +708,7 @@ public class EventService {
         notificationService.notifyEventProposalApproved(event.getCreatedBy(), event);
         emailService.sendEventProposalApprovedEmail(event.getCreatedBy().getEmail(), event);
         pointService.awardProposalApprovedBonus(event.getCreatedBy(), event);
-        
+
         return toResponse(event);
     }
 

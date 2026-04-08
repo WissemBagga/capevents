@@ -1,0 +1,69 @@
+<div class="my-points-page">
+  <div class="page-header">
+    <div>
+      <p class="breadcrumb">ACCUEIL › MES POINTS</p>
+      <h1>Mes points</h1>
+      <p class="header-sub">Consultez votre total et l’historique de vos points.</p>
+    </div>
+
+    <button type="button" class="refresh-btn" (click)="loadPoints()">
+      Actualiser
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="state-message loading-msg">
+      <p>Chargement des points...</p>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-message error-msg">
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @if (!loading) {
+    <div class="points-summary-card">
+      <span class="summary-label">Total</span>
+      <strong class="summary-value">{{ totalPoints }}</strong>
+      <span class="summary-unit">points</span>
+    </div>
+  }
+
+  @if (!loading && history.length === 0) {
+    <div class="state-message info-msg">
+      <p>Aucun historique de points pour le moment.</p>
+    </div>
+  }
+
+  @if (!loading && history.length > 0) {
+    <div class="history-list">
+      @for (item of history; track trackByTransactionId($index, item)) {
+        <article class="history-card">
+          <div class="history-left">
+            <div
+              class="delta-badge"
+              [class.delta-positive]="isPositive(item.pointsDelta)"
+              [class.delta-negative]="!isPositive(item.pointsDelta)"
+            >
+              {{ formatDelta(item.pointsDelta) }}
+            </div>
+          </div>
+
+          <div class="history-content">
+            <h3>{{ item.reason }}</h3>
+            <p class="event-title">{{ item.eventTitle }}</p>
+            <p class="meta-date">{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+          </div>
+
+          <div class="history-actions">
+            <a [routerLink]="['/events', item.eventId]" class="details-link">
+              Voir
+            </a>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>
