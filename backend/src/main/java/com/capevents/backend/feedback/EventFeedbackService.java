@@ -8,6 +8,7 @@ import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
 import com.capevents.backend.feedback.dto.CreateEventFeedbackRequest;
 import com.capevents.backend.feedback.dto.EventFeedbackResponse;
+import com.capevents.backend.points.PointService;
 import com.capevents.backend.registration.AttendanceStatus;
 import com.capevents.backend.registration.EventRegistration;
 import com.capevents.backend.registration.EventRegistrationRepository;
@@ -30,17 +31,19 @@ public class EventFeedbackService {
     private final EventRepository eventRepository;
     private final EventRegistrationRepository registrationRepository;
     private final UserRepository userRepository;
+    private final PointService pointService;
 
     public EventFeedbackService(
             EventFeedbackRepository feedbackRepository,
             EventRepository eventRepository,
             EventRegistrationRepository registrationRepository,
-            UserRepository userRepository
+            UserRepository userRepository, PointService pointService
     ) {
         this.feedbackRepository = feedbackRepository;
         this.eventRepository = eventRepository;
         this.registrationRepository = registrationRepository;
         this.userRepository = userRepository;
+        this.pointService = pointService;
     }
 
     @Transactional
@@ -64,6 +67,7 @@ public class EventFeedbackService {
         feedback.setComment(normalizeComment(req.comment()));
 
         EventFeedback saved = feedbackRepository.save(feedback);
+        pointService.awardFeedbackBonus(user, event);
         return toResponse(saved);
     }
 
