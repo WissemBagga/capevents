@@ -1,0 +1,90 @@
+<div class="feedback-page">
+  <div class="page-header">
+    <div>
+      <p class="breadcrumb">MES ÉVÉNEMENTS › FEEDBACK</p>
+      <h1>Laisser un feedback</h1>
+      @if (event) {
+        <p class="header-sub">
+          {{ event.title }} — {{ event.startAt | date:'dd/MM/yyyy HH:mm' }}
+        </p>
+      }
+    </div>
+
+    <button type="button" class="back-btn" (click)="goBack()">Retour</button>
+  </div>
+
+  @if (loading) {
+    <div class="state-message loading-msg">
+      <p>Chargement de l’événement...</p>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-message error-msg">
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="state-message success-msg">
+      <p>{{ successMessage }}</p>
+    </div>
+  }
+
+  @if (!loading && event) {
+    <div class="feedback-card">
+      @if (existingFeedback) {
+        <div class="existing-feedback-box">
+          <h2>Votre feedback a déjà été envoyé</h2>
+          <p><strong>Note :</strong> {{ existingFeedback.rating }}/5</p>
+
+          @if (existingFeedback.comment) {
+            <p><strong>Commentaire :</strong> {{ existingFeedback.comment }}</p>
+          }
+
+          <p class="small-text">
+            Envoyé le {{ existingFeedback.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </p>
+        </div>
+      } @else {
+        <form [formGroup]="form" class="feedback-form">
+          <div class="form-group">
+            <label for="rating">Note</label>
+            <select id="rating" formControlName="rating">
+              <option [ngValue]="5">5 - Excellent</option>
+              <option [ngValue]="4">4 - Très bien</option>
+              <option [ngValue]="3">3 - Bien</option>
+              <option [ngValue]="2">2 - Moyen</option>
+              <option [ngValue]="1">1 - Faible</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="comment">Commentaire (optionnel)</label>
+            <textarea
+              id="comment"
+              rows="5"
+              formControlName="comment"
+              placeholder="Votre ressenti sur l’événement..."
+            ></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn-primary"
+              (click)="submit()"
+              [disabled]="submitting"
+            >
+              @if (submitting) {
+                Envoi...
+              } @else {
+                Envoyer le feedback
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  }
+</div>

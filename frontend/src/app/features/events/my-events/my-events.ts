@@ -109,6 +109,11 @@ export class MyEvents {
     return new Date(registration.eventStartAt).getTime() >= new Date().getTime();
   }
 
+  canLeaveFeedback(registration: RegistrationResponse): boolean {
+    return registration.status === 'REGISTERED'
+      && new Date(registration.eventStartAt).getTime() < new Date().getTime();
+  }
+
   statusLabel(status: string): string {
     switch (status) {
       case 'REGISTERED':

@@ -55,17 +55,14 @@
     @for (registration of filteredRegistrations; track registration.eventId) {
       <article class="event-card" [class.upcoming]="isUpcoming(registration)">
 
-        <!-- Card Top: status badge + ref -->
         <div class="card-top">
           <span class="status-badge"
             [class.registered]="registration.status === 'REGISTERED'"
             [class.cancelled]="registration.status === 'CANCELLED'">
             {{ registration.status === 'REGISTERED' ? 'Inscrit' : 'Annulé' }}
           </span>
-
         </div>
 
-        <!-- Event Date Block (primary focus) -->
         <div class="event-date-block">
           <span class="meta-icon date-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -74,10 +71,8 @@
           <span class="event-time-value">{{ registration.eventStartAt | date:'HH:mm' }}</span>
         </div>
 
-        <!-- Event Title -->
         <h3 class="event-title">{{ registration.eventTitle }}</h3>
 
-        <!-- Meta rows -->
         <div class="meta-list">
           <div class="meta-row">
             <span class="meta-icon">
@@ -94,15 +89,20 @@
               <span class="meta-text">Annulé le <strong>{{ registration.cancelledAt | date:'mediumDate' }}</strong></span>
             </div>
           }
+          @if (canLeaveFeedback(registration)) {
+            <a class="btn-secondary" [routerLink]="['/events', registration.eventId, 'feedback']">
+              Laisser un feedback
+            </a>
+          }
         </div>
 
-        <!-- Action -->
         <div class="card-footer">
           <a [routerLink]="['/events', registration.eventId]" class="btn-details">
             Voir les détails
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
         </div>
+
 
       </article>
     }

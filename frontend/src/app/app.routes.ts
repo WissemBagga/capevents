@@ -23,6 +23,8 @@ import { PendingEvents } from './features/admin-events/pending-events/pending-ev
 
 import { MySubmissions } from './features/events/my-submissions/my-submissions';
 
+import {FeedbackEvent} from './features/events/feedback-event/feedback-event'
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -105,6 +107,12 @@ export const routes: Routes = [
       {
         path: 'my-submissions',
         component: MySubmissions,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE'] }
+      },
+      {
+        path: 'events/:id/feedback',
+        component: FeedbackEvent,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_EMPLOYEE'] }
       }

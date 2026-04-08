@@ -19,6 +19,8 @@ import {UserSummary} from '../models/user-summary.model'
 
 import {EmployeeEventSubmissionResponse} from '../models/employee-event-submission.model'
 
+import {EventFeedbackResponse, CreateEventFeedbackRequest} from '../models/feedback.model'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -191,6 +193,14 @@ export class EventService {
       .set('size', size);
 
     return this.http.get<PageResponse<EventResponse>>(`${this.apiUrl}/me/submissions`, { params });
+  }
+
+  createFeedback(eventId: string, payload: CreateEventFeedbackRequest) {
+    return this.http.post<EventFeedbackResponse>(`${this.apiUrl}/${eventId}/feedback`, payload);
+  }
+
+  getMyFeedback(eventId: string) {
+    return this.http.get<EventFeedbackResponse>(`${this.apiUrl}/${eventId}/feedback/me`);
   }
   
 }
