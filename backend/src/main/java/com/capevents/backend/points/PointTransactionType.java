@@ -1,0 +1,10 @@
+package com.capevents.backend.points;
+
+public enum PointTransactionType {
+    REGISTRATION_BONUS,
+    UNREGISTER_PENALTY,
+    ATTENDANCE_PRESENT_BONUS,
+    ATTENDANCE_ABSENT_PENALTY,
+    FEEDBACK_BONUS,
+    EVENT_PROPOSAL_APPROVED_BONUS
+}
