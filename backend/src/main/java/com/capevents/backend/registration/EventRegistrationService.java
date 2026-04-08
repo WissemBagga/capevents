@@ -8,6 +8,7 @@ import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
 import com.capevents.backend.mail.EmailService;
 import com.capevents.backend.notification.NotificationService;
+import com.capevents.backend.points.PointService;
 import com.capevents.backend.registration.dto.EventParticipantResponse;
 import com.capevents.backend.registration.dto.RegistrationResponse;
 import com.capevents.backend.registration.dto.UnregisterRequest;
@@ -27,13 +28,15 @@ public class EventRegistrationService {
     private final EventRegistrationRepository registrationRepository;
     private final NotificationService notificationService;
     private final EmailService emailService;
+    private final PointService pointService;
 
-    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService) {
+    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService, PointService pointService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.registrationRepository = registrationRepository;
         this.notificationService = notificationService;
         this.emailService = emailService;
+        this.pointService = pointService;
     }
 
     @Transactional
@@ -66,6 +69,7 @@ public class EventRegistrationService {
         EventRegistration saved = registrationRepository.save(registration);
         emailService.sendRegistrationSavedEmail(user.getEmail(), event);
         notificationService.notifyRegistrationSaved(user, event);
+        pointService.awardRegistrationBonus(user, event);
         return toResponse(saved);
 
     }
@@ -103,6 +107,7 @@ public class EventRegistrationService {
         );
 
         EventRegistration saved = registrationRepository.save(registration);
+        pointService.applyUnregisterPenalty(user, event);
         return toResponse(saved);
     }
 
@@ -194,6 +199,15 @@ public class EventRegistrationService {
 
         registration.setAttendanceStatus(attendanceStatus);
         registrationRepository.save(registration);
+
+        if (attendanceStatus == AttendanceStatus.PRESENT) {
+            pointService.awardAttendancePresentBonus(registration.getUser(), registration.getEvent());
+        }
+
+        if (attendanceStatus == AttendanceStatus.ABSENT) {
+            pointService.applyAttendanceAbsentPenalty(registration.getUser(), registration.getEvent());
+        }
+
     }
 
     private void validateRegistrationAllowed(Event event, User user) {
