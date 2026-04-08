@@ -188,4 +188,23 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             @Param("departmentId") Long departmentId,
             Pageable pageable
     );
+
+    @Query("""
+        select e from Event e
+        left join fetch e.createdBy cb
+        left join fetch cb.department
+        left join fetch e.targetDepartment
+        order by e.createdAt desc
+    """)
+    List<Event> findAllForAnalytics();
+
+    @Query("""
+        select e from Event e
+        left join fetch e.createdBy cb
+        left join fetch cb.department
+        left join fetch e.targetDepartment
+        where cb.department.id = :departmentId
+        order by e.createdAt desc
+    """)
+    List<Event> findAllForAnalyticsByCreatorDepartment(@Param("departmentId") Long departmentId);
 }
