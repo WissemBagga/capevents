@@ -12,6 +12,7 @@ import com.capevents.backend.event.dto.EventResponse;
 import com.capevents.backend.event.dto.UpdateEventRequest;
 import com.capevents.backend.mail.EmailService;
 import com.capevents.backend.notification.NotificationService;
+import com.capevents.backend.points.PointService;
 import com.capevents.backend.registration.EventRegistration;
 import com.capevents.backend.registration.EventRegistrationRepository;
 import com.capevents.backend.registration.RegistrationStatus;
@@ -37,8 +38,9 @@ public class EventService {
     private  final EventRegistrationRepository registrationRepository;
     private final NotificationService notificationService;
     private final EmailService emailService;
+    private final PointService pointService;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository, AuditService auditService, DepartmentRepository departmentRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository, AuditService auditService, DepartmentRepository departmentRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService, PointService pointService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.auditService = auditService;
@@ -46,6 +48,7 @@ public class EventService {
         this.registrationRepository = registrationRepository;
         this.notificationService = notificationService;
         this.emailService = emailService;
+        this.pointService = pointService;
     }
 
     @Transactional
@@ -704,7 +707,8 @@ public class EventService {
 
         notificationService.notifyEventProposalApproved(event.getCreatedBy(), event);
         emailService.sendEventProposalApprovedEmail(event.getCreatedBy().getEmail(), event);
-
+        pointService.awardProposalApprovedBonus(event.getCreatedBy(), event);
+        
         return toResponse(event);
     }
 
