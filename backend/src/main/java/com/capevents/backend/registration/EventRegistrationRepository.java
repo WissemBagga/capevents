@@ -27,4 +27,6 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
     List<EventRegistration> findByUserIdAndStatusOrderByRegisteredAtDesc(UUID userId, RegistrationStatus status);
 
     List<EventRegistration> findByEventAndStatusOrderByRegisteredAtAsc(Event event, RegistrationStatus status);
+
+    long countByEventAndAttendanceStatus(Event event, AttendanceStatus attendanceStatus);
 }
