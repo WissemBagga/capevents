@@ -1,11 +1,14 @@
 <div class="create-event-page">
   <div class="page-header">
     <div class="header-text">
-      <p class="breadcrumb">ACCUEIL › ÉVÉNEMENTS › PARTAGE</p>
-      <h1>Partager un événement</h1>
-      <p class="header-sub">{{ helperMessage }}</p>
+      <p class="breadcrumb">ACCUEIL › ÉVÉNEMENTS › SOUMISSION</p>
+      <h1>Soumettre un événement</h1>
+      <p class="header-sub">Proposez un micro-événement ou envoyez une demande à l’administration</p>
     </div>
-    <a routerLink="/dashboard/employee" class="back-link">Retour</a>
+    <a routerLink="/dashboard/employee" class="back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Retour
+    </a>
   </div>
 
   @if (errorMessage) {
@@ -110,6 +113,7 @@
     </div>
 
     <div class="form-actions">
+      <a routerLink="/dashboard/employee" class="btn-secondary">Annuler</a>
       <button
         type="button"
         class="btn-primary"
@@ -119,7 +123,7 @@
         @if (loading) {
           Envoi...
         } @else {
-          {{ submitLabel }}
+          Envoyer la demande
         }
       </button>
     </div>
