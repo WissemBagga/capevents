@@ -9,13 +9,13 @@
       <a routerLink="/employee/submit-event" routerLinkActive="active-link">Partager un événement</a>
       <a routerLink="/my-submissions" routerLinkActive="active-link">Mes demandes</a>
     }
-    
+
     @if (hasEmployeeRole()) {
       <a routerLink="/events" routerLinkActive="active-link">Événements</a>
       <a routerLink="/my-events" routerLinkActive="active-link">Mes événements</a>
       <a routerLink="/my-invitations" routerLinkActive="active-link">Mes invitations</a>
       <a routerLink="/my-points" routerLinkActive="active-link">Mes points</a>
-    } 
+    }
 
     @if (isManager()) {
       <a routerLink="/admin/manager">Dashboard Manager</a>
@@ -86,7 +86,9 @@
             @if (!notificationsLoading && notifications.length > 0) {
               <div class="notification-list">
                 @for (notification of notifications; track trackByNotificationId($index, notification)) {
-                  <article class="notification-item" [class.unread]="!notification.read">
+                  <article class="notification-item" 
+                           [class.unread]="!notification.read" 
+                           (click)="openNotification(notification, $event)">
                     <div class="notification-item-top">
                       <h5>{{ notification.title }}</h5>
 
@@ -98,29 +100,17 @@
                     <p class="notification-message">{{ notification.message }}</p>
 
                     <div class="notification-meta">
-                      <span>{{ notification.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                      <span>{{ notification.createdAt | date:'short' }}</span>
 
-                      <div class="notification-actions">
-                        @if (notification.actionPath) {
-                          <button
-                            type="button"
-                            class="panel-link-btn"
-                            (click)="openNotification(notification, $event)"
-                          >
-                            Ouvrir
-                          </button>
-                        }
-
-                        @if (!notification.read) {
-                          <button
-                            type="button"
-                            class="panel-link-btn"
-                            (click)="markAsRead(notification, $event)"
-                          >
-                            Marquer comme lu
-                          </button>
-                        }
-                      </div>
+                      @if (!notification.read) {
+                        <button
+                          type="button"
+                          class="panel-link-btn"
+                          (click)="markAsRead(notification, $event)"
+                        >
+                          Marquer comme lu
+                        </button>
+                      }
                     </div>
                   </article>
                 }

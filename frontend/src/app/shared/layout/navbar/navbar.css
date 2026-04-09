@@ -152,6 +152,12 @@ button {
   padding: 14px 16px;
   border-top: 1px solid #f1f5f9;
   background: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.notification-item:hover {
+  background: #f8fafc;
 }
 
 .notification-item.unread {
@@ -193,12 +199,6 @@ button {
   gap: 12px;
   font-size: 12px;
   color: #64748b;
-}
-
-.notification-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .panel-link-btn {
