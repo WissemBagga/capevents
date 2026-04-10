@@ -1,6 +1,6 @@
 <div class="feedback-page">
   <div class="page-header">
-    <div>
+    <div class="header-text">
       <p class="breadcrumb">MES ÉVÉNEMENTS › FEEDBACK</p>
       <h1>Laisser un feedback</h1>
       @if (event) {
@@ -10,7 +10,7 @@
       }
     </div>
 
-    <button type="button" class="back-btn" (click)="goBack()">Retour</button>
+    <button type="button" class="btn-secondary" (click)="goBack()">Retour</button>
   </div>
 
   @if (loading) {
@@ -35,38 +35,52 @@
     <div class="feedback-card">
       @if (existingFeedback) {
         <div class="existing-feedback-box">
-          <h2>Votre feedback a déjà été envoyé</h2>
-          <p><strong>Note :</strong> {{ existingFeedback.rating }}/5</p>
+          <div class="feedback-submitted-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="success-icon"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <h2>Votre feedback a déjà été envoyé</h2>
+          </div>
 
-          @if (existingFeedback.comment) {
-            <p><strong>Commentaire :</strong> {{ existingFeedback.comment }}</p>
-          }
+          <div class="feedback-details">
+            <div class="feedback-row">
+              <span class="feedback-label">Note :</span>
+              <span class="feedback-value rating-badge">{{ existingFeedback.rating }}/5</span>
+            </div>
 
-          <p class="small-text">
+            @if (existingFeedback.comment) {
+              <div class="feedback-row">
+                <span class="feedback-label">Commentaire :</span>
+                <p class="feedback-value comment-text">{{ existingFeedback.comment }}</p>
+              </div>
+            }
+          </div>
+
+          <p class="feedback-meta">
             Envoyé le {{ existingFeedback.createdAt | date:'dd/MM/yyyy HH:mm' }}
           </p>
         </div>
       } @else {
         <form [formGroup]="form" class="feedback-form">
-          <div class="form-group">
-            <label for="rating">Note</label>
-            <select id="rating" formControlName="rating">
-              <option [ngValue]="5">5 - Excellent</option>
-              <option [ngValue]="4">4 - Très bien</option>
-              <option [ngValue]="3">3 - Bien</option>
-              <option [ngValue]="2">2 - Moyen</option>
-              <option [ngValue]="1">1 - Faible</option>
-            </select>
-          </div>
+          <div class="form-section">
+            <div class="form-group">
+              <label for="rating">Note</label>
+              <select id="rating" formControlName="rating">
+                <option [ngValue]="5">5 - Excellent</option>
+                <option [ngValue]="4">4 - Très bien</option>
+                <option [ngValue]="3">3 - Bien</option>
+                <option [ngValue]="2">2 - Moyen</option>
+                <option [ngValue]="1">1 - Faible</option>
+              </select>
+            </div>
 
-          <div class="form-group">
-            <label for="comment">Commentaire (optionnel)</label>
-            <textarea
-              id="comment"
-              rows="5"
-              formControlName="comment"
-              placeholder="Votre ressenti sur l’événement..."
-            ></textarea>
+            <div class="form-group">
+              <label for="comment">Commentaire (optionnel)</label>
+              <textarea
+                id="comment"
+                rows="5"
+                formControlName="comment"
+                placeholder="Votre ressenti sur l’événement..."
+              ></textarea>
+            </div>
           </div>
 
           <div class="form-actions">
