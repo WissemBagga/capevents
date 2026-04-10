@@ -1,16 +1,19 @@
 <div class="create-event-page">
+
+  <!-- Header -->
   <div class="page-header">
     <div class="header-text">
       <p class="breadcrumb">ACCUEIL › ÉVÉNEMENTS › SOUMISSION</p>
       <h1>Soumettre un événement</h1>
-      <p class="header-sub">Proposez un micro-événement ou envoyez une demande à l’administration</p>
+      <p class="header-sub">Proposez un micro-événement ou envoyez une demande à l'administration</p>
     </div>
     <a routerLink="/dashboard/employee" class="back-link">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       Retour
     </a>
   </div>
 
+  <!-- State Messages -->
   @if (errorMessage) {
     <div class="state-message error-msg">
       <p>{{ errorMessage }}</p>
@@ -23,7 +26,10 @@
     </div>
   }
 
+  <!-- Form -->
   <form class="event-form" [formGroup]="form">
+
+    <!-- Section: General Info -->
     <div class="form-section">
       <h2 class="section-title">Informations générales</h2>
       <div class="form-grid">
@@ -52,6 +58,7 @@
       </div>
     </div>
 
+    <!-- Section: Date & Capacity -->
     <div class="form-section">
       <h2 class="section-title">Date et capacité</h2>
       <div class="form-grid">
@@ -77,6 +84,7 @@
       </div>
     </div>
 
+    <!-- Section: Location -->
     <div class="form-section">
       <h2 class="section-title">Lieu</h2>
       <div class="form-grid">
@@ -112,6 +120,11 @@
       </div>
     </div>
 
+    <!-- Submit -->
+    <div class="form-helper">
+      <p class="helper-message">{{ helperMessage }}</p>
+    </div>
+
     <div class="form-actions">
       <a routerLink="/dashboard/employee" class="btn-secondary">Annuler</a>
       <button
@@ -123,7 +136,7 @@
         @if (loading) {
           Envoi...
         } @else {
-          Envoyer la demande
+          {{ submitLabel }}
         }
       </button>
     </div>

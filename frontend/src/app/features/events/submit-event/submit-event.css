@@ -1,6 +1,6 @@
-/* ===== Main Page container ===== */
+/* ===== Page ===== */
 .create-event-page {
-  padding: 32px 28px 60px;
+  padding: 28px 36px;
   max-width: 860px;
   margin: 0 auto;
 }
@@ -69,7 +69,9 @@
   font-size: 13.5px;
 }
 
-.state-message p { margin: 0; }
+.state-message p {
+  margin: 0;
+}
 
 .error-msg {
   background: #fef2f2;
@@ -83,17 +85,18 @@
   color: #16a34a;
 }
 
-/* ===== Form Layout ===== */
+/* ===== Form Card ===== */
 .event-form {
   background: #ffffff;
   border-radius: 20px;
   padding: 0;
   border: 1px solid #edf1f7;
-  box-shadow: 0 6px 24px rgba(0, 30, 70, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 40, 80, 0.05);
 }
 
+/* ===== Sections ===== */
 .form-section {
-  padding: 28px 32px;
+  padding: 24px 28px;
   border-bottom: 1px solid #f0f3f7;
 }
 
@@ -103,44 +106,46 @@
 
 .section-title {
   font-family: 'Ubuntu', sans-serif;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: #0f1b2d;
-  margin: 0 0 20px;
+  margin: 0 0 18px;
   letter-spacing: -0.2px;
 }
 
+/* ===== Grid ===== */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
+  gap: 16px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .full-width {
   grid-column: 1 / -1;
 }
 
-/* ===== Labels & Inputs ===== */
+/* ===== Labels ===== */
 label {
   font-family: Verdana, Geneva, sans-serif;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 700;
   color: #475569;
   letter-spacing: 0.2px;
 }
 
+/* ===== Inputs ===== */
 input,
 select,
 textarea {
   border: 1.5px solid #dce3ed;
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 11px 14px;
   font-family: Verdana, Geneva, sans-serif;
   font-size: 13.5px;
   color: #1a2538;
@@ -172,7 +177,7 @@ input:disabled {
 
 textarea {
   resize: vertical;
-  min-height: 110px;
+  min-height: 100px;
 }
 
 select {
@@ -180,23 +185,37 @@ select {
   appearance: auto;
 }
 
+/* ===== Helper Message ===== */
+.form-helper {
+  padding: 14px 28px;
+  border-top: 1px solid #f0f3f7;
+}
+
+.helper-message {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12.5px;
+  color: #0a6ebd;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* ===== Actions & Buttons ===== */
 .form-actions {
-  padding: 24px 32px 30px;
+  padding: 24px 28px 28px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 14px;
   border-top: 1px solid #f0f3f7;
-  background: #fcfdfe;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
 }
 
 .btn-secondary {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
   padding: 11px 22px;
   border: 1.5px solid #dce3ed;
@@ -270,7 +289,7 @@ select {
   .form-actions {
     flex-wrap: wrap;
     gap: 12px;
-    padding: 20px 18px 22px;
+    padding: 16px 18px 20px;
   }
 
   .btn-secondary,
@@ -280,6 +299,6 @@ select {
   }
 
   .form-section {
-    padding: 24px 20px;
+    padding: 20px 18px;
   }
 }

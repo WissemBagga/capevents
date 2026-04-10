@@ -11,7 +11,8 @@ import { CreateEventRequest } from '../../../core/models/create-event.model';
   selector: 'app-submit-event',
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './submit-event.html'
+  templateUrl: './submit-event.html',
+  styleUrl: './submit-event.css'
 })
 export class SubmitEvent {
   private fb = inject(FormBuilder);
