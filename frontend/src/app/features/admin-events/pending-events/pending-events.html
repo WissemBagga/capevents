@@ -1,13 +1,17 @@
 <div class="page-shell">
+  <!-- Header -->
   <div class="page-header">
-    <div>
+    <div class="header-text">
+      <p class="breadcrumb">ADMINISTRATION › ÉVÉNEMENTS</p>
       <h1>Demandes en attente</h1>
-      <p>Validez ou refusez les événements proposés par les employés.</p>
+      <p class="header-sub">Validez ou refusez les événements proposés par les employés.</p>
     </div>
-
-    <button type="button" (click)="loadPendingEvents()">Actualiser</button>
+    <button type="button" class="btn-secondary" (click)="loadPendingEvents()">
+      Actualiser
+    </button>
   </div>
 
+  <!-- State Messages -->
   @if (errorMessage) {
     <div class="state-message error-msg">
       <p>{{ errorMessage }}</p>
@@ -26,43 +30,79 @@
     </div>
   }
 
+  <!-- Grid -->
   @if (!loading && pendingEvents.length > 0) {
-    <div class="events-grid">
+    <div class="cards-grid">
       @for (event of pendingEvents; track trackByEventId($index, event)) {
         <article class="event-card">
-          <h2>{{ event.title }}</h2>
-          <p><strong>Proposé par :</strong> {{ event.createdByFullName || '—' }}</p>
-          <p><strong>Catégorie :</strong> {{ event.category || '—' }}</p>
-          <p><strong>Date :</strong> {{ event.startAt | date:'dd/MM/yyyy HH:mm' }}</p>
-          <p><strong>Audience :</strong> {{ event.audience }}</p>
-          <p><strong>Capacité :</strong> {{ event.capacity }}</p>
-          <p><strong>Durée :</strong> {{ event.durationMinutes }} min</p>
 
-          @if (event.targetDepartmentName) {
-            <p><strong>Département cible :</strong> {{ event.targetDepartmentName }}</p>
-          }
-
-          <p>{{ event.description || '' }}</p>
-
-          <div class="event-actions">
-            <a [routerLink]="['/admin/events', event.id]">Voir détail</a>
-            <button type="button" (click)="approve(event.id)">Approuver & Publier</button>
-            <button type="button" (click)="toggleRejectBox(event.id)">Refuser</button>
+          <!-- Card Header -->
+          <div class="event-card-header">
+            <div class="event-card-title">
+              <h2>{{ event.title }}</h2>
+              <span class="status-badge">En attente</span>
+            </div>
+            <p class="event-card-subtitle">Proposé par {{ event.createdByFullName || '—' }} ({{ event.category || 'Sans catégorie' }})</p>
           </div>
 
-          @if (showRejectBoxById[event.id]) {
-            <div class="reject-box">
-              <textarea
-                rows="3"
-                [(ngModel)]="rejectReasonById[event.id]"
-                placeholder="Raison du refus"
-              ></textarea>
-
-              <button type="button" (click)="reject(event.id)">
-                Confirmer le refus
-              </button>
+          <!-- Card Body -->
+          <div class="event-card-body">
+            <div class="meta-grid">
+               <div class="meta-item">
+                 <span class="meta-label">Date :</span>
+                 <span class="meta-value">{{ event.startAt | date:'dd/MM/yyyy HH:mm' }}</span>
+               </div>
+               <div class="meta-item">
+                 <span class="meta-label">Audience :</span>
+                 <span class="meta-value">{{ event.audience === 'GLOBAL' ? 'Global' : 'Département' }}</span>
+               </div>
+               <div class="meta-item">
+                 <span class="meta-label">Capacité :</span>
+                 <span class="meta-value">{{ event.capacity }} pers.</span>
+               </div>
+               <div class="meta-item">
+                 <span class="meta-label">Durée :</span>
+                 <span class="meta-value">{{ event.durationMinutes }} min</span>
+               </div>
+               @if (event.targetDepartmentName) {
+                 <div class="meta-item full-width">
+                   <span class="meta-label">Département cible :</span>
+                   <span class="meta-value">{{ event.targetDepartmentName }}</span>
+                 </div>
+               }
             </div>
-          }
+            <p class="description">{{ event.description || 'Aucune description fournie.' }}</p>
+          </div>
+
+          <!-- Card Footer (Actions) -->
+          <div class="event-card-footer">
+            <div class="event-card-actions">
+              <a [routerLink]="['/admin/events', event.id]" class="btn-link">Voir détail</a>
+              <div class="action-buttons">
+                <button type="button" class="btn-reject" (click)="toggleRejectBox(event.id)">Refuser</button>
+                <button type="button" class="btn-approve" (click)="approve(event.id)">Approuver</button>
+              </div>
+            </div>
+
+            <!-- Reject Box -->
+            @if (showRejectBoxById[event.id]) {
+              <div class="reject-box">
+                <label for="reject-{{event.id}}">Raison du refus :</label>
+                <textarea
+                  id="reject-{{event.id}}"
+                  rows="3"
+                  [(ngModel)]="rejectReasonById[event.id]"
+                  placeholder="Veuillez expliquer pourquoi cet événement est refusé..."
+                ></textarea>
+                <div class="reject-actions">
+                  <button type="button" class="btn-reject-confirm" (click)="reject(event.id)">
+                    Confirmer le refus
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+
         </article>
       }
     </div>

@@ -11,7 +11,8 @@ import { EventResponse } from '../../../core/models/event.model';
   selector: 'app-pending-events',
   standalone: true,
   imports: [DatePipe, RouterLink, FormsModule],
-  templateUrl: './pending-events.html'
+  templateUrl: './pending-events.html',
+  styleUrl: './pending-events.css'
 })
 export class PendingEvents {
   private eventService = inject(EventService);
