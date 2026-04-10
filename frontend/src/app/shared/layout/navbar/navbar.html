@@ -108,14 +108,15 @@
                       <p class="notification-message">{{ notification.message }}</p>
 
                       <div class="notification-footer">
-                        <span class="notification-date">{{ notification.createdAt | date:'short' }}</span>
+                        <span class="notification-date">{{ notification.createdAt | date:'HH:mm' }}</span>
+                        
                         @if (!notification.read) {
                           <button
                             type="button"
                             class="panel-action"
                             (click)="markAsRead(notification, $event)"
                           >
-                            Marquer comme lu
+                            Marquer lu
                           </button>
                         }
                       </div>

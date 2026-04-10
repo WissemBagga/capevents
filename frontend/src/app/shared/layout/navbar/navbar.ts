@@ -12,6 +12,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NotificationResponse } from '../../../core/models/notification.model';
 
+interface NotificationGroup{
+  label: string;
+  items: NotificationResponse[];
+}
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -28,6 +32,7 @@ export class Navbar {
   currentUser$ = this.authService.currentUser$;
 
   notifications: NotificationResponse[] = [];
+  groupedNotifications: NotificationGroup[] = [];
   unreadCount = 0;
 
   notificationsOpen = false;
@@ -35,10 +40,17 @@ export class Navbar {
   notificationsErrorMessage = '';
   markAllLoading = false;
 
+  private refreshTimer: number | null = null;
+
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
       this.loadUnreadCount();
+      this.startAutoRefresh();
     }
+  }
+
+  ngOnDestroy(): void{
+    this.stopAutoRefresh();
   }
 
   @HostListener('document:click', ['$event'])
@@ -56,6 +68,7 @@ export class Navbar {
   }
 
   logout(): void {
+    this.stopAutoRefresh();
     this.authService.logout();
     this.router.navigate(['/login']);
   }
@@ -94,45 +107,6 @@ export class Navbar {
     this.loadNotifications();
   }
 
-  private loadUnreadCount(): void {
-    this.notificationService.getUnreadCount().subscribe({
-      next: (response) => {
-        this.unreadCount = response.unreadCount ?? 0;
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        this.unreadCount = 0;
-        this.cdr.markForCheck();
-      }
-    });
-  }
-
-  private loadNotifications(): void {
-    this.notificationsLoading = true;
-    this.notificationsErrorMessage = '';
-    this.cdr.markForCheck();
-
-    this.notificationService.getMyNotifications(10)
-      .pipe(finalize(() => {
-        this.notificationsLoading = false;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: (items) => {
-          this.notifications = items ?? [];
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          this.notifications = [];
-          this.notificationsErrorMessage =
-            err?.error?.message ||
-            err?.error ||
-            'Impossible de charger les notifications.';
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
   markAsRead(notification: NotificationResponse, event: MouseEvent): void {
     event.stopPropagation();
 
@@ -168,12 +142,14 @@ export class Navbar {
       }))
       .subscribe({
         next: () => {
+          const now = new Date().toISOString(); 
           this.notifications = this.notifications.map(item => ({
             ...item,
             read: true,
-            readAt: item.readAt ?? new Date().toISOString()
+            readAt: item.readAt ?? now
           }));
           this.unreadCount = 0;
+          this.groupNotificationsByDate();
           this.cdr.markForCheck();
         },
         error: () => {
@@ -203,6 +179,7 @@ export class Navbar {
         notification.read = true;
         notification.readAt = new Date().toISOString();
         this.unreadCount = Math.max(this.unreadCount - 1, 0);
+        this.groupNotificationsByDate();
         this.cdr.markForCheck();
         navigate();
       },
@@ -214,5 +191,104 @@ export class Navbar {
 
   trackByNotificationId(_: number, item: NotificationResponse): number {
     return item.id;
+  }
+
+  private loadUnreadCount(): void {
+    this.notificationService.getUnreadCount().subscribe({
+      next: (response) => {
+        this.unreadCount = response.unreadCount ?? 0;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.unreadCount = 0;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  private loadNotifications(): void {
+    this.notificationsLoading = true;
+    this.notificationsErrorMessage = '';
+    this.cdr.markForCheck();
+
+    this.notificationService.getMyNotifications(10)
+      .pipe(finalize(() => {
+        this.notificationsLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (items) => {
+          this.notifications = items ?? [];
+          this.groupNotificationsByDate();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.notifications = [];
+          this.groupedNotifications = [];
+          this.notificationsErrorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de charger les notifications.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  private groupNotificationsByDate(): void {
+    const groups = new Map<string, NotificationResponse[]>();
+
+    for (const notification of this.notifications) {
+      const label = this.getDateLabel(notification.createdAt);
+      const existing = groups.get(label) ?? [];
+      existing.push(notification);
+      groups.set(label, existing);
+    }
+
+    this.groupedNotifications = Array.from(groups.entries()).map(([label, items]) => ({
+      label,
+      items
+    }));
+  }
+
+  private getDateLabel(dateIso: string): string {
+    const date = new Date(dateIso);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    const normalized = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+
+    if (normalized(date) === normalized(today)) {
+      return 'Aujourd’hui';
+    }
+
+    if (normalized(date) === normalized(yesterday)) {
+      return 'Hier';
+    }
+
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
+  private startAutoRefresh(): void {
+    this.stopAutoRefresh();
+
+    this.refreshTimer = window.setInterval(() => {
+      this.loadUnreadCount();
+
+      if (this.notificationsOpen) {
+        this.loadNotifications();
+      }
+    }, 30000);
+  }
+
+  private stopAutoRefresh(): void {
+    if (this.refreshTimer !== null) {
+      window.clearInterval(this.refreshTimer);
+      this.refreshTimer = null;
+    }
   }
 }
