@@ -2,6 +2,7 @@ package com.capevents.backend.user;
 
 
 import com.capevents.backend.department.Department;
+import com.capevents.backend.interest.Interest;
 import com.capevents.backend.role.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -73,6 +74,14 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_interests",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "interest_id")
+    )
+    private Set<Interest> interests = new HashSet<>();
     @PrePersist
     public void prePersist() {
         if (id == null) {
