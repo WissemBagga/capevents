@@ -151,6 +151,11 @@ public class EventService {
                 ? getRegisteredUsers(e)
                 : List.of();
 
+        if (previousStatus != EventStatus.CANCELLED) {
+            List<User> visibleUsers = resolveVisibleEmployeeUsers(e);
+            notificationService.notifyEventPublished(visibleUsers, e);
+        }
+
         e.setStatus(EventStatus.PUBLISHED);
 
         auditService.logByEmail(
@@ -257,6 +262,10 @@ public class EventService {
             throw new BadRequestException("Impossible de modifier un événement archivé");
         }
 
+        Instant previousStartAt = e.getStartAt();
+        Instant previousDeadline = e.getRegistrationDeadline();
+        boolean wasPublished = e.getStatus() == EventStatus.PUBLISHED;
+
         e.setTitle(req.title());
         e.setCategory(req.category());
         e.setDescription(req.description());
@@ -270,6 +279,26 @@ public class EventService {
         e.setRegistrationDeadline(req.registrationDeadline());
         e.setImageUrl(req.imageUrl());
 
+        boolean dateChanged = previousStartAt != null && !previousStartAt.equals(e.getStartAt());
+        boolean deadlineChanged = previousDeadline != null && !previousDeadline.equals(e.getRegistrationDeadline());
+
+        if (dateChanged) {
+            e.setReminder24hSentAt(null);
+            e.setFeedbackNotificationSentAt(null);
+        }
+
+        if (deadlineChanged) {
+            e.setDeadlineReminder48hSentAt(null);
+        }
+
+        if (wasPublished && dateChanged) {
+            List<User> registeredUsers = getRegisteredUsers(e);
+            notificationService.notifyEventRescheduled(registeredUsers, e);
+
+            for (User registeredUser : registeredUsers) {
+                emailService.sendEventRescheduledEmail(registeredUser.getEmail(), e);
+            }
+        }
 
 
         auditService.logByEmail(
@@ -633,6 +662,8 @@ public class EventService {
             for (User approver : approvers) {
                 emailService.sendEventProposalSubmittedEmail(approver.getEmail(), saved, creator);
             }
+            notificationService.notifyProposalPendingForCreator(creator, saved);
+            emailService.sendEventProposalPendingEmail(creator.getEmail(), saved);
         }
 
         return new EmployeeEventSubmissionResponse(
@@ -708,6 +739,9 @@ public class EventService {
         notificationService.notifyEventProposalApproved(event.getCreatedBy(), event);
         emailService.sendEventProposalApprovedEmail(event.getCreatedBy().getEmail(), event);
         pointService.awardProposalApprovedBonus(event.getCreatedBy(), event);
+
+        List<User> visibleUsers = resolveVisibleEmployeeUsers(event);
+        notificationService.notifyEventPublished(visibleUsers, event);
 
         return toResponse(event);
     }
@@ -794,6 +828,26 @@ public class EventService {
         }
 
         return creator.getDepartment();
+    }
+
+    private List<User> resolveVisibleEmployeeUsers(Event event) {
+        List<User> users;
+
+        if (event.getAudience() == EventAudience.GLOBAL) {
+            users = userRepository.findActiveVerifiedEmployeeUsers();
+        } else {
+            Long departmentId = event.getTargetDepartment() != null ? event.getTargetDepartment().getId() : null;
+            if (departmentId == null) {
+                return List.of();
+            }
+            users = userRepository.findActiveVerifiedEmployeeUsersByDepartmentId(departmentId);
+        }
+
+        UUID creatorId = event.getCreatedBy() != null ? event.getCreatedBy().getId() : null;
+
+        return users.stream()
+                .filter(user -> creatorId == null || !creatorId.equals(user.getId()))
+                .toList();
     }
 
 

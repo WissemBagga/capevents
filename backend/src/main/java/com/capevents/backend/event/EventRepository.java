@@ -207,4 +207,20 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
         order by e.createdAt desc
     """)
     List<Event> findAllForAnalyticsByCreatorDepartment(@Param("departmentId") Long departmentId);
+
+    List<Event> findByStatusAndStartAtBetweenAndReminder24hSentAtIsNull(
+            EventStatus status,
+            Instant from,
+            Instant to
+    );
+
+    List<Event> findByStatusAndRegistrationDeadlineBetweenAndDeadlineReminder48hSentAtIsNull(
+            EventStatus status,
+            Instant from,
+            Instant to
+    );
+
+    List<Event> findByStatusAndFeedbackNotificationSentAtIsNullOrderByCreatedAtDesc(
+            EventStatus status
+    );
 }

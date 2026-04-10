@@ -85,4 +85,12 @@ public class DevEmailService implements EmailService {
         String safeLastName = lastName != null ? lastName.trim() : "";
         return (safeFirstName + " " + safeLastName).trim();
     }
+
+
+    @Override
+    public void sendEventProposalPendingEmail(String to, Event event) {
+        System.out.println("[DEV EMAIL] Event proposal pending for " + to
+                + " | event=" + event.getTitle()
+                + " | link=" + mailProperties.getFrontendBaseUrl() + "/my-submissions");
+    }
 }

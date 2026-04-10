@@ -234,6 +234,85 @@ public class NotificationService {
         return (safeFirstName + " " + safeLastName).trim();
     }
 
+    @Transactional
+    public void notifyEventPublished(List<User> users, Event event) {
+        if (users == null || users.isEmpty()) return;
+
+        createNotifications(
+                dedupeUsers(users),
+                NotificationType.EVENT_PUBLISHED,
+                "Nouvel événement publié",
+                "Un nouvel événement \"" + event.getTitle() + "\" a été publié.",
+                "/events/" + event.getId()
+        );
+    }
+
+    @Transactional
+    public void notifyProposalPendingForCreator(User creator, Event event) {
+        createNotification(
+                creator,
+                NotificationType.EVENT_PROPOSAL_PENDING_FOR_CREATOR,
+                "Proposition en attente",
+                "Votre événement \"" + event.getTitle() + "\" est en attente de validation.",
+                "/my-submissions"
+        );
+    }
+
+    @Transactional
+    public void notifyEventReminder24h(List<User> users, Event event) {
+        if (users == null || users.isEmpty()) return;
+
+        String when = event.getStartAt() != null ? DATE_TIME_FORMATTER.format(event.getStartAt()) : "";
+        createNotifications(
+                dedupeUsers(users),
+                NotificationType.EVENT_REMINDER_24H,
+                "Rappel événement",
+                "Rappel : l’événement \"" + event.getTitle() + "\" commence dans moins de 24h"
+                        + (when.isBlank() ? "." : " (" + when + ")."),
+                "/events/" + event.getId()
+        );
+    }
+
+    @Transactional
+    public void notifyRegistrationDeadlineReminder(List<User> users, Event event) {
+        if (users == null || users.isEmpty()) return;
+
+        String deadline = event.getRegistrationDeadline() != null
+                ? DATE_TIME_FORMATTER.format(event.getRegistrationDeadline())
+                : "";
+
+        createNotifications(
+                dedupeUsers(users),
+                NotificationType.REGISTRATION_DEADLINE_REMINDER,
+                "Rappel date limite",
+                "La date limite d’inscription pour \"" + event.getTitle() + "\" approche"
+                        + (deadline.isBlank() ? "." : " (" + deadline + ")."),
+                "/events/" + event.getId()
+        );
+    }
+
+    @Transactional
+    public void notifyFeedbackAvailable(List<User> users, Event event) {
+        if (users == null || users.isEmpty()) return;
+
+        createNotifications(
+                dedupeUsers(users),
+                NotificationType.EVENT_FEEDBACK_AVAILABLE,
+                "Donnez votre avis",
+                "Donnez votre avis sur \"" + event.getTitle() + "\".",
+                "/events/" + event.getId() + "/feedback"
+        );
+    }
+
+    private List<User> dedupeUsers(List<User> users) {
+        return users.stream()
+                .filter(user -> user != null && user.getId() != null)
+                .collect(java.util.stream.Collectors.collectingAndThen(
+                        java.util.stream.Collectors.toMap(User::getId, user -> user, (a, b) -> a),
+                        map -> new java.util.ArrayList<>(map.values())
+                ));
+    }
+
 
 
 }

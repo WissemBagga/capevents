@@ -93,6 +93,16 @@ public class Event {
     @Column(name = "review_comment", length = 1000)
     private String reviewComment;
 
+    @Column(name = "reminder_24h_sent_at")
+    private Instant reminder24hSentAt;
+
+    @Column(name = "deadline_reminder_48h_sent_at")
+    private Instant deadlineReminder48hSentAt;
+
+    @Column(name = "feedback_notification_sent_at")
+    private Instant feedbackNotificationSentAt;
+
+
     @PrePersist
     public void prePersist() {
         if (id == null) {

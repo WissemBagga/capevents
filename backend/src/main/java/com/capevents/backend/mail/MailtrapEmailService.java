@@ -208,4 +208,23 @@ public class MailtrapEmailService implements EmailService {
         return (safeFirstName + " " + safeLastName).trim();
     }
 
+    @Override
+    public void sendEventProposalPendingEmail(String to, Event event) {
+        String submissionsUrl = mailProperties.getFrontendBaseUrl() + "/my-submissions";
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailProperties.getFrom());
+        message.setTo(to);
+        message.setSubject("Demande en attente de validation - CapEvents");
+        message.setText(
+                "Bonjour,\n\n" +
+                        "Votre événement \"" + event.getTitle() + "\" a bien été envoyé pour validation.\n" +
+                        "Vous serez notifié dès qu’une décision sera prise.\n\n" +
+                        "Voir mes demandes : " + submissionsUrl + "\n\n" +
+                        "CapEvents"
+        );
+
+        mailSender.send(message);
+    }
+
 }

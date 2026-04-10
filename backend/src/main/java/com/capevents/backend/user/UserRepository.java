@@ -52,4 +52,24 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     """)
     Optional<User> findByEmailWithRolesDepartmentAndInterests(@Param("email") String email);
 
+    @Query("""
+    select distinct u from User u
+    join u.roles r
+    left join fetch u.department
+    where u.active = true
+      and u.emailVerified = true
+      and r.code = 'ROLE_EMPLOYEE'
+    """)
+    List<User> findActiveVerifiedEmployeeUsers();
+
+    @Query("""
+    select distinct u from User u
+    join u.roles r
+    left join fetch u.department
+    where u.active = true
+      and u.emailVerified = true
+      and r.code = 'ROLE_EMPLOYEE'
+      and u.department.id = :departmentId
+    """)
+    List<User> findActiveVerifiedEmployeeUsersByDepartmentId(@Param("departmentId") Long departmentId);
 }

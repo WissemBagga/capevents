@@ -12,6 +12,9 @@ public interface EmailService {
     void sendEventCancelledEmail(String to, Event event);
     void sendEventRescheduledEmail(String to, Event event);
 
+
+    void sendEventProposalPendingEmail(String to, Event event);
+
     void sendEventProposalSubmittedEmail(String to, Event event, User creator);
     void sendEventProposalApprovedEmail(String to, Event event);
     void sendEventProposalRejectedEmail(String to, Event event, String reason);
