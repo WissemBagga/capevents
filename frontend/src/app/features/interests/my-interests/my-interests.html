@@ -1,0 +1,62 @@
+<div class="my-interests-page">
+  <div class="page-header">
+    <div>
+      <p class="breadcrumb">ACCUEIL › MES INTÉRÊTS</p>
+      <h1>Mes intérêts</h1>
+      <p class="header-sub">
+        Sélectionnez entre 1 et 6 centres d’intérêt pour personnaliser votre expérience.
+      </p>
+    </div>
+
+    <button type="button" class="refresh-btn" (click)="loadData()">
+      Actualiser
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="state-message loading-msg">
+      <p>Chargement des intérêts...</p>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-message error-msg">
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="state-message success-msg">
+      <p>{{ successMessage }}</p>
+    </div>
+  }
+
+  @if (!loading) {
+    <div class="selection-summary">
+      <span>Sélectionnés : {{ selectedIds.length }} / {{ maxSelection }}</span>
+    </div>
+
+    <div class="interests-grid">
+      @for (interest of availableInterests; track trackByInterestId($index, interest)) {
+        <button
+          type="button"
+          class="interest-chip"
+          [class.selected]="isSelected(interest.id)"
+          (click)="toggleInterest(interest.id)"
+        >
+          {{ interest.label }}
+        </button>
+      }
+    </div>
+
+    <div class="actions">
+      <button type="button" class="save-btn" (click)="save()" [disabled]="saving">
+        @if (saving) {
+          Enregistrement...
+        } @else {
+          Enregistrer mes intérêts
+        }
+      </button>
+    </div>
+  }
+</div>

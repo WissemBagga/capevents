@@ -23,9 +23,11 @@ import { PendingEvents } from './features/admin-events/pending-events/pending-ev
 
 import { MySubmissions } from './features/events/my-submissions/my-submissions';
 
-import {FeedbackEvent} from './features/events/feedback-event/feedback-event';
+import { FeedbackEvent } from './features/events/feedback-event/feedback-event';
 
-import {MyPoints} from './features/points/my-points/my-points'
+import { MyPoints } from './features/points/my-points/my-points';
+
+import { MyInterests } from './features/interests/my-interests/my-interests';
 
 
 export const routes: Routes = [
@@ -123,6 +125,12 @@ export const routes: Routes = [
         component: MyPoints,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
+      }, 
+      {
+        path: 'my-interests',
+        component: MyInterests,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE'] }
       }
     ]
   },
