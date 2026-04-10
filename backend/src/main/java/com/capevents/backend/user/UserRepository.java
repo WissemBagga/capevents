@@ -43,4 +43,13 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     """)
     List<User> findActiveManagersByDepartmentId(@Param("departmentId") Long departmentId);
 
+    @Query("""
+        select distinct u from User u
+        left join fetch u.roles
+        left join fetch u.department
+        left join fetch u.interests
+        where u.email = :email
+    """)
+    Optional<User> findByEmailWithRolesDepartmentAndInterests(@Param("email") String email);
+
 }
