@@ -1,12 +1,12 @@
 <div class="my-points-page">
   <div class="page-header">
-    <div>
+    <div class="header-text">
       <p class="breadcrumb">ACCUEIL › MES POINTS</p>
       <h1>Mes points</h1>
       <p class="header-sub">Consultez votre total et l’historique de vos points.</p>
     </div>
 
-    <button type="button" class="refresh-btn" (click)="loadPoints()">
+    <button type="button" class="btn-secondary" (click)="loadPoints()">
       Actualiser
     </button>
   </div>
@@ -58,9 +58,7 @@
           </div>
 
           <div class="history-actions">
-            <a [routerLink]="['/events', item.eventId]" class="details-link">
-              Voir
-            </a>
+            <a [routerLink]="['/events', item.eventId]" class="btn-link">Voir</a>
           </div>
         </article>
       }
