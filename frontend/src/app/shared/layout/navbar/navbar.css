@@ -1,7 +1,10 @@
+/* ========================================
+   Navbar
+   ======================================== */
 .navbar {
-  height: 72px;
+  height: 56px;
   background: #ffffff;
-  border-bottom: 1px solid #d9e2ec;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -14,25 +17,30 @@
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
 }
 
 .brand {
-  font-size: 24px;
-  font-weight: 700;
-  color: #005a8b;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0a6ebd;
   text-decoration: none;
+  letter-spacing: -0.3px;
 }
 
+/* ========================================
+   Nav Links
+   ======================================== */
 .navbar-center a {
   color: #5a6a80;
   text-decoration: none;
   font-family: 'Ubuntu', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 8px 14px;
+  padding: 6px 12px;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease;
 }
 
 .navbar-center a:hover {
@@ -46,21 +54,37 @@
   font-weight: 700;
 }
 
+/* ========================================
+   User & Logout
+   ======================================== */
 .user-name {
-  font-weight: 500;
-  color: #121a38;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2538;
 }
 
-button {
+.btn-logout {
   border: none;
-  background: #1db8f2;
+  background: linear-gradient(135deg, #0a6ebd 0%, #1a8ce0 100%);
   color: #ffffff;
-  padding: 10px 14px;
+  padding: 8px 16px;
   border-radius: 10px;
   cursor: pointer;
-  font-family: 'Ubuntu', Verdana, sans-serif;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  transition: all 0.2s ease;
 }
 
+.btn-logout:hover {
+  background: linear-gradient(135deg, #0860aa 0%, #1080d0 100%);
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   Notification Bell & Badge
+   ======================================== */
 .notification-wrapper {
   position: relative;
   display: flex;
@@ -72,88 +96,165 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-right: 12px;
-  border: 1px solid #dbe3ea;
-  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
   background: #ffffff;
+  color: #475569;
   cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  padding: 0;
 }
 
 .notification-bell:hover {
-  background: #f6f8fb;
+  background: #f0f7ff;
+  border-color: #bfdbfe;
+  color: #0a6ebd;
 }
 
 .notification-badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
+  top: -3px;
+  right: -3px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
   border-radius: 999px;
   background: #dc2626;
   color: #ffffff;
-  font-size: 11px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 10px;
   font-weight: 700;
+  line-height: 18px;
+  text-align: center;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid #ffffff;
 }
 
+/* ========================================
+   Notification Panel
+   ======================================== */
 .notification-panel {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   right: 0;
-  width: 360px;
-  max-height: 480px;
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
+  width: 340px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
   background: #ffffff;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
-  z-index: 50;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+  z-index: 100;
+  overflow: hidden;
 }
 
-.notification-panel-header,
-.notification-panel-footer {
+/* --- Panel Header --- */
+.panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  border-bottom: 1px solid #edf2f7;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.notification-panel-footer {
-  border-bottom: none;
-  border-top: 1px solid #edf2f7;
-  justify-content: flex-end;
-}
-
-.notification-panel-header h4 {
+.panel-header-left h4 {
   margin: 0;
-  font-size: 15px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
   font-weight: 700;
+  color: #0f1b2d;
 }
 
-.notification-panel-header p {
-  margin: 4px 0 0;
-  font-size: 12px;
+.panel-counter {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
   color: #64748b;
+  margin-top: 2px;
+  display: block;
 }
 
-.notification-list {
-  max-height: 330px;
+/* --- Panel Body --- */
+.panel-body {
+  max-height: 320px;
   overflow-y: auto;
 }
 
-.notification-item {
-  padding: 14px 16px;
+.panel-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.panel-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+/* --- Panel States (loading / empty / error) --- */
+.panel-state {
+  padding: 24px 16px;
+  text-align: center;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+
+.panel-state--error {
+  color: #b91c1c;
+}
+
+/* --- Panel Footer --- */
+.panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 16px;
   border-top: 1px solid #f1f5f9;
+}
+
+/* --- Panel Action Buttons --- */
+.panel-action {
+  border: none;
+  background: transparent;
+  color: #0a6ebd;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.15s ease;
+}
+
+.panel-action:hover:not(:disabled) {
+  color: #084e8a;
+}
+
+.panel-action:disabled {
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   Notification Items
+   ======================================== */
+.notification-list {
+  /* allow scrolling from panel-body */
+}
+
+.notification-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f8fafc;
   background: #ffffff;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background 0.15s ease;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
 }
 
 .notification-item:hover {
@@ -161,66 +262,84 @@ button {
 }
 
 .notification-item.unread {
-  background: #f8fbff;
+  background: #f0f7ff;
+  border-left: 3px solid #0a6ebd;
 }
 
-.notification-item-top {
+.notification-item.unread:hover {
+  background: #e8f1fc;
+}
+
+.notification-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
 
-.notification-item-top h5 {
+.notification-title {
   margin: 0;
-  font-size: 14px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13px;
   font-weight: 700;
+  color: #0f1b2d;
+  line-height: 1.3;
 }
 
 .unread-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  background: #2563eb;
-  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  border-radius: 50%;
+  background: #0a6ebd;
 }
 
 .notification-message {
-  margin: 8px 0 10px;
-  font-size: 13px;
+  margin: 4px 0 8px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
   line-height: 1.45;
-  color: #334155;
+  color: #475569;
 }
 
-.notification-meta {
+.notification-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  font-size: 12px;
-  color: #64748b;
+  gap: 10px;
 }
 
-.panel-link-btn {
-  border: none;
-  background: transparent;
-  color: #2563eb;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.panel-link-btn:disabled {
+.notification-date {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 11px;
   color: #94a3b8;
-  cursor: not-allowed;
 }
 
-.notification-state {
-  padding: 18px 16px;
-  font-size: 13px;
-  color: #64748b;
-}
+/* ========================================
+   Responsive
+   ======================================== */
+@media (max-width: 900px) {
+  .navbar {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    gap: 10px;
+  }
 
-.notification-state.error-state {
-  color: #b91c1c;
+  .navbar-center {
+    order: 3;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .navbar-center a {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .notification-panel {
+    width: 300px;
+    right: -40px;
+  }
 }
