@@ -12,7 +12,12 @@
     <div class="filters-card">
         <div class="filter-group">
             <label for="category">CATÉGORIE</label>
-            <input id="category" type="text" [(ngModel)]="category" placeholder="Toutes les catégories" />
+            <select id="category" [(ngModel)]="category">
+                <option value="">Toutes les catégories</option>
+                @for (option of categoryOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                }
+            </select>
         </div>
 
         <div class="filter-group">
@@ -23,6 +28,32 @@
         <div class="filter-group">
             <label for="to">Date limite d’inscription</label>
             <input id="to" type="datetime-local" [(ngModel)]="to" />
+        </div>
+
+        <div class="filter-group">
+            <label for="availability">Disponibilité</label>
+            <select id="availability" [(ngModel)]="availability">
+                <option value="ALL">Toutes</option>
+                <option value="AVAILABLE">Places disponibles</option>
+                <option value="FULL">Complet</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="sortBy">Tri</label>
+            <select id="sortBy" [(ngModel)]="sortBy">
+                <option value="DATE_ASC">Date croissante</option>
+                <option value="DATE_DESC">Date décroissante</option>
+                <option value="POPULARITY">Popularité</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>Vue</label>
+            <div class="view-switch">
+                <button type="button" (click)="viewMode = 'grid'">Grille</button>
+                <button type="button" (click)="viewMode = 'list'">Liste</button>
+            </div>
         </div>
 
         <div class="filter-actions">
@@ -66,8 +97,12 @@
                     @if (isFull(event)) {
                         <span class="full-badge">Complet</span>
                     }
+                    @else if (isRegistered(event)) {
+                        <span class="registered-badge">Inscrit</span>
+                    }
                     <span class="status-badge" [class]="event.status.toLowerCase()">{{ statusLabel(event.status) }}</span>
                 </div>
+                
 
 
                 <div class="event-body">

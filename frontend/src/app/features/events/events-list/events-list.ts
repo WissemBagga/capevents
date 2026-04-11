@@ -7,6 +7,10 @@ import { EventResponse } from '../../../core/models/event.model';
 import { PageResponse } from '../../../core/models/page-response.model';
 import { finalize } from 'rxjs';
 
+import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
+import { AuthService } from '../../../core/services/auth.service';
+import { RegistrationResponse } from '../../../core/models/registration.model';
+
 @Component({
   selector: 'app-events-list',
   standalone: true,
@@ -16,11 +20,21 @@ import { finalize } from 'rxjs';
 })
 export class EventsList {
   private eventService = inject(EventService);
+    private authService = inject(AuthService);
+
   private cdr = inject(ChangeDetectorRef);
+  
   private normalizeSearchText(value: string): string | null {
     if (!value || !value.trim()) return null;
     return value.trim();
   }
+
+  readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
+
+  availability = 'ALL';
+  sortBy = 'DATE_ASC';
+  viewMode: 'grid' | 'list' = 'grid';
+  registeredEventIds = new Set<string>();
 
 
 
@@ -41,6 +55,62 @@ export class EventsList {
 
   ngOnInit(): void {
     this.loadEvents();
+    this.loadEvents();
+    if (this.authService.hasEmployeeRole()) {
+      this.loadRegisteredEvents();
+    }
+  }
+
+  private loadRegisteredEvents(): void {
+    this.eventService.getMyRegistrations().subscribe({
+      next: (items: RegistrationResponse[]) => {
+        this.registeredEventIds = new Set(items.map(item => item.eventId));
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.registeredEventIds = new Set();
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  isRegistered(event: EventResponse): boolean {
+    return this.registeredEventIds.has(event.id);
+  }
+
+  get processedEvents(): EventResponse[] {
+    let items = [...this.events];
+
+    if (this.category) {
+      items = items.filter(e => e.category === this.category);
+    }
+
+    if (this.from) {
+      const fromDate = new Date(this.from).getTime();
+      items = items.filter(e => new Date(e.startAt).getTime() >= fromDate);
+    }
+
+    if (this.to) {
+      const toDate = new Date(this.to).getTime();
+      items = items.filter(e => new Date(e.registrationDeadline).getTime() <= toDate);
+    }
+
+    if (this.availability === 'AVAILABLE') {
+      items = items.filter(e => (e.remainingCapacity ?? 0) > 0);
+    }
+    if (this.availability === 'FULL') {
+      items = items.filter(e => (e.remainingCapacity ?? 0) === 0);
+    }
+
+    if (this.sortBy === 'DATE_ASC') {
+      items.sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime());
+    } else if (this.sortBy === 'DATE_DESC') {
+      items.sort((a, b) => new Date(b.startAt).getTime() - new Date(a.startAt).getTime());
+    } else if (this.sortBy === 'POPULARITY') {
+      items.sort((a, b) => (b.registeredCount ?? 0) - (a.registeredCount ?? 0));
+    }
+
+    return items;
   }
 
   statusLabel(status: string): string {
