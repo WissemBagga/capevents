@@ -7,6 +7,8 @@ import { EventService } from '../../../core/services/event.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CreateEventRequest } from '../../../core/models/create-event.model';
 
+import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
+
 @Component({
   selector: 'app-submit-event',
   standalone: true,
@@ -20,6 +22,8 @@ export class SubmitEvent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+
+  readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
 
   loading = false;
   errorMessage = '';

@@ -6,6 +6,8 @@ import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Department } from '../../../core/models/department.model';
 
+import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
+
 @Component({
   selector: 'app-create-event',
   standalone: true,
@@ -20,6 +22,8 @@ export class CreateEvent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+
+  readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
   
 
   departments: Department[] = [];

@@ -6,6 +6,7 @@ import { EventService } from '../../../core/services/event.service';
 import { UserService } from '../../../core/services/user.service';
 import { Department } from '../../../core/models/department.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
 @Component({
   selector: 'app-edit-event',
@@ -22,6 +23,10 @@ export class EditEvent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+
+  readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
+  originalRegisteredCount = 0;
+
 
   departments: Department[] = [];
   loading = false;
@@ -121,6 +126,7 @@ export class EditEvent {
           targetDepartmentId: event.targetDepartmentId
         });
 
+        this.originalRegisteredCount = event.registeredCount ?? 0;
         this.imagePreviewUrl = event.imageUrl || null;
 
         if (this.isManager) {
@@ -289,6 +295,15 @@ export class EditEvent {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  get hasRegisteredParticipants(): boolean {
+    return this.originalRegisteredCount > 0;
+  }
+
+  get capacityBelowRegistrations(): boolean {
+    const capacity = Number(this.form.get('capacity')?.value ?? 0);
+    return capacity < this.originalRegisteredCount;
   }
 
 }
