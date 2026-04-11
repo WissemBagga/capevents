@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, Location, UpperCasePipe } from '@angular/common';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin  } from 'rxjs';
 
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
@@ -609,6 +609,72 @@ export class AdminEventDetails {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  get presentCount(): number {
+    return this.participants.filter(p => p.attendanceStatus === 'PRESENT').length;
+  }
+
+  get absentCount(): number {
+    return this.participants.filter(p => p.attendanceStatus === 'ABSENT').length;
+  }
+
+  get pendingCount(): number {
+    return this.participants.filter(p => p.attendanceStatus === 'PENDING').length;
+  }
+
+  markAllPresent(): void {
+    const targets = this.participants
+      .filter(p => p.attendanceStatus !== 'PRESENT')
+      .map(p => this.eventService.markAttendance(p.registrationId, 'PRESENT'));
+
+    if (targets.length === 0) return;
+
+    this.participantsLoading = true;
+    this.cdr.markForCheck();
+
+    forkJoin(targets)
+      .pipe(finalize(() => {
+        this.participantsLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: () => {
+          this.participants = this.participants.map(p => ({ ...p, attendanceStatus: 'PRESENT' }));
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.errorMessage = 'Impossible de marquer tous les participants comme présents.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  markAllAbsent(): void {
+    const targets = this.participants
+      .filter(p => p.attendanceStatus !== 'ABSENT')
+      .map(p => this.eventService.markAttendance(p.registrationId, 'ABSENT'));
+
+    if (targets.length === 0) return;
+
+    this.participantsLoading = true;
+    this.cdr.markForCheck();
+
+    forkJoin(targets)
+      .pipe(finalize(() => {
+        this.participantsLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: () => {
+          this.participants = this.participants.map(p => ({ ...p, attendanceStatus: 'ABSENT' }));
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.errorMessage = 'Impossible de marquer tous les participants comme absents.';
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   invitationResponseLabel(response: InvitationResponseStatus | null): string {

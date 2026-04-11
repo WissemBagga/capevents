@@ -328,7 +328,16 @@
                   }
 
                   @if (!participantsLoading && participants.length > 0) {
+                    <div class="attendance-actions">
+                              <button type="button" class="btn-secondary" (click)="markAllPresent()">
+                                Tout cocher
+                              </button>
+                              <button type="button" class="btn-secondary" (click)="markAllAbsent()">
+                                Tout décocher
+                              </button>
+                          </div>
                       <div class="participants-grid">
+                          
                           @for (participant of participants; track participant.registrationId) {
                               <article class="participant-card" [class.is-present]="participant.attendanceStatus === 'PRESENT'" [class.is-absent]="participant.attendanceStatus === 'ABSENT'">
                                   <div class="participant-main">
