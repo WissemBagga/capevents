@@ -201,14 +201,20 @@ export class AdminDashboard {
       });
   }
 
-  cancel(eventId: string): void {
-    const reason = window.prompt('Entrez la raison de l’annulation :');
+  cancel(event: EventResponse): void {
+    const registered = event.registeredCount ?? 0;
+    const reason = window.prompt(
+      registered > 0
+        ? `Entrez la raison de l’annulation. ${registered} personne(s) sont déjà inscrites :`
+        : 'Entrez la raison de l’annulation :'
+    );
+
     if (!reason || !reason.trim()) return;
 
     this.actionLoading = true;
     this.cdr.markForCheck();
 
-    this.eventService.cancelEvent(eventId, reason.trim())
+    this.eventService.cancelEvent(event.id, reason.trim())
       .pipe(finalize(() => {
         this.actionLoading = false;
         this.cdr.markForCheck();

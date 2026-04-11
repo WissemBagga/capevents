@@ -240,7 +240,7 @@
                         }
 
                         @if (canCancel(event)) {
-                            <button type="button" class="btn-cancel" (click)="cancel(event.id)" [disabled]="actionLoading">Annuler</button>
+                            <button type="button" class="btn-cancel" (click)="cancel(event)" [disabled]="actionLoading">Annuler</button>
                         }
 
                         @if (canArchive(event)) {
