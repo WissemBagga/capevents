@@ -29,6 +29,8 @@ import { MyPoints } from './features/points/my-points/my-points';
 
 import { MyInterests } from './features/interests/my-interests/my-interests';
 
+import { MyProfile } from './features/profile/my-profile/my-profile';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -131,6 +133,12 @@ export const routes: Routes = [
         component: MyInterests,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_EMPLOYEE'] }
+      },
+      {
+        path: 'my-profile',
+        component: MyProfile,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
       }
     ]
   },

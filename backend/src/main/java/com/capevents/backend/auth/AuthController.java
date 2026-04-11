@@ -4,7 +4,7 @@ package com.capevents.backend.auth;
 import com.capevents.backend.auth.dto.*;
 import com.capevents.backend.auth.dto.VerifyEmailRequest;
 import com.capevents.backend.user.UserService;
-import com.capevents.backend.user.UserSummaryDto;
+import com.capevents.backend.user.dto.UserSummaryDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;

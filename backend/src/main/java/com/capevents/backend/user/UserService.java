@@ -4,9 +4,11 @@ import com.capevents.backend.common.dto.PageResponse;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.role.Role;
+import com.capevents.backend.user.dto.MyProfileResponse;
+import com.capevents.backend.user.dto.UpdateMyProfileRequest;
+import com.capevents.backend.user.dto.UserSummaryDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -91,4 +93,41 @@ public class UserService {
                 roleCodes
         );
     }
+
+    @Transactional(readOnly = true)
+    public MyProfileResponse getMyProfile(String email) {
+        User user = userRepository.findByEmailWithRolesAndDepartment(email.toLowerCase())
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        return new MyProfileResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getJobTitle(),
+                user.getDepartment() != null ? user.getDepartment().getId() : null,
+                user.getDepartment() != null ? user.getDepartment().getName() : null,
+                user.getAvatarUrl(),
+                user.getRoles().stream().map(Role::getCode).collect(Collectors.toSet())
+        );
+    }
+
+    @Transactional
+    public MyProfileResponse updateMyProfile(String email, UpdateMyProfileRequest req) {
+        User user = userRepository.findByEmailWithRolesAndDepartment(email.toLowerCase())
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
+
+        user.setFirstName(req.firstName().trim());
+        user.setLastName(req.lastName().trim());
+        user.setJobTitle(req.jobTitle() != null && !req.jobTitle().trim().isEmpty() ? req.jobTitle().trim() : null);
+        user.setAvatarUrl(req.avatarUrl() != null && !req.avatarUrl().trim().isEmpty() ? req.avatarUrl().trim() : null);
+
+        userRepository.save(user);
+
+        return getMyProfile(email);
+    }
+
+
+
 }

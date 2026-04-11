@@ -3,16 +3,17 @@ package com.capevents.backend.user;
 
 import com.capevents.backend.common.dto.PageResponse;
 import com.capevents.backend.common.exception.BadRequestException;
+import com.capevents.backend.user.dto.MyProfileResponse;
+import com.capevents.backend.user.dto.UpdateMyProfileRequest;
+import com.capevents.backend.user.dto.UserSummaryDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
@@ -48,5 +49,23 @@ public class UserController {
         var pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         return userService.listUsersForAdmin(authentication.getName(), pageable);
     }
+
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/me/profile")
+    public MyProfileResponse getMyProfile(Authentication authentication) {
+        return userService.getMyProfile(authentication.getName());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/me/profile")
+    public MyProfileResponse updateMyProfile(
+            @Valid @RequestBody UpdateMyProfileRequest req,
+            Authentication authentication
+    ) {
+        return userService.updateMyProfile(authentication.getName(), req);
+    }
+
+    
 
 }

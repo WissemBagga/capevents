@@ -1,0 +1,67 @@
+<div class="profile-page">
+  <div class="page-header">
+    <h1>Mon profil</h1>
+    <p>Modifiez vos informations principales.</p>
+  </div>
+
+  @if (loading) {
+    <div class="state-message loading-msg"><p>Chargement...</p></div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-message error-msg"><p>{{ errorMessage }}</p></div>
+  }
+
+  @if (successMessage) {
+    <div class="state-message success-msg"><p>{{ successMessage }}</p></div>
+  }
+
+  @if (!loading) {
+    <div class="profile-card">
+      <div class="avatar-preview">
+        @if (form.get('avatarUrl')?.value) {
+          <img [src]="form.get('avatarUrl')?.value" alt="Avatar" />
+        } @else {
+          <div class="avatar-placeholder">Avatar</div>
+        }
+      </div>
+
+      <form [formGroup]="form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" formControlName="firstName" />
+          </div>
+
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" formControlName="lastName" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Poste</label>
+            <input type="text" formControlName="jobTitle" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Avatar (URL optionnelle)</label>
+            <input type="text" formControlName="avatarUrl" placeholder="https://..." />
+          </div>
+
+          @if (profile) {
+            <div class="form-group full-width readonly-info">
+              <p><strong>Email :</strong> {{ profile.email }}</p>
+              <p><strong>Département :</strong> {{ profile.departmentName || '—' }}</p>
+            </div>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-primary" (click)="save()" [disabled]="saving">
+            @if (saving) { Enregistrement... } @else { Enregistrer }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

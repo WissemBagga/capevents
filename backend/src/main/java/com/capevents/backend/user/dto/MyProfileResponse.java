@@ -1,9 +1,9 @@
-package com.capevents.backend.user;
+package com.capevents.backend.user.dto;
 
 import java.util.Set;
 import java.util.UUID;
 
-public record UserSummaryDto(
+public record MyProfileResponse(
         UUID id,
         String firstName,
         String lastName,
@@ -12,6 +12,6 @@ public record UserSummaryDto(
         String jobTitle,
         Long departmentId,
         String departmentName,
-        boolean active,
+        String avatarUrl,
         Set<String> roles
 ) {}
