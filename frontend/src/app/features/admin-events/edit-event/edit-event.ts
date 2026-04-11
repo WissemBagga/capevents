@@ -111,8 +111,8 @@ export class EditEvent {
       next: (event) => {
         this.form.patchValue({
           title: event.title,
-          category: event.category || '',
-          description: event.description || '',
+          category: event.category ?? '',
+          description: event.description ?? '',
           startAt: this.toDatetimeLocal(event.startAt),
           durationMinutes: event.durationMinutes,
           locationType: event.locationType,
@@ -271,6 +271,12 @@ export class EditEvent {
       audience: (formValue.audience ?? 'DEPARTMENT') as 'GLOBAL' | 'DEPARTMENT',
       targetDepartmentId: formValue.audience === 'GLOBAL' ? null : formValue.targetDepartmentId
     };
+
+    if (this.capacityBelowRegistrations) {
+      this.errorMessage = `Impossible de réduire la capacité en dessous de ${this.originalRegisteredCount} inscrit(s).`;
+      this.cdr.markForCheck();
+      return;
+    }
 
     this.eventService.updateEvent(this.eventId, payload).subscribe({
       next: () => {

@@ -208,6 +208,19 @@
                 }
             </div>
 
+
+            @if (hasRegisteredParticipants) {
+                <div class="state-message loading-msg">
+                    <p>Attention : {{ originalRegisteredCount }} personne(s) sont déjà inscrites à cet événement.</p>
+                </div>
+                }
+
+                @if (capacityBelowRegistrations) {
+                <div class="state-message error-msg">
+                    <p>La capacité ne peut pas être inférieure au nombre actuel d’inscrits : {{ originalRegisteredCount }}.</p>
+                </div>
+            }
+
             <!-- Submit -->
             <div class="form-actions">
                 <button type="submit" class="btn-submit" [disabled]="submitting">

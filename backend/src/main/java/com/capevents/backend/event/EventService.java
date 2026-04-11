@@ -266,6 +266,15 @@ public class EventService {
         Instant previousDeadline = e.getRegistrationDeadline();
         boolean wasPublished = e.getStatus() == EventStatus.PUBLISHED;
 
+        long registeredCount = registrationRepository.countByEventAndStatus(e, RegistrationStatus.REGISTERED);
+
+        if (req.capacity() < registeredCount) {
+            throw new BadRequestException(
+                    "Impossible de réduire la capacité à " + req.capacity()
+                            + " : " + registeredCount + " participant(s) sont déjà inscrit(s)."
+            );
+        }
+
         e.setTitle(req.title());
         e.setCategory(req.category());
         e.setDescription(req.description());
