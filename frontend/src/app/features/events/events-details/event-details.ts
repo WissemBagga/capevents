@@ -484,6 +484,16 @@ export class EventDetails {
     }
   }
 
+  get isLateUnregister(): boolean {
+    if (!this.event?.startAt) return false;
+
+    const now = new Date().getTime();
+    const start = new Date(this.event.startAt).getTime();
+    const diffMs = start - now;
+
+    return diffMs > 0 && diffMs < 24 * 60 * 60 * 1000;
+  }
+
 
   statusLabel(status: string): string {
     switch (status) {
