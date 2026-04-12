@@ -28,7 +28,7 @@ export class EventService {
   private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/api/events`;
 
-  getPublished(page = 0, size = 10, sortBy = 'startAt', sortDir = 'asc'): Observable<PageResponse<EventResponse>> {
+  getPublished(page = 0, size = 8, sortBy = 'startAt', sortDir = 'asc'): Observable<PageResponse<EventResponse>> {
     const params = new HttpParams()
       .set('page', page)
       .set('size', size)
@@ -43,7 +43,7 @@ export class EventService {
     from: string | null,
     to: string | null,
     page = 0,
-    size = 10,
+    size = 8,
     sortBy = 'startAt',
     sortDir = 'asc'
   ): Observable<PageResponse<EventResponse>> {

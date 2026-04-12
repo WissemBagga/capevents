@@ -186,9 +186,41 @@
 /* ===== Events Grid ===== */
 .events-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
 }
+
+.events-grid.list-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.events-grid.list-mode .event-card {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+.events-grid.list-mode .event-image {
+  min-height: 100%;
+}
+
+.events-grid.list-mode .event-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.event-card {
+  overflow: hidden;
+}
+
+.event-image {
+  min-height: 170px;
+}
+
 
 /* ===== Event Card ===== */
 .event-card {
@@ -444,7 +476,7 @@
   }
 
   .events-grid,
-  .filters-card {
+  .filters-card, .events-grid.list-mode .event-card {
     grid-template-columns: 1fr;
   }
 
