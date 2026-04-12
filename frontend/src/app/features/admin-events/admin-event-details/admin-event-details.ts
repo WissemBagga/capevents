@@ -640,7 +640,10 @@ export class AdminEventDetails {
       }))
       .subscribe({
         next: () => {
-          this.participants = this.participants.map(p => ({ ...p, attendanceStatus: 'PRESENT' }));
+          this.participants = this.participants.map(p => ({
+            ...p,
+            attendanceStatus: 'PRESENT'
+          }));
           this.cdr.markForCheck();
         },
         error: () => {
@@ -667,7 +670,10 @@ export class AdminEventDetails {
       }))
       .subscribe({
         next: () => {
-          this.participants = this.participants.map(p => ({ ...p, attendanceStatus: 'ABSENT' }));
+          this.participants = this.participants.map(p => ({
+            ...p,
+            attendanceStatus: 'ABSENT'
+          }));
           this.cdr.markForCheck();
         },
         error: () => {

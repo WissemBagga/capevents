@@ -328,14 +328,18 @@
                   }
 
                   @if (!participantsLoading && participants.length > 0) {
-                    <div class="attendance-actions">
-                              <button type="button" class="btn-secondary" (click)="markAllPresent()">
-                                Tout cocher
-                              </button>
-                              <button type="button" class="btn-secondary" (click)="markAllAbsent()">
-                                Tout décocher
-                              </button>
-                          </div>
+                      <div class="attendance-toolbar">
+                        <div class="attendance-summary">
+                          <span>Présents : {{ presentCount }}</span>
+                          <span>Absents : {{ absentCount }}</span>
+                          <span>En attente : {{ pendingCount }}</span>
+                        </div>
+
+                        <div class="attendance-actions">
+                          <button type="button" (click)="markAllPresent()">Tout cocher</button>
+                          <button type="button" (click)="markAllAbsent()">Tout décocher</button>
+                        </div>
+                      </div>
                       <div class="participants-grid">
                           
                           @for (participant of participants; track participant.registrationId) {

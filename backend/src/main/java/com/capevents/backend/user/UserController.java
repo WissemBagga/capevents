@@ -66,6 +66,6 @@ public class UserController {
         return userService.updateMyProfile(authentication.getName(), req);
     }
 
-    
+
 
 }

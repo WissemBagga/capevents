@@ -55,7 +55,6 @@ export class EventsList {
 
   ngOnInit(): void {
     this.loadEvents();
-    this.loadEvents();
     if (this.authService.hasEmployeeRole()) {
       this.loadRegisteredEvents();
     }
