@@ -11,6 +11,15 @@
     <!-- Filters Bar -->
     <div class="filters-card">
         <div class="filter-group">
+            <label for="titleQuery">Nom de l’événement</label>
+            <input
+                id="titleQuery"
+                type="text"
+                [(ngModel)]="titleQuery"
+                placeholder="Rechercher par titre"
+            />
+        </div>
+        <div class="filter-group">
             <label for="category">CATÉGORIE</label>
             <select id="category" [(ngModel)]="category">
                 <option value="">Toutes les catégories</option>

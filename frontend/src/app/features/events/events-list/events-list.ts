@@ -36,6 +36,7 @@ export class EventsList {
   to = '';
   sortBy = 'DATE_ASC';
   viewMode: 'grid' | 'list' = 'grid';
+  titleQuery = '';
 
   currentPage = 0;
   pageSize = 6;
@@ -106,6 +107,7 @@ export class EventsList {
     this.to = '';
     this.sortBy = 'DATE_ASC';
     this.viewMode = 'grid';
+    this.titleQuery = '';
     this.fetchEvents(0);
   }
 
@@ -120,14 +122,15 @@ export class EventsList {
 
     const request$ = hasFilters
       ? this.eventService.searchPublished(
-          this.normalizeSearchText(this.category),
-          this.toIsoInstant(this.from),
-          this.toIsoInstant(this.to),
-          page,
-          this.pageSize,
-          sortBy,
-          sortDir
-        )
+        this.normalizeSearchText(this.category),
+        this.normalizeSearchText(this.titleQuery),
+        this.toIsoInstant(this.from),
+        this.toIsoInstant(this.to),
+        page,
+        this.pageSize,
+        sortBy,
+        sortDir
+      )
       : this.eventService.getPublished(
           page,
           this.pageSize,

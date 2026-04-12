@@ -40,6 +40,7 @@ export class EventService {
 
   searchPublished(
     category: string | null,
+    q: string | null,
     from: string | null,
     to: string | null,
     page = 0,
@@ -54,6 +55,7 @@ export class EventService {
       .set('sortDir', sortDir);
 
     if (category) params = params.set('category', category);
+    if (q) params = params.set('q', q);
     if (from) params = params.set('from', from);
     if (to) params = params.set('to', to);
 

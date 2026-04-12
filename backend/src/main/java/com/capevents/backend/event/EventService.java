@@ -508,6 +508,7 @@ public class EventService {
     public PageResponse<EventResponse> searchPublishedForUserDept(
             String actorEmail,
             String category,
+            String q,
             Instant from,
             Instant to,
             Pageable pageable
@@ -515,75 +516,81 @@ public class EventService {
         var actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
-        Instant now = Instant.now();
+        boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
 
-        Instant effectiveFrom = (from != null) ? from : now;
-        Instant effectiveTo = (to != null) ? to : Instant.parse("9999-12-31T23:59:59Z");
-
-        if (effectiveFrom.isAfter(effectiveTo)) {
-            throw new BadRequestException("La date de début doit être antérieure ou égale à la date de fin");
-        }
-
-        String normalizedCategory = (category != null && !category.trim().isEmpty())
-            ? category.trim()
-            : null;
-
-        boolean isHr = actor.getRoles().stream()
-                .anyMatch(r -> r.getCode().equals("ROLE_HR"));
+        Instant effectiveFrom = (from != null) ? from : Instant.now();
+        String normalizedCategory = (category != null && !category.trim().isEmpty()) ? category.trim() : null;
+        String normalizedQuery = (q != null && !q.trim().isEmpty()) ? q.trim() : null;
 
         Page<Event> page;
 
         if (isHr) {
-            if (normalizedCategory == null) {
-                page = eventRepository.searchPublishedPageWithoutCategory(
-                        effectiveFrom,
-                        effectiveTo,
-                        pageable
-                );
-            } else {
-                page = eventRepository.searchPublishedPageWithCategory(
-                        normalizedCategory,
-                        effectiveFrom,
-                        effectiveTo,
-                        pageable
-                );
-            }
+            page = searchPublishedForHr(normalizedCategory, normalizedQuery, effectiveFrom, to, pageable);
         } else {
             if (actor.getDepartment() == null) {
                 throw new BadRequestException("L’utilisateur n’a pas de département");
             }
 
-            Long deptId = actor.getDepartment().getId();
-
-            if (normalizedCategory == null) {
-                page = eventRepository.searchPublishedVisibleForDeptPageWithoutCategory(
-                        deptId,
-                        effectiveFrom,
-                        effectiveTo,
-                        pageable
-                );
-            } else {
-                page = eventRepository.searchPublishedVisibleForDeptPageWithCategory(
-                        deptId,
-                        normalizedCategory,
-                        effectiveFrom,
-                        effectiveTo,
-                        pageable
-                );
-            }
+            page = searchPublishedForDept(
+                    actor.getDepartment().getId(),
+                    normalizedCategory,
+                    normalizedQuery,
+                    effectiveFrom,
+                    to,
+                    pageable
+            );
         }
 
-        Page<EventResponse> dtoPage = page.map(this::toResponse);
+        Page<EventResponse> mapped = page.map(this::toResponse);
 
         return new PageResponse<>(
-                dtoPage.getContent(),
-                dtoPage.getNumber(),
-                dtoPage.getSize(),
-                dtoPage.getTotalPages(),
-                dtoPage.getTotalElements(),
-                dtoPage.hasNext(),
-                dtoPage.hasPrevious()
+                mapped.getContent(),
+                mapped.getNumber(),
+                mapped.getSize(),
+                mapped.getTotalPages(),
+                mapped.getTotalElements(),
+                mapped.hasNext(),
+                mapped.hasPrevious()
         );
+    }
+
+    private Page<Event> searchPublishedForHr(
+            String category,
+            String q,
+            Instant from,
+            Instant to,
+            Pageable pageable
+    ) {
+        if (category != null && q != null) {
+            return eventRepository.searchPublishedPageWithCategoryAndTitle(category, q, from, to, pageable);
+        }
+        if (category != null) {
+            return eventRepository.searchPublishedPageWithCategory(category, from, to, pageable);
+        }
+        if (q != null) {
+            return eventRepository.searchPublishedPageWithTitle(q, from, to, pageable);
+        }
+        return eventRepository.searchPublishedPage(from, to, pageable);
+    }
+
+    private Page<Event> searchPublishedForDept(
+            Long deptId,
+            String category,
+            String q,
+            Instant from,
+            Instant to,
+            Pageable pageable
+    ) {
+        if (category != null && q != null) {
+            return eventRepository.searchPublishedVisibleForDeptPageWithCategoryAndTitle(deptId, category, q, from, to, pageable);
+        }
+        if (category != null) {
+            return eventRepository.searchPublishedVisibleForDeptPageWithCategory(deptId, category, from, to, pageable);
+        }
+        if (q != null) {
+            return eventRepository.searchPublishedVisibleForDeptPageWithTitle(deptId, q, from, to, pageable);
+        }
+        return eventRepository.searchPublishedVisibleForDeptPage(deptId, from, to, pageable);
     }
 
 

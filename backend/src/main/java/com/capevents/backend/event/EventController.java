@@ -99,6 +99,7 @@ public class EventController {
     public PageResponse<EventResponse> searchPublished(
             Authentication auth,
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String q,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
             @RequestParam(defaultValue = "0") int page,
@@ -106,13 +107,21 @@ public class EventController {
             @RequestParam(defaultValue = "startAt") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir
     ) {
-        Sort.Direction dir = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        var pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
-
         if (!EVENT_SORT_FIELDS.contains(sortBy)) {
             throw new BadRequestException("Invalid sortBy. Allowed: " + EVENT_SORT_FIELDS);
         }
-        return eventService.searchPublishedForUserDept(auth.getName(), category, from, to, pageable);
+
+        Sort.Direction dir = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        var pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
+
+        return eventService.searchPublishedForUserDept(
+                auth.getName(),
+                category,
+                q,
+                from,
+                to,
+                pageable
+        );
     }
 
     private static final Set<String> EVENT_SORT_FIELDS = Set.of("startAt","createdAt","title");

@@ -73,99 +73,35 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     );
 
     @Query("""
-  select e from Event e
-  left join e.targetDepartment td
-  where e.status = 'PUBLISHED'
-    and (
-      e.audience = 'GLOBAL'
-      or (e.audience = 'DEPARTMENT' and td.id = :deptId)
-    )
-    and e.startAt >= :from
-    and e.startAt <= :to
-    and lower(e.category) like lower(concat('%', :category, '%'))
+    select e from Event e
+    left join e.targetDepartment td
+    where e.status = 'PUBLISHED'
+      and (
+        e.audience = 'GLOBAL'
+        or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+      )
+      and e.startAt >= :from
+      and (:to is null or e.registrationDeadline <= :to)
 """)
     Page<Event> searchPublishedVisibleForDeptPage(
             @Param("deptId") Long deptId,
-            @Param("category") String category,
             @Param("from") Instant from,
             @Param("to") Instant to,
             Pageable pageable
     );
 
     @Query("""
-      select e from Event e
-      where e.status = 'PUBLISHED'
-      and  e.startAt >= :from
-      and  e.startAt <= :to
-      and (:category is null or lower(e.category) like lower( concat('%', :category, '%')))
-    
+    select e from Event e
+    left join e.targetDepartment td
+    where e.status = 'PUBLISHED'
+      and (
+        e.audience = 'GLOBAL'
+        or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+      )
+      and e.startAt >= :from
+      and (:to is null or e.registrationDeadline <= :to)
+      and e.category = :category
 """)
-    Page<Event> searchPublishedPage(
-            @Param("category") String category,
-            @Param("from") Instant from,
-            @Param("to") Instant to,
-            Pageable pageable
-    );
-
-
-
-    @Query("""
-      select e from Event e
-      where e.status = 'PUBLISHED'
-        and e.startAt >= :from
-        and e.startAt <= :to
-    """)
-    Page<Event> searchPublishedPageWithoutCategory(
-            @Param("from") Instant from,
-            @Param("to") Instant to,
-            Pageable pageable
-    );
-
-    @Query("""
-      select e from Event e
-      where e.status = 'PUBLISHED'
-        and e.startAt >= :from
-        and e.startAt <= :to
-        and lower(e.category) like lower(concat('%', :category, '%'))
-    """)
-    Page<Event> searchPublishedPageWithCategory(
-            @Param("category") String category,
-            @Param("from") Instant from,
-            @Param("to") Instant to,
-            Pageable pageable
-    );
-
-
-    @Query("""
-      select e from Event e
-      left join e.targetDepartment td
-      where e.status = 'PUBLISHED'
-        and (
-          e.audience = 'GLOBAL'
-          or (e.audience = 'DEPARTMENT' and td.id = :deptId)
-        )
-        and e.startAt >= :from
-        and e.startAt <= :to
-    """)
-    Page<Event> searchPublishedVisibleForDeptPageWithoutCategory(
-            @Param("deptId") Long deptId,
-            @Param("from") Instant from,
-            @Param("to") Instant to,
-            Pageable pageable
-    );
-
-    @Query("""
-      select e from Event e
-      left join e.targetDepartment td
-      where e.status = 'PUBLISHED'
-        and (
-          e.audience = 'GLOBAL'
-          or (e.audience = 'DEPARTMENT' and td.id = :deptId)
-        )
-        and e.startAt >= :from
-        and e.startAt <= :to
-        and lower(e.category) like lower(concat('%', :category, '%'))
-    """)
     Page<Event> searchPublishedVisibleForDeptPageWithCategory(
             @Param("deptId") Long deptId,
             @Param("category") String category,
@@ -173,6 +109,62 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             @Param("to") Instant to,
             Pageable pageable
     );
+
+    @Query("""
+    select e from Event e
+    left join e.targetDepartment td
+    where e.status = 'PUBLISHED'
+      and (
+        e.audience = 'GLOBAL'
+        or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+      )
+      and e.startAt >= :from
+      and (:to is null or e.registrationDeadline <= :to)
+      and lower(e.title) like lower(concat('%', :q, '%'))
+""")
+    Page<Event> searchPublishedVisibleForDeptPageWithTitle(
+            @Param("deptId") Long deptId,
+            @Param("q") String q,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
+    @Query("""
+    select e from Event e
+    left join e.targetDepartment td
+    where e.status = 'PUBLISHED'
+      and (
+        e.audience = 'GLOBAL'
+        or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+      )
+      and e.startAt >= :from
+      and (:to is null or e.registrationDeadline <= :to)
+      and e.category = :category
+      and lower(e.title) like lower(concat('%', :q, '%'))
+""")
+    Page<Event> searchPublishedVisibleForDeptPageWithCategoryAndTitle(
+            @Param("deptId") Long deptId,
+            @Param("category") String category,
+            @Param("q") String q,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
+    @Query("""
+        select e from Event e
+        where e.status = 'PUBLISHED'
+          and e.startAt >= :from
+          and (:to is null or e.registrationDeadline <= :to)
+    """)
+    Page<Event> searchPublishedPage(
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
+
 
     Page<Event> findByStatusOrderByCreatedAtDesc(EventStatus status, Pageable pageable);
 
@@ -223,4 +215,49 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     List<Event> findByStatusAndFeedbackNotificationSentAtIsNullOrderByCreatedAtDesc(
             EventStatus status
     );
+
+    @Query("""
+    select e from Event e
+    where e.status = 'PUBLISHED'
+      and e.startAt >= :from
+      and (:to is null or e.registrationDeadline <= :to)
+      and e.category = :category
+""")
+    Page<Event> searchPublishedPageWithCategory(
+            @Param("category") String category,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
+    @Query("""
+    select e from Event e
+    where e.status = 'PUBLISHED'
+      and e.startAt >= :from
+      and (:to is null or e.registrationDeadline <= :to)
+      and lower(e.title) like lower(concat('%', :q, '%'))
+""")
+    Page<Event> searchPublishedPageWithTitle(
+            @Param("q") String q,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
+    @Query("""
+    select e from Event e
+    where e.status = 'PUBLISHED'
+      and e.startAt >= :from
+      and (:to is null or e.registrationDeadline <= :to)
+      and e.category = :category
+      and lower(e.title) like lower(concat('%', :q, '%'))
+""")
+    Page<Event> searchPublishedPageWithCategoryAndTitle(
+            @Param("category") String category,
+            @Param("q") String q,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            Pageable pageable
+    );
+
 }
