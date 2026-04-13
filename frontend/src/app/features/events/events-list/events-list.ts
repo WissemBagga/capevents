@@ -118,7 +118,7 @@ export class EventsList {
 
     const { sortBy, sortDir } = this.mapSort();
 
-    const hasFilters = !!this.category || !!this.from || !!this.to;
+    const hasFilters = !!this.category || !!this.from || !!this.to || !!this.titleQuery?.trim();
 
     const request$ = hasFilters
       ? this.eventService.searchPublished(

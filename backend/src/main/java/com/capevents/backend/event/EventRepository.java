@@ -81,7 +81,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
         or (e.audience = 'DEPARTMENT' and td.id = :deptId)
       )
       and e.startAt >= :from
-      and (:to is null or e.registrationDeadline <= :to)
+      and e.registrationDeadline <= :to
 """)
     Page<Event> searchPublishedVisibleForDeptPage(
             @Param("deptId") Long deptId,
@@ -99,7 +99,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
         or (e.audience = 'DEPARTMENT' and td.id = :deptId)
       )
       and e.startAt >= :from
-      and (:to is null or e.registrationDeadline <= :to)
+      and e.registrationDeadline <= :to
       and e.category = :category
 """)
     Page<Event> searchPublishedVisibleForDeptPageWithCategory(
@@ -119,7 +119,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
         or (e.audience = 'DEPARTMENT' and td.id = :deptId)
       )
       and e.startAt >= :from
-      and (:to is null or e.registrationDeadline <= :to)
+      and e.registrationDeadline <= :to
       and lower(e.title) like lower(concat('%', :q, '%'))
 """)
     Page<Event> searchPublishedVisibleForDeptPageWithTitle(
@@ -139,7 +139,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
         or (e.audience = 'DEPARTMENT' and td.id = :deptId)
       )
       and e.startAt >= :from
-      and (:to is null or e.registrationDeadline <= :to)
+      and e.registrationDeadline <= :to
       and e.category = :category
       and lower(e.title) like lower(concat('%', :q, '%'))
 """)
@@ -156,7 +156,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
         select e from Event e
         where e.status = 'PUBLISHED'
           and e.startAt >= :from
-          and (:to is null or e.registrationDeadline <= :to)
+          and e.registrationDeadline <= :to
     """)
     Page<Event> searchPublishedPage(
             @Param("from") Instant from,
@@ -220,7 +220,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     select e from Event e
     where e.status = 'PUBLISHED'
       and e.startAt >= :from
-      and (:to is null or e.registrationDeadline <= :to)
+      and e.registrationDeadline <= :to
       and e.category = :category
 """)
     Page<Event> searchPublishedPageWithCategory(
@@ -234,7 +234,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     select e from Event e
     where e.status = 'PUBLISHED'
       and e.startAt >= :from
-      and (:to is null or e.registrationDeadline <= :to)
+      and e.registrationDeadline <= :to
       and lower(e.title) like lower(concat('%', :q, '%'))
 """)
     Page<Event> searchPublishedPageWithTitle(
@@ -248,7 +248,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     select e from Event e
     where e.status = 'PUBLISHED'
       and e.startAt >= :from
-      and (:to is null or e.registrationDeadline <= :to)
+      and e.registrationDeadline <= :to
       and e.category = :category
       and lower(e.title) like lower(concat('%', :q, '%'))
 """)

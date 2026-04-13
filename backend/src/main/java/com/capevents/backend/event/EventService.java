@@ -519,13 +519,24 @@ public class EventService {
         boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
 
         Instant effectiveFrom = (from != null) ? from : Instant.now();
-        String normalizedCategory = (category != null && !category.trim().isEmpty()) ? category.trim() : null;
-        String normalizedQuery = (q != null && !q.trim().isEmpty()) ? q.trim() : null;
+        Instant effectiveTo = (to != null) ? to : Instant.parse("9999-12-31T23:59:59Z");
+
+        String normalizedCategory = (category != null && !category.trim().isEmpty())
+                ? category.trim()
+                : null;
+
+        String normalizedQuery = (q != null && !q.trim().isEmpty())
+                ? q.trim()
+                : null;
+
+        if (effectiveFrom.isAfter(effectiveTo)) {
+            throw new BadRequestException("La date de début doit être antérieure ou égale à la date limite d’inscription.");
+        }
 
         Page<Event> page;
 
         if (isHr) {
-            page = searchPublishedForHr(normalizedCategory, normalizedQuery, effectiveFrom, to, pageable);
+            page = searchPublishedForHr(normalizedCategory, normalizedQuery, effectiveFrom, effectiveTo, pageable);
         } else {
             if (actor.getDepartment() == null) {
                 throw new BadRequestException("L’utilisateur n’a pas de département");
@@ -536,7 +547,7 @@ public class EventService {
                     normalizedCategory,
                     normalizedQuery,
                     effectiveFrom,
-                    to,
+                    effectiveTo,
                     pageable
             );
         }
