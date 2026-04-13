@@ -107,7 +107,6 @@ export class EventDetails {
           this.cdr.markForCheck();
 
           if (this.authService.isLoggedIn() && this.canParticipate) {
-            this.loadMySentInvitations();
             this.loadRegistrationStatus(event.id);
           }
         },
@@ -174,9 +173,12 @@ export class EventDetails {
 
         if (this.isRegistered && !this.isDeadlinePassed) {
           this.loadInvitableUsers();
+          this.loadMySentInvitations();
         } else {
           this.users = [];
+          this.sentInvitations = [];
           this.showEmployeeInvitePanel = false;
+          this.selectedEmployeeInviteEmails = [];
         }
 
         this.cdr.markForCheck();
@@ -184,7 +186,9 @@ export class EventDetails {
       error: () => {
         this.isRegistered = false;
         this.users = [];
+        this.sentInvitations = [];
         this.showEmployeeInvitePanel = false;
+        this.selectedEmployeeInviteEmails = [];
         this.cdr.markForCheck();
       }
     });
@@ -304,12 +308,13 @@ export class EventDetails {
       .subscribe({
         next: () => {
           this.isRegistered = false;
-          this.users = [];
-          this.showEmployeeInvitePanel = false;
-          this.selectedEmployeeInviteEmails = [];
           this.decrementCapacity();
           this.showUnregisterModal = false;
           this.successMessage = 'Désinscription effectuée.';
+          this.users = [];
+          this.showEmployeeInvitePanel = false;
+          this.selectedEmployeeInviteEmails = [];
+          this.sentInvitations = [];
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -384,10 +389,19 @@ export class EventDetails {
   }
 
   toggleEmployeeInvitePanel(): void {
+    if (!this.isRegistered) {
+      this.showEmployeeInvitePanel = false;
+      this.employeeInviteErrorMessage =
+        "Vous devez d'abord vous inscrire à cet événement avant d'inviter des collègues.";
+      this.employeeInviteSuccessMessage = '';
+      this.cdr.markForCheck();
+      return;
+    }
+
     if (this.isDeadlinePassed) {
       this.showEmployeeInvitePanel = false;
       this.employeeInviteErrorMessage =
-        'Les invitations aux collègues sont fermées : la date limite d’inscription est dépassée.';
+        "Les invitations aux collègues sont fermées : la date limite d'inscription est dépassée.";
       this.employeeInviteSuccessMessage = '';
       this.cdr.markForCheck();
       return;
@@ -412,6 +426,12 @@ export class EventDetails {
   }
 
   sendEmployeeInvites(): void {
+    if (!this.isRegistered) {
+      this.employeeInviteErrorMessage =
+        "Vous devez d'abord vous inscrire à cet événement avant d'inviter des collègues.";
+      this.cdr.markForCheck();
+      return;
+    }
     if (this.isDeadlinePassed) {
       this.showEmployeeInvitePanel = false;
       this.employeeInviteErrorMessage =

@@ -277,10 +277,10 @@ export class Navbar {
     this.stopAutoRefresh();
 
     this.refreshTimer = window.setInterval(() => {
-      this.loadUnreadCount();
 
       if (this.notificationsOpen) {
         this.loadNotifications();
+        this.loadUnreadCount();
       }
     }, 30000);
   }

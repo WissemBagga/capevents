@@ -364,7 +364,7 @@ public class EventInvitationService {
         );
 
         if (!actorRegistered) {
-            throw new BadRequestException("Vous devez être inscrit à cet événement pour consulter vos invitations envoyées.");
+            return List.of();
         }
 
         return invitationRepository.findByEventAndInvitedByOrderBySentAtDesc(event, actor).stream()
