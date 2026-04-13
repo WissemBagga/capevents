@@ -11,6 +11,15 @@
     <!-- Filters Bar -->
     <div class="filters-card">
         <div class="filter-group">
+            <label for="statusFilter">Statut</label>
+            <select id="statusFilter" [(ngModel)]="statusFilter">
+                <option value="ALL">Tous</option>
+                <option value="AVAILABLE">Disponibles</option>
+                <option value="FULL">Complets</option>
+                <option value="DEADLINE_PASSED">Deadline dépassée</option>
+            </select>
+        </div>
+        <div class="filter-group">
             <label for="titleQuery">Nom de l’événement</label>
             <input
                 id="titleQuery"
@@ -84,7 +93,7 @@
         </div>
     }
 
-    @if (!loading && events.length === 0) {
+    @if (!loading && displayedEvents.length === 0) {
         <div class="state-message empty">
             <p>Aucun événement trouvé.</p>
         </div>
@@ -92,7 +101,7 @@
 
     <!-- Events Grid -->
     <div class="events-grid" [class.list-mode]="viewMode === 'list'">
-        @for (event of events; track event.id) {
+        @for (event of displayedEvents; track event.id) {
             <article class="event-card">
             <div class="event-image">
                 @if (isDeadlinePassed(event)) {

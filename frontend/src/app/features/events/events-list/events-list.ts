@@ -45,6 +45,9 @@ export class EventsList {
   hasNext = false;
   hasPrevious = false;
 
+  statusFilter: 'ALL' | 'AVAILABLE' | 'FULL' | 'DEADLINE_PASSED' = 'ALL';
+
+
   ngOnInit(): void {
     this.fetchEvents(0);
 
@@ -108,12 +111,32 @@ export class EventsList {
     this.sortBy = 'DATE_ASC';
     this.viewMode = 'grid';
     this.titleQuery = '';
+    this.statusFilter = 'ALL';
     this.fetchEvents(0);
   }
+
 
   isDeadlinePassed(event: EventResponse): boolean {
     if (!event.registrationDeadline) return false;
     return new Date().getTime() > new Date(event.registrationDeadline).getTime();
+  }
+
+  matchesStatusFilter(event: EventResponse): boolean {
+    switch (this.statusFilter) {
+      case 'AVAILABLE':
+        return !this.isDeadlinePassed(event) && !this.isFull(event);
+      case 'FULL':
+        return !this.isDeadlinePassed(event) && this.isFull(event);
+      case 'DEADLINE_PASSED':
+        return this.isDeadlinePassed(event);
+      case 'ALL':
+      default:
+        return true;
+    }
+  }
+
+  get displayedEvents(): EventResponse[] {
+    return this.events.filter(event => this.matchesStatusFilter(event));
   }
 
   private fetchEvents(page = 0): void {
