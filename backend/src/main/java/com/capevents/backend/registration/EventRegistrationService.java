@@ -6,6 +6,7 @@ import com.capevents.backend.event.Event;
 import com.capevents.backend.event.EventAudience;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
+import com.capevents.backend.invitation.EventInvitationRepository;
 import com.capevents.backend.mail.EmailService;
 import com.capevents.backend.notification.NotificationService;
 import com.capevents.backend.points.PointService;
@@ -29,14 +30,16 @@ public class EventRegistrationService {
     private final NotificationService notificationService;
     private final EmailService emailService;
     private final PointService pointService;
+    private final EventInvitationRepository invitationRepository;
 
-    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService, PointService pointService) {
+    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService, PointService pointService, EventInvitationRepository invitationRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.registrationRepository = registrationRepository;
         this.notificationService = notificationService;
         this.emailService = emailService;
         this.pointService = pointService;
+        this.invitationRepository = invitationRepository;
     }
 
     @Transactional
@@ -82,12 +85,18 @@ public class EventRegistrationService {
         User user = userRepository.findByEmailWithRolesAndDepartment(userEmail.toLowerCase())
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
+        boolean hasPendingSentInvitations =
+                invitationRepository.existsByEventAndInvitedByAndRsvpResponseIsNull(event, user);
+
+        if (hasPendingSentInvitations) {
+            throw new BadRequestException(
+                    "Impossible de vous désinscrire : vous avez encore des invitations envoyées en attente pour cet événement."
+            );
+        }
+
         if (request == null || request.reason() == null ||  request.reason().isEmpty()) {
             throw new BadRequestException("La raison de désinscription est obligatoire.");
         }
-
-
-
 
         EventRegistration registration = registrationRepository
                 .findByEventIdAndUserId(event.getId(), user.getId())

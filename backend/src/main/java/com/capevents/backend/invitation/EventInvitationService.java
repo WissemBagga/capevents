@@ -156,6 +156,18 @@ public class EventInvitationService {
             throw new NotFoundException("Événement introuvable");
         }
 
+        boolean inviterRegistered = registrationRepository.existsByEventAndUserAndStatus(
+                event,
+                actor,
+                RegistrationStatus.REGISTERED
+        );
+
+        if (!inviterRegistered) {
+            throw new BadRequestException(
+                    "Vous devez être inscrit à cet événement avant de pouvoir inviter des collègues."
+            );
+        }
+
         List<User> targets = resolveEmployeeIndividualTargets(req.userEmails(), event);
 
         int created = 0;

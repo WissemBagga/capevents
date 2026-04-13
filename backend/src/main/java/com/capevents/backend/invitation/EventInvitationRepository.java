@@ -13,6 +13,8 @@ public interface EventInvitationRepository extends JpaRepository<EventInvitation
     Optional<EventInvitation> findByIdAndUser(Long id, User user);
     boolean existsByEventAndUser(Event event, User user);
 
+    boolean existsByEventAndInvitedByAndRsvpResponseIsNull(Event event, User invitedBy);
+
     List<EventInvitation> findByEventOrderBySentAtDesc(Event event);
 
     List<EventInvitation> findByUserOrderBySentAtDesc(User user);

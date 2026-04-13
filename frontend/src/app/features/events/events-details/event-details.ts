@@ -109,13 +109,6 @@ export class EventDetails {
           if (this.authService.isLoggedIn() && this.canParticipate) {
             this.loadMySentInvitations();
             this.loadRegistrationStatus(event.id);
-
-            if (!this.isDeadlinePassed) {
-              this.loadInvitableUsers();
-            } else {
-              this.users = [];
-              this.showEmployeeInvitePanel = false;
-            }
           }
         },
         error: (err) => {
@@ -178,10 +171,20 @@ export class EventDetails {
     this.eventService.getRegistrationStatus(eventId).subscribe({
       next: (registered) => {
         this.isRegistered = registered;
+
+        if (this.isRegistered && !this.isDeadlinePassed) {
+          this.loadInvitableUsers();
+        } else {
+          this.users = [];
+          this.showEmployeeInvitePanel = false;
+        }
+
         this.cdr.markForCheck();
       },
       error: () => {
         this.isRegistered = false;
+        this.users = [];
+        this.showEmployeeInvitePanel = false;
         this.cdr.markForCheck();
       }
     });
@@ -232,6 +235,9 @@ export class EventDetails {
       .subscribe({
         next: () => {
           this.isRegistered = true;
+          if (!this.isDeadlinePassed) {
+            this.loadInvitableUsers();
+          }
           this.incrementCapacity();
           this.successMessage = 'Inscription réussie.';
           this.loadMySentInvitations();
@@ -253,6 +259,12 @@ export class EventDetails {
     this.unregisterErrorMessage = '';
     this.unregisterReason = '';
     this.unregisterComment = '';
+    if (this.hasPendingSentInvitations) {
+      this.successMessage = '';
+      this.errorMessage = this.unregisterBlockingMessage;
+      this.cdr.markForCheck();
+      return;
+    }
     this.showUnregisterModal = true;
     this.cdr.markForCheck();
   }
@@ -292,6 +304,9 @@ export class EventDetails {
       .subscribe({
         next: () => {
           this.isRegistered = false;
+          this.users = [];
+          this.showEmployeeInvitePanel = false;
+          this.selectedEmployeeInviteEmails = [];
           this.decrementCapacity();
           this.showUnregisterModal = false;
           this.successMessage = 'Désinscription effectuée.';
@@ -308,7 +323,7 @@ export class EventDetails {
   }
 
   get canInviteColleagues(): boolean {
-    return this.authService.hasEmployeeRole() && !!this.event && !this.isDeadlinePassed;
+    return this.authService.hasEmployeeRole() && !!this.event && !this.isDeadlinePassed && this.isRegistered;
   }
 
   get invitableUsers(): UserSummary[] {
@@ -334,8 +349,12 @@ export class EventDetails {
       return '';
     }
 
+    if (!this.isRegistered) {
+      return "Vous devez d'abord vous inscrire à cet événement avant d'inviter des collègues.";
+    }
+
     if (this.isDeadlinePassed) {
-      return 'Les invitations aux collègues sont fermées : la date limite d’inscription est dépassée.';
+      return "Les invitations aux collègues sont fermées : la date limite d'inscription est dépassée.";
     }
 
     return '';
@@ -494,6 +513,17 @@ export class EventDetails {
     return diffMs > 0 && diffMs < 24 * 60 * 60 * 1000;
   }
 
+  get hasPendingSentInvitations(): boolean {
+    return this.sentInvitations.some(invitation => !invitation.rsvpResponse);
+  }
+
+  get unregisterBlockingMessage(): string {
+    if (this.hasPendingSentInvitations) {
+      return 'Vous ne pouvez pas vous désinscrire tant que des invitations envoyées sont encore en attente.';
+    }
+
+    return '';
+  }
 
   statusLabel(status: string): string {
     switch (status) {

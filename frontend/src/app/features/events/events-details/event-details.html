@@ -185,7 +185,7 @@
                         }
 
                         @if (isRegistered) {
-                            <button class="btn-danger" type="button" (click)="openUnregisterModal()" [disabled]="actionLoading || isDeadlinePassed">                                @if (actionLoading) {
+                            <button class="btn-danger" type="button" (click)="openUnregisterModal()" [disabled]="actionLoading || isDeadlinePassed || hasPendingSentInvitations">                                @if (actionLoading) {
                                     <span class="spinner-small"></span> Traitement...
                                 } @else {
                                     Se désinscrire
@@ -227,6 +227,12 @@
                         <p>{{ errorMessage }}</p>
                     </div>
                 }
+            </div>
+        }
+
+        @if (canParticipate && event && !isRegistered && !isDeadlinePassed) {
+            <div class="state-message info">
+                <p>Inscrivez-vous d’abord à cet événement pour pouvoir inviter des collègues.</p>
             </div>
         }
         @if (canInviteColleagues) {
@@ -483,12 +489,17 @@
             <!-- Header -->
             <div class="modal-header">
                 <div class="modal-header-text">
-                <h2>Se désinscrire</h2>
-                <p class="modal-subtitle">Merci d'indiquer la raison de votre désinscription avant de confirmer.</p>
+                    <h2>Se désinscrire</h2>
+                    <p class="modal-subtitle">Merci d'indiquer la raison de votre désinscription avant de confirmer.</p>
                 </div>
-                <button type="button" class="modal-close" (click)="closeUnregisterModal()" title="Fermer">
+                <button type="button" class="modal-close" (click)="closeUnregisterModal()" title="Fermer" [disabled]="actionLoading || hasPendingSentInvitations">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
+                @if (hasPendingSentInvitations) {
+                    <div class="state-message error-msg">
+                        <p>{{ unregisterBlockingMessage }}</p>
+                    </div>
+                }
             </div>
             @if (isLateUnregister) {
                     <div class="state-message error">
