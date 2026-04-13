@@ -519,6 +519,22 @@ export class EventDetails {
     this.cdr.markForCheck();
   }
 
+  get registrationUnavailableMessage(): string {
+    if (!this.event) {
+      return '';
+    }
+
+    if (this.isDeadlinePassed) {
+      return "La date limite d'inscription est dépassée. Les nouvelles inscriptions sont fermées.";
+    }
+
+    if (this.isFull && !this.isRegistered) {
+      return "Cet événement est complet. Aucune place n’est disponible.";
+    }
+
+    return '';
+  }
+
   invitationResponseLabel(response: InvitationResponseStatus | null): string {
     switch (response) {
       case 'YES':

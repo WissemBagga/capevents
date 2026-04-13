@@ -95,14 +95,15 @@
         @for (event of events; track event.id) {
             <article class="event-card">
             <div class="event-image">
-                @if (isFull(event)) {
-                <span class="full-badge">Complet</span>
+                @if (isDeadlinePassed(event)) {
+                    <span class="deadline-badge">Deadline dépassée</span>
+                } @else if (isFull(event)) {
+                    <span class="full-badge">Complet</span>
                 } @else if (isRegistered(event)) {
-                <span class="registered-badge">Inscrit</span>
+                    <span class="registered-badge">Inscrit</span>
                 }
-
                 <span class="status-badge" [class]="event.status.toLowerCase()">
-                {{ statusLabel(event.status) }}
+                    {{ statusLabel(event.status) }}
                 </span>
             </div>
 
@@ -112,17 +113,26 @@
                 <p class="description">{{ event.description || 'Aucune description disponible.' }}</p>
 
                 <div class="meta">
-                <div class="meta-row">
-                    <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
-                </div>
-                <div class="meta-row">
-                    <span>{{ event.startAt | date:'medium' }}</span>
-                </div>
-                <div class="meta-row">
-                    <span [class.capacity-full]="isFull(event)">
-                    {{ event.registeredCount }} / {{ event.capacity }} inscrits
-                    </span>
-                </div>
+                    <div class="meta-row">
+                        <span>{{ event.locationName || event.address || 'Lieu non précisé' }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span>{{ event.startAt | date:'medium' }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span [class.capacity-full]="isFull(event)">
+                        {{ event.registeredCount }} / {{ event.capacity }} inscrits
+                        </span>
+                    </div>
+                    <div class="meta-row">
+                        @if (isDeadlinePassed(event)) {
+                            <span class="capacity-full">Inscriptions fermées</span>
+                        } @else if (isFull(event)) {
+                            <span class="capacity-full">Plus aucune place disponible</span>
+                        } @else {
+                            <span>{{ event.remainingCapacity }} place(s) restante(s)</span>
+                        }
+                    </div>
                 </div>
 
                 <div class="card-actions">

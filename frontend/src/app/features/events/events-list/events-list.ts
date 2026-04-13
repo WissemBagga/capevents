@@ -111,6 +111,11 @@ export class EventsList {
     this.fetchEvents(0);
   }
 
+  isDeadlinePassed(event: EventResponse): boolean {
+    if (!event.registrationDeadline) return false;
+    return new Date().getTime() > new Date(event.registrationDeadline).getTime();
+  }
+
   private fetchEvents(page = 0): void {
     this.loading = true;
     this.errorMessage = '';

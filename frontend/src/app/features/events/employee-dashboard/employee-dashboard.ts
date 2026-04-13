@@ -68,4 +68,8 @@ export class EmployeeDashboard {
         }
       });
   }
+  isDeadlinePassed(event: EventResponse): boolean {
+    if (!event.registrationDeadline) return false;
+    return new Date().getTime() > new Date(event.registrationDeadline).getTime();
+  }
 }
