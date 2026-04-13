@@ -41,7 +41,7 @@ export class CreateEvent {
   form = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
     category: ['', [Validators.required]],
-    description: ['', [Validators.required]],
+    description: [''],
     startAt: ['', [Validators.required]],
     durationMinutes: [30, [Validators.required, Validators.min(30)]],
     locationType: ['ONSITE', [Validators.required]],

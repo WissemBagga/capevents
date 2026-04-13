@@ -97,7 +97,11 @@ public class EventService {
         Event e = new Event();
         e.setTitle(req.title());
         e.setCategory(req.category());
-        e.setDescription(req.description());
+        e.setDescription(
+                req.description() != null && !req.description().trim().isEmpty()
+                        ? req.description().trim()
+                        : null
+        );
         e.setStartAt(req.startAt());
         e.setDurationMinutes(req.durationMinutes());
         e.setLocationType(req.locationType());
@@ -277,7 +281,11 @@ public class EventService {
 
         e.setTitle(req.title());
         e.setCategory(req.category());
-        e.setDescription(req.description());
+        e.setDescription(
+                req.description() != null && !req.description().trim().isEmpty()
+                        ? req.description().trim()
+                        : null
+        );
         e.setStartAt(req.startAt());
         e.setDurationMinutes(req.durationMinutes());
         e.setLocationType(req.locationType());
@@ -655,7 +663,11 @@ public class EventService {
         Event event = new Event();
         event.setTitle(req.title());
         event.setCategory(req.category());
-        event.setDescription(req.description());
+        event.setDescription(
+                req.description() != null && !req.description().trim().isEmpty()
+                        ? req.description().trim()
+                        : null
+        );
         event.setStartAt(req.startAt());
         event.setDurationMinutes(req.durationMinutes());
         event.setLocationType(req.locationType());
