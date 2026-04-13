@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 
 interface NavItem {
@@ -21,8 +22,18 @@ export class Sidebar {
   currentUser = this.authService.getCurrentUserSnapshot();
 
   mainOpen = true;
-  workOpen = true;
+  workOpen = false;
   participationOpen = false;
+
+  ngOnInit(): void {
+    this.syncSectionsWithRoute(this.router.url);
+
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe(event => {
+        this.syncSectionsWithRoute(event.urlAfterRedirects);
+      });
+  }
 
   get displayName(): string {
     const firstName = this.currentUser?.firstName ?? '';
@@ -45,10 +56,6 @@ export class Sidebar {
     if (this.authService.isHr()) return '/admin/hr';
     if (this.authService.isManager()) return '/admin/manager';
     return '/dashboard/employee';
-  }
-
-  get isPrimaryEmployee(): boolean {
-    return this.authService.isEmployeeOnly();
   }
 
   get hasParticipationAccess(): boolean {
@@ -125,5 +132,27 @@ export class Sidebar {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  private syncSectionsWithRoute(url: string): void {
+    this.mainOpen = this.matchesAny(url, this.mainLinks);
+    this.workOpen = this.matchesAny(url, this.workLinks) || this.workOpen;
+    this.participationOpen = this.matchesAny(url, this.participationLinks) || this.participationOpen;
+
+    if (!this.mainOpen && !this.workOpen && !this.participationOpen) {
+      this.mainOpen = true;
+    }
+  }
+
+  private matchesAny(url: string, items: NavItem[]): boolean {
+    return items.some(item => this.routeMatches(url, item.route));
+  }
+
+  private routeMatches(currentUrl: string, itemRoute: string): boolean {
+    if (itemRoute === '/events') {
+      return currentUrl.startsWith('/events');
+    }
+
+    return currentUrl === itemRoute || currentUrl.startsWith(itemRoute + '/');
   }
 }

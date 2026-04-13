@@ -53,16 +53,7 @@
   color: #1e40af;
 }
 
-.user-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-  padding: 14px 12px;
-  border-radius: 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
+
 
 .user-avatar {
   width: 44px;
@@ -167,6 +158,17 @@
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 12px;
+  padding: 11px 12px; 
+  background: #f8fafc;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
 }
 
 .footer-btn:hover {

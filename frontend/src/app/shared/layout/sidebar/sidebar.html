@@ -4,14 +4,6 @@
             <div class="brand-title">CAPEVENTS</div>
             <div class="brand-subtitle">PORTAIL INTERNE</div>
         </a>
-
-        <div class="user-card">
-            <div class="user-avatar">{{ avatarLetter }}</div>
-            <div class="user-meta">
-            <strong>{{ displayName }}</strong>
-            <span>{{ roleLabel }}</span>
-            </div>
-        </div>
     </div>
 
   <nav class="sidebar-nav">
@@ -83,10 +75,16 @@
     }
   </nav>
 
+
+
   <div class="sidebar-footer">
-    <button type="button" class="footer-btn" (click)="goToProfile()">
-      Mon profil
-    </button>
+      <div class="user-card" (click)="goToProfile()">
+                <div class="user-avatar">{{ avatarLetter }}</div>
+                <div class="user-meta">
+                <strong>{{ displayName }}</strong>
+                <span>{{ roleLabel }}</span>
+                </div>
+      </div>
     <button type="button" class="footer-btn logout-btn" (click)="logout()">
       Déconnexion
     </button>
