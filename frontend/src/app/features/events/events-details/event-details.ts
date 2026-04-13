@@ -485,6 +485,40 @@ export class EventDetails {
       });
   }
 
+  get filteredInvitableUserEmails(): string[] {
+    return this.filteredInvitableUsers.map(user => user.email);
+  }
+
+  get areAllFilteredInvitableUsersSelected(): boolean {
+    const emails = this.filteredInvitableUserEmails;
+    return emails.length > 0 && emails.every(email => this.selectedEmployeeInviteEmails.includes(email));
+  }
+
+  get selectedFilteredInvitableCount(): number {
+    const emails = this.filteredInvitableUserEmails;
+    return emails.filter(email => this.selectedEmployeeInviteEmails.includes(email)).length;
+  }
+
+  toggleSelectAllEmployeeInvitableUsers(checked: boolean): void {
+    const emails = this.filteredInvitableUserEmails;
+
+    if (emails.length === 0) {
+      return;
+    }
+
+    if (checked) {
+      this.selectedEmployeeInviteEmails = Array.from(
+        new Set([...this.selectedEmployeeInviteEmails, ...emails])
+      );
+    } else {
+      this.selectedEmployeeInviteEmails = this.selectedEmployeeInviteEmails.filter(
+        email => !emails.includes(email)
+      );
+    }
+
+    this.cdr.markForCheck();
+  }
+
   invitationResponseLabel(response: InvitationResponseStatus | null): string {
     switch (response) {
       case 'YES':

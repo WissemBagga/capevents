@@ -736,6 +736,40 @@ export class AdminEventDetails {
     return this.isManager && !this.isHr;
   }
 
+  get filteredSelectableUserEmails(): string[] {
+    return this.filteredSelectableUsers.map(user => user.email);
+  }
+
+  get areAllFilteredSelectableUsersSelected(): boolean {
+    const emails = this.filteredSelectableUserEmails;
+    return emails.length > 0 && emails.every(email => this.selectedUserEmails.includes(email));
+  }
+
+  get selectedFilteredSelectableCount(): number {
+    const emails = this.filteredSelectableUserEmails;
+    return emails.filter(email => this.selectedUserEmails.includes(email)).length;
+  }
+
+  toggleSelectAllAdminUsers(checked: boolean): void {
+    const emails = this.filteredSelectableUserEmails;
+
+    if (emails.length === 0) {
+      return;
+    }
+
+    if (checked) {
+      this.selectedUserEmails = Array.from(
+        new Set([...this.selectedUserEmails, ...emails])
+      );
+    } else {
+      this.selectedUserEmails = this.selectedUserEmails.filter(
+        email => !emails.includes(email)
+      );
+    }
+
+    this.cdr.markForCheck();
+  }
+
   invitationResponseLabel(response: InvitationResponseStatus | null): string {
     switch (response) {
       case 'YES':

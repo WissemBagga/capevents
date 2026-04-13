@@ -288,6 +288,20 @@
                       @if (filteredInvitableUsers.length === 0) {
                         <p class="helper-text">Aucun collaborateur ne correspond à votre recherche.</p>
                       } @else {
+                        <div class="selection-toolbar">
+                            <label class="select-all-option">
+                                <input
+                                type="checkbox"
+                                [checked]="areAllFilteredInvitableUsersSelected"
+                                (change)="toggleSelectAllEmployeeInvitableUsers($any($event.target).checked)"
+                                />
+                                <span>Tout sélectionner les résultats affichés</span>
+                            </label>
+
+                            <span class="selection-summary">
+                                {{ selectedFilteredInvitableCount }} / {{ filteredInvitableUsers.length }} sélectionné(s)
+                            </span>
+                        </div>
                         <div class="user-selection-list">
                             @for (user of filteredInvitableUsers; track user.id) {
                             <label class="user-option" [class.checked]="selectedEmployeeInviteEmails.includes(user.email)">

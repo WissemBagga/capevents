@@ -905,6 +905,30 @@
   box-shadow: 0 0 0 3px rgba(10, 110, 189, 0.1);
 }
 
+.selection-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.select-all-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.selection-summary {
+  font-size: 13px;
+  color: #64748b;
+}
+
 .user-selection-list {
   display: flex;
   flex-direction: column;

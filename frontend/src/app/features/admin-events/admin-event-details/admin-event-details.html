@@ -515,7 +515,7 @@
           <div class="panel-step">
             <div class="step-label">
               <span class="step-num">2</span>
-              <span class="step-title">Choisissez des employés</span>
+              <span class="step-title">Choisissez des employés</span>          
               @if (selectedUserEmails.length > 0) {
                 <span class="selected-count-pill">{{ selectedUserEmails.length }} sélectionné(s)</span>
               }
@@ -543,11 +543,27 @@
                   Réinitialiser
                 </button>
               </div>
+              
+              
               @if (filteredSelectableUsers.length === 0) {
                 <div class="state-message info-msg">
                   <p>Aucun employé ne correspond à votre recherche.</p>
                 </div>
               } @else {
+              <div class="selection-toolbar">
+                <label class="select-all-option">
+                  <input
+                    type="checkbox"
+                    [checked]="areAllFilteredSelectableUsersSelected"
+                    (change)="toggleSelectAllAdminUsers($any($event.target).checked)"
+                  />
+                  <span>Tout sélectionner les résultats affichés</span>
+                </label>
+
+                <span class="selection-summary">
+                  {{ selectedFilteredSelectableCount }} / {{ filteredSelectableUsers.length }} sélectionné(s)
+                </span>
+              </div>  
               <div class="user-selection-list">
                 @for (user of filteredSelectableUsers; track user.id) {
                   <label class="user-option" [class.checked]="selectedUserEmails.includes(user.email)">
