@@ -84,6 +84,31 @@ export class MyEvents {
     this.filteredRegistrations = [...this.registrations];
   }
 
+
+  isEventCancelled(registration: RegistrationResponse): boolean {
+    return registration.eventStatus === 'CANCELLED';
+  }
+
+  eventStatusLabel(registration: RegistrationResponse): string {
+    if (this.isEventCancelled(registration)) {
+      return 'Événement annulé';
+    }
+
+    if (registration.status === 'REGISTERED') {
+      return 'Inscrit';
+    }
+
+    if (registration.status === 'CANCELLED') {
+      return 'Annulé';
+    }
+
+    return registration.status;
+  }
+
+  canOpenEventDetails(registration: RegistrationResponse): boolean {
+    return registration.eventStatus === 'PUBLISHED';
+  }
+
   private sortByNearest(registrations: RegistrationResponse[]): RegistrationResponse[] {
     const now = new Date().getTime();
 
@@ -111,6 +136,7 @@ export class MyEvents {
 
   canLeaveFeedback(registration: RegistrationResponse): boolean {
     return registration.status === 'REGISTERED'
+      && registration.eventStatus === 'PUBLISHED'
       && new Date(registration.eventStartAt).getTime() < new Date().getTime();
   }
 

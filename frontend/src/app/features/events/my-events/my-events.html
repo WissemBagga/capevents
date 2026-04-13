@@ -57,9 +57,9 @@
 
         <div class="card-top">
           <span class="status-badge"
-            [class.registered]="registration.status === 'REGISTERED'"
-            [class.cancelled]="registration.status === 'CANCELLED'">
-            {{ registration.status === 'REGISTERED' ? 'Inscrit' : 'Annulé' }}
+            [class.registered]="registration.status === 'REGISTERED' && !isEventCancelled(registration)"
+            [class.cancelled]="isEventCancelled(registration) || registration.status === 'CANCELLED'">
+            {{ eventStatusLabel(registration) }}
           </span>
         </div>
 
@@ -94,13 +94,23 @@
               Laisser un feedback
             </a>
           }
+          @if (isEventCancelled(registration)) {
+            <div class="cancel-reason-box">
+              <strong>Raison de l’annulation :</strong>
+              <p>{{ registration.eventCancelReason || 'Aucune raison précisée.' }}</p>
+            </div>
+          }
         </div>
 
         <div class="card-footer">
-          <a [routerLink]="['/events', registration.eventId]" class="btn-details">
-            Voir les détails
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </a>
+          @if (canOpenEventDetails(registration)) {
+            <a [routerLink]="['/events', registration.eventId]" class="btn-details">
+              Voir les détails
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+          } @else {
+            <span class="btn-details disabled-link">Événement annulé</span>
+          }
         </div>
 
 

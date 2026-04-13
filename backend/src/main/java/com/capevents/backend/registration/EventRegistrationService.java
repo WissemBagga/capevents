@@ -129,8 +129,10 @@ public class EventRegistrationService {
                 .findByUserIdAndStatusOrderByRegisteredAtDesc(user.getId(), RegistrationStatus.REGISTERED)
                 .stream()
                 .filter(registration -> registration.getEvent() != null)
-                .filter(registration -> registration.getEvent().getStatus() == EventStatus.PUBLISHED)
-                .map(this::toResponse)
+                .filter(registration ->
+                        registration.getEvent().getStatus() == EventStatus.PUBLISHED
+                                || registration.getEvent().getStatus() == EventStatus.CANCELLED
+                ).map(this::toResponse)
                 .toList();
     }
 
@@ -254,7 +256,9 @@ public class EventRegistrationService {
                 registration.getEvent().getStartAt(),
                 registration.getStatus(),
                 registration.getRegisteredAt(),
-                registration.getCancelledAt()
+                registration.getCancelledAt(),
+                registration.getEvent().getStatus(),
+                registration.getEvent().getCancelReason()
         );
     }
 

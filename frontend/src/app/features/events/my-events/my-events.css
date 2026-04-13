@@ -108,6 +108,35 @@
   gap: 20px;
 }
 
+.cancel-reason-box {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+}
+
+.cancel-reason-box strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.cancel-reason-box p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.btn-details.disabled-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.65;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* ===== Card ===== */
 .event-card {
   background: #ffffff;
