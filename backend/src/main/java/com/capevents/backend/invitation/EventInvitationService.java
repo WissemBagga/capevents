@@ -62,6 +62,8 @@ public class EventInvitationService {
 
         List<User> targets = resolveTargets(req, actor);
 
+        validateAdminInvitationScope(event, req, targets);
+
         int created = 0;
         int skipped = 0;
 
@@ -469,6 +471,38 @@ public class EventInvitationService {
             }
 
             default -> throw new BadRequestException("Target type not supported");
+        }
+    }
+
+    private void validateAdminInvitationScope(Event event, SendInvitationRequest req, List<User> targets) {
+        if (event.getAudience() != EventAudience.DEPARTMENT) {
+            return;
+        }
+
+        Long targetDeptId = event.getTargetDepartment() != null
+                ? event.getTargetDepartment().getId()
+                : null;
+
+        if (targetDeptId == null) {
+            throw new BadRequestException("Département cible introuvable pour cet événement.");
+        }
+
+        if (req.targetType() == InvitationTargetType.GLOBAL) {
+            throw new BadRequestException("Les invitations globales sont interdites pour un événement départemental.");
+        }
+
+        if (req.targetType() == InvitationTargetType.DEPARTMENT) {
+            if (req.departmentId() == null || !targetDeptId.equals(req.departmentId())) {
+                throw new BadRequestException("Vous devez inviter uniquement le département cible de cet événement.");
+            }
+        }
+
+        boolean hasOutsideUser = targets.stream().anyMatch(user ->
+                user.getDepartment() == null || !targetDeptId.equals(user.getDepartment().getId())
+        );
+
+        if (hasOutsideUser) {
+            throw new BadRequestException("Impossible d’inviter des utilisateurs hors du département cible de cet événement.");
         }
     }
 

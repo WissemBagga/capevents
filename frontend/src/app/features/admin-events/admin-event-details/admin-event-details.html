@@ -448,7 +448,7 @@
             <span class="step-title">Type d'invitation</span>
           </div>
           <div class="type-selector">
-            @if (isHr) {
+            @if (isHr && !isDepartmentAudienceEvent) {
               <label class="type-option" [class.selected]="invitationTargetType === 'GLOBAL'">
                 <input type="radio" name="targetType" value="GLOBAL"
                   [checked]="invitationTargetType === 'GLOBAL'"
@@ -503,7 +503,7 @@
                 [disabled]="isManager && !isHr"
               >
                 <option [ngValue]="null">-- Choisir un département --</option>
-                @for (department of departments; track department.id) {
+                @for (department of allowedDepartmentsForInvitation; track department.id) {
                   <option [ngValue]="department.id">{{ department.name }}</option>
                 }
               </select>

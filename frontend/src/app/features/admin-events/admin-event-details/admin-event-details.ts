@@ -88,13 +88,17 @@ export class AdminEventDetails {
 
 
   get visibleUsersForInvitation(): UserSummary[] {
-    if (this.isHr) {
-      return this.users.filter(user => user.active);
+    let users = this.users.filter(user => user.active);
+
+    if (this.isDepartmentAudienceEvent && this.eventTargetDepartmentId !== null) {
+      return users.filter(user => user.departmentId === this.eventTargetDepartmentId);
     }
 
-    return this.users.filter(
-      user => user.active && user.departmentId === this.currentUserDepartmentId
-    );
+    if (this.isHr) {
+      return users;
+    }
+
+    return users.filter(user => user.departmentId === this.currentUserDepartmentId);
   }
 
   get filteredSelectableUsers(): UserSummary[] {
@@ -317,22 +321,35 @@ export class AdminEventDetails {
     this.invitationErrorMessage = '';
     this.invitationSuccessMessage = '';
 
-    if (this.showInvitationPanel && this.isManager && !this.isHr) {
-      this.invitationTargetType = 'DEPARTMENT';
-      this.selectedDepartmentId = this.currentUserDepartmentId;
+    if (this.showInvitationPanel) {
+      if (this.isDepartmentAudienceEvent) {
+        this.invitationTargetType = 'DEPARTMENT';
+        this.selectedDepartmentId = this.eventTargetDepartmentId;
+      } else if (this.isManager && !this.isHr) {
+        this.invitationTargetType = 'DEPARTMENT';
+        this.selectedDepartmentId = this.currentUserDepartmentId;
+      }
     }
 
     this.cdr.markForCheck();
   }
 
   onTargetTypeChange(value: InvitationTargetType): void {
+    if (this.isDepartmentAudienceEvent && value === 'GLOBAL') {
+      this.invitationErrorMessage = 'Le mode Global est interdit pour un événement départemental.';
+      this.cdr.markForCheck();
+      return;
+    }
+
     this.invitationTargetType = value;
     this.invitationErrorMessage = '';
     this.invitationSuccessMessage = '';
     this.individualSearchTerm = '';
     this.individualDepartmentFilter = null;
 
-    if (value !== 'DEPARTMENT') {
+    if (this.isDepartmentAudienceEvent) {
+      this.selectedDepartmentId = this.eventTargetDepartmentId;
+    } else if (value !== 'DEPARTMENT') {
       this.selectedDepartmentId = this.isManager && !this.isHr
         ? this.currentUserDepartmentId
         : null;
@@ -340,10 +357,6 @@ export class AdminEventDetails {
 
     if (this.invitationTargetType !== 'INDIVIDUAL') {
       this.selectedUserEmails = [];
-    }
-
-    if (this.isManager && !this.isHr && this.invitationTargetType !== 'DEPARTMENT' ) {
-      this.selectedDepartmentId = this.currentUserDepartmentId;
     }
 
     this.cdr.markForCheck();
@@ -383,6 +396,23 @@ export class AdminEventDetails {
       this.invitationErrorMessage = 'Veuillez sélectionner au moins un utilisateur.';
       this.cdr.markForCheck();
       return;
+    }
+
+    if (this.isDepartmentAudienceEvent) {
+      if (this.invitationTargetType === 'GLOBAL') {
+        this.invitationErrorMessage = 'Les invitations globales sont interdites pour un événement départemental.';
+        this.cdr.markForCheck();
+        return;
+      }
+
+      if (
+        this.invitationTargetType === 'DEPARTMENT' &&
+        this.selectedDepartmentId !== this.eventTargetDepartmentId
+      ) {
+        this.invitationErrorMessage = 'Vous devez sélectionner uniquement le département cible de cet événement.';
+        this.cdr.markForCheck();
+        return;
+      }
     }
 
     const payload: SendInvitationRequest = {
@@ -681,6 +711,22 @@ export class AdminEventDetails {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  get isDepartmentAudienceEvent(): boolean {
+    return this.event?.audience === 'DEPARTMENT';
+  }
+
+  get eventTargetDepartmentId(): number | null {
+    return this.event?.targetDepartmentId ?? null;
+  }
+
+  get allowedDepartmentsForInvitation(): Department[] {
+    if (!this.isDepartmentAudienceEvent || this.eventTargetDepartmentId == null) {
+      return this.departments;
+    }
+
+    return this.departments.filter(dept => dept.id === this.eventTargetDepartmentId);
   }
 
   invitationResponseLabel(response: InvitationResponseStatus | null): string {
