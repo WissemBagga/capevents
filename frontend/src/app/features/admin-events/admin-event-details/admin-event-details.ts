@@ -729,6 +729,13 @@ export class AdminEventDetails {
     return this.departments.filter(dept => dept.id === this.eventTargetDepartmentId);
   }
 
+  get shouldDisableDepartmentSelect(): boolean {
+    if (this.isDepartmentAudienceEvent) {
+      return true;
+    }
+    return this.isManager && !this.isHr;
+  }
+
   invitationResponseLabel(response: InvitationResponseStatus | null): string {
     switch (response) {
       case 'YES':

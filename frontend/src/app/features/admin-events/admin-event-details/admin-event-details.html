@@ -500,7 +500,7 @@
               <select
                 id="departmentId"
                 [(ngModel)]="selectedDepartmentId"
-                [disabled]="isManager && !isHr"
+                [disabled]="shouldDisableDepartmentSelect"
               >
                 <option [ngValue]="null">-- Choisir un département --</option>
                 @for (department of allowedDepartmentsForInvitation; track department.id) {
