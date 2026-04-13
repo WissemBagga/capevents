@@ -3,12 +3,14 @@ package com.capevents.backend.auth;
 
 import com.capevents.backend.auth.dto.*;
 import com.capevents.backend.auth.dto.VerifyEmailRequest;
+import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.user.UserService;
 import com.capevents.backend.user.dto.UserSummaryDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +21,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
     private final UserService  userService;
-    public AuthController(AuthService authService, UserService userService) {
+    private final AuthCookieService authCookieService;
+    public AuthController(AuthService authService, UserService userService, AuthCookieService authCookieService) {
         this.authService = authService;
         this.userService = userService;
+        this.authCookieService = authCookieService;
     }
 
     @PostMapping("/register")
@@ -32,20 +36,53 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest req, HttpServletRequest http) {
-        return authService.login(req, http.getRemoteAddr());
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req, HttpServletRequest http) {
+        AuthResponse response = authService.login(req, http.getRemoteAddr());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, authCookieService.buildRefreshCookie(response.refreshToken()).toString())
+                .body(new AuthResponse(
+                        response.accessToken(),
+                        response.tokenType(),
+                        null,
+                        response.role(),
+                        response.emailVerified()
+                ));
     }
 
 
     @PostMapping("/refresh")
-    public RefreshResponse refresh(@Valid @RequestBody RefreshRequest req, HttpServletRequest http) {
-        return authService.refresh(req, http.getRemoteAddr());
+    public ResponseEntity<RefreshResponse> refresh(
+            @CookieValue(value = AuthCookieService.REFRESH_COOKIE_NAME, required = false) String refreshToken,
+            HttpServletRequest http
+    ) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new BadRequestException("Refresh token manquant");
+        }
+
+        RefreshResponse response = authService.refresh(refreshToken, http.getRemoteAddr());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, authCookieService.buildRefreshCookie(response.refreshToken()).toString())
+                .body(new RefreshResponse(
+                        response.accessToken(),
+                        response.tokenType(),
+                        null
+                ));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshRequest req, HttpServletRequest http) {
-        authService.logout(req, http.getRemoteAddr());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> logout(
+            @CookieValue(value = AuthCookieService.REFRESH_COOKIE_NAME, required = false) String refreshToken,
+            HttpServletRequest http
+    ) {
+        if (refreshToken != null && !refreshToken.isBlank()) {
+            authService.logout(refreshToken, http.getRemoteAddr());
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, authCookieService.clearRefreshCookie().toString())
+                .build();
     }
 
     @PostMapping("/forgot-password")

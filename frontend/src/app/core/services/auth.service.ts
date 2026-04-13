@@ -6,6 +6,8 @@ import { environment } from '../../../environments/environment';
 import { UserSummary } from '../models/user-summary.model';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.models';
 
+import {RefreshResponse} from '../models/auth.models'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,7 +21,9 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
 
   login(payload: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, payload).pipe(
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, payload, {
+      withCredentials: true
+    }).pipe(
       tap((response) => {
         localStorage.setItem(this.tokenKey, response.accessToken);
       })
@@ -66,9 +70,14 @@ export class AuthService {
     );
   }
 
-  logout(): void {
-    localStorage.removeItem(this.tokenKey);
-    this.currentUserSubject.next(null);
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/logout`, {}, {
+      withCredentials: true
+    }).pipe(
+      tap(() => {
+        this.clearSession();
+      })
+    );
   }
 
   getToken(): string | null {
@@ -83,19 +92,42 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  refreshAccessToken(): Observable<RefreshResponse> {
+    return this.http.post<RefreshResponse>(`${this.apiUrl}/refresh`, {}, {
+      withCredentials: true
+    }).pipe(
+      tap((response) => {
+        localStorage.setItem(this.tokenKey, response.accessToken);
+      })
+    );
+  }
+
+  clearSession(): void {
+    localStorage.removeItem(this.tokenKey);
+    this.currentUserSubject.next(null);
+  }
+
   async initializeApp(): Promise<void> {
     const token = this.getToken();
 
-    if (!token) {
-      this.currentUserSubject.next(null);
-      return;
+    if (token) {
+      try {
+        const user = await firstValueFrom(this.getMe());
+        this.currentUserSubject.next(user);
+        return;
+      } catch {
+        localStorage.removeItem(this.tokenKey);
+      }
     }
 
     try {
+      const refreshResponse = await firstValueFrom(this.refreshAccessToken());
+      localStorage.setItem(this.tokenKey, refreshResponse.accessToken);
+
       const user = await firstValueFrom(this.getMe());
       this.currentUserSubject.next(user);
     } catch {
-      this.logout();
+      this.clearSession();
     }
   }
 

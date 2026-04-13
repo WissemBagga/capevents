@@ -16,3 +16,9 @@ export interface AuthResponse {
   accessToken: string;
   tokenType: string;
 }
+
+export interface RefreshResponse {
+  accessToken: string;
+  tokenType: string;
+  refreshToken: string | null;
+}

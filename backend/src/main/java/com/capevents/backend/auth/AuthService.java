@@ -186,8 +186,8 @@ public class AuthService {
 
 
     @Transactional
-    public RefreshResponse refresh(RefreshRequest req, String remoteAddr) {
-        String hash = sha256Hex(req.refreshToken());
+    public RefreshResponse refresh(String rawRefreshToken, String remoteAddr) {
+        String hash = sha256Hex(rawRefreshToken);
 
         RefreshToken oldToken = refreshTokenRepository.findByTokenHash(hash)
                 .orElseThrow(() -> new BadRequestException("Invalid refresh token"));
@@ -238,8 +238,8 @@ public class AuthService {
     }
 
     @Transactional
-    public void logout(RefreshRequest req, String remoteAddr) {
-        String hash = sha256Hex(req.refreshToken());
+    public void logout(String rawRefreshToken, String remoteAddr) {
+        String hash = sha256Hex(rawRefreshToken);
 
         var rtOpt = refreshTokenRepository.findByTokenHash(hash);
         if (rtOpt.isEmpty()) {

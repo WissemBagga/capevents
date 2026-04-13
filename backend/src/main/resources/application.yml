@@ -26,6 +26,8 @@ app:
       refresh-expiration-days: 7
     allowed-email-domains:
       - capgemini.com
+  cookies:
+    refresh-name: capevents_refresh_token
 
   mail:
     from: noreply@capevents.local
