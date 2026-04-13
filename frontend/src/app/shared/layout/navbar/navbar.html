@@ -1,41 +1,10 @@
-<nav class="navbar">
-  <div class="navbar-left">
-    <a routerLink="/events" class="brand">CapEvents</a>
+<nav class="topbar">
+  <div class="topbar-left">
+    <h1 class="topbar-title">{{ pageTitle }}</h1>
   </div>
 
-  <div class="navbar-center">
-    @if (hasEmployeeRole() && !isAdmin()) {
-      <a routerLink="/dashboard/employee" routerLinkActive="active-link">Dashboard</a>
-      <a routerLink="/employee/submit-event" routerLinkActive="active-link">Partager un événement</a>
-      <a routerLink="/my-submissions" routerLinkActive="active-link">Mes demandes</a>
-    }
-
-    @if (hasEmployeeRole()) {
-      <a routerLink="/my-profile" routerLinkActive="active-link">Mon profil</a>
-      <a routerLink="/events" routerLinkActive="active-link">Événements</a>
-      <a routerLink="/my-events" routerLinkActive="active-link">Mes événements</a>
-      <a routerLink="/my-invitations" routerLinkActive="active-link">Mes invitations</a>
-      <a routerLink="/my-points" routerLinkActive="active-link">Mes points</a>
-      <a routerLink="/my-interests" routerLinkActive="active-link">Mes intérêts</a>
-    }
-
-    @if (isManager()) {
-      <a routerLink="/admin/manager">Dashboard Manager</a>
-      <a routerLink="/admin/create-event">Créer un événement</a>
-      <a routerLink="/admin/pending-events" routerLinkActive="active-link">Demandes en attente</a>
-    }
-
-    @if (isHr()) {
-      <a routerLink="/admin/hr">Dashboard RH</a>
-      <a routerLink="/admin/create-event">Créer un événement</a>
-      <a routerLink="/admin/pending-events" routerLinkActive="active-link">Demandes en attente</a>
-    }
-  </div>
-
-  <div class="navbar-right">
+  <div class="topbar-right">
     @if (currentUser$ | async; as user) {
-
-      <!-- Notifications -->
       <div class="notification-wrapper">
         <button
           type="button"
@@ -58,8 +27,6 @@
 
         @if (notificationsOpen) {
           <div class="notification-panel" (click)="$event.stopPropagation()">
-
-            <!-- Panel Header -->
             <div class="panel-header">
               <div class="panel-header-left">
                 <h4>Notifications</h4>
@@ -70,9 +37,7 @@
               </button>
             </div>
 
-            <!-- Panel Body -->
             <div class="panel-body">
-
               @if (notificationsLoading) {
                 <div class="panel-state">
                   <span>Chargement...</span>
@@ -110,7 +75,7 @@
 
                       <div class="notification-footer">
                         <span class="notification-date">{{ notification.createdAt | date:'HH:mm' }}</span>
-                        
+
                         @if (!notification.read) {
                           <button
                             type="button"
@@ -125,10 +90,8 @@
                   }
                 </div>
               }
-
             </div>
 
-            <!-- Panel Footer -->
             <div class="panel-footer">
               <button
                 type="button"
@@ -143,13 +106,14 @@
                 }
               </button>
             </div>
-
           </div>
         }
       </div>
 
-      <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
-      <button type="button" class="btn-logout" (click)="logout()">Déconnexion</button>
+      <a routerLink="/my-profile" class="profile-chip">
+        <span class="profile-avatar">{{ user.firstName?.charAt(0) }}</span>
+        <span class="profile-name">{{ user.firstName }} {{ user.lastName }}</span>
+      </a>
     }
   </div>
 </nav>

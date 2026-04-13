@@ -1,0 +1,94 @@
+<aside class="sidebar">
+    <div class="sidebar-top">
+        <a [routerLink]="homeRoute" class="brand-block">
+            <div class="brand-title">CAPEVENTS</div>
+            <div class="brand-subtitle">PORTAIL INTERNE</div>
+        </a>
+
+        <div class="user-card">
+            <div class="user-avatar">{{ avatarLetter }}</div>
+            <div class="user-meta">
+            <strong>{{ displayName }}</strong>
+            <span>{{ roleLabel }}</span>
+            </div>
+        </div>
+    </div>
+
+  <nav class="sidebar-nav">
+    <section class="nav-section">
+      <button type="button" class="section-toggle" (click)="toggle('main')">
+        <span>Navigation principale</span>
+        <span class="toggle-icon">{{ mainOpen ? '−' : '+' }}</span>
+      </button>
+
+      @if (mainOpen) {
+        <div class="section-links">
+          @for (item of mainLinks; track item.route) {
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="active-link"
+              [routerLinkActiveOptions]="isEventsLink(item.route) ? { exact: false } : { exact: true }"
+              class="nav-link">
+              {{ item.label }}
+            </a>
+          }
+        </div>
+      }
+    </section>
+
+    @if (workLinks.length > 0) {
+      <section class="nav-section">
+        <button type="button" class="section-toggle" (click)="toggle('work')">
+          <span>Actions</span>
+          <span class="toggle-icon">{{ workOpen ? '−' : '+' }}</span>
+        </button>
+
+        @if (workOpen) {
+          <div class="section-links">
+            @for (item of workLinks; track item.route) {
+              <a
+                [routerLink]="item.route"
+                routerLinkActive="active-link"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="nav-link">
+                {{ item.label }}
+              </a>
+            }
+          </div>
+        }
+      </section>
+    }
+
+    @if (participationLinks.length > 0) {
+      <section class="nav-section">
+        <button type="button" class="section-toggle" (click)="toggle('participation')">
+          <span>Participation</span>
+          <span class="toggle-icon">{{ participationOpen ? '−' : '+' }}</span>
+        </button>
+
+        @if (participationOpen) {
+          <div class="section-links">
+            @for (item of participationLinks; track item.route) {
+              <a
+                [routerLink]="item.route"
+                routerLinkActive="active-link"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="nav-link">
+                {{ item.label }}
+              </a>
+            }
+          </div>
+        }
+      </section>
+    }
+  </nav>
+
+  <div class="sidebar-footer">
+    <button type="button" class="footer-btn" (click)="goToProfile()">
+      Mon profil
+    </button>
+    <button type="button" class="footer-btn logout-btn" (click)="logout()">
+      Déconnexion
+    </button>
+  </div>
+</aside>

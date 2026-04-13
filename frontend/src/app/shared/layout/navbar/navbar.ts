@@ -299,4 +299,24 @@ export class Navbar {
       this.refreshTimer = null;
     }
   }
+
+  get pageTitle(): string {
+    const url = this.router.url;
+
+    if (url.startsWith('/dashboard/employee')) return 'Tableau de bord';
+    if (url.startsWith('/admin/hr')) return 'Dashboard RH';
+    if (url.startsWith('/admin/manager')) return 'Dashboard Manager';
+    if (url.startsWith('/events')) return 'Événements';
+    if (url.startsWith('/my-events')) return 'Mes événements';
+    if (url.startsWith('/my-invitations')) return 'Mes invitations';
+    if (url.startsWith('/my-points')) return 'Mes points';
+    if (url.startsWith('/my-interests')) return 'Mes intérêts';
+    if (url.startsWith('/my-profile')) return 'Mon profil';
+    if (url.startsWith('/my-submissions')) return 'Mes demandes';
+    if (url.startsWith('/employee/submit-event')) return 'Proposer un événement';
+    if (url.startsWith('/admin/create-event')) return 'Créer un événement';
+    if (url.startsWith('/admin/pending-events')) return 'Demandes en attente';
+
+    return 'CapEvents';
+  }
 }
