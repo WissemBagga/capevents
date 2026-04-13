@@ -31,6 +31,9 @@ import { MyInterests } from './features/interests/my-interests/my-interests';
 
 import { MyProfile } from './features/profile/my-profile/my-profile';
 
+import { Forbidden } from './features/errors/forbidden/forbidden';
+import { NotFound } from './features/errors/not-found/not-found';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -42,6 +45,8 @@ export const routes: Routes = [
   { path: 'verify-email-pending', component: VerifyEmailPending },
   { path: 'verify-email', component: VerifyEmail },
 
+  { path: 'forbidden', component: Forbidden },
+  { path: 'not-found', component: NotFound },
   
  {
     path: '',
@@ -143,5 +148,5 @@ export const routes: Routes = [
     ]
   },
 
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'not-found' }
 ];
