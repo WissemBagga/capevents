@@ -15,6 +15,7 @@ import { UserSummary } from '../../../core/models/user-summary.model';
 import { Department } from '../../../core/models/department.model';
 import { FormsModule } from '@angular/forms';
 
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-event-details',
@@ -31,6 +32,7 @@ export class AdminEventDetails {
 
   private userService = inject(UserService)
   private authService = inject(AuthService)
+  private router = inject(Router);
 
   event: EventResponse | null = null;
   loading = false;
@@ -270,10 +272,22 @@ export class AdminEventDetails {
           this.cdr.markForCheck();
         },
         error: (err) => {
+          const status = err?.status;
+
+          if (status === 404) {
+            this.router.navigate(['/not-found']);
+            return;
+          }
+
+          if (status === 403) {
+            this.router.navigate(['/forbidden']);
+            return;
+          }
+
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de charger les détails admin de l’événement.';
+            "Impossible de charger les détails de l'événement.";
           this.cdr.markForCheck();
         }
       });

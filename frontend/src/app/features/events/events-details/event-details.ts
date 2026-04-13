@@ -12,7 +12,7 @@ import {UnregisterRequest} from '../../../core/models/registration.model'
 
 import {EmployeeInviteRequest, InvitationCreatedItemResponse, InvitationSkippedItemResponse, AdminEventInvitationResponse, InvitationResponseStatus} from '../../../core/models/invitation.model'
 import { UserSummary } from '../../../core/models/user-summary.model';
-import { UserService } from '../../../core/services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-event-details',
@@ -27,6 +27,7 @@ export class EventDetails {
   private cdr = inject(ChangeDetectorRef);
   private location = inject(Location);
   private authService = inject(AuthService);
+  private router = inject(Router);
 
 
   event: EventResponse | null = null;
@@ -111,10 +112,22 @@ export class EventDetails {
           }
         },
         error: (err) => {
+          const status = err?.status;
+
+          if (status === 404) {
+            this.router.navigate(['/not-found']);
+            return;
+          }
+
+          if (status === 403) {
+            this.router.navigate(['/forbidden']);
+            return;
+          }
+
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de charger les détails de l’événement.';
+            'Impossible de charger cet événement.';
           this.cdr.markForCheck();
         }
       });
