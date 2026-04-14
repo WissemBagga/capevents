@@ -303,18 +303,23 @@
               <div class="section-block participants-section">
 
                   <div class="participants-header">
+                    <div class="participants-title-wrap">
                       <h2 class="section-label">Participants</h2>
+                      <span class="participants-count-chip">
+                        {{ participantsCount }} participant{{ participantsCount > 1 ? 's' : '' }}
+                      </span>
+                    </div>
 
-                      @if (event) {
-                          <div class="capacity-badges">
-                              @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
-                                  <span class="badge-blue">{{ event.registeredCount }} inscrits / {{ event.capacity }} places</span>
-                                  <span class="badge-green">Reste {{ event.remainingCapacity }} places</span>
-                              } @else {
-                                  <span class="badge-blue">Capacité max : {{ event.capacity }}</span>
-                              }
-                          </div>
-                      }
+                    @if (event) {
+                      <div class="capacity-badges">
+                        @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
+                          <span class="badge-blue">{{ event.registeredCount }} inscrits / {{ event.capacity }} places</span>
+                          <span class="badge-green">Reste {{ event.remainingCapacity }} places</span>
+                        } @else {
+                          <span class="badge-blue">Capacité max : {{ event.capacity }}</span>
+                        }
+                      </div>
+                    }
                   </div>
 
                   @if (participantsLoading) {
@@ -349,7 +354,11 @@
                               <article class="participant-card" [class.is-present]="participant.attendanceStatus === 'PRESENT'" [class.is-absent]="participant.attendanceStatus === 'ABSENT'">
                                   <div class="participant-main">
                                       <div class="participant-avatar">
-                                          {{ participant.firstName.charAt(0) | uppercase }}{{ participant.lastName.charAt(0) | uppercase }}
+                                        @if (hasParticipantAvatar(participant)) {
+                                          <img [src]="participant.avatarUrl!" [alt]="participant.firstName + ' ' + participant.lastName" (error)="$any($event.target).style.display='none'" />
+                                        } @else {
+                                          <span>{{ getParticipantInitials(participant) }}</span>
+                                        }
                                       </div>
                                       <div class="participant-info">
                                           <h3>{{ participant.firstName }} {{ participant.lastName }}</h3>

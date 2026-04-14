@@ -22,7 +22,7 @@ import { getDefaultEventImage } from '../../../core/constants/event-image-preset
 @Component({
   selector: 'app-admin-event-details',
   standalone: true,
-  imports: [RouterLink, DatePipe, UpperCasePipe, FormsModule],
+  imports: [DatePipe, UpperCasePipe, FormsModule],
   templateUrl: './admin-event-details.html',
   styleUrl: './admin-event-details.css'
 })
@@ -675,6 +675,21 @@ export class AdminEventDetails {
 
   get pendingCount(): number {
     return this.participants.filter(p => p.attendanceStatus === 'PENDING').length;
+  }
+
+
+  get participantsCount(): number {
+    return this.participants.length;
+  }
+
+  getParticipantInitials(participant: EventParticipantResponse): string {
+    const first = participant.firstName?.charAt(0)?.toUpperCase() ?? '';
+    const last = participant.lastName?.charAt(0)?.toUpperCase() ?? '';
+    return `${first}${last}` || '?';
+  }
+
+  hasParticipantAvatar(participant: EventParticipantResponse): boolean {
+    return !!participant.avatarUrl?.trim();
   }
 
   markAllPresent(): void {

@@ -167,6 +167,7 @@ public class EventRegistrationService {
                         reg.getUser().getLastName(),
                         reg.getUser().getEmail(),
                         reg.getUser().getDepartment() != null ? reg.getUser().getDepartment().getName() : null,
+                        reg.getUser().getAvatarUrl(),
                         reg.getRegisteredAt(),
                         reg.getAttendanceStatus()
                 ))

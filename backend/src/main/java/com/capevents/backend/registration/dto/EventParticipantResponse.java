@@ -12,6 +12,7 @@ public record EventParticipantResponse(
         String lastName,
         String email,
         String departmentName,
+        String avatarUrl,
         Instant registeredAt,
         AttendanceStatus attendanceStatus
 ) {}
