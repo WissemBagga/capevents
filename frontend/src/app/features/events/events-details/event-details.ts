@@ -136,7 +136,13 @@ export class EventDetails {
   }
 
   private loadInvitableUsers(): void {
-    this.eventService.getEmployeeInvitableUsers(this.event!.id).subscribe({
+    if (!this.event || !this.hasDepartmentForColleagueInvite) {
+      this.users = [];
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.eventService.getEmployeeInvitableUsers(this.event.id).subscribe({
       next: (users) => {
         this.users = users ?? [];
         this.cdr.markForCheck();
@@ -154,6 +160,10 @@ export class EventDetails {
 
   get currentUserDepartmentId(): number | null {
     return this.authService.getCurrentUserSnapshot()?.departmentId ?? null;
+  }
+
+  get hasDepartmentForColleagueInvite(): boolean {
+    return this.currentUserDepartmentId !== null;
   }
 
   private loadMySentInvitations(): void {
@@ -186,7 +196,7 @@ export class EventDetails {
       next: (registered) => {
         this.isRegistered = registered;
 
-        if (this.isRegistered && !this.isDeadlinePassed) {
+        if (this.isRegistered && !this.isDeadlinePassed && this.hasDepartmentForColleagueInvite) {
           this.loadInvitableUsers();
           this.loadMySentInvitations();
         } else {
@@ -343,7 +353,11 @@ export class EventDetails {
   }
 
   get canInviteColleagues(): boolean {
-    return this.authService.hasEmployeeRole() && !!this.event && !this.isDeadlinePassed && this.isRegistered;
+    return this.authService.hasEmployeeRole()
+      && !!this.event
+      && !this.isDeadlinePassed
+      && this.isRegistered
+      && this.hasDepartmentForColleagueInvite;
   }
 
   get invitableUsers(): UserSummary[] {
@@ -371,6 +385,10 @@ export class EventDetails {
 
     if (!this.isRegistered) {
       return "Vous devez d'abord vous inscrire à cet événement avant d'inviter des collègues.";
+    }
+
+    if (!this.hasDepartmentForColleagueInvite) {
+      return "L’invitation entre collègues n’est pas disponible pour un utilisateur sans département. Utilisez l’invitation administrateur.";
     }
 
     if (this.isDeadlinePassed) {
@@ -413,6 +431,15 @@ export class EventDetails {
       return;
     }
 
+    if (!this.hasDepartmentForColleagueInvite) {
+      this.showEmployeeInvitePanel = false;
+      this.employeeInviteErrorMessage =
+        "L’invitation entre collègues n’est pas disponible pour un utilisateur sans département.";
+      this.employeeInviteSuccessMessage = '';
+      this.cdr.markForCheck();
+      return;
+    }
+
     if (this.isDeadlinePassed) {
       this.showEmployeeInvitePanel = false;
       this.employeeInviteErrorMessage =
@@ -444,6 +471,13 @@ export class EventDetails {
     if (!this.isRegistered) {
       this.employeeInviteErrorMessage =
         "Vous devez d'abord vous inscrire à cet événement avant d'inviter des collègues.";
+      this.cdr.markForCheck();
+      return;
+    }
+
+    if (!this.hasDepartmentForColleagueInvite) {
+      this.employeeInviteErrorMessage =
+        "L’invitation entre collègues n’est pas disponible pour un utilisateur sans département.";
       this.cdr.markForCheck();
       return;
     }

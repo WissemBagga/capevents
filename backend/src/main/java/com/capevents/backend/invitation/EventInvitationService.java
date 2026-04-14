@@ -144,6 +144,8 @@ public class EventInvitationService {
         User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
+        validateEmployeeColleagueInviteAccess(actor);
+
         if (event.getStatus() != EventStatus.PUBLISHED) {
             throw new BadRequestException("Seuls les événements publiés peuvent être partagés.");
         }
@@ -306,6 +308,8 @@ public class EventInvitationService {
         User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
+        validateEmployeeColleagueInviteAccess(actor);
+        
         if (event.getStatus() != EventStatus.PUBLISHED) {
             throw new BadRequestException("Seuls les événements publiés peuvent être partagés.");
         }
@@ -364,7 +368,7 @@ public class EventInvitationService {
         );
 
         if (!actorRegistered) {
-            return List.of();
+            throw new BadRequestException("Vous devez être inscrit à cet événement pour consulter vos invitations envoyées.");
         }
 
         return invitationRepository.findByEventAndInvitedByOrderBySentAtDesc(event, actor).stream()
@@ -483,6 +487,14 @@ public class EventInvitationService {
             }
 
             default -> throw new BadRequestException("Target type not supported");
+        }
+    }
+
+    private void validateEmployeeColleagueInviteAccess(User actor) {
+        if (actor.getDepartment() == null) {
+            throw new BadRequestException(
+                    "L’invitation entre collègues n’est pas disponible pour un utilisateur sans département. Utilisez l’invitation administrateur."
+            );
         }
     }
 

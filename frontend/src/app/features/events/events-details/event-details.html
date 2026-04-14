@@ -236,6 +236,11 @@
                         <p>Les invitations aux collègues sont fermées : la date limite d’inscription est dépassée.</p>
                     </div>
         }
+        @if (isRegistered && canParticipate && !hasDepartmentForColleagueInvite && !isDeadlinePassed) {
+            <div class="state-message info">
+                <p>L’invitation entre collègues n’est pas disponible pour un utilisateur sans département.</p>
+            </div>
+        }
         @if (canInviteColleagues) {
             <section class="invitation-section">
                 <!-- Section Header -->
