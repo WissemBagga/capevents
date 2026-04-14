@@ -11,6 +11,12 @@ public record AdminAnalyticsOverviewResponse(
         long totalPresent,
         long totalAbsent,
         double attendanceRate,
+
+        long totalFeedbacks,
+        double averageRating,
+        double feedbackResponseRate,
+        List<EventFeedbackAnalyticsResponse> topRatedEvents,
+
         List<EventEngagementResponse> topEngagingEvents
 ) {
 }

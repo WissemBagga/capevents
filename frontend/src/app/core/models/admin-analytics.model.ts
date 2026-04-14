@@ -9,6 +9,14 @@ export interface EventEngagementResponse {
   attendanceRate: number;
 }
 
+export interface EventFeedbackAnalyticsResponse {
+  eventId: string;
+  title: string;
+  status: string;
+  averageRating: number;
+  feedbackCount: number;
+}
+
 export interface AdminAnalyticsOverviewResponse {
   totalEvents: number;
   publishedEvents: number;
@@ -18,5 +26,11 @@ export interface AdminAnalyticsOverviewResponse {
   totalPresent: number;
   totalAbsent: number;
   attendanceRate: number;
+
+  totalFeedbacks: number;
+  averageRating: number;
+  feedbackResponseRate: number;
+  topRatedEvents: EventFeedbackAnalyticsResponse[];
+
   topEngagingEvents: EventEngagementResponse[];
 }

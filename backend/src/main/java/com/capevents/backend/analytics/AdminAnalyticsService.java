@@ -2,11 +2,13 @@ package com.capevents.backend.analytics;
 
 import com.capevents.backend.analytics.dto.AdminAnalyticsOverviewResponse;
 import com.capevents.backend.analytics.dto.EventEngagementResponse;
+import com.capevents.backend.analytics.dto.EventFeedbackAnalyticsResponse;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.event.Event;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
+import com.capevents.backend.feedback.EventFeedbackRepository;
 import com.capevents.backend.registration.AttendanceStatus;
 import com.capevents.backend.registration.EventRegistrationRepository;
 import com.capevents.backend.registration.RegistrationStatus;
@@ -26,15 +28,17 @@ public class AdminAnalyticsService {
     private final EventRepository eventRepository;
     private final EventRegistrationRepository registrationRepository;
     private final UserRepository userRepository;
+    private final EventFeedbackRepository feedbackRepository;
 
     public AdminAnalyticsService(
             EventRepository eventRepository,
             EventRegistrationRepository registrationRepository,
-            UserRepository userRepository
+            UserRepository userRepository, EventFeedbackRepository feedbackRepository
     ) {
         this.eventRepository = eventRepository;
         this.registrationRepository = registrationRepository;
         this.userRepository = userRepository;
+        this.feedbackRepository = feedbackRepository;
     }
 
     @Transactional(readOnly = true)
@@ -57,6 +61,33 @@ public class AdminAnalyticsService {
         long totalCapacity = 0L;
         long totalPresent = 0L;
         long totalAbsent = 0L;
+
+        long totalFeedbacks = 0L;
+        double ratingSum = 0.0;
+        long ratedEventsCount = 0L;
+
+        List<EventFeedbackAnalyticsResponse> topRatedEvents = eligibleEvents.stream()
+                .map(event -> {
+                    long feedbackCount = feedbackRepository.countByEventId(event.getId());
+                    Double avg = feedbackRepository.findAverageRatingByEventId(event.getId());
+
+                    double averageRating = avg != null ? round2(avg) : 0.0;
+
+                    return new EventFeedbackAnalyticsResponse(
+                            event.getId(),
+                            event.getTitle(),
+                            event.getStatus().name(),
+                            averageRating,
+                            feedbackCount
+                    );
+                })
+                .filter(item -> item.feedbackCount() > 0)
+                .sorted(
+                        Comparator.comparing(EventFeedbackAnalyticsResponse::averageRating).reversed()
+                                .thenComparing(EventFeedbackAnalyticsResponse::feedbackCount).reversed()
+                )
+                .limit(5)
+                .toList();
 
         List<EventEngagementResponse> topEngagingEvents = eligibleEvents.stream()
                 .map(event -> {
@@ -91,6 +122,16 @@ public class AdminAnalyticsService {
             totalPresent += registrationRepository.countByEventAndAttendanceStatus(event, AttendanceStatus.PRESENT);
             totalAbsent += registrationRepository.countByEventAndAttendanceStatus(event, AttendanceStatus.ABSENT);
             totalCapacity += event.getCapacity() != null ? event.getCapacity() : 0;
+
+            long feedbackCount = feedbackRepository.countByEventId(event.getId());
+            Double avg = feedbackRepository.findAverageRatingByEventId(event.getId());
+
+            totalFeedbacks += feedbackCount;
+
+            if (avg != null && feedbackCount > 0) {
+                ratingSum += avg;
+                ratedEventsCount++;
+            }
         }
 
         double registrationRate = totalCapacity > 0
@@ -99,6 +140,22 @@ public class AdminAnalyticsService {
 
         double attendanceRate = totalRegistrations > 0
                 ? round2((totalPresent * 100.0) / totalRegistrations)
+                : 0.0;
+
+        double averageRating = totalFeedbacks > 0
+                ? round2(
+                eligibleEvents.stream()
+                        .mapToDouble(event -> {
+                            Double avg = feedbackRepository.findAverageRatingByEventId(event.getId());
+                            long count = feedbackRepository.countByEventId(event.getId());
+                            return (avg != null ? avg : 0.0) * count;
+                        })
+                        .sum() / totalFeedbacks
+        )
+                : 0.0;
+
+        double feedbackResponseRate = totalPresent > 0
+                ? round2((totalFeedbacks * 100.0) / totalPresent)
                 : 0.0;
 
         return new AdminAnalyticsOverviewResponse(
@@ -110,6 +167,10 @@ public class AdminAnalyticsService {
                 totalPresent,
                 totalAbsent,
                 attendanceRate,
+                totalFeedbacks,
+                averageRating,
+                feedbackResponseRate,
+                topRatedEvents,
                 topEngagingEvents
         );
     }

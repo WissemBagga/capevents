@@ -200,6 +200,9 @@ export class AdminDashboard {
         }
       });
   }
+  trackByRatedEventId(_: number, item: { eventId: string }): string {
+    return item.eventId;
+  }
 
   cancel(event: EventResponse): void {
     const registered = event.registeredCount ?? 0;

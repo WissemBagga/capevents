@@ -180,6 +180,17 @@
   font-size: 26px;
 }
 
+.kpi-card.feedback-kpi {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%);
+  border: 1px solid #fed7aa;
+}
+
+.metric-box.highlight-box {
+  background: #eff6ff;
+  border-radius: 12px;
+  padding: 12px;
+}
+
 /* ===== Top Events Section ===== */
 .top-events-section {
   background: #ffffff;

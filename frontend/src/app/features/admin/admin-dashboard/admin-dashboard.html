@@ -70,7 +70,69 @@
                     <strong class="kpi-value">{{ analytics.totalAbsent }}</strong>
                     <span class="kpi-sub">No-show constatés</span>
                 </article>
+
+                <article class="kpi-card secondary-card">
+                    <span class="kpi-label">Feedbacks reçus</span>
+                    <strong class="kpi-value">{{ analytics.totalFeedbacks }}</strong>
+                    <span class="kpi-sub">Réponses collectées</span>
+                </article>
+
+                <article class="kpi-card highlight-kpi">
+                    <span class="kpi-label">Note moyenne</span>
+                    <strong class="kpi-value">{{ analytics.averageRating | number:'1.1-2' }}/5</strong>
+                    <span class="kpi-sub">Satisfaction globale</span>
+                </article>
+
+                <article class="kpi-card secondary-card">
+                    <span class="kpi-label">Taux de réponse feedback</span>
+                    <strong class="kpi-value">{{ analytics.feedbackResponseRate | number:'1.0-2' }}%</strong>
+                    <span class="kpi-sub">Basé sur les présents</span>
+                </article>
             </div>
+
+            <section class="top-events-section">
+                <div class="section-header">
+                    <h2>Événements les mieux notés</h2>
+                    <p>Top 5 des événements selon la note moyenne des feedbacks.</p>
+                </div>
+
+                @if (analytics.topRatedEvents.length === 0) {
+                    <div class="state-message info-msg">
+                    <p>Aucune donnée de feedback disponible pour le moment.</p>
+                    </div>
+                }
+
+                @if (analytics.topRatedEvents.length > 0) {
+                    <div class="top-events-list">
+                    @for (item of analytics.topRatedEvents; track trackByRatedEventId($index, item)) {
+                        <article class="top-event-card">
+                        <div class="top-event-main">
+                            <h3>{{ item.title }}</h3>
+                            <span class="top-event-status">{{ statusLabel(item.status) }}</span>
+                        </div>
+
+                        <div class="top-event-metrics">
+                            <div class="metric-box highlight-box">
+                            <span>Note moyenne</span>
+                            <strong>{{ item.averageRating | number:'1.1-2' }}/5</strong>
+                            </div>
+
+                            <div class="metric-box">
+                            <span>Feedbacks</span>
+                            <strong>{{ item.feedbackCount }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="top-event-actions">
+                            <a [routerLink]="['/admin/events', item.eventId]" class="details-link">
+                            Voir les détails de l'événement
+                            </a>
+                        </div>
+                        </article>
+                    }
+                    </div>
+                }
+            </section>
 
             <section class="top-events-section">
                 <div class="section-header">
