@@ -56,7 +56,7 @@
 
                     <div class="form-group">
                         <label for="category">Catégorie</label>
-                        <select id="category" formControlName="category">
+                        <select id="category" formControlName="category" (change)="onCategoryChange()">
                             <option value="">Sélectionnez une catégorie</option>
                             @for (option of categoryOptions; track option.value) {
                             <option [value]="option.value">{{ option.label }}</option>
@@ -200,12 +200,6 @@
                     <input id="imageFile" type="file" accept="image/*" (change)="onImageSelected($event)" />
                     <p class="helper-text">L'aperçu fonctionne déjà. L'enregistrement réel de l'image nécessitera un upload backend.</p>
                 </div>
-
-                @if (imagePreviewUrl) {
-                    <div class="image-preview">
-                        <img [src]="imagePreviewUrl" alt="Aperçu de l'image" />
-                    </div>
-                }
             </div>
 
 

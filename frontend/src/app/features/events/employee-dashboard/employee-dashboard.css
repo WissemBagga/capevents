@@ -275,8 +275,10 @@
 /* Event Image */
 .event-image {
   position: relative;
-  height: 145px;
-  background: linear-gradient(135deg, #c8dff5 0%, #a3c4e8 50%, #8eb8de 100%);
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 12px;
   overflow: hidden;
 }

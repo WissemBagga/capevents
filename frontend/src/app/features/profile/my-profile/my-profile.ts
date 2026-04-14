@@ -3,6 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { ProfileService } from '../../../core/services/profile.service';
 
+import { AVATAR_PRESETS } from '../../../core/constants/avatar-presets';
+
 @Component({
   selector: 'app-my-profile',
   standalone: true,
@@ -15,12 +17,19 @@ export class MyProfile {
   private profileService = inject(ProfileService);
   private cdr = inject(ChangeDetectorRef);
 
+
+  readonly avatarPresets = AVATAR_PRESETS;
+
   loading = false;
   saving = false;
   errorMessage = '';
   successMessage = '';
 
   profile: any = null;
+
+
+  avatarMode: 'PRESET' | 'CUSTOM_URL' = 'PRESET';
+  selectedAvatarPresetUrl = this.avatarPresets[0].url;
 
   form = this.fb.group({
     firstName: ['', [Validators.required, Validators.maxLength(80)]],
@@ -44,12 +53,20 @@ export class MyProfile {
       .subscribe({
         next: (profile) => {
           this.profile = profile;
+
+          const avatarUrl = profile.avatarUrl ?? this.avatarPresets[0].url;
+          const presetMatch = this.avatarPresets.find(item => item.url === avatarUrl);
+
+          this.avatarMode = presetMatch ? 'PRESET' : 'CUSTOM_URL';
+          this.selectedAvatarPresetUrl = presetMatch?.url ?? this.avatarPresets[0].url;
+
           this.form.patchValue({
             firstName: profile.firstName,
             lastName: profile.lastName,
             jobTitle: profile.jobTitle ?? '',
-            avatarUrl: profile.avatarUrl ?? ''
+            avatarUrl
           });
+
           this.cdr.markForCheck();
         },
         error: () => {
@@ -92,5 +109,33 @@ export class MyProfile {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  selectAvatarPreset(url: string): void {
+    this.avatarMode = 'PRESET';
+    this.selectedAvatarPresetUrl = url;
+    this.form.patchValue({ avatarUrl: url });
+    this.cdr.markForCheck();
+  }
+
+  onAvatarModeChange(mode: 'PRESET' | 'CUSTOM_URL'): void {
+    this.avatarMode = mode;
+
+    if (mode === 'PRESET') {
+      this.form.patchValue({ avatarUrl: this.selectedAvatarPresetUrl });
+    } else {
+      this.form.patchValue({ avatarUrl: '' });
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  get avatarPreviewUrl(): string {
+    const value = this.form.get('avatarUrl')?.value?.trim();
+    if (this.avatarMode === 'CUSTOM_URL' && value) {
+      return value;
+    }
+
+    return this.selectedAvatarPresetUrl;
   }
 }

@@ -222,8 +222,28 @@
 
 .event-image {
   position: relative;
-  min-height: 170px;
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 12px;
   overflow: hidden;
+}
+
+.event-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.10), rgba(15, 23, 42, 0.35));
+}
+
+.status-badge,
+.full-badge,
+.registered-badge,
+.deadline-badge,
+.event-date-badge {
+  position: relative;
+  z-index: 2;
 }
 
 .deadline-badge,

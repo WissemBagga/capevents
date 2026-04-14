@@ -17,6 +17,8 @@ import { FormsModule } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
+import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
+
 @Component({
   selector: 'app-admin-event-details',
   standalone: true,
@@ -251,6 +253,14 @@ export class AdminEventDetails {
       this.invitationTargetType = 'GLOBAL';
       this.selectedDepartmentId = null;
     }
+  }
+
+  get eventHeroImageUrl(): string {
+    if (!this.event) {
+      return getDefaultEventImage(null);
+    }
+
+    return this.event.imageUrl || getDefaultEventImage(this.event.category);
   }
 
 

@@ -37,6 +37,9 @@
                     {{ statusLabel(event.status) }}
                 </span>
             </div>
+            <div class="event-hero-image">
+              <img [src]="eventHeroImageUrl" [alt]="event.title" />
+            </div>
 
             <!-- Description -->
             <div class="description-section">

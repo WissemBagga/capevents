@@ -14,6 +14,8 @@ import {EmployeeInviteRequest, InvitationCreatedItemResponse, InvitationSkippedI
 import { UserSummary } from '../../../core/models/user-summary.model';
 import { Router } from '@angular/router';
 
+import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
+
 @Component({
   selector: 'app-event-details',
   standalone: true,
@@ -594,6 +596,14 @@ export class EventDetails {
     const diffMs = start - now;
 
     return diffMs > 0 && diffMs < 24 * 60 * 60 * 1000;
+  }
+
+  get eventHeroImageUrl(): string {
+    if (!this.event) {
+      return getDefaultEventImage(null);
+    }
+
+    return this.event.imageUrl || getDefaultEventImage(this.event.category);
   }
 
   get hasPendingSentInvitations(): boolean {

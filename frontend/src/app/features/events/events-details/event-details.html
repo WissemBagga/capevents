@@ -254,6 +254,9 @@
                     }
                   </button>
                 </div>
+                <div class="event-hero-image">
+                    <img [src]="eventHeroImageUrl" [alt]="event.title" />
+                </div>
 
                 @if (showEmployeeInvitePanel  && !isDeadlinePassed) {
                 <div class="invitation-panel">

@@ -19,10 +19,38 @@
   @if (!loading) {
     <div class="profile-card">
       <div class="avatar-preview">
-        @if (form.get('avatarUrl')?.value) {
-          <img [src]="form.get('avatarUrl')?.value" alt="Avatar" />
-        } @else {
-          <div class="avatar-placeholder">Avatar</div>
+        <img [src]="avatarPreviewUrl" alt="Avatar" />
+      </div>
+
+      <div class="form-group full-width">
+        <label>Avatar</label>
+
+        <div class="image-mode-switch">
+          <button type="button" [class.active]="avatarMode === 'PRESET'" (click)="onAvatarModeChange('PRESET')">
+            Choisir un avatar
+          </button>
+          <button type="button" [class.active]="avatarMode === 'CUSTOM_URL'" (click)="onAvatarModeChange('CUSTOM_URL')">
+            URL personnalisée
+          </button>
+        </div>
+
+        @if (avatarMode === 'PRESET') {
+          <div class="avatar-preset-grid">
+            @for (avatar of avatarPresets; track avatar.id) {
+              <button
+                type="button"
+                class="avatar-card"
+                [class.selected]="selectedAvatarPresetUrl === avatar.url"
+                (click)="selectAvatarPreset(avatar.url)">
+                <img [src]="avatar.url" [alt]="avatar.label" />
+                <span>{{ avatar.label }}</span>
+              </button>
+            }
+          </div>
+        }
+
+        @if (avatarMode === 'CUSTOM_URL') {
+          <input type="text" formControlName="avatarUrl" placeholder="https://..." />
         }
       </div>
 

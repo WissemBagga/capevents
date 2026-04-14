@@ -8,6 +8,8 @@ import { Department } from '../../../core/models/department.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
+import { EVENT_IMAGE_PRESETS, getDefaultEventImage } from '../../../core/constants/event-image-presets';
+
 @Component({
   selector: 'app-edit-event',
   standalone: true,
@@ -25,7 +27,13 @@ export class EditEvent {
   private cdr = inject(ChangeDetectorRef);
 
   readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
+  readonly eventImagePresets = EVENT_IMAGE_PRESETS;
+
   originalRegisteredCount = 0;
+
+
+  imageMode: 'AUTO' | 'PRESET' | 'CUSTOM_URL' = 'AUTO';
+  selectedPresetImageUrl = '';
 
 
   departments: Department[] = [];
@@ -35,15 +43,13 @@ export class EditEvent {
   successMessage = '';
   eventId = '';
 
-  selectedImageFile: File | null = null;
-  imagePreviewUrl: string | null = null;
 
   currentUser = this.authService.getCurrentUserSnapshot();
 
   form = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
     category: ['', [Validators.required]],
-    description: ['', [Validators.required]],
+    description: [''],
     startAt: ['', [Validators.required]],
     durationMinutes: [30, [Validators.required, Validators.min(30)]],
     locationType: ['ONSITE', [Validators.required]],
@@ -127,7 +133,20 @@ export class EditEvent {
         });
 
         this.originalRegisteredCount = event.registeredCount ?? 0;
-        this.imagePreviewUrl = event.imageUrl || null;
+
+        const currentImage = event.imageUrl?.trim() || '';
+        const presetMatch = this.eventImagePresets.find(item => item.url === currentImage);
+
+        if (presetMatch) {
+          this.imageMode = 'PRESET';
+          this.selectedPresetImageUrl = presetMatch.url;
+        } else if (currentImage) {
+          this.imageMode = 'CUSTOM_URL';
+        } else {
+          this.imageMode = 'AUTO';
+        }
+
+        this.syncEventImageSelection();
 
         if (this.isManager) {
           this.form.patchValue({
@@ -211,7 +230,6 @@ export class EditEvent {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
 
-    this.selectedImageFile = file;
 
     if (!file) {
       return;
@@ -219,7 +237,6 @@ export class EditEvent {
 
     const reader = new FileReader();
     reader.onload = () => {
-      this.imagePreviewUrl = reader.result as string;
       this.cdr.markForCheck();
     };
     reader.readAsDataURL(file);
@@ -267,7 +284,7 @@ export class EditEvent {
       address: formValue.address || null,
       capacity: Number(formValue.capacity ?? 0),
       registrationDeadline: this.toIsoInstant(formValue.registrationDeadline ?? ''),
-      imageUrl: null,
+      imageUrl: this.form.get('imageUrl')?.value?.trim() || this.defaultCategoryImageUrl,
       audience: (formValue.audience ?? 'DEPARTMENT') as 'GLOBAL' | 'DEPARTMENT',
       targetDepartmentId: formValue.audience === 'GLOBAL' ? null : formValue.targetDepartmentId
     };
@@ -311,5 +328,55 @@ export class EditEvent {
     const capacity = Number(this.form.get('capacity')?.value ?? 0);
     return capacity < this.originalRegisteredCount;
   }
+
+  onCategoryChange(): void {
+    if (this.imageMode === 'AUTO') {
+      this.syncEventImageSelection();
+    }
+  }
+
+  onImageModeChange(mode: 'AUTO' | 'PRESET' | 'CUSTOM_URL'): void {
+    this.imageMode = mode;
+    this.syncEventImageSelection();
+  }
+
+  selectEventPreset(url: string): void {
+    this.imageMode = 'PRESET';
+    this.selectedPresetImageUrl = url;
+    this.form.patchValue({ imageUrl: url });
+    this.cdr.markForCheck();
+  }
+
+  get defaultCategoryImageUrl(): string {
+    const category = this.form.get('category')?.value;
+    return getDefaultEventImage(category);
+  }
+
+  get previewEventImageUrl(): string {
+    if (this.imageMode === 'CUSTOM_URL') {
+      const custom = this.form.get('imageUrl')?.value?.trim();
+      return custom || this.defaultCategoryImageUrl;
+    }
+
+    if (this.imageMode === 'PRESET' && this.selectedPresetImageUrl) {
+      return this.selectedPresetImageUrl;
+    }
+
+    return this.defaultCategoryImageUrl;
+  }
+
+  private syncEventImageSelection(): void {
+    if (this.imageMode === 'AUTO') {
+      this.form.patchValue({ imageUrl: this.defaultCategoryImageUrl });
+    } else if (this.imageMode === 'PRESET') {
+      this.form.patchValue({ imageUrl: this.selectedPresetImageUrl || this.defaultCategoryImageUrl });
+    } else if (this.imageMode === 'CUSTOM_URL') {
+      if (!this.form.get('imageUrl')?.value) {
+        this.form.patchValue({ imageUrl: '' });
+      }
+    }
+
+    this.cdr.markForCheck();
+}
 
 }

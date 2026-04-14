@@ -13,6 +13,8 @@ import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories
 
 import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
 
+
+
 @Component({
   selector: 'app-events-list',
   standalone: true,
