@@ -89,7 +89,8 @@ export class Register implements OnInit {
       email: this.registerForm.value.email ?? '',
       password: this.registerForm.value.password ?? '',
       phone: this.registerForm.value.phone ?? '',
-      departmentId: this.registerForm.value.departmentId ?? null
+      departmentId: this.registerForm.value.departmentId ?? null,
+      avatarUrl: this.registerForm.value.avatarUrl?.trim() || null
     };
 
     this.authService.register(payload).subscribe({
