@@ -76,5 +76,5 @@ public class UserController {
     ) {
         return userService.updateUserRole(id, req.roleCode());
     }
-    
+
 }

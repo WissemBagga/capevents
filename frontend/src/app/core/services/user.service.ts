@@ -18,6 +18,7 @@ export class UserService {
   private http = inject(HttpClient);
 
   private readonly departmentsUrl = `${environment.apiBaseUrl}/api/departments`;
+  private readonly usersAdminUrl = `${environment.apiBaseUrl}/api/users/admin`;
 
   getDepartments(): Observable<Department[]> {
     return this.http.get<Department[]>(this.departmentsUrl);
@@ -30,14 +31,14 @@ export class UserService {
       .set('sortBy', sortBy)
       .set('sortDir', sortDir);
 
-    return this.http.get<PageResponse<UserSummary>>(`${environment.apiBaseUrl}/api/users/admin`, { params });
+    return this.http.get<PageResponse<UserSummary>>(this.usersAdminUrl, { params });
   } 
+
+  updateUserRole(userId: string, roleCode: string) {
+    return this.http.patch<UserSummary>(`${this.usersAdminUrl}/${userId}/role`, { roleCode });
+  }
 
   createDepartment(name: string) {
     return this.http.post<Department>(this.departmentsUrl, { name });
-  }
-
-  updateUserRole(userId: string, roleCode: string) {
-    return this.http.patch<UserSummary>(`${environment.apiBaseUrl}/api/users/admin/${userId}/role`, { roleCode });
   }
 }
