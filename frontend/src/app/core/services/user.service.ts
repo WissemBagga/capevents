@@ -36,4 +36,8 @@ export class UserService {
   createDepartment(name: string) {
     return this.http.post<Department>(this.departmentsUrl, { name });
   }
+
+  updateUserRole(userId: string, roleCode: string) {
+    return this.http.patch<UserSummary>(`${environment.apiBaseUrl}/api/users/admin/${userId}/role`, { roleCode });
+  }
 }

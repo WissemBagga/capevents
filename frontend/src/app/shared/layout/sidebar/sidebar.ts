@@ -66,7 +66,9 @@ export class Sidebar {
     if (this.authService.isHr()) {
       return [
         { label: 'Dashboard RH', route: '/admin/hr' },
-        { label: 'Événements', route: '/events' }
+        { label: 'Événements', route: '/events' },
+        { label: 'Départements', route: '/admin/admin-departments' },
+        { label: 'Utilisateurs & rôles', route: '/admin/admin-users' }
       ];
     }
 

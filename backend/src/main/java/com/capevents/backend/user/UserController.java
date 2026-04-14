@@ -5,6 +5,7 @@ import com.capevents.backend.common.dto.PageResponse;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.user.dto.MyProfileResponse;
 import com.capevents.backend.user.dto.UpdateMyProfileRequest;
+import com.capevents.backend.user.dto.UpdateUserRoleRequest;
 import com.capevents.backend.user.dto.UserSummaryDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Tag(name="Users")
 @SecurityRequirement(name = "bearerAuth")
@@ -66,6 +68,13 @@ public class UserController {
         return userService.updateMyProfile(authentication.getName(), req);
     }
 
-
-
+    @PatchMapping("/admin/{id}/role")
+    @PreAuthorize("hasAuthority('ROLE_HR')")
+    public UserSummaryDto updateUserRole(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateUserRoleRequest req
+    ) {
+        return userService.updateUserRole(id, req.roleCode());
+    }
+    
 }

@@ -35,6 +35,9 @@ import { Forbidden } from './features/errors/forbidden/forbidden';
 import { NotFound } from './features/errors/not-found/not-found';
 
 
+import { AdminDepartments } from './features/admin/admin-departments/admin-departments';
+import { AdminUsers } from './features/admin/admin-users/admin-users';
+
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -144,7 +147,19 @@ export const routes: Routes = [
         component: MyProfile,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
-      }
+      },
+      {
+        path: 'admin/admin-departments',
+        component: AdminDepartments,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_HR'] }
+      },
+      {
+        path: 'admin/admin-users',
+        component: AdminUsers,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_HR'] }
+      },
     ]
   },
 

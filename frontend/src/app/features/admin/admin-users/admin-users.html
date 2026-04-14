@@ -1,0 +1,55 @@
+<div class="admin-page">
+  <div class="page-header">
+    <h1>Utilisateurs & rôles</h1>
+    <p>Gérez les rôles métier des utilisateurs.</p>
+  </div>
+
+  @if (errorMessage) {
+    <div class="state-message error-msg"><p>{{ errorMessage }}</p></div>
+  }
+
+  @if (successMessage) {
+    <div class="state-message success-msg"><p>{{ successMessage }}</p></div>
+  }
+
+  <section class="card">
+    <h2>Liste des utilisateurs</h2>
+
+    @if (loading) {
+      <p>Chargement...</p>
+    }
+
+    @if (!loading && users.length === 0) {
+      <p>Aucun utilisateur trouvé.</p>
+    }
+
+    @if (!loading && users.length > 0) {
+      <div class="users-table">
+        @for (user of users; track user.id) {
+          <div class="user-row">
+            <div class="user-col main">
+              <strong>{{ user.firstName }} {{ user.lastName }}</strong>
+              <span>{{ user.email }}</span>
+            </div>
+
+            <div class="user-col">
+              <span>{{ user.departmentName || '—' }}</span>
+            </div>
+
+            <div class="user-col">
+              <select
+                [ngModel]="getPrimaryRole(user)"
+                (ngModelChange)="changeRole(user, $event)"
+                [disabled]="savingRoleByUserId[user.id]"
+              >
+                @for (role of roleOptions; track role.value) {
+                  <option [value]="role.value">{{ role.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+</div>

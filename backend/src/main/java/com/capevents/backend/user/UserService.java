@@ -4,6 +4,7 @@ import com.capevents.backend.common.dto.PageResponse;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.role.Role;
+import com.capevents.backend.role.RoleRepository;
 import com.capevents.backend.user.dto.MyProfileResponse;
 import com.capevents.backend.user.dto.UpdateMyProfileRequest;
 import com.capevents.backend.user.dto.UserSummaryDto;
@@ -13,14 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Transactional(readOnly = true)
@@ -128,6 +132,29 @@ public class UserService {
         return getMyProfile(email);
     }
 
+    @Transactional
+    public UserSummaryDto updateUserRole(UUID userId, String roleCode) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
+        Set<String> allowed = Set.of("ROLE_EMPLOYEE", "ROLE_MANAGER", "ROLE_HR");
+        if (!allowed.contains(roleCode)) {
+            throw new BadRequestException("Rôle invalide");
+        }
+
+        Role newRole = roleRepository.findByCode(roleCode)
+                .orElseThrow(() -> new NotFoundException("Rôle introuvable"));
+
+        user.getRoles().removeIf(role ->
+                "ROLE_EMPLOYEE".equals(role.getCode()) ||
+                        "ROLE_MANAGER".equals(role.getCode()) ||
+                        "ROLE_HR".equals(role.getCode())
+        );
+
+        user.getRoles().add(newRole);
+
+        User saved = userRepository.save(user);
+        return toSummaryDto(saved);
+    }
 
 }
