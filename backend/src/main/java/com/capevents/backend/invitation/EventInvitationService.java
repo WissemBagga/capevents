@@ -309,7 +309,7 @@ public class EventInvitationService {
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         validateEmployeeColleagueInviteAccess(actor);
-        
+
         if (event.getStatus() != EventStatus.PUBLISHED) {
             throw new BadRequestException("Seuls les événements publiés peuvent être partagés.");
         }

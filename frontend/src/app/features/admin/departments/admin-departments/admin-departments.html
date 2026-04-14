@@ -1,0 +1,55 @@
+<div class="admin-page">
+  <div class="page-header">
+    <h1>Départements</h1>
+    <p>Ajoutez de nouveaux départements à l’organisation.</p>
+  </div>
+
+  @if (errorMessage) {
+    <div class="state-message error-msg"><p>{{ errorMessage }}</p></div>
+  }
+
+  @if (successMessage) {
+    <div class="state-message success-msg"><p>{{ successMessage }}</p></div>
+  }
+
+  <div class="layout-grid">
+    <section class="card">
+      <h2>Ajouter un département</h2>
+
+      <form [formGroup]="form">
+        <div class="form-group">
+          <label for="name">Nom du département</label>
+          <input id="name" type="text" formControlName="name" placeholder="Ex: Finance" />
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-primary" (click)="submit()" [disabled]="saving">
+            @if (saving) { Ajout... } @else { Ajouter }
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Liste des départements</h2>
+
+      @if (loading) {
+        <p>Chargement...</p>
+      }
+
+      @if (!loading && departments.length === 0) {
+        <p>Aucun département trouvé.</p>
+      }
+
+      @if (!loading && departments.length > 0) {
+        <div class="simple-list">
+          @for (department of departments; track department.id) {
+            <div class="list-row">
+              <strong>{{ department.name }}</strong>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  </div>
+</div>

@@ -8,18 +8,18 @@ import { authGuard } from './core/guards/auth-guard';
 import { EventDetails } from './features/events/events-details/event-details';
 import { roleGuard } from './core/guards/role-guard';
 import { EmployeeDashboard } from './features/events/employee-dashboard/employee-dashboard';
-import { AdminDashboard } from './features/admin-events/admin-dashboard/admin-dashboard';
-import { CreateEvent } from './features/admin-events/create-event/create-event';
-import { EditEvent } from './features/admin-events/edit-event/edit-event';
+import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard';
+import { CreateEvent } from './features/admin/create-event/create-event';
+import { EditEvent } from './features/admin/edit-event/edit-event';
 import { AppShell } from './shared/layout/app-shell/app-shell';
 import { VerifyEmail } from './features/auth/verify-email/verify-email';
 import { VerifyEmailPending } from './features/auth/verify-email-pending/verify-email-pending';
-import { AdminEventDetails } from './features/admin-events/admin-event-details/admin-event-details';
+import { AdminEventDetails } from './features/admin/admin-event-details/admin-event-details';
 import {MyEvents} from './features/events/my-events/my-events'
 
 import { MyInvitations } from './features/events/my-invitations/my-invitations'
 import { SubmitEvent } from './features/events/submit-event/submit-event';
-import { PendingEvents } from './features/admin-events/pending-events/pending-events';
+import { PendingEvents } from './features/admin/pending-events/pending-events';
 
 import { MySubmissions } from './features/events/my-submissions/my-submissions';
 

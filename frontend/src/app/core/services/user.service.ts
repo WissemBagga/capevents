@@ -32,4 +32,8 @@ export class UserService {
 
     return this.http.get<PageResponse<UserSummary>>(`${environment.apiBaseUrl}/api/users/admin`, { params });
   } 
+
+  createDepartment(name: string) {
+    return this.http.post<Department>(this.departmentsUrl, { name });
+  }
 }
