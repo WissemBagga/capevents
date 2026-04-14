@@ -11,6 +11,8 @@ import { PageResponse } from '../../../core/models/page-response.model';
 import { RegistrationResponse } from '../../../core/models/registration.model';
 import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
+import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
+
 @Component({
   selector: 'app-events-list',
   standalone: true,
@@ -184,6 +186,10 @@ export class EventsList {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  getEventImageUrl(event: EventResponse): string {
+    return event.imageUrl || getDefaultEventImage(event.category);
   }
 
   private mapSort(): { sortBy: string; sortDir: 'asc' | 'desc' } {

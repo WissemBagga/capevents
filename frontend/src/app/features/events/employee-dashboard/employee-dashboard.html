@@ -62,7 +62,7 @@
     <div class="events-grid">
       @for (event of events; track event.id) {
         <article class="event-card">
-          <div class="event-image">
+          <div class="event-image" [style.background-image]="'url(' + getEventImageUrl(event) + ')'">
             @if (isDeadlinePassed(event)) {
               <span class="deadline-badge">Deadline dépassée</span>
             } @else if (isFull(event)) {

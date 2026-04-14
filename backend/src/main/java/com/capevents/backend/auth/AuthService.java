@@ -101,6 +101,11 @@ public class AuthService {
         user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(req.password()));
         user.setPhone(req.phone());
+        user.setAvatarUrl(
+                req.avatarUrl() != null && !req.avatarUrl().trim().isEmpty()
+                        ? req.avatarUrl().trim()
+                        : null
+        );
         user.setDepartment(dept);
         user.setEmailVerified(false);
         user.getRoles().add(roleEmployee);

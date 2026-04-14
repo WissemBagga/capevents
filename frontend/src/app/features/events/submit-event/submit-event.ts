@@ -9,6 +9,8 @@ import { CreateEventRequest } from '../../../core/models/create-event.model';
 
 import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
+import { EVENT_IMAGE_PRESETS, getDefaultEventImage } from '../../../core/constants/event-image-presets';
+
 @Component({
   selector: 'app-submit-event',
   standalone: true,
@@ -24,12 +26,18 @@ export class SubmitEvent {
   private cdr = inject(ChangeDetectorRef);
 
   readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
+  readonly eventImagePresets = EVENT_IMAGE_PRESETS;
+
 
   loading = false;
   errorMessage = '';
   successMessage = '';
 
   currentUser = this.authService.getCurrentUserSnapshot();
+
+
+  imageMode: 'AUTO' | 'PRESET' | 'CUSTOM_URL' = 'AUTO';
+  selectedPresetImageUrl = '';
 
   form = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
@@ -76,6 +84,7 @@ export class SubmitEvent {
 
     this.onLocationTypeChange();
     this.onAudienceChange();
+    this.syncEventImageSelection();
   }
 
   onLocationTypeChange(): void {
@@ -194,9 +203,59 @@ export class SubmitEvent {
       address: formValue.address || null,
       capacity: Number(formValue.capacity ?? 0),
       registrationDeadline: new Date(formValue.registrationDeadline ?? '').toISOString(),
-      imageUrl: null,
+      imageUrl: this.form.get('imageUrl')?.value?.trim() || this.defaultCategoryImageUrl,
       audience: (formValue.audience ?? 'DEPARTMENT') as 'GLOBAL' | 'DEPARTMENT',
       targetDepartmentId: formValue.audience === 'GLOBAL' ? null : this.currentDepartmentId
     };
+  }
+
+  onCategoryChange(): void {
+    if (this.imageMode === 'AUTO') {
+      this.syncEventImageSelection();
+    }
+  }
+
+  onImageModeChange(mode: 'AUTO' | 'PRESET' | 'CUSTOM_URL'): void {
+    this.imageMode = mode;
+    this.syncEventImageSelection();
+  }
+
+  selectEventPreset(url: string): void {
+    this.imageMode = 'PRESET';
+    this.selectedPresetImageUrl = url;
+    this.form.patchValue({ imageUrl: url });
+    this.cdr.markForCheck();
+  }
+
+  get defaultCategoryImageUrl(): string {
+    const category = this.form.get('category')?.value;
+    return getDefaultEventImage(category);
+  }
+
+  get previewEventImageUrl(): string {
+    if (this.imageMode === 'CUSTOM_URL') {
+      const custom = this.form.get('imageUrl')?.value?.trim();
+      return custom || this.defaultCategoryImageUrl;
+    }
+
+    if (this.imageMode === 'PRESET' && this.selectedPresetImageUrl) {
+      return this.selectedPresetImageUrl;
+    }
+
+    return this.defaultCategoryImageUrl;
+  }
+
+  private syncEventImageSelection(): void {
+    if (this.imageMode === 'AUTO') {
+      this.form.patchValue({ imageUrl: this.defaultCategoryImageUrl });
+    } else if (this.imageMode === 'PRESET') {
+      this.form.patchValue({ imageUrl: this.selectedPresetImageUrl || this.defaultCategoryImageUrl });
+    } else if (this.imageMode === 'CUSTOM_URL') {
+      if (!this.form.get('imageUrl')?.value) {
+        this.form.patchValue({ imageUrl: '' });
+      }
+    }
+
+    this.cdr.markForCheck();
   }
 }

@@ -8,6 +8,8 @@ import { Department } from '../../../core/models/department.model';
 
 import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
+import { EVENT_IMAGE_PRESETS, getDefaultEventImage } from '../../../core/constants/event-image-presets';
+
 @Component({
   selector: 'app-create-event',
   standalone: true,
@@ -24,7 +26,8 @@ export class CreateEvent {
   private cdr = inject(ChangeDetectorRef);
 
   readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
-  
+  readonly eventImagePresets = EVENT_IMAGE_PRESETS;
+
 
   departments: Department[] = [];
   loading = false;
@@ -33,9 +36,10 @@ export class CreateEvent {
   successMessage = '';
   currentUser = this.authService.getCurrentUserSnapshot();
 
-  selectedImageFile: File | null = null;
   imagePreviewUrl: string | null = null;
 
+  imageMode: 'AUTO' | 'PRESET' | 'CUSTOM_URL' = 'AUTO';
+  selectedPresetImageUrl = '';
 
 
   form = this.fb.group({
@@ -60,6 +64,7 @@ export class CreateEvent {
   this.applyRoleRules();
   this.onLocationTypeChange();
   this.onAudienceChange();
+  this.syncEventImageSelection();
 }
 
   get isHr(): boolean {
@@ -267,28 +272,60 @@ export class CreateEvent {
       address: formValue.address || null,
       capacity: Number(formValue.capacity ?? 0),
       registrationDeadline: this.toIsoInstant(formValue.registrationDeadline ?? ''),
-      imageUrl: null,
+      imageUrl: this.form.get('imageUrl')?.value?.trim() || this.defaultCategoryImageUrl,
       audience: (formValue.audience ?? 'DEPARTMENT') as 'GLOBAL' | 'DEPARTMENT',
       targetDepartmentId: formValue.audience === 'GLOBAL' ? null : formValue.targetDepartmentId
     };
   }
 
-  onImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0] ?? null;
+  onCategoryChange(): void {
+    if (this.imageMode === 'AUTO') {
+      this.syncEventImageSelection();
+    }
+  }
 
-    this.selectedImageFile = file;
+  onImageModeChange(mode: 'AUTO' | 'PRESET' | 'CUSTOM_URL'): void {
+    this.imageMode = mode;
+    this.syncEventImageSelection();
+  }
 
-    if (!file) {
-      this.imagePreviewUrl = null;
-      return;
+  selectEventPreset(url: string): void {
+    this.imageMode = 'PRESET';
+    this.selectedPresetImageUrl = url;
+    this.form.patchValue({ imageUrl: url });
+    this.cdr.markForCheck();
+  }
+
+  get defaultCategoryImageUrl(): string {
+    const category = this.form.get('category')?.value;
+    return getDefaultEventImage(category);
+  }
+
+  get previewEventImageUrl(): string {
+    if (this.imageMode === 'CUSTOM_URL') {
+      const custom = this.form.get('imageUrl')?.value?.trim();
+      return custom || this.defaultCategoryImageUrl;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.imagePreviewUrl = reader.result as string;
-      this.cdr.markForCheck();
-    };
-    reader.readAsDataURL(file);
-  }  
+    if (this.imageMode === 'PRESET' && this.selectedPresetImageUrl) {
+      return this.selectedPresetImageUrl;
+    }
+
+    return this.defaultCategoryImageUrl;
+  }
+
+  private syncEventImageSelection(): void {
+    if (this.imageMode === 'AUTO') {
+      this.form.patchValue({ imageUrl: this.defaultCategoryImageUrl });
+    } else if (this.imageMode === 'PRESET') {
+      this.form.patchValue({ imageUrl: this.selectedPresetImageUrl || this.defaultCategoryImageUrl });
+    } else if (this.imageMode === 'CUSTOM_URL') {
+      if (!this.form.get('imageUrl')?.value) {
+        this.form.patchValue({ imageUrl: '' });
+      }
+    }
+
+    this.imagePreviewUrl = this.previewEventImageUrl;
+    this.cdr.markForCheck();
+  }
 }

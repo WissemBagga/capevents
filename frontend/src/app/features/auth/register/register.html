@@ -203,6 +203,42 @@
                         <p class="error-message">{{errorMessage}}</p>
                     }
 
+                    <div class="form-group full-width">
+                        <label>Avatar</label>
+
+                        <div class="image-mode-switch">
+                            <button type="button" [class.active]="avatarMode === 'PRESET'" (click)="onAvatarModeChange('PRESET')">
+                            Choisir un avatar
+                            </button>
+                            <button type="button" [class.active]="avatarMode === 'CUSTOM_URL'" (click)="onAvatarModeChange('CUSTOM_URL')">
+                            URL personnalisée
+                            </button>
+                        </div>
+
+                        @if (avatarMode === 'PRESET') {
+                            <div class="avatar-preset-grid">
+                            @for (avatar of avatarPresets; track avatar.id) {
+                                <button
+                                type="button"
+                                class="avatar-card"
+                                [class.selected]="selectedAvatarPresetUrl === avatar.url"
+                                (click)="selectAvatarPreset(avatar.url)">
+                                    <img [src]="avatar.url" [alt]="avatar.label" />
+                                    <span>{{ avatar.label }}</span>
+                                </button>
+                            }
+                            </div>
+                        }
+
+                        @if (avatarMode === 'CUSTOM_URL') {
+                            <input type="text" formControlName="avatarUrl" placeholder="https://..." />
+                        }
+
+                        <div class="avatar-preview-box">
+                            <img [src]="avatarPreviewUrl" alt="Aperçu avatar" />
+                        </div>
+                    </div>
+
                     <button type="submit" [disabled] = "loading">
                         {{loading ? 'Inscription...' : 'Créer un compte →'}}
                     </button>

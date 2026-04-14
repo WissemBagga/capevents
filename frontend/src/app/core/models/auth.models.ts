@@ -10,6 +10,8 @@ export interface RegisterRequest {
   password: string;
   phone?: string | null;
   departmentId?: number | null;
+  avatarUrl?: string | null;
+
 }
 
 export interface AuthResponse {

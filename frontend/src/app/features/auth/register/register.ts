@@ -5,7 +5,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 import { Department } from '../../../core/models/department.model';
 
-
+import { AVATAR_PRESETS } from '../../../core/constants/avatar-presets';
 
 
 @Component({
@@ -22,11 +22,16 @@ export class Register implements OnInit {
   private userService = inject(UserService);
   private cdr = inject(ChangeDetectorRef)
 
+  readonly avatarPresets = AVATAR_PRESETS;
+
   departments: Department[] = [];
 
   errorMessage = '';
   successMessage = '';
   loading = false;
+
+  avatarMode: 'PRESET' | 'CUSTOM_URL' = 'PRESET';
+  selectedAvatarPresetUrl = this.avatarPresets[0].url;
 
   registerForm = this.fb.group({
     firstName: [
@@ -52,8 +57,11 @@ export class Register implements OnInit {
           Validators.pattern(/^[A-Za-z0-9._%+-]+@capgemini\.com$/i)
         ]
       ],
-    password: ['', [Validators.required, Validators.minLength(8), 
-      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)]],
+    password: ['', [
+      Validators.required, 
+      Validators.minLength(8), 
+      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)
+    ]],
     phone: [
       '',
       [
@@ -61,7 +69,8 @@ export class Register implements OnInit {
         Validators.pattern(/^\+216(?:\s?\d{8}|\s?\d{2}\s?\d{3}\s?\d{3})$/)
       ]
     ],
-    departmentId: [null as number | null, [Validators.required]]
+    departmentId: [null as number | null, [Validators.required]],
+    avatarUrl: [this.avatarPresets[0].url]
   });
 
   onSubmit(): void{
@@ -112,6 +121,37 @@ export class Register implements OnInit {
         this.cdr.markForCheck();
       }
     });
+    this.registerForm.patchValue({
+      avatarUrl: this.selectedAvatarPresetUrl
+    });
+  }
+
+  selectAvatarPreset(url: string): void {
+    this.avatarMode = 'PRESET';
+    this.selectedAvatarPresetUrl = url;
+    this.registerForm.patchValue({ avatarUrl: url });
+    this.cdr.markForCheck();
+  }
+
+  onAvatarModeChange(mode: 'PRESET' | 'CUSTOM_URL'): void {
+    this.avatarMode = mode;
+
+    if (mode === 'PRESET') {
+      this.registerForm.patchValue({ avatarUrl: this.selectedAvatarPresetUrl });
+    } else {
+      this.registerForm.patchValue({ avatarUrl: '' });
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  get avatarPreviewUrl(): string {
+    const custom = this.registerForm.get('avatarUrl')?.value?.trim();
+    if (this.avatarMode === 'CUSTOM_URL' && custom) {
+      return custom;
+    }
+
+    return this.selectedAvatarPresetUrl;
   }
 
 

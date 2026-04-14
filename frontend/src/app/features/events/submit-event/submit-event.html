@@ -40,7 +40,7 @@
 
         <div class="form-group">
           <label for="category">Catégorie</label>
-          <select id="category" formControlName="category">
+          <select id="category" formControlName="category" (change)="onCategoryChange()">
             <option value="">Sélectionnez une catégorie</option>
             @for (option of categoryOptions; track option.value) {
               <option [value]="option.value">{{ option.label }}</option>
@@ -125,6 +125,49 @@
             <input id="address" type="text" formControlName="address" />
           </div>
         }
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="section-title">Image de l’événement</h2>
+
+      <div class="form-group full-width">
+        <label>Choix de l’image</label>
+
+        <div class="image-mode-switch">
+          <button type="button" [class.active]="imageMode === 'AUTO'" (click)="onImageModeChange('AUTO')">
+            Automatique selon la catégorie
+          </button>
+          <button type="button" [class.active]="imageMode === 'PRESET'" (click)="onImageModeChange('PRESET')">
+            Choisir une image preset
+          </button>
+          <button type="button" [class.active]="imageMode === 'CUSTOM_URL'" (click)="onImageModeChange('CUSTOM_URL')">
+            URL personnalisée
+          </button>
+        </div>
+
+        @if (imageMode === 'PRESET') {
+          <div class="image-preset-grid">
+            @for (preset of eventImagePresets; track preset.url) {
+              <button
+                type="button"
+                class="image-card"
+                [class.selected]="selectedPresetImageUrl === preset.url"
+                (click)="selectEventPreset(preset.url)">
+                <img [src]="preset.url" [alt]="preset.label" />
+                <span>{{ preset.label }}</span>
+              </button>
+            }
+          </div>
+        }
+
+        @if (imageMode === 'CUSTOM_URL') {
+          <input type="text" formControlName="imageUrl" placeholder="https://..." />
+        }
+
+        <div class="image-preview-box">
+          <img [src]="previewEventImageUrl" alt="Aperçu de l’événement" />
+        </div>
       </div>
     </div>
 

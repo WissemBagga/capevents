@@ -8,6 +8,8 @@ import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
 import { PageResponse } from '../../../core/models/page-response.model';
 
+import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
+
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
@@ -71,5 +73,9 @@ export class EmployeeDashboard {
   isDeadlinePassed(event: EventResponse): boolean {
     if (!event.registrationDeadline) return false;
     return new Date().getTime() > new Date(event.registrationDeadline).getTime();
+  }
+
+  getEventImageUrl(event: EventResponse): string {
+    return event.imageUrl || getDefaultEventImage(event.category);
   }
 }
