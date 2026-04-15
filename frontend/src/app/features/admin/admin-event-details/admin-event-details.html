@@ -604,7 +604,17 @@
                                         <div class="user-selection-list">
                                             @for (user of filteredSelectableUsers; track user.id) {
                                                 <label class="user-option" [class.checked]="selectedUserEmails.includes(user.email)">
-                                                    <div class="user-avatar-small">{{ user.firstName.charAt(0) | uppercase }}</div>
+                                                    <div class="user-avatar-small" [class.has-image]="hasSelectableUserAvatar(user)">
+                                                      @if (hasSelectableUserAvatar(user)) {
+                                                        <img
+                                                          [src]="user.avatarUrl!"
+                                                          [alt]="user.firstName + ' ' + user.lastName"
+                                                          (error)="onSelectableUserAvatarError(user)"
+                                                        />
+                                                      } @else {
+                                                        <span>{{ getSelectableUserInitials(user) }}</span>
+                                                      }
+                                                    </div>
                                                     <div class="user-option-text">
                                                         <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
                                                         @if (isHr && user.departmentName) {
@@ -770,15 +780,11 @@
                         <article class="inv-card">
                             <div class="inv-card-header">
                                 <div class="inv-user-row">
-                                    <div class="inv-avatar" [class.has-image]="hasInvitationAvatar(invitation)">
-                                        @if (hasInvitationAvatar(invitation)) {
-                                            <img
-                                            [src]="invitation.avatarUrl!"
-                                            [alt]="invitation.fullName"
-                                            (error)="onInvitationAvatarError(invitation)"
-                                            />
+                                    <div class="inv-avatar">
+                                        @if (invitation.avatarUrl) {
+                                            <img [src]="invitation.avatarUrl" [alt]="invitation.fullName" (error)="$any($event.target).style.display='none'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
                                         } @else {
-                                            <span>{{ getInvitationInitials(invitation.fullName) }}</span>
+                                            {{ invitation.fullName.charAt(0) | uppercase }}
                                         }
                                     </div>
                                     <div class="inv-identity-text">

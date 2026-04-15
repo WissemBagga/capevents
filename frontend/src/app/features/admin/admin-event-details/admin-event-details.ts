@@ -40,6 +40,8 @@ export class AdminEventDetails {
   loading = false;
   errorMessage = '';
 
+  userAvatarErrors: Record<string, boolean> = {};
+
   participants: EventParticipantResponse[]= [];
   participantsLoading = false;
 
@@ -612,6 +614,21 @@ export class AdminEventDetails {
       audience: this.event.audience,
       targetDepartmentId: this.event.targetDepartmentId
     };
+  }
+
+  hasSelectableUserAvatar(user: UserSummary): boolean {
+    return !!user.avatarUrl?.trim() && !this.userAvatarErrors[user.id];
+  }
+
+  onSelectableUserAvatarError(user: UserSummary): void {
+    this.userAvatarErrors[user.id] = true;
+    this.cdr.markForCheck();
+  }
+
+  getSelectableUserInitials(user: UserSummary): string {
+    const first = user.firstName?.charAt(0)?.toUpperCase() ?? '';
+    const last = user.lastName?.charAt(0)?.toUpperCase() ?? '';
+    return `${first}${last}` || '?';
   }
 
   submitReschedule(): void {

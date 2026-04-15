@@ -7,6 +7,7 @@ export interface UserSummary {
   jobTitle?: string | null;
   departmentId?: number | null;
   departmentName?: string | null;
+  avatarUrl?: string | null;
   active: boolean;
   roles: string[];
 }

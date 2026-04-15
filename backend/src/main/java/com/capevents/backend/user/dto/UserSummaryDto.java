@@ -12,6 +12,7 @@ public record UserSummaryDto(
         String jobTitle,
         Long departmentId,
         String departmentName,
+        String avatarUrl,
         boolean active,
         Set<String> roles
 ) {}

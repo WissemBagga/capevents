@@ -93,6 +93,7 @@ public class UserService {
                 user.getJobTitle(),
                 deptId,
                 deptName,
+                user.getAvatarUrl(),
                 user.isActive(),
                 roleCodes
         );
