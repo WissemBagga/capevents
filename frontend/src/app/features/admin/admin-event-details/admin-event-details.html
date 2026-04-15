@@ -770,11 +770,15 @@
                         <article class="inv-card">
                             <div class="inv-card-header">
                                 <div class="inv-user-row">
-                                    <div class="inv-avatar">
-                                        @if (invitation.avatarUrl) {
-                                            <img [src]="invitation.avatarUrl" [alt]="invitation.fullName" (error)="$any($event.target).style.display='none'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                                    <div class="inv-avatar" [class.has-image]="hasInvitationAvatar(invitation)">
+                                        @if (hasInvitationAvatar(invitation)) {
+                                            <img
+                                            [src]="invitation.avatarUrl!"
+                                            [alt]="invitation.fullName"
+                                            (error)="onInvitationAvatarError(invitation)"
+                                            />
                                         } @else {
-                                            {{ invitation.fullName.charAt(0) | uppercase }}
+                                            <span>{{ getInvitationInitials(invitation.fullName) }}</span>
                                         }
                                     </div>
                                     <div class="inv-identity-text">

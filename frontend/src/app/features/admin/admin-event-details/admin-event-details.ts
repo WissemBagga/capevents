@@ -69,6 +69,7 @@ export class AdminEventDetails {
 
   attendanceLoadingById: Record<number, boolean> = {};
 
+  invitationAvatarErrors: Record<string, boolean> = {};
 
   showRescheduleModal = false;
   rescheduleLoading = false;
@@ -820,6 +821,38 @@ export class AdminEventDetails {
       default:
         return 'Pas encore répondu';
     }
+  }
+
+  getInvitationAvatarKey(invitation: AdminEventInvitationResponse): string {
+    return `${invitation.email}_${invitation.sentAt}`;
+  }
+
+  onInvitationAvatarError(invitation: AdminEventInvitationResponse): void {
+    const key = this.getInvitationAvatarKey(invitation);
+    this.invitationAvatarErrors[key] = true;
+    this.cdr.markForCheck();
+  }
+
+  hasInvitationAvatar(invitation: AdminEventInvitationResponse): boolean {
+    const key = this.getInvitationAvatarKey(invitation);
+    return !!invitation.avatarUrl?.trim() && !this.invitationAvatarErrors[key];
+  }
+
+  getInvitationInitials(fullName: string): string {
+    const parts = fullName
+      ?.trim()
+      .split(' ')
+      .filter(Boolean) ?? [];
+
+    if (parts.length === 0) {
+      return '?';
+    }
+
+    if (parts.length === 1) {
+      return parts[0].charAt(0).toUpperCase();
+    }
+
+    return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
   }
 
 

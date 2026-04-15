@@ -14,6 +14,7 @@ public record AdminEventInvitationResponse(
         InvitationStatus status,
         InvitationResponseStatus rsvpResponse,
         String message,
+        String avatarUrl,
         Instant sentAt,
         String invitedByFullName
 ) {

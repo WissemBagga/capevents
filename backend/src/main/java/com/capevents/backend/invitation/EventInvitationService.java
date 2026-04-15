@@ -424,6 +424,7 @@ public class EventInvitationService {
                 invitation.getStatus(),
                 invitation.getRsvpResponse(),
                 invitation.getMessage(),
+                invitedUser.getAvatarUrl(),
                 invitation.getSentAt(),
                 buildFullName(
                         invitation.getInvitedBy().getFirstName(),
