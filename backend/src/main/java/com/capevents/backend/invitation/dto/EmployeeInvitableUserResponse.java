@@ -8,6 +8,7 @@ public record EmployeeInvitableUserResponse(
         String lastName,
         String email,
         Long departmentId,
-        String departmentName
+        String departmentName,
+        String avatarUrl
 ) {
 }

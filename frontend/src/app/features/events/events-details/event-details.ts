@@ -31,6 +31,9 @@ export class EventDetails {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  userAvatarErrors: Record<string, boolean> = {};
+  sentInvitationAvatarErrors: Record<string, boolean> = {};
+
 
   event: EventResponse | null = null;
   loading = false;
@@ -607,6 +610,50 @@ export class EventDetails {
       && !this.isRegistered
       && !this.isDeadlinePassed
       && !this.isFull;
+  }
+
+  hasSelectableUserAvatar(user: UserSummary): boolean {
+    return !!user.avatarUrl?.trim() && !this.userAvatarErrors[user.id];
+  }
+
+  onSelectableUserAvatarError(user: UserSummary): void {
+    this.userAvatarErrors[user.id] = true;
+    this.cdr.markForCheck();
+  }
+
+  getSelectableUserInitials(user: UserSummary): string {
+    const first = user.firstName?.charAt(0)?.toUpperCase() ?? '';
+    const last = user.lastName?.charAt(0)?.toUpperCase() ?? '';
+    return `${first}${last}` || '?';
+  }
+
+  getSentInvitationAvatarKey(invitation: AdminEventInvitationResponse): string {
+    return `${invitation.email}_${invitation.sentAt}`;
+  }
+
+  hasSentInvitationAvatar(invitation: AdminEventInvitationResponse): boolean {
+    const key = this.getSentInvitationAvatarKey(invitation);
+    return !!invitation.avatarUrl?.trim() && !this.sentInvitationAvatarErrors[key];
+  }
+
+  onSentInvitationAvatarError(invitation: AdminEventInvitationResponse): void {
+    const key = this.getSentInvitationAvatarKey(invitation);
+    this.sentInvitationAvatarErrors[key] = true;
+    this.cdr.markForCheck();
+  }
+
+  getSentInvitationInitials(fullName: string): string {
+    const parts = fullName?.trim().split(' ').filter(Boolean) ?? [];
+
+    if (parts.length === 0) {
+      return '?';
+    }
+
+    if (parts.length === 1) {
+      return parts[0].charAt(0).toUpperCase();
+    }
+
+    return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
   }
 
   getRsvpStatusClass(response: InvitationResponseStatus | null): string {

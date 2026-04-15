@@ -340,7 +340,8 @@ public class EventInvitationService {
                         user.getLastName(),
                         user.getEmail(),
                         user.getDepartment() != null ? user.getDepartment().getId() : null,
-                        user.getDepartment() != null ? user.getDepartment().getName() : null
+                        user.getDepartment() != null ? user.getDepartment().getName() : null,
+                        user.getAvatarUrl()
                 ))
                 .toList();
     }

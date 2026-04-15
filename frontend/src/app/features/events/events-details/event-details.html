@@ -585,8 +585,16 @@
                       class="user-option"
                       [class.checked]="selectedEmployeeInviteEmails.includes(user.email)"
                     >
-                      <div class="user-avatar-small">
-                        {{ user.firstName.charAt(0) | uppercase }}
+                      <div class="user-avatar-small" [class.has-image]="hasSelectableUserAvatar(user)">
+                        @if (hasSelectableUserAvatar(user)) {
+                          <img
+                            [src]="user.avatarUrl!"
+                            [alt]="user.firstName + ' ' + user.lastName"
+                            (error)="onSelectableUserAvatarError(user)"
+                          />
+                        } @else {
+                          <span>{{ getSelectableUserInitials(user) }}</span>
+                        }
                       </div>
                       <div class="user-option-text">
                         <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
@@ -814,8 +822,16 @@
                 <article class="inv-history-card">
                   <div class="inv-card-header">
                     <div class="inv-user-row">
-                      <div class="user-avatar-small">
-                        {{ (invitation.fullName || invitation.email || '?').charAt(0) | uppercase }}
+                      <div class="inv-avatar" [class.has-image]="hasSentInvitationAvatar(invitation)">
+                        @if (hasSentInvitationAvatar(invitation)) {
+                          <img
+                            [src]="invitation.avatarUrl!"
+                            [alt]="invitation.fullName"
+                            (error)="onSentInvitationAvatarError(invitation)"
+                          />
+                        } @else {
+                          <span>{{ getSentInvitationInitials(invitation.fullName) }}</span>
+                        }
                       </div>
                       <div class="user-main-info">
                         <span class="user-name">{{ invitation.fullName }}</span>
