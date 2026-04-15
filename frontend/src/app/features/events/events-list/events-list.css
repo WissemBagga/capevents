@@ -42,14 +42,25 @@
   box-shadow: 0 2px 10px rgba(0, 40, 80, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
-.filters-row {
+/* Row 1: Rechercher + Date début + Date limite */
+.filters-row-1 {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.4fr 1.4fr 1fr;
-  gap: 12px;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 14px;
   align-items: end;
+}
+
+/* Row 2: Statut + Catégorie + Trier par */
+.filters-row-2 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  align-items: end;
+  padding-top: 14px;
+  border-top: 1px solid #f0f3f7;
 }
 
 .filters-footer {
@@ -100,10 +111,8 @@
 .filter-group input,
 .filter-group select {
   width: 100%;
-  height: 44px;
   border: 1.5px solid #dce3ed;
   border-radius: 12px;
-  padding: 0 14px;
   font-family: Verdana, Geneva, sans-serif;
   font-size: 13.5px;
   color: #1a2538;
@@ -111,7 +120,25 @@
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   box-sizing: border-box;
+}
+
+/* Text inputs keep a fixed height */
+.filter-group input[type="text"],
+.filter-group input[type="datetime-local"] {
+  height: 44px;
+  padding: 0 14px;
+}
+
+/* Selects: let the browser size them naturally, just add padding */
+.filter-group select {
+  height: auto;
+  padding: 11px 36px 11px 14px;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa6b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
 }
 
 .filter-group input::placeholder {
@@ -566,7 +593,11 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .filters-row {
+  .filters-row-1 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filters-row-2 {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -576,8 +607,9 @@
     padding: 20px 16px;
   }
 
-  .filters-row {
-    grid-template-columns: repeat(2, 1fr);
+  .filters-row-1,
+  .filters-row-2 {
+    grid-template-columns: 1fr;
   }
 
   .filters-footer {
@@ -606,7 +638,8 @@
 }
 
 @media (max-width: 480px) {
-  .filters-row {
+  .filters-row-1,
+  .filters-row-2 {
     grid-template-columns: 1fr;
   }
 }

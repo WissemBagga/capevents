@@ -10,7 +10,9 @@
 
     <!-- Filters Bar -->
     <div class="filters-card">
-        <div class="filters-row">
+
+        <!-- Row 1: Search + Dates -->
+        <div class="filters-row filters-row-1">
 
             <div class="filter-group">
                 <label for="titleQuery">Rechercher</label>
@@ -24,6 +26,21 @@
                     />
                 </div>
             </div>
+
+            <div class="filter-group">
+                <label for="from">Date de début</label>
+                <input id="from" type="datetime-local" [(ngModel)]="from" />
+            </div>
+
+            <div class="filter-group">
+                <label for="to">Date limite</label>
+                <input id="to" type="datetime-local" [(ngModel)]="to" />
+            </div>
+
+        </div>
+
+        <!-- Row 2: Selects -->
+        <div class="filters-row filters-row-2">
 
             <div class="filter-group">
                 <label for="statusFilter">Statut</label>
@@ -43,16 +60,6 @@
                         <option [value]="option.value">{{ option.label }}</option>
                     }
                 </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="from">Date de début</label>
-                <input id="from" type="datetime-local" [(ngModel)]="from" />
-            </div>
-
-            <div class="filter-group">
-                <label for="to">Date limite</label>
-                <input id="to" type="datetime-local" [(ngModel)]="to" />
             </div>
 
             <div class="filter-group">
