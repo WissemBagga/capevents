@@ -16,791 +16,875 @@
 
     @if (errorMessage) {
         <div class="state-message error-msg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <p>{{ errorMessage }}</p>
         </div>
     }
 
+    @if (successMessage) {
+        <div class="state-message success-msg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <p>{{ successMessage }}</p>
+        </div>
+    }
+
     @if (event && !loading) {
-        <article class="details-card">
 
-            <!-- Header -->
-            <div class="details-header">
-                <div class="header-left">
-                    <span class="category-tag">{{ event.category || 'Sans catégorie' }}</span>
-                    <h1>{{ event.title }}</h1>
+        <!-- ============================================ -->
+        <!-- HERO HEADER -->
+        <!-- ============================================ -->
+        <section class="hero-section">
+            <div class="hero-image-wrap">
+                <img [src]="eventHeroImageUrl" [alt]="event.title" class="hero-img" />
+                <div class="hero-overlay"></div>
+                <div class="hero-badges">
+                    <span class="hero-category-tag">{{ event.category || 'Sans catégorie' }}</span>
+                    <span class="hero-status-tag"
+                        [class.published]="event.status === 'PUBLISHED'"
+                        [class.draft]="event.status === 'DRAFT'"
+                        [class.cancelled]="event.status === 'CANCELLED'"
+                        [class.archived]="event.status === 'ARCHIVED'">
+                        {{ statusLabel(event.status) }}
+                    </span>
                 </div>
-                <span class="status-tag"
-                    [class.published]="event.status === 'PUBLISHED'"
-                    [class.draft]="event.status === 'DRAFT'"
-                    [class.cancelled]="event.status === 'CANCELLED'"
-                    [class.archived]="event.status === 'ARCHIVED'">
-                    {{ statusLabel(event.status) }}
-                </span>
             </div>
-            <div class="event-hero-image">
-              <img [src]="eventHeroImageUrl" [alt]="event.title" />
+            <div class="hero-content">
+                <div class="hero-content-left">
+                    <h1 class="hero-title">{{ event.title }}</h1>
+                    <div class="hero-meta-row">
+                        <span class="hero-meta-chip">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            {{ event.startAt | date:'fullDate' }}
+                        </span>
+                        <span class="hero-meta-chip">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            {{ event.durationMinutes }} min
+                        </span>
+                        <span class="hero-meta-chip">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            {{ event.locationType }}
+                        </span>
+                        <span class="hero-meta-chip">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                            {{ event.audience }}
+                        </span>
+                        @if (event.createdByFullName || event.createdByEmail) {
+                            <span class="hero-meta-chip">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                {{ event.createdByFullName || event.createdByEmail }}
+                            </span>
+                        }
+                        @if (event.audience === 'DEPARTMENT' && event.targetDepartmentName) {
+                            <span class="hero-meta-chip accent">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                {{ event.targetDepartmentName }}
+                            </span>
+                        }
+                    </div>
+                </div>
             </div>
+        </section>
 
-            <!-- Description -->
-            <div class="description-section">
-                <h2 class="section-label">Description</h2>
-                <p class="description">{{ event.description || 'Aucune description disponible.' }}</p>
+        <!-- ============================================ -->
+        <!-- QUICK STATS ROW -->
+        <!-- ============================================ -->
+        <section class="stats-row">
+            <div class="stat-card">
+                <span class="stat-value">{{ event.capacity }}</span>
+                <span class="stat-label">Capacité totale</span>
             </div>
+            @if (event.registeredCount !== undefined) {
+                <div class="stat-card accent">
+                    <span class="stat-value">{{ event.registeredCount }}</span>
+                    <span class="stat-label">Inscrits</span>
+                </div>
+            }
+            @if (event.remainingCapacity !== undefined) {
+                <div class="stat-card" [class.stat-warning]="event.remainingCapacity <= 0">
+                    <span class="stat-value">{{ event.remainingCapacity }}</span>
+                    <span class="stat-label">Places restantes</span>
+                </div>
+            }
+            @if (!participantsLoading && participants.length > 0) {
+                <div class="stat-card stat-success">
+                    <span class="stat-value">{{ presentCount }}</span>
+                    <span class="stat-label">Présents</span>
+                </div>
+                <div class="stat-card stat-danger">
+                    <span class="stat-value">{{ absentCount }}</span>
+                    <span class="stat-label">Absents</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">{{ pendingCount }}</span>
+                    <span class="stat-label">En attente</span>
+                </div>
+            }
+            @if (event.registrationDeadline) {
+                <div class="stat-card stat-deadline">
+                    <span class="stat-value stat-value-date">{{ event.registrationDeadline | date:'shortDate' }}</span>
+                    <span class="stat-label">Date limite</span>
+                </div>
+            }
+        </section>
 
-            <!-- Details Grid -->
-            <div class="section-block">
-                <h2 class="section-label">Détails de l'événement</h2>
-                <div class="details-grid">
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        </span>
-                        <div>
-                            <h3>Date et heure</h3>
-                            <p>{{ event.startAt | date:'full' }}</p>
+        <!-- ============================================ -->
+        <!-- CANCELLED / ARCHIVED BANNERS -->
+        <!-- ============================================ -->
+        @if (event?.status === 'CANCELLED') {
+            <section class="cancel-banner-section">
+                <div class="cancel-banner-card">
+                    <div class="cancel-banner-content">
+                        <div class="cancel-banner-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         </div>
-                    </div>
-
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </span>
                         <div>
-                            <h3>Durée</h3>
-                            <p>{{ event.durationMinutes }} minutes</p>
-                        </div>
-                    </div>
-
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                        </span>
-                        <div>
-                            <h3>Type de lieu</h3>
-                            <p>{{ event.locationType }}</p>
-                        </div>
-                    </div>
-
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                        </span>
-                        <div>
-                            <h3>Lieu / plateforme</h3>
-                            <p>{{ event.locationName || event.address || 'Non précisé' }}</p>
-                        </div>
-                    </div>
-
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-                        </span>
-                        <div>
-                            <h3>Meeting URL</h3>
+                            <h4>Événement annulé</h4>
                             <p>
-                                @if (event.meetingUrl) {
-                                    <a [href]="event.meetingUrl" target="_blank" rel="noopener noreferrer">Ouvrir le lien</a>
-                                } @else {
-                                    <span>Non applicable</span>
-                                }
+                                Cet événement a été annulé par un administrateur et retiré du catalogue. Les autres sections ont été masquées. Vous pouvez utiliser l'action de reprogrammation pour définir de nouvelles dates et le republier.
                             </p>
                         </div>
                     </div>
-
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                        </span>
-                        <div>
-                            <h3>Capacité</h3>
-                            <p>{{ event.capacity }} participants</p>
-                        </div>
-                    </div>
-
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        </span>
-                        <div>
-                            <h3>Date limite d'inscription</h3>
-                            <p>{{ event.registrationDeadline | date:'medium' }}</p>
-                        </div>
-                    </div>
+                    <button type="button" class="btn-reschedule" (click)="openRescheduleModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        Reprogrammer
+                    </button>
                 </div>
-            </div>
+            </section>
+        }
 
-            <!-- Organisation Info -->
-            <div class="section-block">
-                <h2 class="section-label">Organisation</h2>
-                <div class="details-grid">
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                        </span>
-                        <div>
-                            <h3>Créé par</h3>
-                            <p>{{ event.createdByFullName || event.createdByEmail || 'Non renseigné' }}</p>
-                        </div>
+        @if (event?.status === 'ARCHIVED') {
+            <section class="archived-banner-section">
+                <div class="archived-banner-card">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+                    <p>Cet événement est archivé. Les sections Participants et Invitations ne sont plus affichées.</p>
+                </div>
+            </section>
+        }
+
+        <!-- ============================================ -->
+        <!-- MAIN CONTENT LAYOUT (2-column on desktop) -->
+        <!-- ============================================ -->
+        <div class="content-layout">
+
+            <!-- LEFT / MAIN COLUMN -->
+            <div class="content-main">
+
+                <!-- Description Card -->
+                <section class="section-card">
+                    <div class="section-card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        <h2>Description</h2>
                     </div>
+                    <p class="description-text">{{ event.description || 'Aucune description disponible.' }}</p>
+                </section>
 
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                        </span>
-                        <div>
-                            <h3>Audience</h3>
-                            <p>{{ event.audience }}</p>
-                        </div>
+                <!-- Details Card -->
+                <section class="section-card">
+                    <div class="section-card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        <h2>Détails de l'événement</h2>
                     </div>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </span>
+                            <div>
+                                <span class="detail-label">Date et heure</span>
+                                <span class="detail-value">{{ event.startAt | date:'full' }}</span>
+                            </div>
+                        </div>
 
-                    @if (event.audience === 'DEPARTMENT') {
-                        <div class="detail-box">
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </span>
+                            <div>
+                                <span class="detail-label">Durée</span>
+                                <span class="detail-value">{{ event.durationMinutes }} minutes</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </span>
+                            <div>
+                                <span class="detail-label">Type de lieu</span>
+                                <span class="detail-value">{{ event.locationType }}</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
                             <span class="detail-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                             </span>
                             <div>
-                                <h3>Département cible</h3>
-                                <p>{{ event.targetDepartmentName || 'Non renseigné' }}</p>
+                                <span class="detail-label">Lieu / plateforme</span>
+                                <span class="detail-value">{{ event.locationName || event.address || 'Non précisé' }}</span>
                             </div>
                         </div>
+
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                            </span>
+                            <div>
+                                <span class="detail-label">Meeting URL</span>
+                                <span class="detail-value">
+                                    @if (event.meetingUrl) {
+                                        <a [href]="event.meetingUrl" target="_blank" rel="noopener noreferrer">Ouvrir le lien</a>
+                                    } @else {
+                                        Non applicable
+                                    }
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                            </span>
+                            <div>
+                                <span class="detail-label">Capacité</span>
+                                <span class="detail-value">{{ event.capacity }} participants</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </span>
+                            <div>
+                                <span class="detail-label">Date limite d'inscription</span>
+                                <span class="detail-value">{{ event.registrationDeadline | date:'medium' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================================ -->
+                <!-- PARTICIPANTS SECTION -->
+                <!-- ============================================ -->
+                @if (canShowParticipationSections) {
+                    <section class="section-card participants-section">
+                        <div class="section-card-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                            <h2>Participants</h2>
+                            <span class="header-count-badge">{{ participantsCount }}</span>
+                        </div>
+
+                        @if (participantsLoading) {
+                            <div class="state-message loading-msg compact">
+                                <div class="spinner"></div>
+                                <p>Chargement des participants...</p>
+                            </div>
+                        }
+
+                        @if (!participantsLoading && participants.length === 0) {
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                                </div>
+                                <p class="empty-state-title">Aucun participant</p>
+                                <p class="empty-state-sub">Les participants inscrits apparaîtront ici.</p>
+                            </div>
+                        }
+
+                        @if (!participantsLoading && participants.length > 0) {
+                            <!-- Attendance Toolbar -->
+                            <div class="attendance-toolbar">
+                                <div class="attendance-summary">
+                                    <span class="att-chip att-present">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        {{ presentCount }} Présent{{ presentCount > 1 ? 's' : '' }}
+                                    </span>
+                                    <span class="att-chip att-absent">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                        {{ absentCount }} Absent{{ absentCount > 1 ? 's' : '' }}
+                                    </span>
+                                    <span class="att-chip att-pending">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        {{ pendingCount }} En attente
+                                    </span>
+                                </div>
+                                <div class="attendance-bulk-actions">
+                                    <button type="button" class="btn-bulk present" (click)="markAllPresent()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Tout cocher
+                                    </button>
+                                    <button type="button" class="btn-bulk absent" (click)="markAllAbsent()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                        Tout décocher
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Participants Grid -->
+                            <div class="participants-grid">
+                                @for (participant of participants; track participant.registrationId) {
+                                    <article class="participant-card"
+                                        [class.is-present]="participant.attendanceStatus === 'PRESENT'"
+                                        [class.is-absent]="participant.attendanceStatus === 'ABSENT'">
+                                        <div class="participant-main">
+                                            <div class="participant-avatar">
+                                                @if (hasParticipantAvatar(participant)) {
+                                                    <img [src]="participant.avatarUrl!" [alt]="participant.firstName + ' ' + participant.lastName" (error)="$any($event.target).style.display='none'" />
+                                                } @else {
+                                                    <span>{{ getParticipantInitials(participant) }}</span>
+                                                }
+                                            </div>
+                                            <div class="participant-info">
+                                                <h3>{{ participant.firstName }} {{ participant.lastName }}</h3>
+                                                <p class="participant-detail-line">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                                    {{ participant.email }}
+                                                </p>
+                                                <p class="participant-detail-line">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                                    {{ participant.departmentName || 'Département non renseigné' }}
+                                                </p>
+                                                <p class="participant-detail-line muted">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                                    Inscrit le {{ participant.registeredAt | date:'mediumDate' }}
+                                                </p>
+                                            </div>
+                                            <div class="participant-status-zone">
+                                                <span class="attendance-chip"
+                                                    [class.present]="participant.attendanceStatus === 'PRESENT'"
+                                                    [class.absent]="participant.attendanceStatus === 'ABSENT'"
+                                                    [class.pending]="participant.attendanceStatus === 'PENDING'">
+                                                    {{ statusLabel(participant.attendanceStatus) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="attendance-action-bar">
+                                            <button type="button"
+                                                class="attendance-btn present-btn"
+                                                [class.active]="participant.attendanceStatus === 'PRESENT'"
+                                                [disabled]="attendanceLoadingById[participant.registrationId]"
+                                                (click)="markAttendance(participant.registrationId, 'PRESENT')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                                Présent
+                                            </button>
+                                            <button type="button"
+                                                class="attendance-btn absent-btn"
+                                                [class.active]="participant.attendanceStatus === 'ABSENT'"
+                                                [disabled]="attendanceLoadingById[participant.registrationId]"
+                                                (click)="markAttendance(participant.registrationId, 'ABSENT')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                                Absent
+                                            </button>
+                                        </div>
+                                    </article>
+                                }
+                            </div>
+                        }
+                    </section>
+                }
+
+            </div><!-- /content-main -->
+
+            <!-- RIGHT / SIDEBAR -->
+            <aside class="content-sidebar">
+
+                <!-- Organisation Card -->
+                <section class="section-card sidebar-card">
+                    <div class="section-card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        <h2>Organisation</h2>
+                    </div>
+                    <div class="sidebar-detail-list">
+                        <div class="sidebar-detail-item">
+                            <span class="sidebar-detail-label">Créé par</span>
+                            <span class="sidebar-detail-value">{{ event.createdByFullName || event.createdByEmail || 'Non renseigné' }}</span>
+                        </div>
+                        <div class="sidebar-detail-item">
+                            <span class="sidebar-detail-label">Audience</span>
+                            <span class="sidebar-detail-value">{{ event.audience }}</span>
+                        </div>
+                        @if (event.audience === 'DEPARTMENT') {
+                            <div class="sidebar-detail-item">
+                                <span class="sidebar-detail-label">Département cible</span>
+                                <span class="sidebar-detail-value">{{ event.targetDepartmentName || 'Non renseigné' }}</span>
+                            </div>
+                        }
+                    </div>
+                </section>
+
+                <!-- Historique Card -->
+                <section class="section-card sidebar-card">
+                    <div class="section-card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <h2>Historique</h2>
+                    </div>
+                    <div class="sidebar-detail-list">
+                        <div class="sidebar-detail-item">
+                            <span class="sidebar-detail-label">Créé le</span>
+                            <span class="sidebar-detail-value">{{ event.createdAt | date:'medium' }}</span>
+                        </div>
+                        <div class="sidebar-detail-item">
+                            <span class="sidebar-detail-label">Mis à jour le</span>
+                            <span class="sidebar-detail-value">{{ event.updatedAt | date:'medium' }}</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Event Image Card (if exists) -->
+                @if (event.imageUrl) {
+                    <section class="section-card sidebar-card image-card-sidebar">
+                        <div class="section-card-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <h2>Image</h2>
+                        </div>
+                        <div class="sidebar-image-wrap">
+                            <img [src]="event.imageUrl" [alt]="event.title" />
+                        </div>
+                    </section>
+                }
+
+            </aside>
+        </div><!-- /content-layout -->
+
+        <!-- ============================================ -->
+        <!-- INVITATION SECTION -->
+        <!-- ============================================ -->
+        @if (showInvitationSection && canShowParticipationSections) {
+            <section class="section-card invitation-section-card">
+                <div class="section-card-header inv-header">
+                    <div class="inv-header-left">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <div>
+                            <h2>Inviter des employés</h2>
+                            <p class="section-card-sub">Envoyez des invitations aux employés pour cet événement</p>
+                        </div>
+                    </div>
+                    @if (canInviteNow) {
+                        <button type="button" class="invite-toggle-btn" (click)="toggleInvitationPanel()">
+                            @if (showInvitationPanel) {
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                Fermer
+                            } @else {
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                Inviter des employés
+                            }
+                        </button>
                     }
                 </div>
-            </div>
 
-            <!-- Timestamps -->
-            <div class="section-block">
-                <h2 class="section-label">Historique</h2>
-                <div class="details-grid">
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </span>
-                        <div>
-                            <h3>Créé le</h3>
-                            <p>{{ event.createdAt | date:'medium' }}</p>
-                        </div>
+                <!-- Blocking Message -->
+                @if (invitationBlockingMessage) {
+                    <div class="state-message info-msg compact">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+                        <p>{{ invitationBlockingMessage }}</p>
                     </div>
+                }
 
-                    <div class="detail-box">
-                        <span class="detail-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </span>
-                        <div>
-                            <h3>Mis à jour le</h3>
-                            <p>{{ event.updatedAt | date:'medium' }}</p>
+                <!-- Invitation Panel -->
+                @if (showInvitationPanel && canInviteNow) {
+                    <div class="invitation-panel">
+                        <!-- Step 1: Type de cible -->
+                        <div class="panel-step">
+                            <div class="step-label">
+                                <span class="step-num">1</span>
+                                <span class="step-title">Type d'invitation</span>
+                            </div>
+                            <div class="type-selector">
+                                @if (isHr && !isDepartmentAudienceEvent) {
+                                    <label class="type-option" [class.selected]="invitationTargetType === 'GLOBAL'">
+                                        <input type="radio" name="targetType" value="GLOBAL"
+                                            [checked]="invitationTargetType === 'GLOBAL'"
+                                            (change)="onTargetTypeChange('GLOBAL')" />
+                                        <span class="type-option-icon global">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+                                        </span>
+                                        <div>
+                                            <span class="type-label">Global</span>
+                                            <span class="type-desc">Tous les employés</span>
+                                        </div>
+                                    </label>
+                                }
+                                <label class="type-option" [class.selected]="invitationTargetType === 'DEPARTMENT'">
+                                    <input type="radio" name="targetType" value="DEPARTMENT"
+                                        [checked]="invitationTargetType === 'DEPARTMENT'"
+                                        (change)="onTargetTypeChange('DEPARTMENT')" />
+                                    <span class="type-option-icon department">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                    </span>
+                                    <div>
+                                        <span class="type-label">Département</span>
+                                        <span class="type-desc">Un département entier</span>
+                                    </div>
+                                </label>
+                                <label class="type-option" [class.selected]="invitationTargetType === 'INDIVIDUAL'">
+                                    <input type="radio" name="targetType" value="INDIVIDUAL"
+                                        [checked]="invitationTargetType === 'INDIVIDUAL'"
+                                        (change)="onTargetTypeChange('INDIVIDUAL')" />
+                                    <span class="type-option-icon individual">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                                    </span>
+                                    <div>
+                                        <span class="type-label">Individuel</span>
+                                        <span class="type-desc">Employés sélectionnés</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
+
+                        <!-- Step 2: Department or Users -->
+                        @if (invitationTargetType === 'DEPARTMENT') {
+                            <div class="panel-step">
+                                <div class="step-label">
+                                    <span class="step-num">2</span>
+                                    <span class="step-title">Sélectionnez un département</span>
+                                </div>
+                                <div class="form-group">
+                                    <select
+                                        id="departmentId"
+                                        [(ngModel)]="selectedDepartmentId"
+                                        [disabled]="shouldDisableDepartmentSelect">
+                                        <option [ngValue]="null">-- Choisir un département --</option>
+                                        @for (department of allowedDepartmentsForInvitation; track department.id) {
+                                            <option [ngValue]="department.id">{{ department.name }}</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        }
+
+                        @if (invitationTargetType === 'INDIVIDUAL') {
+                            <div class="panel-step">
+                                <div class="step-label">
+                                    <span class="step-num">2</span>
+                                    <span class="step-title">Choisissez des employés</span>
+                                    @if (selectedUserEmails.length > 0) {
+                                        <span class="selected-count-pill">{{ selectedUserEmails.length }} sélectionné(s)</span>
+                                    }
+                                </div>
+                                @if (visibleUsersForInvitation.length === 0) {
+                                    <p class="helper-text">Aucun utilisateur disponible.</p>
+                                } @else {
+                                    <div class="individual-filters">
+                                        <input
+                                            type="text"
+                                            [(ngModel)]="individualSearchTerm"
+                                            placeholder="Rechercher par nom, prénom ou email"
+                                        />
+                                        @if (isHr) {
+                                            <select [(ngModel)]="individualDepartmentFilter">
+                                                <option [ngValue]="null">Tous les départements</option>
+                                                @for (department of departments; track department.id) {
+                                                    <option [ngValue]="department.id">{{ department.name }}</option>
+                                                }
+                                            </select>
+                                        }
+                                        <button type="button" class="btn-clear-filter" (click)="clearIndividualFilters()">
+                                            Réinitialiser
+                                        </button>
+                                    </div>
+
+                                    @if (filteredSelectableUsers.length === 0) {
+                                        <div class="state-message info-msg compact">
+                                            <p>Aucun employé ne correspond à votre recherche.</p>
+                                        </div>
+                                    } @else {
+                                        <div class="selection-toolbar">
+                                            <label class="select-all-option">
+                                                <input
+                                                    type="checkbox"
+                                                    [checked]="areAllFilteredSelectableUsersSelected"
+                                                    (change)="toggleSelectAllAdminUsers($any($event.target).checked)"
+                                                />
+                                                <span>Tout sélectionner les résultats affichés</span>
+                                            </label>
+                                            <span class="selection-summary">
+                                                {{ selectedFilteredSelectableCount }} / {{ filteredSelectableUsers.length }} sélectionné(s)
+                                            </span>
+                                        </div>
+                                        <div class="user-selection-list">
+                                            @for (user of filteredSelectableUsers; track user.id) {
+                                                <label class="user-option" [class.checked]="selectedUserEmails.includes(user.email)">
+                                                    <div class="user-avatar-small">{{ user.firstName.charAt(0) | uppercase }}</div>
+                                                    <div class="user-option-text">
+                                                        <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
+                                                        @if (isHr && user.departmentName) {
+                                                            <small>{{ user.departmentName }}</small>
+                                                        }
+                                                    </div>
+                                                    <input
+                                                        type="checkbox"
+                                                        class="user-checkbox"
+                                                        [checked]="selectedUserEmails.includes(user.email)"
+                                                        (change)="onIndividualSelectionChange(user.email, $any($event.target).checked)"
+                                                    />
+                                                </label>
+                                            }
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+
+                        <!-- Step 3: Message personnalisé -->
+                        <div class="panel-step">
+                            <div class="step-label">
+                                <span class="step-num">{{ invitationTargetType === 'GLOBAL' ? '2' : '3' }}</span>
+                                <span class="step-title">Message personnalisé <span class="optional-tag">optionnel</span></span>
+                            </div>
+                            <div class="form-group">
+                                <textarea
+                                    id="invitationMessage"
+                                    rows="3"
+                                    [(ngModel)]="invitationMessage"
+                                    placeholder="Ajoutez un message personnalisé pour accompagner l'invitation..."
+                                ></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Summary + Action -->
+                        <div class="invitation-footer">
+                            <div class="invitation-summary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                                <strong>{{ selectedCount }}</strong> personne(s) ciblée(s)
+                            </div>
+                            <button
+                                type="button"
+                                class="btn-send"
+                                (click)="sendInvitations()"
+                                [disabled]="!canSendInvitations">
+                                @if (invitationLoading) {
+                                    <span class="spinner-small"></span>
+                                    Envoi en cours...
+                                } @else {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                    Envoyer les invitations
+                                }
+                            </button>
+                        </div>
+
+                        <!-- Feedback Messages -->
+                        @if (invitationErrorMessage) {
+                            <div class="inv-feedback error-feedback">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                {{ invitationErrorMessage }}
+                            </div>
+                        }
+                        @if (invitationSuccessMessage) {
+                            <div class="inv-feedback success-feedback">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                {{ invitationSuccessMessage }}
+                            </div>
+                        }
+
+                        @if (lastInvitedItems.length > 0 || lastSkippedItems.length > 0) {
+                            <div class="invitation-result-panel">
+                                <div class="invitation-result-summary">
+                                    <span class="result-badge success-badge">
+                                        {{ lastInvitedItems.length }} invité{{ lastInvitedItems.length > 1 ? 's' : '' }}
+                                    </span>
+                                    <span class="result-badge warning-badge">
+                                        {{ lastSkippedItems.length }} ignoré{{ lastSkippedItems.length > 1 ? 's' : '' }}
+                                    </span>
+                                </div>
+
+                                @if (lastInvitedItems.length > 0) {
+                                    <div class="result-block">
+                                        <h3>Invités</h3>
+                                        <div class="result-list">
+                                            @for (item of lastInvitedItems; track item.email) {
+                                                <div class="result-row">
+                                                    <span class="result-name">{{ item.fullName }}</span>
+                                                    <span class="result-email">{{ item.email }}</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (lastSkippedItems.length > 0) {
+                                    <div class="result-block">
+                                        <h3>Ignorés</h3>
+                                        <div class="result-list">
+                                            @for (item of lastSkippedItems; track item.email + item.reason) {
+                                                <div class="result-row skipped-row">
+                                                    <div>
+                                                        <span class="result-name">{{ item.fullName }}</span>
+                                                        <span class="result-email">{{ item.email }}</span>
+                                                    </div>
+                                                    <span class="skip-reason">{{ item.reason }}</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+        }
+
+        <!-- ============================================ -->
+        <!-- SENT INVITATIONS SECTION -->
+        <!-- ============================================ -->
+        <section class="section-card sent-invitations-card">
+            <div class="section-card-header inv-header">
+                <div class="inv-header-left">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    <div>
+                        <h2>Invitations envoyées</h2>
+                        <p class="section-card-sub">Historique des invitations transmises pour cet événement</p>
                     </div>
                 </div>
+                @if (!invitationsLoading && invitations.length > 0) {
+                    <span class="header-count-badge">{{ invitations.length }}</span>
+                }
             </div>
 
-            @if (showRescheduleModal) {
-              <div class="modal-overlay">
-                <div class="modal-card">
-                  <div class="modal-header">
+            <!-- Loading State -->
+            @if (invitationsLoading) {
+                <div class="state-message loading-msg compact">
+                    <div class="spinner"></div>
+                    <span>Chargement des invitations...</span>
+                </div>
+            }
+
+            <!-- Empty State -->
+            @else if (!invitationLoading && invitations.length === 0) {
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </div>
+                    <p class="empty-state-title">Aucune invitation envoyée</p>
+                    <p class="empty-state-sub">Les invitations transmises pour cet événement apparaîtront ici.</p>
+                </div>
+            }
+
+            <!-- Invitation List -->
+            @else {
+                <div class="inv-list">
+                    @for (invitation of invitations; track invitation.email + invitation.sentAt) {
+                        <article class="inv-card">
+                            <div class="inv-card-header">
+                                <div class="inv-user-row">
+                                    <div class="inv-avatar">
+                                        @if (invitation.avatarUrl) {
+                                            <img [src]="invitation.avatarUrl" [alt]="invitation.fullName" (error)="$any($event.target).style.display='none'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                                        } @else {
+                                            {{ invitation.fullName.charAt(0) | uppercase }}
+                                        }
+                                    </div>
+                                    <div class="inv-identity-text">
+                                        <span class="inv-name">{{ invitation.fullName }}</span>
+                                        <span class="inv-email">{{ invitation.email }}</span>
+                                        <div class="inv-meta-row">
+                                            <span class="inv-meta-item">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                                {{ invitation.sentAt | date:'mediumDate' }}
+                                            </span>
+                                            @if (canShowDepartmentInSentInvitations && invitation.departmentName) {
+                                                <span class="inv-meta-item">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                                                    {{ invitation.departmentName }}
+                                                </span>
+                                            }
+                                            <span class="inv-meta-item">
+                                                <span style="font-weight: 700; color: #a1aebf;">({{ invitation.targetType }})</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="inv-card-badges">
+                                    <span class="rsvp-badge"
+                                        [class.rsvp-yes]="invitation.rsvpResponse === 'YES'"
+                                        [class.rsvp-no]="invitation.rsvpResponse === 'NO'"
+                                        [class.rsvp-maybe]="invitation.rsvpResponse === 'MAYBE'"
+                                        [class.rsvp-none]="!invitation.rsvpResponse">
+                                        {{ invitationResponseLabel(invitation.rsvpResponse) }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            @if (invitation.message) {
+                                <div class="inv-message">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                                    {{ invitation.message }}
+                                </div>
+                            }
+                        </article>
+                    }
+                </div>
+            }
+        </section>
+
+    }
+
+    <!-- ============================================ -->
+    <!-- RESCHEDULE MODAL -->
+    <!-- ============================================ -->
+    @if (showRescheduleModal) {
+        <div class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-header">
                     <h2>Reprogrammer l'événement</h2>
                     <button type="button" class="modal-close" (click)="closeRescheduleModal()">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
-                  </div>
+                </div>
 
-                  <p class="modal-subtitle">
+                <p class="modal-subtitle">
                     Définissez les nouvelles dates pour cet événement annulé. Une fois validé, il sera republié automatiquement.
-                  </p>
-
-                  <div class="modal-body">
-                    <div class="form-group">
-                      <label for="rescheduleStartAt">Nouvelle date et heure de l'événement</label>
-                      <div class="input-wrapper">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        <input
-                          id="rescheduleStartAt"
-                          type="datetime-local"
-                          [(ngModel)]="rescheduleStartAt"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="rescheduleDeadline">Nouvelle date limite d'inscription</label>
-                      <div class="input-wrapper">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <input
-                          id="rescheduleDeadline"
-                          type="datetime-local"
-                          [(ngModel)]="rescheduleRegistrationDeadline"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  @if (rescheduleErrorMessage) {
-                    <div class="state-message error-msg">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                      <p>{{ rescheduleErrorMessage }}</p>
-                    </div>
-                  }
-
-                  <div class="modal-actions">
-                    <button type="button" class="btn-cancel-modal" (click)="closeRescheduleModal()" [disabled]="rescheduleLoading">
-                      Annuler
-                    </button>
-
-                    <button type="button" class="btn-primary" (click)="submitReschedule()" [disabled]="rescheduleLoading">
-                      @if (rescheduleLoading) {
-                        Reprogrammation...
-                      } @else {
-                        Reprogrammer & Publier
-                      }
-                    </button>
-                  </div>
-                </div>
-              </div>
-            }
-
-            <!-- Image -->
-            @if (event.imageUrl) {
-                <div class="section-block">
-                    <h2 class="section-label">Image</h2>
-                    <div class="image-box">
-                        <img [src]="event.imageUrl" [alt]="event.title" />
-                    </div>
-                </div>
-            }
-
-
-            @if (event?.status === 'CANCELLED') {
-              <div class="state-message cancel-banner">
-                <div class="cancel-banner-content">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                  <div>
-                    <h4>Événement annulé</h4>
-                    <p>
-                      Cet événement a été annulé par un administrateur et retiré du catalogue. Les autres sections ont été masquées. Vous pouvez utiliser l'action de reprogrammation pour définir de nouvelles dates et le republier.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  class="btn-reschedule btn-reschedule-banner"
-                  (click)="openRescheduleModal()"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M5 10H3"/><path d="M21 10h-2"/><path d="M7.5 4.5L6 3"/><path d="M18 3l-1.5 1.5"/><path d="M18 17l-1.5-1.5"/><path d="M7.5 15.5L6 17"/></svg>
-                  Reprogrammer
-                </button>
-              </div>
-            }
-
-            @if (event?.status === 'ARCHIVED') {
-              <div class="state-message info-msg">
-                <p>
-                  Cet événement est archivé. Les sections Participants et Invitations ne sont plus affichées.
                 </p>
-              </div>
-            }
 
-            @if (canShowParticipationSections) {
-              <!-- Participants Info -->
-              <div class="section-block participants-section">
-
-                  <div class="participants-header">
-                    <div class="participants-title-wrap">
-                      <h2 class="section-label">Participants</h2>
-                      <span class="participants-count-chip">
-                        {{ participantsCount }} participant{{ participantsCount > 1 ? 's' : '' }}
-                      </span>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="rescheduleStartAt">Nouvelle date et heure de l'événement</label>
+                        <div class="input-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <input
+                                id="rescheduleStartAt"
+                                type="datetime-local"
+                                [(ngModel)]="rescheduleStartAt"
+                            />
+                        </div>
                     </div>
+                    <div class="form-group">
+                        <label for="rescheduleDeadline">Nouvelle date limite d'inscription</label>
+                        <div class="input-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <input
+                                id="rescheduleDeadline"
+                                type="datetime-local"
+                                [(ngModel)]="rescheduleRegistrationDeadline"
+                            />
+                        </div>
+                    </div>
+                </div>
 
-                    @if (event) {
-                      <div class="capacity-badges">
-                        @if (event.registeredCount !== undefined && event.remainingCapacity !== undefined) {
-                          <span class="badge-blue">{{ event.registeredCount }} inscrits / {{ event.capacity }} places</span>
-                          <span class="badge-green">Reste {{ event.remainingCapacity }} places</span>
+                @if (rescheduleErrorMessage) {
+                    <div class="state-message error-msg compact modal-error">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <p>{{ rescheduleErrorMessage }}</p>
+                    </div>
+                }
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel-modal" (click)="closeRescheduleModal()" [disabled]="rescheduleLoading">
+                        Annuler
+                    </button>
+                    <button type="button" class="btn-primary" (click)="submitReschedule()" [disabled]="rescheduleLoading">
+                        @if (rescheduleLoading) {
+                            Reprogrammation...
                         } @else {
-                          <span class="badge-blue">Capacité max : {{ event.capacity }}</span>
+                            Reprogrammer & Publier
                         }
-                      </div>
-                    }
-                  </div>
-
-                  @if (participantsLoading) {
-                      <div class="state-message loading-msg">
-                          <div class="spinner"></div>
-                          <p>Chargement des participants...</p>
-                      </div>
-                  }
-
-                  @if (!participantsLoading && participants.length === 0) {
-                      <div class="state-message info-msg">
-                          <p>Aucun participant inscrit pour le moment.</p>
-                      </div>
-                  }
-
-                  @if (!participantsLoading && participants.length > 0) {
-                      <div class="attendance-toolbar">
-                        <div class="attendance-summary">
-                          <span>Présents : {{ presentCount }}</span>
-                          <span>Absents : {{ absentCount }}</span>
-                          <span>En attente : {{ pendingCount }}</span>
-                        </div>
-
-                        <div class="attendance-actions">
-                          <button type="button" (click)="markAllPresent()">Tout cocher</button>
-                          <button type="button" (click)="markAllAbsent()">Tout décocher</button>
-                        </div>
-                      </div>
-                      <div class="participants-grid">
-                          
-                          @for (participant of participants; track participant.registrationId) {
-                              <article class="participant-card" [class.is-present]="participant.attendanceStatus === 'PRESENT'" [class.is-absent]="participant.attendanceStatus === 'ABSENT'">
-                                  <div class="participant-main">
-                                      <div class="participant-avatar">
-                                        @if (hasParticipantAvatar(participant)) {
-                                          <img [src]="participant.avatarUrl!" [alt]="participant.firstName + ' ' + participant.lastName" (error)="$any($event.target).style.display='none'" />
-                                        } @else {
-                                          <span>{{ getParticipantInitials(participant) }}</span>
-                                        }
-                                      </div>
-                                      <div class="participant-info">
-                                          <h3>{{ participant.firstName }} {{ participant.lastName }}</h3>
-                                          <p>
-                                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                                              {{ participant.email }}
-                                          </p>
-                                          <p>
-                                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                                              {{ participant.departmentName || 'Département non renseigné' }}
-                                          </p>
-                                          <p>
-                                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                              Inscrit le {{ participant.registeredAt | date:'mediumDate' }}
-                                          </p>
-                                      </div>
-                                      <div class="participant-status-badge">
-                                          <span class="attendance-chip"
-                                                [class.present]="participant.attendanceStatus === 'PRESENT'"
-                                                [class.absent]="participant.attendanceStatus === 'ABSENT'"
-                                                [class.pending]="participant.attendanceStatus === 'PENDING'">
-                                              {{ statusLabel(participant.attendanceStatus) }}
-                                          </span>
-                                      </div>
-                                  </div>
-
-                                  <div class="attendance-block">
-                                    <div class="attendance-actions">
-                                      <button
-                                        type="button"
-                                        class="attendance-btn present-btn"
-                                        [class.active]="participant.attendanceStatus === 'PRESENT'"
-                                        [disabled]="attendanceLoadingById[participant.registrationId]"
-                                        (click)="markAttendance(participant.registrationId, 'PRESENT')"
-                                      >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                        Présent
-                                      </button>
-
-                                      <button
-                                        type="button"
-                                        class="attendance-btn absent-btn"
-                                        [class.active]="participant.attendanceStatus === 'ABSENT'"
-                                        [disabled]="attendanceLoadingById[participant.registrationId]"
-                                        (click)="markAttendance(participant.registrationId, 'ABSENT')"
-                                      >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                        Absent
-                                      </button>
-                                    </div>
-                                  </div>
-                              </article>
-                          }
-                      </div>
-                  }
-              </div>
-            }
-
-        </article>
-    }
-@if (event && !loading && showInvitationSection && canShowParticipationSections) {
-  <section class="invitation-section">
-
-    <!-- Section Header -->
-    <div class="inv-panel-header">
-      <div>
-        <h2 class="inv-panel-title">Inviter des employés</h2>
-        <p class="inv-panel-sub">Envoyez des invitations aux employés pour cet événement</p>
-      </div>
-      @if (canInviteNow) {
-        <button type="button" class="invite-toggle-btn" (click)="toggleInvitationPanel()">
-          @if (showInvitationPanel) {
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            Fermer
-          } @else {
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            Inviter des employés
-          }
-        </button>
-      }
-    </div>
-
-    <!-- Blocking Message -->
-    @if (invitationBlockingMessage) {
-      <div class="state-message info-msg">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
-        <p>{{ invitationBlockingMessage }}</p>
-      </div>
-    }
-
-    <!-- Invitation Panel -->
-    @if (showInvitationPanel && canInviteNow) {
-      <div class="invitation-panel">
-
-        <!-- Step 1: Type de cible -->
-        <div class="panel-step">
-          <div class="step-label">
-            <span class="step-num">1</span>
-            <span class="step-title">Type d'invitation</span>
-          </div>
-          <div class="type-selector">
-            @if (isHr && !isDepartmentAudienceEvent) {
-              <label class="type-option" [class.selected]="invitationTargetType === 'GLOBAL'">
-                <input type="radio" name="targetType" value="GLOBAL"
-                  [checked]="invitationTargetType === 'GLOBAL'"
-                  (change)="onTargetTypeChange('GLOBAL')" />
-                <span class="type-option-icon global">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-                </span>
-                <div>
-                  <span class="type-label">Global</span>
-                  <span class="type-desc">Tous les employés</span>
+                    </button>
                 </div>
-              </label>
-            }
-            <label class="type-option" [class.selected]="invitationTargetType === 'DEPARTMENT'">
-              <input type="radio" name="targetType" value="DEPARTMENT"
-                [checked]="invitationTargetType === 'DEPARTMENT'"
-                (change)="onTargetTypeChange('DEPARTMENT')" />
-              <span class="type-option-icon department">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              </span>
-              <div>
-                <span class="type-label">Département</span>
-                <span class="type-desc">Un département entier</span>
-              </div>
-            </label>
-            <label class="type-option" [class.selected]="invitationTargetType === 'INDIVIDUAL'">
-              <input type="radio" name="targetType" value="INDIVIDUAL"
-                [checked]="invitationTargetType === 'INDIVIDUAL'"
-                (change)="onTargetTypeChange('INDIVIDUAL')" />
-              <span class="type-option-icon individual">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-              </span>
-              <div>
-                <span class="type-label">Individuel</span>
-                <span class="type-desc">Employés sélectionnés</span>
-              </div>
-            </label>
-          </div>
+            </div>
         </div>
-
-        <!-- Step 2: Departement or Users -->
-        @if (invitationTargetType === 'DEPARTMENT') {
-          <div class="panel-step">
-            <div class="step-label">
-              <span class="step-num">2</span>
-              <span class="step-title">Sélectionnez un département</span>
-            </div>
-            <div class="form-group">
-              <select
-                id="departmentId"
-                [(ngModel)]="selectedDepartmentId"
-                [disabled]="shouldDisableDepartmentSelect"
-              >
-                <option [ngValue]="null">-- Choisir un département --</option>
-                @for (department of allowedDepartmentsForInvitation; track department.id) {
-                  <option [ngValue]="department.id">{{ department.name }}</option>
-                }
-              </select>
-            </div>
-          </div>
-        }
-
-        @if (invitationTargetType === 'INDIVIDUAL') {
-          <div class="panel-step">
-            <div class="step-label">
-              <span class="step-num">2</span>
-              <span class="step-title">Choisissez des employés</span>          
-              @if (selectedUserEmails.length > 0) {
-                <span class="selected-count-pill">{{ selectedUserEmails.length }} sélectionné(s)</span>
-              }
-            </div>
-            @if (visibleUsersForInvitation.length === 0) {
-              <p class="helper-text">Aucun utilisateur disponible.</p>
-            } @else {
-              <div class="individual-filters">
-                <input
-                  type="text"
-                  [(ngModel)]="individualSearchTerm"
-                  placeholder="Rechercher par nom, prénom ou email"
-                />
-
-                @if (isHr) {
-                  <select [(ngModel)]="individualDepartmentFilter">
-                    <option [ngValue]="null">Tous les départements</option>
-                    @for (department of departments; track department.id) {
-                      <option [ngValue]="department.id">{{ department.name }}</option>
-                    }
-                  </select>
-                }
-
-                <button type="button" class="btn-clear-filter" (click)="clearIndividualFilters()">
-                  Réinitialiser
-                </button>
-              </div>
-              
-              
-              @if (filteredSelectableUsers.length === 0) {
-                <div class="state-message info-msg">
-                  <p>Aucun employé ne correspond à votre recherche.</p>
-                </div>
-              } @else {
-              <div class="selection-toolbar">
-                <label class="select-all-option">
-                  <input
-                    type="checkbox"
-                    [checked]="areAllFilteredSelectableUsersSelected"
-                    (change)="toggleSelectAllAdminUsers($any($event.target).checked)"
-                  />
-                  <span>Tout sélectionner les résultats affichés</span>
-                </label>
-
-                <span class="selection-summary">
-                  {{ selectedFilteredSelectableCount }} / {{ filteredSelectableUsers.length }} sélectionné(s)
-                </span>
-              </div>  
-              <div class="user-selection-list">
-                @for (user of filteredSelectableUsers; track user.id) {
-                  <label class="user-option" [class.checked]="selectedUserEmails.includes(user.email)">
-                    <div class="user-avatar-small">{{ user.firstName.charAt(0) | uppercase }}</div>
-                    <div class="user-option-text">
-                      <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
-                      @if (isHr && user.departmentName) {
-                        <small>{{ user.departmentName }}</small>
-                      }
-                    </div>
-                    <input
-                      type="checkbox"
-                      class="user-checkbox"
-                      [checked]="selectedUserEmails.includes(user.email)"
-                      (change)="onIndividualSelectionChange(user.email, $any($event.target).checked)"
-                    />
-                  </label>
-                }
-              </div>
-              }
-            }
-          </div>
-        }
-
-        <!-- Step 3: Message personnalisé -->
-        <div class="panel-step">
-          <div class="step-label">
-            <span class="step-num">{{ invitationTargetType === 'GLOBAL' ? '2' : '3' }}</span>
-            <span class="step-title">Message personnalisé <span class="optional-tag">optionnel</span></span>
-          </div>
-          <div class="form-group">
-            <textarea
-              id="invitationMessage"
-              rows="3"
-              [(ngModel)]="invitationMessage"
-              placeholder="Ajoutez un message personnalisé pour accompagner l'invitation..."
-            ></textarea>
-          </div>
-        </div>
-
-        <!-- Summary + Action -->
-        <div class="invitation-footer">
-          <div class="invitation-summary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-            <strong>{{ selectedCount }}</strong> personne(s) ciblée(s)
-          </div>
-
-          <button
-            type="button"
-            class="btn-send"
-            (click)="sendInvitations()"
-            [disabled]="!canSendInvitations"
-          >
-            @if (invitationLoading) {
-              <span class="spinner-small"></span>
-              Envoi en cours...
-            } @else {
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              Envoyer les invitations
-            }
-          </button>
-        </div>
-
-        <!-- Feedback Messages -->
-        @if (invitationErrorMessage) {
-          <div class="inv-feedback error-feedback">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            {{ invitationErrorMessage }}
-          </div>
-        }
-        @if (invitationSuccessMessage) {
-          <div class="inv-feedback success-feedback">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            {{ invitationSuccessMessage }}
-          </div>
-        }
-
-        @if (lastInvitedItems.length > 0 || lastSkippedItems.length > 0) {
-          <div class="invitation-result-panel">
-
-            <div class="invitation-result-summary">
-              <span class="result-badge success-badge">
-                {{ lastInvitedItems.length }} invité{{ lastInvitedItems.length > 1 ? 's' : '' }}
-              </span>
-
-              <span class="result-badge warning-badge">
-                {{ lastSkippedItems.length }} ignoré{{ lastSkippedItems.length > 1 ? 's' : '' }}
-              </span>
-            </div>
-
-            @if (lastInvitedItems.length > 0) {
-              <div class="result-block">
-                <h3>Invités</h3>
-                <div class="result-list">
-                  @for (item of lastInvitedItems; track item.email) {
-                    <div class="result-row">
-                      <span class="result-name">{{ item.fullName }}</span>
-                      <span class="result-email">{{ item.email }}</span>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-
-            @if (lastSkippedItems.length > 0) {
-              <div class="result-block">
-                <h3>Ignorés</h3>
-                <div class="result-list">
-                  @for (item of lastSkippedItems; track item.email + item.reason) {
-                    <div class="result-row skipped-row">
-                      <div>
-                        <span class="result-name">{{ item.fullName }}</span>
-                        <span class="result-email">{{ item.email }}</span>
-                      </div>
-                      <span class="skip-reason">{{ item.reason }}</span>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-
-          </div>
-        }
-
-      </div>
     }
-  </section>
-}
-
-<section class="sent-invitations-section">
-  <!-- Section Header -->
-  <div class="inv-section-header">
-    <div>
-      <h2 class="inv-section-title">Invitations envoyées</h2>
-      <p class="inv-section-sub">Historique des invitations transmises pour cet événement</p>
-    </div>
-    @if (!invitationsLoading && invitations.length > 0) {
-      <span class="inv-count-badge">{{ invitations.length }} invitation{{ invitations.length > 1 ? 's' : '' }}</span>
-    }
-  </div>
-
-  <!-- Loading State -->
-  @if (invitationsLoading) {
-    <div class="inv-state loading">
-      <div class="spinner"></div>
-      <span>Chargement des invitations...</span>
-    </div>
-  }
-
-  <!-- Empty State -->
-  @else if (!invitationLoading && invitations.length === 0) {
-    <div class="inv-empty">
-      <div class="inv-empty-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-          <polyline points="22,6 12,13 2,6"/>
-        </svg>
-      </div>
-      <p class="inv-empty-title">Aucune invitation envoyée</p>
-      <p class="inv-empty-sub">Les invitations transmises pour cet événement apparaîtront ici.</p>
-    </div>
-  }
-
-  <!-- Invitation Rows -->
-  @else {
-    <div class="inv-list">
-      @for (invitation of invitations; track invitation.email + invitation.sentAt) {
-        <article class="inv-row">
-
-          <!-- Left: Avatar + Identity -->
-          <div class="inv-identity">
-            <div class="inv-avatar">
-              {{ invitation.fullName.charAt(0) | uppercase }}
-            </div>
-            <div class="inv-identity-text">
-              <span class="inv-name">{{ invitation.fullName }}</span>
-              <span class="inv-email">{{ invitation.email }}</span>
-            </div>
-            <div>
-              <span class="state-badge">
-                {{statusLabel(invitation.status)}}
-              </span>
-            </div>
-          </div>
-
-          <!-- Center: Type Badge -->
-          <div class="inv-type-col">
-            <span class="inv-type-badge"
-              [class.global]="invitation.targetType === 'GLOBAL'"
-              [class.department]="invitation.targetType === 'DEPARTMENT'"
-              [class.individual]="invitation.targetType === 'INDIVIDUAL'">
-              {{ invitation.targetType }}
-            </span>
-            @if (canShowDepartmentInSentInvitations && invitation.departmentName) {
-              <span class="inv-dept">{{ invitation.departmentName }}</span>
-            }
-          </div>
-
-          <!-- Right: Metadata -->
-          <div class="inv-meta-col">
-            <span class="inv-meta-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-              {{ invitation.invitedByFullName }}
-            </span>
-            <span>
-              {{ invitationResponseLabel(invitation.rsvpResponse)}}
-            </span>
-            <span class="inv-meta-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              {{ invitation.sentAt | date:'mediumDate' }}
-            </span>
-          </div>
-
-          <!-- Message (if present) -->
-          @if (invitation.message) {
-            <div class="inv-message">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-              {{ invitation.message }}
-            </div>
-          }
-
-        </article>
-      }
-    </div>
-  }
-</section>
 
 </div>

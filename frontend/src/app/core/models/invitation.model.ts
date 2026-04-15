@@ -23,6 +23,7 @@ export interface AdminEventInvitationResponse {
   status: 'PENDING';
   rsvpResponse: InvitationResponseStatus | null;
   message: string | null;
+  avatarUrl?: string;
   sentAt: string;
   invitedByFullName: string;
 }
