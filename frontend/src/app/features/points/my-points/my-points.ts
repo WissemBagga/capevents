@@ -21,6 +21,7 @@ export class MyPoints {
   errorMessage = '';
 
   totalPoints = 0;
+  weeklyPoints = 0;
   history: PointTransactionResponse[] = [];
 
   ngOnInit(): void {
@@ -41,11 +42,13 @@ export class MyPoints {
         next: (response: MyPointsResponse) => {
           this.totalPoints = response.totalPoints ?? 0;
           this.history = response.history ?? [];
+          this.calculateWeeklyPoints();
           this.cdr.markForCheck();
         },
         error: (err) => {
           this.totalPoints = 0;
           this.history = [];
+          this.weeklyPoints = 0;
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
@@ -53,6 +56,15 @@ export class MyPoints {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  private calculateWeeklyPoints(): void {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    this.weeklyPoints = this.history
+      .filter(item => new Date(item.createdAt) >= sevenDaysAgo && item.pointsDelta > 0)
+      .reduce((sum, item) => sum + item.pointsDelta, 0);
   }
 
   isPositive(pointsDelta: number): boolean {

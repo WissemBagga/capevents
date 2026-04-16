@@ -1,10 +1,10 @@
 /* ===== Layout & Base ===== */
 .create-event-page {
   padding: 32px 48px;
-  max-width: 1000px; /* Increased horizontal space */
+  max-width: 1000px;
   margin: 0 auto;
-  background: transparent; /* Makes use of parent page background */
-  font-family: 'Verdana', sans-serif; /* Fallback */
+  background: transparent;
+  font-family: 'Verdana', sans-serif;
 }
 
 /* ===== Header ===== */
