@@ -15,14 +15,6 @@
   margin-bottom: 24px;
 }
 
-.breadcrumb {
-  font-size: 10px;
-  font-weight: 700;
-  color: #94a3b8;
-  letter-spacing: 1px;
-  margin: 0 0 4px;
-  text-transform: uppercase;
-}
 
 .header-main h1 {
   font-family: 'Ubuntu', sans-serif;
@@ -79,16 +71,33 @@
 }
 
 .summary-card {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border-radius: 24px;
-  padding: 32px 24px;
+  background-image: url('/images/points-bg.png');
+  background-size: cover;
+  background-position: center;
+  border-radius: 28px;
+  padding: 36px 28px;
   color: #ffffff;
-  box-shadow: 0 12px 24px -8px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   position: relative;
   overflow: hidden;
+  z-index: 1;
+}
+
+/* Glass/Dark Overlay for Readability */
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(15, 23, 42, 0) 100%);
+  backdrop-filter: blur(1px);
+  z-index: -1;
+  pointer-events: none;
 }
 
 .card-label {
