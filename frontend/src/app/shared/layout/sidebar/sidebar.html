@@ -1,16 +1,24 @@
 <aside class="sidebar">
-    <div class="sidebar-top">
-        <a [routerLink]="homeRoute" class="brand-block">
-            <div class="brand-title">CAPEVENTS</div>
-            <div class="brand-subtitle">PORTAIL INTERNE</div>
-        </a>
-    </div>
+  <div class="sidebar-top">
+    <a [routerLink]="homeRoute" class="brand-block">
+      <div class="brand-text">
+        <div class="brand-title">CAPEVENTS</div>
+        <div class="brand-subtitle">PORTAIL INTERNE</div>
+      </div>
+    </a>
+  </div>
 
   <nav class="sidebar-nav">
     <section class="nav-section">
       <button type="button" class="section-toggle" (click)="toggle('main')">
-        <span>Navigation principale</span>
-        <span class="toggle-icon">{{ mainOpen ? '−' : '+' }}</span>
+        <span>Navigation Principale</span>
+        <span class="toggle-icon">
+          @if (mainOpen) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          }
+        </span>
       </button>
 
       @if (mainOpen) {
@@ -21,7 +29,18 @@
               routerLinkActive="active-link"
               [routerLinkActiveOptions]="isEventsLink(item.route) ? { exact: false } : { exact: true }"
               class="nav-link">
-              {{ item.label }}
+              <span class="nav-icon">
+                @switch (item.route) {
+                  @case ('/admin/hr') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> }
+                  @case ('/admin/manager') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> }
+                  @case ('/dashboard/employee') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> }
+                  @case ('/events') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> }
+                  @case ('/admin/admin-departments') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> }
+                  @case ('/admin/admin-users') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> }
+                  @default { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg> }
+                }
+              </span>
+              <span class="nav-label">{{ item.label }}</span>
             </a>
           }
         </div>
@@ -32,7 +51,13 @@
       <section class="nav-section">
         <button type="button" class="section-toggle" (click)="toggle('work')">
           <span>Actions</span>
-          <span class="toggle-icon">{{ workOpen ? '−' : '+' }}</span>
+          <span class="toggle-icon">
+            @if (workOpen) {
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            }
+          </span>
         </button>
 
         @if (workOpen) {
@@ -43,7 +68,16 @@
                 routerLinkActive="active-link"
                 [routerLinkActiveOptions]="{ exact: true }"
                 class="nav-link">
-                {{ item.label }}
+                <span class="nav-icon">
+                  @switch (item.route) {
+                    @case ('/admin/create-event') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> }
+                    @case ('/admin/pending-events') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> }
+                    @case ('/employee/submit-event') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> }
+                    @case ('/my-submissions') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> }
+                    @default { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg> }
+                  }
+                </span>
+                <span class="nav-label">{{ item.label }}</span>
               </a>
             }
           </div>
@@ -55,7 +89,13 @@
       <section class="nav-section">
         <button type="button" class="section-toggle" (click)="toggle('participation')">
           <span>Participation</span>
-          <span class="toggle-icon">{{ participationOpen ? '−' : '+' }}</span>
+          <span class="toggle-icon">
+            @if (participationOpen) {
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            }
+          </span>
         </button>
 
         @if (participationOpen) {
@@ -66,7 +106,16 @@
                 routerLinkActive="active-link"
                 [routerLinkActiveOptions]="{ exact: true }"
                 class="nav-link">
-                {{ item.label }}
+                <span class="nav-icon">
+                  @switch (item.route) {
+                    @case ('/my-events') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> }
+                    @case ('/my-invitations') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> }
+                    @case ('/my-points') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> }
+                    @case ('/my-interests') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> }
+                    @default { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg> }
+                  }
+                </span>
+                <span class="nav-label">{{ item.label }}</span>
               </a>
             }
           </div>
@@ -75,18 +124,25 @@
     }
   </nav>
 
-
-
   <div class="sidebar-footer">
-      <div class="user-card" (click)="goToProfile()">
-                <div class="user-avatar">{{ avatarLetter }}</div>
-                <div class="user-meta">
-                <strong>{{ displayName }}</strong>
-                <span>{{ roleLabel }}</span>
-                </div>
+    <div class="user-card" (click)="goToProfile()">
+      <div class="user-avatar" [class.has-image]="hasAvatar">
+        @if (hasAvatar) {
+          <img [src]="avatarUrl!" [alt]="displayName" (error)="onAvatarError()" />
+        } @else {
+          <span>{{ avatarInitials }}</span>
+        }
       </div>
-    <button type="button" class="footer-btn logout-btn" (click)="logout()">
-      Déconnexion
-    </button>
+
+      <div class="user-meta">
+        <strong>{{ displayName }}</strong>
+        <span>{{ roleLabel }}</span>
+      </div>
+
+      <!-- ChatGPT settings gear or dots -->
+      <button type="button" class="user-action-btn" (click)="logout(); $event.stopPropagation()" title="Déconnexion">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
   </div>
 </aside>

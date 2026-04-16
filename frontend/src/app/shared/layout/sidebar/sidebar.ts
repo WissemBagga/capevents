@@ -19,7 +19,7 @@ export class Sidebar {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  currentUser = this.authService.getCurrentUserSnapshot();
+  avatarLoadError = false;
 
   mainOpen = true;
   workOpen = false;
@@ -35,6 +35,10 @@ export class Sidebar {
       });
   }
 
+  get currentUser() {
+    return this.authService.getCurrentUserSnapshot();
+  }
+
   get displayName(): string {
     const firstName = this.currentUser?.firstName ?? '';
     const lastName = this.currentUser?.lastName ?? '';
@@ -42,8 +46,25 @@ export class Sidebar {
     return fullName || 'Utilisateur';
   }
 
-  get avatarLetter(): string {
-    return this.displayName.charAt(0).toUpperCase();
+  get avatarInitials(): string {
+    const first = this.currentUser?.firstName?.charAt(0)?.toUpperCase() ?? '';
+    const last = this.currentUser?.lastName?.charAt(0)?.toUpperCase() ?? '';
+
+    if (!first && !last) return 'U';
+    return `${first}${last}`.trim();
+  }
+
+  get avatarUrl(): string | null {
+    const url = this.currentUser?.avatarUrl?.trim();
+    return url ? url : null;
+  }
+
+  get hasAvatar(): boolean {
+    return !!this.avatarUrl && !this.avatarLoadError;
+  }
+
+  onAvatarError(): void {
+    this.avatarLoadError = true;
   }
 
   get roleLabel(): string {
