@@ -2,9 +2,11 @@
 
     <!-- Header -->
     <div class="page-header">
+        <a routerLink="/admin/hr" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Retour
+        </a>
         <div class="header-text">
-            <p class="breadcrumb">ACCUEIL › ÉVÉNEMENTS › CRÉATION</p>
-            <h1>Créer un événement</h1>
             @if (isHr) {
                 <p class="header-sub">Créez un événement pour un département précis ou pour toute l'entreprise.</p>
             }
@@ -12,10 +14,6 @@
                 <p class="header-sub">Créez un événement pour votre département: {{ currentDepartmentName }}</p>
             }
         </div>
-        <a routerLink="/admin/hr" class="back-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            Retour
-        </a>
     </div>
 
     <!-- State Messages -->
@@ -47,7 +45,10 @@
             <div class="form-grid">
                 <div class="form-group full-width">
                     <label for="title">Titre</label>
-                    <input id="title" type="text" formControlName="title" placeholder="Nom de l'événement" />
+                    <div class="input-wrapper">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        <input id="title" type="text" formControlName="title" placeholder="Nom de l'événement" />
+                    </div>
                     @if (form.get('title')?.touched && form.get('title')?.errors?.['required']) {
                         <p class="field-error">Le titre est obligatoire.</p>
                     }
@@ -55,12 +56,15 @@
 
                 <div class="form-group">
                     <label for="category">Catégorie</label>
-                    <select id="category" formControlName="category" (change)="onCategoryChange()">
-                        <option value="">Sélectionnez une catégorie</option>
-                        @for (option of categoryOptions; track option.value) {
-                        <option [value]="option.value">{{ option.label }}</option>
-                        }
-                    </select>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                        <select id="category" formControlName="category" (change)="onCategoryChange()">
+                            <option value="">Sélectionnez une catégorie</option>
+                            @for (option of categoryOptions; track option.value) {
+                            <option [value]="option.value">{{ option.label }}</option>
+                            }
+                        </select>
+                    </div>
                     @if (form.get('category')?.touched && form.get('category')?.errors?.['required']) {
                         <p class="field-error">La catégorie est obligatoire.</p>
                     }
@@ -68,24 +72,29 @@
 
                 <div class="form-group">
                     <label for="audience">Audience</label>
-                    <select id="audience" formControlName="audience" (change)="onAudienceChange()">
-                        <option value="DEPARTMENT">Département</option>
-                        @if (isHr) {
-                            <option value="GLOBAL">Global</option>
-                        }
-                    </select>
-                    
+                    <div class="input-wrapper">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <select id="audience" formControlName="audience" (change)="onAudienceChange()">
+                            <option value="DEPARTMENT">Département</option>
+                            @if (isHr) {
+                                <option value="GLOBAL">Global</option>
+                            }
+                        </select>
+                    </div>
                 </div>
 
                 @if (form.getRawValue().audience === 'DEPARTMENT' && isHr) {
                     <div class="form-group">
                         <label for="targetDepartmentId">Département cible</label>
-                        <select id="targetDepartmentId" formControlName="targetDepartmentId">
-                            <option [ngValue]="null">Sélectionnez un département</option>
-                            @for (department of departments; track department.id) {
-                                <option [ngValue]="department.id">{{ department.name }}</option>
-                            }                            
-                        </select>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            <select id="targetDepartmentId" formControlName="targetDepartmentId">
+                                <option [ngValue]="null">Sélectionnez un département</option>
+                                @for (department of departments; track department.id) {
+                                    <option [ngValue]="department.id">{{ department.name }}</option>
+                                }
+                            </select>
+                        </div>
                         @if (form.get('targetDepartmentId')?.touched && form.get('targetDepartmentId')?.errors?.['required']) {
                                <p class="field-error">Le département cible est obligatoire.</p>
                         }
@@ -95,13 +104,19 @@
                 @if (isManager) {
                     <div class="form-group">
                         <label>Département cible</label>
-                        <input type="text" [value]="currentDepartmentName" disabled />
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            <input type="text" [value]="currentDepartmentName" disabled />
+                        </div>
                     </div>
                 }
 
                 <div class="form-group full-width">
                     <label for="description">Description (optionnelle)</label>
-                    <textarea id="description" rows="5" formControlName="description" placeholder="Décrivez l'événement..."></textarea>
+                    <div class="input-wrapper text-area-wrapper">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>
+                        <textarea id="description" rows="4" formControlName="description" placeholder="Décrivez l'événement..."></textarea>
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,7 +127,10 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label for="startAt">Date de début</label>
-                    <input id="startAt" type="datetime-local" formControlName="startAt" />
+                    <div class="input-wrapper">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <input id="startAt" type="datetime-local" formControlName="startAt" />
+                    </div>
                     @if (form.get('startAt')?.touched && form.get('startAt')?.errors?.['required']) {
                         <p class="field-error">La date de début est obligatoire.</p>
                     }
@@ -120,7 +138,10 @@
 
                 <div class="form-group">
                     <label for="registrationDeadline">Date limite d'inscription</label>
-                    <input id="registrationDeadline" type="datetime-local" formControlName="registrationDeadline" />
+                    <div class="input-wrapper">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <input id="registrationDeadline" type="datetime-local" formControlName="registrationDeadline" />
+                    </div>
                     @if (form.get('registrationDeadline')?.touched && form.get('registrationDeadline')?.errors?.['required']) {
                         <p class="field-error">La date limite d’inscription est obligatoire.</p>
                     }
@@ -128,7 +149,10 @@
 
                 <div class="form-group">
                         <label for="durationMinutes">Durée (minutes)</label>
-                        <input id="durationMinutes" type="number" min="30" step="1" formControlName="durationMinutes" placeholder="60" />
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <input id="durationMinutes" type="number" min="30" step="1" formControlName="durationMinutes" placeholder="60" />
+                        </div>
                         @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['required']) {
                             <p class="field-error">La durée est obligatoire.</p>
                         }
@@ -139,7 +163,10 @@
 
                 <div class="form-group">
                         <label for="capacity">Capacité</label>
-                        <input id="capacity" type="number" min="2" step="1" formControlName="capacity" placeholder="30" />
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            <input id="capacity" type="number" min="2" step="1" formControlName="capacity" placeholder="30" />
+                        </div>
                         @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['required']) {
                             <p class="field-error">La capacité est obligatoire.</p>
                         }
@@ -156,17 +183,23 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label for="locationType">Type de lieu</label>
-                    <select id="locationType" formControlName="locationType" (change)="onLocationTypeChange()">
-                        <option value="ONSITE">SUR SITE</option>
-                        <option value="ONLINE">EN LIGNE</option>
-                        <option value="EXTERNAL">EXTERNE</option>
-                    </select>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
+                        <select id="locationType" formControlName="locationType" (change)="onLocationTypeChange()">
+                            <option value="ONSITE">Sur Site</option> <!-- Better capitalising -->
+                            <option value="ONLINE">En Ligne</option>
+                            <option value="EXTERNAL">Externe</option>
+                        </select>
+                    </div>
                 </div>
 
                 @if (form.getRawValue().locationType === 'ONSITE') {
                     <div class="form-group">
                         <label for="locationName">Lieu</label>
-                        <input id="locationName" type="text" formControlName="locationName" placeholder="Salle, bâtiment..." />
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            <input id="locationName" type="text" formControlName="locationName" placeholder="Salle, bâtiment..." />
+                        </div>
                         @if (form.get('locationName')?.touched && form.get('locationName')?.errors?.['required']) {
                             <p class="field-error">Le lieu est obligatoire pour un événement sur site.</p>
                         }
@@ -176,7 +209,10 @@
                 @if (form.getRawValue().locationType === 'ONLINE') {
                     <div class="form-group">
                         <label for="meetingUrl">Meeting URL</label>
-                        <input id="meetingUrl" type="text" formControlName="meetingUrl" placeholder="https://..." />
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            <input id="meetingUrl" type="text" formControlName="meetingUrl" placeholder="https://..." />
+                        </div>
                         @if (form.get('meetingUrl')?.touched && form.get('meetingUrl')?.errors?.['required']) {
                             <p class="field-error">Le lien de réunion est obligatoire pour un événement en ligne.</p>
                         }
@@ -186,7 +222,10 @@
                 @if (form.getRawValue().locationType === 'EXTERNAL') {
                     <div class="form-group">
                         <label for="address">Adresse</label>
-                        <input id="address" type="text" formControlName="address" placeholder="Adresse complète..." />
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            <input id="address" type="text" formControlName="address" placeholder="Adresse complète..." />
+                        </div>
                         @if (form.get('address')?.touched && form.get('address')?.errors?.['required']) {
                             <p class="field-error">L’adresse est obligatoire pour un événement externe.</p>
                         }
@@ -196,7 +235,6 @@
         </div>
 
 
-        
         <div class="form-section">
             <h2 class="section-title">Image de l’événement</h2>
 
@@ -208,7 +246,7 @@
                         Automatique selon la catégorie
                     </button>
                     <button type="button" [class.active]="imageMode === 'PRESET'" (click)="onImageModeChange('PRESET')">
-                            Choisir une image preset
+                        Choisir une image preset
                     </button>
                     <button type="button" [class.active]="imageMode === 'CUSTOM_URL'" (click)="onImageModeChange('CUSTOM_URL')">
                         URL personnalisée
@@ -231,7 +269,10 @@
                 }
 
                 @if (imageMode === 'CUSTOM_URL') {
-                    <input type="text" formControlName="imageUrl" placeholder="https://..." />
+                    <div class="input-wrapper">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                        <input type="text" formControlName="imageUrl" placeholder="https://..." />
+                    </div>
                 }
 
                 <div class="image-preview-box">
@@ -248,7 +289,6 @@
                 (click)="saveAsDraft()"
                 [disabled]="savingDraft || publishing"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                 @if (savingDraft) {
                     Enregistrement...
                 } @else {
@@ -262,13 +302,12 @@
                 (click)="createAndPublish()"
                 [disabled]="savingDraft || publishing"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 @if (publishing) {
                     Création...
                 } @else {
                     Créer et publier
                 }
             </button>
-            </div>
+        </div>
     </form>
 </div>
