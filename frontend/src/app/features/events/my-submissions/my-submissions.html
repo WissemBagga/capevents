@@ -50,7 +50,7 @@
               <span class="label">Catégorie:</span>
               <span class="value">{{ event.category || 'Non spécifiée' }}</span>
             </div>
-
+            
             @if (canOpenEvent(event.status)) {
               <a [routerLink]="['/events', event.id]" class="btn-view">
                 Voir l’événement
