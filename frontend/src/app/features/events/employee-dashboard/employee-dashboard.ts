@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -18,7 +18,7 @@ import { getDefaultEventImage } from '../../../core/constants/event-image-preset
   templateUrl: './employee-dashboard.html',
   styleUrl: './employee-dashboard.css'
 })
-export class EmployeeDashboard implements OnInit {
+export class EmployeeDashboard implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
@@ -30,6 +30,9 @@ export class EmployeeDashboard implements OnInit {
   events: EventResponse[] = [];
   totalItems = 0;
   registeredEventIds = new Set<string>();
+
+  currentDateTime = new Date();
+  private clockInterval: ReturnType<typeof setInterval> | null = null;
 
   get firstName(): string {
     return this.currentUser?.firstName || 'Utilisateur';
@@ -44,6 +47,15 @@ export class EmployeeDashboard implements OnInit {
     if (this.authService.hasEmployeeRole()) {
       this.loadRegisteredEvents();
     }
+    // Update clock every minute
+    this.clockInterval = setInterval(() => {
+      this.currentDateTime = new Date();
+      this.cdr.markForCheck();
+    }, 60000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.clockInterval) clearInterval(this.clockInterval);
   }
 
   isFull(event: EventResponse): boolean {
