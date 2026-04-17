@@ -1,88 +1,65 @@
 <div class="my-submissions-page">
-  <div class="page-header">
-    <h1>Mes demandes</h1>
-    <p>Suivez les événements que vous avez partagés ou proposés.</p>
-  </div>
+  <header class="page-header">
+    <div class="header-content">
+      <h1>Mes soumissions</h1>
+      <p>Suivez l'état de vos propositions et demandes d'événements.</p>
+    </div>
+  </header>
 
   @if (loading) {
-    <div class="state-msg loading-msg">
-      <span>Chargement de vos demandes...</span>
+    <div class="loader-container">
+      <div class="spinner"></div>
+      <p>Chargement de vos soumissions...</p>
     </div>
-  }
-
-  @if (errorMessage) {
+  } @else if (errorMessage) {
     <div class="state-msg error-msg">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span>{{ errorMessage }}</span>
     </div>
-  }
+  } @else if (submissions.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+      </div>
+      <h3>Aucune soumission</h3>
+      <p>Vous n'avez pas encore proposé d'événement pour le moment.</p>
+    </div>
+  } @else {
+    <div class="submissions-list">
+      @for (event of submissions; track trackByEventId($index, event)) {
+        <article class="submission-card">
+          <div class="card-header">
+            <span class="status-badge" [class]="'status-' + event.status.toLowerCase()">
+              {{ statusLabel(event.status) }}
+            </span>
+            <time class="event-date">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              {{ event.startAt | date:'dd MMMM yyyy HH:mm' }}
+            </time>
+          </div>
 
-  @if (!loading && submissions.length === 0) {
-    <div class="state-msg info-msg">
-      <span>Aucune demande à afficher.</span>
+          <div class="card-body">
+            <h2 class="event-title">{{ event.title }}</h2>
+            @if (event.description) {
+              <p class="event-description">{{ event.description }}</p>
+            }
+          </div>
+
+          <div class="card-footer">
+            <div class="category-info">
+              <span class="label">Catégorie:</span>
+              <span class="value">{{ event.category || 'Non spécifiée' }}</span>
+            </div>
+
+            @if (canOpenEvent(event.status)) {
+              <a [routerLink]="['/events', event.id]" class="btn-view">
+                Voir l’événement
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            }
+          </div>
+        </article>
+      }
     </div>
   }
-
-  <div class="submissions-grid">
-    @for (event of submissions; track trackByEventId($index, event)) {
-      <article class="submission-card">
-        <div class="card-top">
-          <span class="status-badge" [class.pending]="event.status === 'PENDING'"
-                                     [class.published]="event.status === 'PUBLISHED'"
-                                     [class.draft]="event.status === 'DRAFT'"
-                                     [class.cancelled]="event.status === 'CANCELLED'"
-                                     [class.archived]="event.status === 'ARCHIVED'">
-            {{ statusLabel(event.status) }}
-          </span>
-        </div>
-
-        <h3 class="event-title">{{ event.title }}</h3>
-
-        <div class="meta-list">
-          <div class="meta-row">
-            <span class="meta-label">Catégorie</span>
-            <span>{{ event.category || '—' }}</span>
-          </div>
-
-          <div class="meta-row">
-            <span class="meta-label">Date</span>
-            <span>{{ event.startAt | date:'dd/MM/yyyy HH:mm' }}</span>
-          </div>
-
-          <div class="meta-row">
-            <span class="meta-label">Audience</span>
-            <span>{{ event.audience }}</span>
-          </div>
-
-          <div class="meta-row">
-            <span class="meta-label">Capacité</span>
-            <span>{{ event.capacity }}</span>
-          </div>
-
-          <div class="meta-row">
-            <span class="meta-label">Durée</span>
-            <span>{{ event.durationMinutes }} min</span>
-          </div>
-
-          @if (event.targetDepartmentName) {
-            <div class="meta-row">
-              <span class="meta-label">Département</span>
-              <span>{{ event.targetDepartmentName }}</span>
-            </div>
-          }
-        </div>
-
-        @if (event.description) {
-          <p class="description">{{ event.description }}</p>
-        }
-
-        <div class="card-footer">
-          @if (canOpenEvent(event.status)) {
-            <a [routerLink]="['/events', event.id]" class="details-link">
-              Voir l’événement
-            </a>
-          }
-        </div>
-      </article>
-    }
-  </div>
 </div>
