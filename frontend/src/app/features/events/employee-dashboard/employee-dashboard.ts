@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -7,6 +7,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
 import { PageResponse } from '../../../core/models/page-response.model';
+import { RegistrationResponse } from '../../../core/models/registration.model';
 
 import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
 
@@ -17,7 +18,7 @@ import { getDefaultEventImage } from '../../../core/constants/event-image-preset
   templateUrl: './employee-dashboard.html',
   styleUrl: './employee-dashboard.css'
 })
-export class EmployeeDashboard {
+export class EmployeeDashboard implements OnInit {
   private authService = inject(AuthService);
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
@@ -28,6 +29,7 @@ export class EmployeeDashboard {
   errorMessage = '';
   events: EventResponse[] = [];
   totalItems = 0;
+  registeredEventIds = new Set<string>();
 
   get firstName(): string {
     return this.currentUser?.firstName || 'Utilisateur';
@@ -39,10 +41,28 @@ export class EmployeeDashboard {
 
   ngOnInit(): void {
     this.loadUpcomingEvents();
+    if (this.authService.hasEmployeeRole()) {
+      this.loadRegisteredEvents();
+    }
   }
 
   isFull(event: EventResponse): boolean {
     return event.remainingCapacity === 0;
+  }
+
+  isRegistered(event: EventResponse): boolean {
+    return this.registeredEventIds.has(event.id);
+  }
+
+  statusLabel(status: string): string {
+    switch (status) {
+      case 'DRAFT': return 'Brouillon';
+      case 'PUBLISHED': return 'Publié';
+      case 'CANCELLED': return 'Annulé';
+      case 'ARCHIVED': return 'Archivé';
+      case 'PENDING': return 'En attente';
+      default: return status;
+    }
   }
 
   loadUpcomingEvents(): void {
@@ -70,6 +90,20 @@ export class EmployeeDashboard {
         }
       });
   }
+
+  private loadRegisteredEvents(): void {
+    this.eventService.getMyRegistrations().subscribe({
+      next: (items: RegistrationResponse[]) => {
+        this.registeredEventIds = new Set(items.map(item => item.eventId));
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.registeredEventIds = new Set();
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
   isDeadlinePassed(event: EventResponse): boolean {
     if (!event.registrationDeadline) return false;
     return new Date().getTime() > new Date(event.registrationDeadline).getTime();

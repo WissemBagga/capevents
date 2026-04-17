@@ -505,6 +505,8 @@
 .card-actions {
   margin-top: auto;
   padding-top: 12px;
+  display: flex;
+  justify-content: center;
 }
 
 .details-btn {
@@ -512,7 +514,7 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 9px 20px;
+  padding: 9px 90px;
   border-radius: 10px;
   border: 1.5px solid #dce3ed;
   background: #ffffff;
