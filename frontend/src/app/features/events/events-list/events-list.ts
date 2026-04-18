@@ -177,6 +177,20 @@ export class EventsList {
       });
   }
 
+  getParticipantAvatars(event: EventResponse): string[] {
+    return (event.participantAvatarUrls ?? []).filter(Boolean).slice(0, 3);
+  }
+
+  getRemainingParticipantCount(event: EventResponse): number {
+    const total = event.registeredCount ?? 0;
+    const shown = this.getParticipantAvatars(event).length;
+    return Math.max(total - shown, 0);
+  }
+
+  hasParticipants(event: EventResponse): boolean {
+    return (event.registeredCount ?? 0) > 0;
+  }
+
   getEventImageUrl(event: EventResponse): string {
     return event.imageUrl || getDefaultEventImage(event.category);
   }

@@ -1038,6 +1038,14 @@ public class EventService {
             remainingCapacity = Math.max(0, e.getCapacity().longValue() - registeredCount);
         }
 
+        List<String> participantAvatarUrls = registrationRepository
+                .findByEventAndStatusOrderByRegisteredAtAsc(e, RegistrationStatus.REGISTERED)
+                .stream()
+                .map(reg -> reg.getUser().getAvatarUrl())
+                .filter(url -> url != null && !url.isBlank())
+                .limit(3)
+                .toList();
+
         return new EventResponse(
                 e.getId(),
                 e.getTitle(),
@@ -1066,7 +1074,8 @@ public class EventService {
                 e.getImageUrl(),
 
                 registeredCount,
-                remainingCapacity
+                remainingCapacity,
+                participantAvatarUrls
         );
     }
 

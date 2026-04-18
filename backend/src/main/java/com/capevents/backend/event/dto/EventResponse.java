@@ -5,6 +5,7 @@ import com.capevents.backend.event.EventLocationType;
 import com.capevents.backend.event.EventStatus;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public record EventResponse (
@@ -36,6 +37,8 @@ public record EventResponse (
         String imageUrl,
 
         Long registeredCount,
-        Long remainingCapacity
+        Long remainingCapacity,
+
+        List<String> participantAvatarUrls
 ) {}
 

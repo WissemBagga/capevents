@@ -31,5 +31,6 @@ export interface EventResponse {
   registeredCount?: number;
   remainingCapacity?: number;
 
+  participantAvatarUrls?: string[];
 
 }

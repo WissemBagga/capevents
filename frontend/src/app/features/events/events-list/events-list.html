@@ -171,10 +171,21 @@
 
                     <div class="card-footer-actions">
                         <div class="avatars-placeholder">
-                            <!-- Avatars placeholder matching design -->
-                            <div class="avatar"><img src="/images/avatars/user-1.jpg" alt="" onerror="this.style.display='none'"></div>
-                            <div class="avatar"><img src="/images/avatars/user-2.jpg" alt="" onerror="this.style.display='none'"></div>
-                            <span class="avatar-count">+{{ (event.registeredCount || 0) > 2 ? (event.registeredCount || 0) - 2 : (event.registeredCount || 0) }}</span>
+                            @if (hasParticipants(event)) {
+                                @for (avatarUrl of getParticipantAvatars(event); track avatarUrl) {
+                                    <div class="avatar">
+                                        <img [src]="avatarUrl" alt="Participant"/>
+                                    </div>
+                                }
+                                @if (getRemainingParticipantCount(event)) {
+                                          <span class="avatar-count">+{{ getRemainingParticipantCount(event) }}</span>
+                                }
+                            } @else {
+                                <div class="avatar-empty-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                                </div>
+                                <span class="avatar-count zero">0</span>
+                            }
                         </div>
                         <a [routerLink]="['/events', event.id]" class="details-btn">Voir les détails</a>
                     </div>
