@@ -1,184 +1,216 @@
-<div class="admin-page">
+<div class="admin-stats-page">
+  <div class="page-container">
 
-  <!-- Header -->
-  <div class="page-header">
-    <div class="header-text">
-      <p class="breadcrumb">ACCUEIL › STATISTIQUES</p>
-      <h1>{{ dashboardTitle }}</h1>
-      <p class="header-sub">{{ dashboardSubtitle }}</p>
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-text">
+        <p class="breadcrumb">
+          ACCUEIL
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          STATISTIQUES
+        </p>
+        <h1>{{ dashboardTitle }}</h1>
+        <p class="header-sub">{{ dashboardSubtitle }}</p>
+      </div>
+
+      <div class="header-actions">
+        <a [routerLink]="managementRoute" class="btn-secondary">
+          Gestion des événements
+        </a>
+      </div>
     </div>
 
-    <a [routerLink]="managementRoute" class="secondary-btn">
-      Gestion des événements
-    </a>
+    <!-- Loading & Error -->
+    @if (loading && !analytics) {
+      <div class="state-message loading-msg">
+        <div class="spinner"></div>
+        <p>Chargement des statistiques...</p>
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="state-message error-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>{{ errorMessage }}</p>
+      </div>
+    }
+
+    <!-- Analytics -->
+    @if (!loading && analytics) {
+      <div class="analytics-layout">
+
+        <div class="section-header">
+          <h2>Indicateurs clés</h2>
+          <p>Vue d'ensemble des performances de tous vos événements.</p>
+        </div>
+
+        <div class="kpi-grid">
+          <article class="kpi-card">
+            <span class="kpi-label">Événements</span>
+            <strong class="kpi-value">{{ analytics.totalEvents }}</strong>
+            <span class="kpi-sub">Tous statuts confondus</span>
+          </article>
+
+          <article class="kpi-card">
+            <span class="kpi-label">Publiés</span>
+            <strong class="kpi-value">{{ analytics.publishedEvents }}</strong>
+            <span class="kpi-sub">Événements actifs</span>
+          </article>
+
+          <article class="kpi-card highlight-kpi">
+            <div class="kpi-icon-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5.5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-label">Taux d'inscription</span>
+              <strong class="kpi-value">{{ analytics.registrationRate | number:'1.0-2' }}%</strong>
+              <span class="kpi-sub">{{ analytics.totalRegistrations }} / {{ analytics.totalCapacity }} places</span>
+            </div>
+          </article>
+
+          <article class="kpi-card highlight-kpi">
+            <div class="kpi-icon-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-label">Taux de présence</span>
+              <strong class="kpi-value">{{ analytics.attendanceRate | number:'1.0-2' }}%</strong>
+              <span class="kpi-sub">{{ analytics.totalPresent }} présents</span>
+            </div>
+          </article>
+
+          <article class="kpi-card">
+            <span class="kpi-label">Total participants</span>
+            <strong class="kpi-value">{{ analytics.totalRegistrations }}</strong>
+            <span class="kpi-sub">Inscrits globalement</span>
+          </article>
+
+          <article class="kpi-card highlight-kpi">
+            <div class="kpi-icon-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-label">Note moyenne</span>
+              <strong class="kpi-value">
+                {{ analytics.averageRating | number:'1.1-2' }}
+                <span class="value-muted">/ 5</span>
+              </strong>
+              <span class="kpi-sub">Satisfaction globale</span>
+            </div>
+          </article>
+        </div>
+
+        <section class="admin-card stats-section">
+          <div class="card-header">
+            <div class="header-text-group">
+              <h2 class="card-title">Événements les mieux notés</h2>
+              <p class="card-subtitle">Top 5 des événements selon la note moyenne des feedbacks.</p>
+            </div>
+          </div>
+
+          @if (analytics.topRatedEvents.length === 0) {
+            <div class="state-message info-msg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+              <p>Aucune donnée de feedback disponible pour le moment.</p>
+            </div>
+          }
+
+          @if (analytics.topRatedEvents.length > 0) {
+            <div class="stats-list">
+              @for (item of analytics.topRatedEvents; track trackByRatedEventId($index, item)) {
+                <article class="stat-list-item">
+                  <div class="item-main">
+                    <h3 class="event-title">{{ item.title }}</h3>
+                    <span class="status-badge" [class]="'status-' + item.status.toLowerCase()">{{ statusLabel(item.status) }}</span>
+                  </div>
+
+                  <div class="item-metrics">
+                    <div class="metric-cell highlight">
+                      <span class="metric-label">Note moyenne</span>
+                      <strong class="metric-value">{{ item.averageRating | number:'1.1-2' }}<small>/5</small></strong>
+                    </div>
+
+                    <div class="metric-cell">
+                      <span class="metric-label">Feedbacks</span>
+                      <strong class="metric-value">{{ item.feedbackCount }}</strong>
+                    </div>
+                  </div>
+
+                  <div class="item-actions">
+                    <a [routerLink]="['/admin/events', item.eventId]" class="btn-view">
+                      Détails
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </a>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </section>
+
+        <section class="admin-card stats-section">
+          <div class="card-header">
+            <div class="header-text-group">
+              <h2 class="card-title">Événements les plus engageants</h2>
+              <p class="card-subtitle">Le top 5 par taux d'inscription et présence globale.</p>
+            </div>
+          </div>
+
+          @if (analytics.topEngagingEvents.length === 0) {
+            <div class="state-message info-msg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+              <p>Aucune donnée d’engagement disponible pour le moment.</p>
+            </div>
+          }
+
+          @if (analytics.topEngagingEvents.length > 0) {
+            <div class="stats-list">
+              @for (item of analytics.topEngagingEvents; track trackByEventId($index, item)) {
+                <article class="stat-list-item">
+                  <div class="item-main">
+                    <h3 class="event-title">{{ item.title }}</h3>
+                    <span class="status-badge" [class]="'status-' + item.status.toLowerCase()">{{ statusLabel(item.status) }}</span>
+                  </div>
+
+                  <div class="item-metrics five-cols">
+                    <div class="metric-cell">
+                      <span class="metric-label">Inscrits</span>
+                      <strong class="metric-value">{{ item.registeredCount }}</strong>
+                    </div>
+
+                    <div class="metric-cell">
+                      <span class="metric-label">Capacité</span>
+                      <strong class="metric-value">{{ item.capacity }}</strong>
+                    </div>
+
+                    <div class="metric-cell">
+                      <span class="metric-label">Présents</span>
+                      <strong class="metric-value">{{ item.presentCount }}</strong>
+                    </div>
+
+                    <div class="metric-cell">
+                      <span class="metric-label">Absents</span>
+                      <strong class="metric-value">{{ item.absentCount }}</strong>
+                    </div>
+
+                    <div class="metric-cell highlight">
+                      <span class="metric-label">Taux présence</span>
+                      <strong class="metric-value">{{ item.attendanceRate | number:'1.0-2' }}%</strong>
+                    </div>
+                  </div>
+
+                  <div class="item-actions">
+                    <a [routerLink]="['/admin/events', item.eventId]" class="btn-view">
+                      Détails
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </a>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </section>
+      </div>
+    }
   </div>
-
-  <!-- Loading & Error -->
-  @if (loading && !analytics) {
-    <div class="state-message loading-msg">
-      <div class="spinner"></div>
-      <p>Chargement des statistiques...</p>
-    </div>
-  }
-
-  @if (errorMessage) {
-    <div class="state-message error-msg">
-      <p>{{ errorMessage }}</p>
-    </div>
-  }
-
-  <!-- Analytics -->
-  @if (!loading && analytics) {
-    <div class="analytics-section">
-
-      <div class="section-header">
-        <h2>Indicateurs clés</h2>
-        <p>Vue d'ensemble des performances de tous vos événements.</p>
-      </div>
-
-      <div class="kpi-grid">
-        <article class="kpi-card">
-          <span class="kpi-label">Événements</span>
-          <strong class="kpi-value">{{ analytics.totalEvents }}</strong>
-          <span class="kpi-sub">Tous statuts confondus</span>
-        </article>
-
-        <article class="kpi-card">
-          <span class="kpi-label">Publiés</span>
-          <strong class="kpi-value">{{ analytics.publishedEvents }}</strong>
-          <span class="kpi-sub">Événements actifs</span>
-        </article>
-
-        <article class="kpi-card highlight-kpi">
-          <span class="kpi-label">Taux d'inscription</span>
-          <strong class="kpi-value">{{ analytics.registrationRate | number:'1.0-2' }}%</strong>
-          <span class="kpi-sub">{{ analytics.totalRegistrations }} / {{ analytics.totalCapacity }} places</span>
-        </article>
-
-        <article class="kpi-card highlight-kpi">
-          <span class="kpi-label">Taux de présence</span>
-          <strong class="kpi-value">{{ analytics.attendanceRate | number:'1.0-2' }}%</strong>
-          <span class="kpi-sub">{{ analytics.totalPresent }} présents</span>
-        </article>
-
-        <article class="kpi-card secondary-card">
-          <span class="kpi-label">Total participants</span>
-          <strong class="kpi-value">{{ analytics.totalRegistrations }}</strong>
-          <span class="kpi-sub">Inscrits globalement</span>
-        </article>
-
-        <article class="kpi-card highlight-kpi">
-          <span class="kpi-label">Note moyenne</span>
-          <strong class="kpi-value">
-            {{ analytics.averageRating | number:'1.1-2' }}
-            <span class="value-muted">/5</span>
-          </strong>
-          <span class="kpi-sub">Satisfaction globale</span>
-        </article>
-      </div>
-
-      <section class="top-events-section">
-        <div class="section-header">
-          <h2>Événements les mieux notés</h2>
-          <p>Top 5 des événements selon la note moyenne des feedbacks.</p>
-        </div>
-
-        @if (analytics.topRatedEvents.length === 0) {
-          <div class="state-message info-msg">
-            <p>Aucune donnée de feedback disponible pour le moment.</p>
-          </div>
-        }
-
-        @if (analytics.topRatedEvents.length > 0) {
-          <div class="top-events-list">
-            @for (item of analytics.topRatedEvents; track trackByRatedEventId($index, item)) {
-              <article class="top-event-card">
-                <div class="top-event-main">
-                  <h3>{{ item.title }}</h3>
-                  <span class="top-event-status">{{ statusLabel(item.status) }}</span>
-                </div>
-
-                <div class="top-event-metrics two-cols">
-                  <div class="metric-box highlight-box">
-                    <span>Note moyenne</span>
-                    <strong>{{ item.averageRating | number:'1.1-2' }}/5</strong>
-                  </div>
-
-                  <div class="metric-box">
-                    <span>Feedbacks</span>
-                    <strong>{{ item.feedbackCount }}</strong>
-                  </div>
-                </div>
-
-                <div class="top-event-actions">
-                  <a [routerLink]="['/admin/events', item.eventId]" class="details-link">
-                    Voir les détails de l'événement
-                  </a>
-                </div>
-              </article>
-            }
-          </div>
-        }
-      </section>
-
-      <section class="top-events-section">
-        <div class="section-header">
-          <h2>Événements les plus engageants</h2>
-          <p>Le top 5 par taux d'inscription et présence globale.</p>
-        </div>
-
-        @if (analytics.topEngagingEvents.length === 0) {
-          <div class="state-message info-msg">
-            <p>Aucune donnée d’engagement disponible pour le moment.</p>
-          </div>
-        }
-
-        @if (analytics.topEngagingEvents.length > 0) {
-          <div class="top-events-list">
-            @for (item of analytics.topEngagingEvents; track trackByEventId($index, item)) {
-              <article class="top-event-card">
-                <div class="top-event-main">
-                  <h3>{{ item.title }}</h3>
-                  <span class="top-event-status">{{ statusLabel(item.status) }}</span>
-                </div>
-
-                <div class="top-event-metrics">
-                  <div class="metric-box">
-                    <span>Inscrits</span>
-                    <strong>{{ item.registeredCount }}</strong>
-                  </div>
-
-                  <div class="metric-box">
-                    <span>Capacité</span>
-                    <strong>{{ item.capacity }}</strong>
-                  </div>
-
-                  <div class="metric-box">
-                    <span>Présents</span>
-                    <strong>{{ item.presentCount }}</strong>
-                  </div>
-
-                  <div class="metric-box">
-                    <span>Absents</span>
-                    <strong>{{ item.absentCount }}</strong>
-                  </div>
-
-                  <div class="metric-box highlight-box">
-                    <span>Présence</span>
-                    <strong>{{ item.attendanceRate | number:'1.0-2' }}%</strong>
-                  </div>
-                </div>
-
-                <div class="top-event-actions">
-                  <a [routerLink]="['/admin/events', item.eventId]" class="details-link">
-                    Voir les détails de l'événement
-                  </a>
-                </div>
-              </article>
-            }
-          </div>
-        }
-      </section>
-    </div>
-  }
 </div>
