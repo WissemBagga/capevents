@@ -1,55 +1,90 @@
-<div class="admin-page">
-  <div class="page-header">
-    <h1>Utilisateurs & rôles</h1>
-    <p>Gérez les rôles métier des utilisateurs.</p>
-  </div>
+<div class="admin-users-page">
+  <div class="page-container">
+    <div class="page-header">
+      <div class="header-text">
+        <h1>Utilisateurs & rôles</h1>
+        <p class="header-sub">Gérez les rôles métier des utilisateurs.</p>
+      </div>
+    </div>
 
-  @if (errorMessage) {
-    <div class="state-message error-msg"><p>{{ errorMessage }}</p></div>
-  }
-
-  @if (successMessage) {
-    <div class="state-message success-msg"><p>{{ successMessage }}</p></div>
-  }
-
-  <section class="card">
-    <h2>Liste des utilisateurs</h2>
-
-    @if (loading) {
-      <p>Chargement...</p>
-    }
-
-    @if (!loading && users.length === 0) {
-      <p>Aucun utilisateur trouvé.</p>
-    }
-
-    @if (!loading && users.length > 0) {
-      <div class="users-table">
-        @for (user of users; track user.id) {
-          <div class="user-row">
-            <div class="user-col main">
-              <strong>{{ user.firstName }} {{ user.lastName }}</strong>
-              <span>{{ user.email }}</span>
-            </div>
-
-            <div class="user-col">
-              <span>{{ user.departmentName || '—' }}</span>
-            </div>
-
-            <div class="user-col">
-              <select
-                [ngModel]="getPrimaryRole(user)"
-                (ngModelChange)="changeRole(user, $event)"
-                [disabled]="savingRoleByUserId[user.id]"
-              >
-                @for (role of roleOptions; track role.value) {
-                  <option [value]="role.value">{{ role.label }}</option>
-                }
-              </select>
-            </div>
-          </div>
-        }
+    <!-- State Messages -->
+    @if (errorMessage) {
+      <div class="state-message error-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>{{ errorMessage }}</p>
       </div>
     }
-  </section>
+
+    @if (successMessage) {
+      <div class="state-message success-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <p>{{ successMessage }}</p>
+      </div>
+    }
+
+    <section class="admin-card">
+      <div class="card-header">
+        <h2 class="card-title">Liste des utilisateurs</h2>
+      </div>
+
+      @if (loading) {
+        <div class="state-message loading-msg">
+          <div class="spinner"></div>
+          <p>Chargement des utilisateurs...</p>
+        </div>
+      }
+
+      @if (!loading && users.length === 0) {
+        <div class="state-message info-msg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+          <p>Aucun utilisateur trouvé.</p>
+        </div>
+      }
+
+      @if (!loading && users.length > 0) {
+        <div class="users-list">
+          @for (user of users; track user.id) {
+            <article class="user-card">
+              
+              <div class="user-avatar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+
+              <div class="user-info">
+                <h3>{{ user.firstName }} {{ user.lastName }}</h3>
+                <span class="user-email">{{ user.email }}</span>
+              </div>
+
+              <div class="user-dept">
+                <span class="dept-label">Département</span>
+                <span class="dept-value">{{ user.departmentName || 'Non défini' }}</span>
+              </div>
+
+              <div class="user-actions">
+                <label [for]="'role-' + user.id" class="sr-only">Rôle</label>
+                <div class="select-wrapper">
+                  <select
+                    [id]="'role-' + user.id"
+                    class="role-select"
+                    [ngModel]="getPrimaryRole(user)"
+                    (ngModelChange)="changeRole(user, $event)"
+                    [disabled]="savingRoleByUserId[user.id]"
+                  >
+                    @for (role of roleOptions; track role.value) {
+                      <option [value]="role.value">{{ role.label }}</option>
+                    }
+                  </select>
+                </div>
+                
+                @if (savingRoleByUserId[user.id]) {
+                  <div class="spinner mini-spinner"></div>
+                }
+              </div>
+
+            </article>
+          }
+        </div>
+      }
+    </section>
+  </div>
 </div>
