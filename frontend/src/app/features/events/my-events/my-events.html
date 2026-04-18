@@ -1,121 +1,137 @@
 <div class="my-events-page">
+  <div class="page-container">
 
-  <!-- Page Header -->
-  <div class="page-header">
-    <h1>Mes événements</h1>
-    <p>Consultez les événements auxquels vous êtes actuellement inscrit.</p>
-  </div>
-
-  <!-- Filter Bar -->
-  <div class="filter-bar">
-    <button
-      class="filter-btn"
-      [class.active]="selectedFilter === 'ALL'"
-      (click)="selectedFilter = 'ALL'; onFilterChange()">
-      Tous
-    </button>
-    <button
-      class="filter-btn"
-      [class.active]="selectedFilter === 'UPCOMING'"
-      (click)="selectedFilter = 'UPCOMING'; onFilterChange()">
-      À venir
-    </button>
-    <button
-      class="filter-btn"
-      [class.active]="selectedFilter === 'PAST'"
-      (click)="selectedFilter = 'PAST'; onFilterChange()">
-      Passés
-    </button>
-  </div>
-
-  <!-- State Messages -->
-  @if (loading) {
-    <div class="state-msg loading-msg">
-      <div class="spinner"></div>
-      <span>Chargement de vos inscriptions...</span>
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-text">
+        <h1>Mes événements</h1>
+        <p class="header-sub">Consultez les événements auxquels vous êtes actuellement inscrit.</p>
+      </div>
     </div>
-  }
 
-  @if (errorMessage) {
-    <div class="state-msg error-msg">
-      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span>{{ errorMessage }}</span>
+    <!-- Filter Bar -->
+    <div class="filter-section">
+      <div class="segmented-control">
+        <button
+          type="button"
+          class="segment-btn"
+          [class.active]="selectedFilter === 'ALL'"
+          (click)="selectedFilter = 'ALL'; onFilterChange()">
+          Tous
+        </button>
+        <button
+          type="button"
+          class="segment-btn"
+          [class.active]="selectedFilter === 'UPCOMING'"
+          (click)="selectedFilter = 'UPCOMING'; onFilterChange()">
+          À venir
+        </button>
+        <button
+          type="button"
+          class="segment-btn"
+          [class.active]="selectedFilter === 'PAST'"
+          (click)="selectedFilter = 'PAST'; onFilterChange()">
+          Passés
+        </button>
+      </div>
     </div>
-  }
 
-  @if (!loading && filteredRegistrations.length === 0) {
-    <div class="state-msg info-msg">
-      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
-      <span>Aucun événement à afficher pour ce filtre.</span>
-    </div>
-  }
+    <!-- State Messages -->
+    @if (loading) {
+      <div class="state-message loading-msg">
+        <div class="spinner"></div>
+        <span>Chargement de vos inscriptions...</span>
+      </div>
+    }
 
-  <!-- Events Grid -->
-  <div class="events-grid">
-    @for (registration of filteredRegistrations; track registration.eventId) {
-      <article class="event-card" [class.upcoming]="isUpcoming(registration)">
+    @if (errorMessage) {
+      <div class="state-message error-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>{{ errorMessage }}</p>
+      </div>
+    }
 
-        <div class="card-top">
-          <span class="status-badge"
-            [class.registered]="registration.status === 'REGISTERED' && !isEventCancelled(registration)"
-            [class.cancelled]="isEventCancelled(registration) || registration.status === 'CANCELLED'">
-            {{ eventStatusLabel(registration) }}
-          </span>
+    @if (!loading && filteredRegistrations.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </div>
+        <h3>Aucun événement</h3>
+        <p>Aucun événement ne correspond au filtre sélectionné.</p>
+      </div>
+    }
 
-        <div class="event-date-block">
-          <span class="meta-icon date-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </span>
-          <span class="event-date-value">{{ registration.eventStartAt | date:'EEEE d MMMM yyyy' : '' : 'fr' }}</span>
-          <span class="event-time-value">{{ registration.eventStartAt | date:'HH:mm' }}</span>
-        </div>
+    <!-- Events Grid -->
+    <div class="events-grid">
+      @for (registration of filteredRegistrations; track registration.eventId) {
+        <article class="event-card" [class.upcoming]="isUpcoming(registration)">
 
-        <h3 class="event-title">{{ registration.eventTitle }}</h3>
-
-        <div class="meta-list">
-          <div class="meta-row">
-            <span class="meta-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div class="card-top">
+            <span class="status-overlay"
+              [class.registered]="registration.status === 'REGISTERED' && !isEventCancelled(registration)"
+              [class.cancelled]="isEventCancelled(registration) || registration.status === 'CANCELLED'">
+              {{ eventStatusLabel(registration) }}
             </span>
-            <span class="meta-text">Inscrit le <strong>{{ registration.registeredAt | date:'mediumDate' }}</strong></span>
           </div>
 
-          @if (registration.status === 'CANCELLED' && registration.cancelledAt) {
-            <div class="meta-row cancelled-row">
-              <span class="meta-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-              </span>
-              <span class="meta-text">Annulé le <strong>{{ registration.cancelledAt | date:'mediumDate' }}</strong></span>
+          <div class="event-date-block">
+            <span class="meta-icon date-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </span>
+            <span class="event-date-value">{{ registration.eventStartAt | date:'EEEE d MMMM yyyy' : '' : 'fr' }}</span>
+            <span class="event-time-value">{{ registration.eventStartAt | date:'HH:mm' }}</span>
+          </div>
+
+          <div class="card-body">
+            <h3 class="event-title">{{ registration.eventTitle }}</h3>
+
+            <div class="meta-list">
+              <div class="meta-row">
+                <span class="meta-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </span>
+                <span class="meta-text">Inscrit le <strong>{{ registration.registeredAt | date:'mediumDate' }}</strong></span>
+              </div>
+
+              @if (registration.status === 'CANCELLED' && registration.cancelledAt) {
+                <div class="meta-row cancelled-row">
+                  <span class="meta-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                  </span>
+                  <span class="meta-text">Annulé le <strong>{{ registration.cancelledAt | date:'mediumDate' }}</strong></span>
+                </div>
+              }
             </div>
-          }
-          @if (canLeaveFeedback(registration)) {
-            <a class="btn-secondary" [routerLink]="['/events', registration.eventId, 'feedback']">
-              Laisser un feedback
-            </a>
-          }
-          @if (isEventCancelled(registration)) {
-            <div class="cancel-reason-box">
-              <strong>Raison de l’annulation :</strong>
-              <p>{{ registration.eventCancelReason || 'Aucune raison précisée.' }}</p>
+
+            @if (isEventCancelled(registration)) {
+              <div class="status-message cancelled-msg">
+                <strong>Raison de l’annulation :</strong> {{ registration.eventCancelReason || 'Aucune raison précisée.' }}
+              </div>
+            }
+          </div>
+
+          <div class="card-footer">
+            <div class="actions">
+              @if (canLeaveFeedback(registration)) {
+                <a class="btn-secondary" [routerLink]="['/events', registration.eventId, 'feedback']">
+                  Feedback
+                </a>
+              }
+              
+              @if (canOpenEventDetails(registration)) {
+                <a [routerLink]="['/events', registration.eventId]" class="btn-details">
+                  Voir les détails
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              } @else {
+                <span class="btn-details disabled">Événement annulé</span>
+              }
             </div>
-          }
-        </div>
+          </div>
 
-        <div class="card-footer">
-          @if (canOpenEventDetails(registration)) {
-            <a [routerLink]="['/events', registration.eventId]" class="btn-details">
-              Voir les détails
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </a>
-          } @else {
-            <span class="btn-details disabled-link">Événement annulé</span>
-          }
-        </div>
+        </article>
+      }
+    </div>
 
-
-      </article>
-    }
   </div>
-
 </div>
