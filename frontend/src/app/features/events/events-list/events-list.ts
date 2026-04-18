@@ -125,22 +125,8 @@ export class EventsList {
     return new Date().getTime() > new Date(event.registrationDeadline).getTime();
   }
 
-  matchesStatusFilter(event: EventResponse): boolean {
-    switch (this.statusFilter) {
-      case 'AVAILABLE':
-        return !this.isDeadlinePassed(event) && !this.isFull(event);
-      case 'FULL':
-        return !this.isDeadlinePassed(event) && this.isFull(event);
-      case 'DEADLINE_PASSED':
-        return this.isDeadlinePassed(event);
-      case 'ALL':
-      default:
-        return true;
-    }
-  }
-
   get displayedEvents(): EventResponse[] {
-    return this.events.filter(event => this.matchesStatusFilter(event));
+    return this.events;
   }
 
   private fetchEvents(page = 0): void {
@@ -150,7 +136,7 @@ export class EventsList {
 
     const { sortBy, sortDir } = this.mapSort();
 
-    const hasFilters = !!this.category || !!this.from || !!this.to || !!this.titleQuery?.trim();
+    const hasFilters = !!this.category || !!this.from || !!this.to || !!this.titleQuery?.trim() || this.statusFilter !== 'ALL';
 
     const request$ = hasFilters
       ? this.eventService.searchPublished(
@@ -158,6 +144,7 @@ export class EventsList {
         this.normalizeSearchText(this.titleQuery),
         this.toIsoInstant(this.from),
         this.toIsoInstant(this.to),
+        this.statusFilter,
         page,
         this.pageSize,
         sortBy,

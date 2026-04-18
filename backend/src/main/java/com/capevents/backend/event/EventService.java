@@ -517,6 +517,7 @@ public class EventService {
             String actorEmail,
             String category,
             String q,
+            String status,
             Instant from,
             Instant to,
             Pageable pageable
@@ -541,36 +542,37 @@ public class EventService {
             throw new BadRequestException("La date de début doit être antérieure ou égale à la date limite d’inscription.");
         }
 
-        Page<Event> page;
+        Pageable fullPageable = org.springframework.data.domain.PageRequest.of(
+                0,
+                10000,
+                pageable.getSort()
+        );
+
+        Page<Event> rawPage;
 
         if (isHr) {
-            page = searchPublishedForHr(normalizedCategory, normalizedQuery, effectiveFrom, effectiveTo, pageable);
+            rawPage = searchPublishedForHr(normalizedCategory, normalizedQuery, effectiveFrom, effectiveTo, fullPageable);
         } else {
             if (actor.getDepartment() == null) {
                 throw new BadRequestException("L’utilisateur n’a pas de département");
             }
 
-            page = searchPublishedForDept(
+            rawPage = searchPublishedForDept(
                     actor.getDepartment().getId(),
                     normalizedCategory,
                     normalizedQuery,
                     effectiveFrom,
                     effectiveTo,
-                    pageable
+                    fullPageable
             );
         }
 
-        Page<EventResponse> mapped = page.map(this::toResponse);
+        List<EventResponse> filtered = rawPage.getContent().stream()
+                .filter(event -> matchesStatusFilter(event, status))
+                .map(this::toResponse)
+                .toList();
 
-        return new PageResponse<>(
-                mapped.getContent(),
-                mapped.getNumber(),
-                mapped.getSize(),
-                mapped.getTotalPages(),
-                mapped.getTotalElements(),
-                mapped.hasNext(),
-                mapped.hasPrevious()
-        );
+        return toPageResponse(filtered, pageable);
     }
 
     private Page<Event> searchPublishedForHr(
@@ -963,6 +965,51 @@ public class EventService {
         if (req.locationType() == EventLocationType.ONSITE && (req.locationName() == null || req.locationName().isBlank())){
             throw new BadRequestException("Le nom du lieu est requis pour les événements SUR SITE");
         }
+    }
+
+
+    private boolean matchesStatusFilter(Event event, String status) {
+        if (status == null || status.isBlank() || status.equalsIgnoreCase("ALL")) {
+            return true;
+        }
+
+        Instant now = Instant.now();
+        boolean deadlinePassed = event.getRegistrationDeadline() != null
+                && !event.getRegistrationDeadline().isAfter(now);
+
+        long registeredCount = registrationRepository.countByEventAndStatus(
+                event,
+                RegistrationStatus.REGISTERED
+        );
+
+        boolean full = registeredCount >= event.getCapacity();
+
+        return switch (status) {
+            case "AVAILABLE" -> !deadlinePassed && !full;
+            case "FULL" -> full;
+            case "DEADLINE_PASSED" -> deadlinePassed && !full;
+            default -> true;
+        };
+    }
+
+    private <T> PageResponse<T> toPageResponse(List<T> items, Pageable pageable) {
+        int totalItems = items.size();
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), totalItems);
+
+        List<T> pageItems = start >= totalItems ? List.of() : items.subList(start, end);
+
+        int totalPages = totalItems == 0 ? 1 : (int) Math.ceil((double) totalItems / pageable.getPageSize());
+
+        return new PageResponse<>(
+                pageItems,
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                totalPages,
+                totalItems,
+                end < totalItems,
+                pageable.getPageNumber() > 0
+        );
     }
     private EventResponse toResponse(Event e) {
         String createdByEmail = null;

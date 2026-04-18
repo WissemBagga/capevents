@@ -43,10 +43,11 @@ export class EventService {
     q: string | null,
     from: string | null,
     to: string | null,
+    status: 'ALL' | 'AVAILABLE' | 'FULL' | 'DEADLINE_PASSED' | null,
     page = 0,
     size = 8,
     sortBy = 'startAt',
-    sortDir = 'asc'
+    sortDir: 'asc' | 'desc' = 'asc'
   ): Observable<PageResponse<EventResponse>> {
     let params = new HttpParams()
       .set('page', page)
@@ -58,6 +59,7 @@ export class EventService {
     if (q) params = params.set('q', q);
     if (from) params = params.set('from', from);
     if (to) params = params.set('to', to);
+    if (status && status !== 'ALL') params = params.set('status', status);
 
     return this.http.get<PageResponse<EventResponse>>(`${this.apiUrl}/published/search`, { params });
   }
