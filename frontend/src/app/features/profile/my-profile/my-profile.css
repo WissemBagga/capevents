@@ -56,6 +56,7 @@
   font-weight: 500;
   transition: color 0.2s ease;
   align-self: flex-start;
+  cursor: pointer;
 }
 
 .back-link:hover {
