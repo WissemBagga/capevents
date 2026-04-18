@@ -74,8 +74,8 @@ export class Sidebar {
   }
 
   get homeRoute(): string {
-    if (this.authService.isHr()) return '/admin/hr';
-    if (this.authService.isManager()) return '/admin/manager';
+    if (this.authService.isHr()) return '/admin/hr/stats';
+    if (this.authService.isManager()) return '/admin/manager/stats';
     return '/dashboard/employee';
   }
 
@@ -86,7 +86,8 @@ export class Sidebar {
   get mainLinks(): NavItem[] {
     if (this.authService.isHr()) {
       return [
-        { label: 'Dashboard RH', route: '/admin/hr' },
+        { label: 'Statistiques RH', route: '/admin/hr/stats' },
+        { label: 'Gestion des événements', route: '/admin/hr' },
         { label: 'Événements', route: '/events' },
         { label: 'Départements', route: '/admin/admin-departments' },
         { label: 'Utilisateurs & rôles', route: '/admin/admin-users' }
@@ -95,7 +96,8 @@ export class Sidebar {
 
     if (this.authService.isManager()) {
       return [
-        { label: 'Dashboard Manager', route: '/admin/manager' },
+        { label: 'Statistiques', route: '/admin/manager/stats' },
+        { label: 'Gestion des événements', route: '/admin/manager' },
         { label: 'Événements', route: '/events' }
       ];
     }

@@ -28,7 +28,7 @@ export class EventService {
   private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/api/events`;
 
-  getPublished(page = 0, size = 8, sortBy = 'startAt', sortDir = 'asc'): Observable<PageResponse<EventResponse>> {
+  getPublished(page = 0, size = 9, sortBy = 'startAt', sortDir = 'asc'): Observable<PageResponse<EventResponse>> {
     const params = new HttpParams()
       .set('page', page)
       .set('size', size)
@@ -45,7 +45,7 @@ export class EventService {
     to: string | null,
     status: 'ALL' | 'AVAILABLE' | 'FULL' | 'DEADLINE_PASSED' | null,
     page = 0,
-    size = 8,
+    size = 9,
     sortBy = 'startAt',
     sortDir: 'asc' | 'desc' = 'asc'
   ): Observable<PageResponse<EventResponse>> {
@@ -175,7 +175,7 @@ export class EventService {
     return this.http.post<EmployeeEventSubmissionResponse>(`${this.apiUrl}/employee-submit`, payload);
   }
 
-  getPendingApprovals(page = 0, size = 8) {
+  getPendingApprovals(page = 0, size = 9) {
     const params = new HttpParams()
       .set('page', page)
       .set('size', size);
@@ -191,7 +191,7 @@ export class EventService {
     return this.http.post<EventResponse>(`${this.apiUrl}/admin/${id}/reject`, { reason });
   }
 
-  getMySubmissions(page = 0, size = 8) {
+  getMySubmissions(page = 0, size = 9) {
     const params = new HttpParams()
       .set('page', page)
       .set('size', size);

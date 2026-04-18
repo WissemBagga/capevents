@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -7,14 +7,12 @@ import { FormsModule } from '@angular/forms';
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
 import { PageResponse } from '../../../core/models/page-response.model';
-import { AdminAnalyticsOverviewResponse, EventEngagementResponse } from '../../../core/models/admin-analytics.model';
 import { AuthService } from '../../../core/services/auth.service';
-import { AdminAnalyticsService } from '../../../core/services/admin-analytics.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [DatePipe, RouterLink, FormsModule, DecimalPipe],
+  imports: [DatePipe, RouterLink, FormsModule],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })
@@ -24,7 +22,6 @@ export class AdminDashboard {
   private router = inject(Router);
   
   private authService = inject(AuthService)
-  private adminAnalyticsService = inject(AdminAnalyticsService)
 
 
   events: EventResponse[] = [];
@@ -37,17 +34,17 @@ export class AdminDashboard {
   errorMessage = '';
 
   currentPage = 0;
-  pageSize = 8;
+  pageSize = 9;
   totalPages = 0;
   totalItems = 0;
   hasNext = false;
   hasPrevious = false;
   
-  analytics: AdminAnalyticsOverviewResponse | null = null;
+
+
 
   ngOnInit(): void {
     this.loadEvents();
-    this.loadAnalytics();
   }
 
   loadEvents(): void {
@@ -200,9 +197,7 @@ export class AdminDashboard {
         }
       });
   }
-  trackByRatedEventId(_: number, item: { eventId: string }): string {
-    return item.eventId;
-  }
+  
 
   cancel(event: EventResponse): void {
     const registered = event.registeredCount ?? 0;
@@ -232,42 +227,12 @@ export class AdminDashboard {
   }
 
   get dashboardTitle(): string {
-    return this.authService.isHr() ? 'Dashboard RH' : 'Dashboard Manager';
+    return this.authService.isHr() ? 'Gestion des événements RH' : 'Gestion des événements';
   }
 
   get dashboardSubtitle(): string {
     return this.authService.isHr()
-      ? 'Vue d’ensemble des performances des événements.'
-      : 'Vue d’ensemble des événements de votre périmètre.';
-  }
-
-  loadAnalytics(): void {
-    this.loading = true;
-    this.errorMessage = '';
-    this.cdr.markForCheck();
-
-    this.adminAnalyticsService.getOverview()
-      .pipe(finalize(() => {
-        this.loading = false;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: (response) => {
-          this.analytics = response;
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          this.analytics = null;
-          this.errorMessage =
-            err?.error?.message ||
-            err?.error ||
-            'Impossible de charger les analytics.';
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
-  trackByEventId(_: number, item: EventEngagementResponse): string {
-    return item.eventId;
-  }
+      ? 'Gérez le cycle de vie de tous les événements de la plateforme.'
+      : 'Gérez les événements de votre périmètre.';
+  } 
 }

@@ -9,6 +9,7 @@ import { EventDetails } from './features/events/events-details/event-details';
 import { roleGuard } from './core/guards/role-guard';
 import { EmployeeDashboard } from './features/events/employee-dashboard/employee-dashboard';
 import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard';
+import {AdminStats} from './features/admin/admin-stats/admin-stats';
 import { CreateEvent } from './features/admin/create-event/create-event';
 import { EditEvent } from './features/admin/edit-event/edit-event';
 import { AppShell } from './shared/layout/app-shell/app-shell';
@@ -82,6 +83,18 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['ROLE_MANAGER'] }
       },
+      {
+        path: 'admin/hr/stats',
+        component: AdminStats,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_HR'] }
+      },
+      {
+        path: 'admin/manager/stats',
+        component: AdminStats,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_MANAGER'] }
+      },  
       {
         path: 'admin/create-event',
         component: CreateEvent,

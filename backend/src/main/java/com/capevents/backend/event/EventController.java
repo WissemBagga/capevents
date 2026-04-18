@@ -35,7 +35,7 @@ public class EventController {
     public PageResponse<EventResponse> listPublished(
             Authentication auth,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "9") int size,
             @RequestParam(defaultValue = "startAt") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir
     ) {
@@ -104,7 +104,7 @@ public class EventController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "9") int size,
             @RequestParam(defaultValue = "startAt") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir
     ) {
@@ -133,7 +133,7 @@ public class EventController {
     @GetMapping("/admin")
     public PageResponse<EventResponse> listEvents(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "9") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir,
             Authentication auth) {
@@ -167,7 +167,7 @@ public class EventController {
     @GetMapping("/admin/pending")
     public PageResponse<EventResponse> listPendingApprovals(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "9") int size,
             Authentication auth
     ) {
         var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -199,7 +199,7 @@ public class EventController {
     @GetMapping("/me/submissions")
     public PageResponse<EventResponse> listMySubmissions(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "9") int size,
             Authentication auth
     ) {
         var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
