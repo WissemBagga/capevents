@@ -36,6 +36,10 @@ export class FeedbackEvent {
     comment: ['', [Validators.maxLength(2000)]]
   });
 
+  get currentRating(): number {
+    return this.form.controls.rating.value ?? 5;
+  }
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
