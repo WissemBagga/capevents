@@ -1,61 +1,46 @@
-<div class="verify-page">
-    <div class="verify-card">
-        <section class="verify-left">
-            <div class="verify-left-overlay"></div>
-            <div class="verify-left-content">
-                <div class="brand-badge">CapEvents</div>
-                <div class="shield-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                </div>
-                <h1>Vérification<br>de votre email</h1>
-                <p class="left-subtitle">
-                    Nous vérifions votre adresse email pour
-                    sécuriser votre compte CapEvents.
-                </p>
-                <div class="verify-footer">
-                    &copy; 2026 CAPEVENTS &mdash; TOUS DROITS RÉSERVÉS
-                </div>
-            </div>
-        </section>
-        <section class="verify-right">
-            <div class="verify-right-inner">
-
-                @if (loading) {
-                    <div class="state-card loading-state">
-                        <div class="spinner"></div>
-                        <h2>Vérification en cours</h2>
-                        <p class="state-text">Veuillez patienter pendant que nous vérifions votre adresse email...</p>
-                    </div>
-                }
-
-                @if (successMessage) {
-                    <div class="state-card success-state">
-                        <div class="state-icon success">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        </div>
-                        <h2>Email vérifié !</h2>
-                        <p class="state-text">{{ successMessage }}</p>
-                        <a class="action-button" routerLink="/login">
-                            Aller à la connexion →
-                        </a>
-                    </div>
-                }
-
-                @if (errorMessage) {
-                    <div class="state-card error-state">
-                        <div class="state-icon error">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                        </div>
-                        <h2>Échec de la vérification</h2>
-                        <p class="state-text">{{ errorMessage }}</p>
-                        <a class="action-button outline" routerLink="/login">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                            Retour à la connexion
-                        </a>
-                    </div>
-                }
-
-            </div>
-        </section>
+<div class="auth-page-simple">
+  <div class="auth-card-simple">
+    <div class="brand-header">
+      <h2>CapEvents</h2>
     </div>
+
+    <div class="auth-icon-simple">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+
+    <h1>Vérification d'email</h1>
+    <p class="auth-subtitle">Sécurisation de votre compte CapEvents.</p>
+
+    @if (loading) {
+        <div class="status-container">
+            <div class="spinner-modern"></div>
+            <p>Vérification en cours...</p>
+        </div>
+    }
+
+    @if (successMessage) {
+        <div class="message-box success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <p>{{ successMessage }}</p>
+        </div>
+        
+        <a class="btn-primary" routerLink="/login">
+            Aller à la connexion →
+        </a>
+    }
+
+    @if (errorMessage) {
+        <div class="message-box error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            <p>{{ errorMessage }}</p>
+        </div>
+    }
+
+    <div class="auth-footer-links">
+        <a class="back-link" routerLink="/login">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Retour à la connexion
+        </a>
+    </div>
+  </div>
 </div>
