@@ -10,11 +10,15 @@
 
 /* ===== Page Layout ===== */
 .my-submissions-page {
-  max-width: 1100px;
+  animation: fadeIn 0.3s ease-out both;
+  font-family: 'Verdana', sans-serif;
+  padding-bottom: 60px;
+}
+
+.page-container {
+  max-width: 1040px;
   margin: 0 auto;
   padding: 32px 48px;
-  font-family: 'Verdana', sans-serif;
-  animation: fadeIn 0.3s ease-out both;
 }
 
 /* ===== Page Header ===== */
@@ -120,17 +124,27 @@
 }
 
 .btn-view {
-  background: #f0f7ff;
-  color: #0a6ebd;
-  border: 1px solid #bfdbfe;
-  padding: 7px 14px;
-  font-size: 13px;
+  background: transparent;
+  color: #3b82f6;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-view svg {
+  transition: transform 0.2s ease;
 }
 
 .btn-view:hover {
-  background: #3b82f6;
-  border-color: #3b82f6;
-  color: #ffffff;
+  background: #f0f7ff;
+  color: #1d4ed8;
+}
+
+.btn-view:hover svg {
+  transform: translateX(3px);
 }
 
 /* ===== State Messages ===== */
@@ -336,7 +350,7 @@
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .my-submissions-page {
+  .page-container {
     padding: 24px 20px;
   }
 
