@@ -1,226 +1,278 @@
 <div class="edit-event-page">
+  <div class="page-container">
 
     <!-- Header -->
     <div class="page-header">
-        <div class="header-text">
-            <p class="breadcrumb">ACCUEIL › ÉVÉNEMENTS › MODIFICATION</p>
-            <h1>Modifier un événement</h1>
-            @if (isHr) {
-                <p class="header-sub">Modifiez un événement global ou départemental.</p>
-            }
-            @if (isManager) {
-                <p class="header-sub">Modifiez un événement de votre département : {{ currentDepartmentName }}</p>
-            }
-        </div>
-        <a routerLink="/events" class="back-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            Retour
-        </a>
+
+      <a [routerLink]="adminDashboardRoute" class="btn-back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+         Retour
+      </a>
+      <div class="header-text">
+        <h1>Modifier un événement</h1>
+        @if (isHr) {
+          <p class="header-sub">Mettez à jour les informations de cet événement.</p>
+        }
+        @if (isManager) {
+          <p class="header-sub">Mettez à jour cet événement pour : {{ currentDepartmentName }}</p>
+        }
+      </div>
     </div>
 
     <!-- State Messages -->
     @if (loading) {
-        <div class="state-message loading-msg">
-            <div class="spinner"></div>
-            <p>Chargement de l'événement...</p>
-        </div>
+      <div class="state-message loading-msg">
+        <div class="spinner"></div>
+        <p>Chargement des données de l'événement...</p>
+      </div>
     }
 
     @if (errorMessage) {
-        <div class="state-message error-msg">
-            <p>{{ errorMessage }}</p>
-        </div>
+      <div class="state-message error-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>{{ errorMessage }}</p>
+      </div>
     }
 
     @if (successMessage) {
-        <div class="state-message success-msg">
-            <p>{{ successMessage }}</p>
-        </div>
+      <div class="state-message success-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <p>{{ successMessage }}</p>
+      </div>
     }
 
     <!-- Form -->
     @if (!loading) {
-        <form class="event-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <form class="event-form" [formGroup]="form" (ngSubmit)="onSubmit()">
 
-            <!-- Section: General Info -->
-            <div class="form-section">
-                <h2 class="section-title">Informations générales</h2>
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label for="title">Titre</label>
-                        <input id="title" type="text" formControlName="title" placeholder="Nom de l'événement" />
-                        @if (form.get('title')?.touched && form.get('title')?.errors?.['required']) {
-                            <p class="field-error">Le titre est obligatoire.</p>
-                        }
-                    </div>
+        <!-- Section: General Info -->
+        <section class="admin-card form-section">
+          <div class="card-header">
+            <h2 class="card-title">Informations générales</h2>
+          </div>
 
-                    <div class="form-group">
-                        <label for="category">Catégorie</label>
-                        <select id="category" formControlName="category" (change)="onCategoryChange()">
-                            <option value="">Sélectionnez une catégorie</option>
-                            @for (option of categoryOptions; track option.value) {
-                            <option [value]="option.value">{{ option.label }}</option>
-                            }
-                        </select>
-                        @if (form.get('category')?.touched && form.get('category')?.errors?.['required']) {
-                            <p class="field-error">La catégorie est obligatoire.</p>
-                        }
-                    </div>
-                    
-
-                    <div class="form-group">
-                        <label for="audience">Audience</label>
-                        <select id="audience" formControlName="audience" (change)="onAudienceChange()">
-                            <option value="DEPARTMENT">Département</option>
-                            @if (isHr) {
-                                <option value="GLOBAL">Global</option>
-                            }
-                        </select>
-                    </div>
-
-                    @if (form.getRawValue().audience === 'DEPARTMENT') {
-                        <div class="form-group">
-                            <label for="targetDepartmentId">Département cible</label>
-                            <select id="targetDepartmentId" formControlName="targetDepartmentId">
-                                <option [ngValue]="null">Sélectionnez un département</option>
-                                @for (department of departments; track department.id) {
-                                    <option [ngValue]="department.id">{{ department.name }}</option>
-                                }
-                                @if (form.get('targetDepartmentId')?.touched && form.get('targetDepartmentId')?.errors?.['required']) {
-                                    <p class="field-error">Le département cible est obligatoire.</p>
-                                }
-                            </select>
-                        </div>
-                    }
-
-                    <div class="form-group full-width">
-                        <label for="description">Description</label>
-                        <textarea id="description" rows="5" formControlName="description" placeholder="Décrivez l'événement..."></textarea>
-                    </div>
-                </div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="title">Titre</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <input id="title" type="text" class="form-input" formControlName="title" placeholder="Saisissez le nom de l'événement" />
+              </div>
+              @if (form.get('title')?.touched && form.get('title')?.errors?.['required']) {
+                <span class="field-error">Le titre est obligatoire.</span>
+              }
             </div>
 
-            <!-- Section: Date & Capacity -->
-            <div class="form-section">
-                <h2 class="section-title">Date et capacité</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="startAt">Date de début</label>
-                        <input id="startAt" type="datetime-local" formControlName="startAt" />
-                        @if (form.get('startAt')?.touched && form.get('startAt')?.errors?.['required']) {
-                            <p class="field-error">La date de début est obligatoire.</p>
-                        }
-                    </div>
-
-                    <div class="form-group">
-                        <label for="registrationDeadline">Date limite d'inscription</label>
-                        <input id="registrationDeadline" type="datetime-local" formControlName="registrationDeadline" />
-                        @if (form.get('registrationDeadline')?.touched && form.get('registrationDeadline')?.errors?.['required']) {
-                            <p class="field-error">La date limite d’inscription est obligatoire.</p>
-                        }
-                    </div>
-
-                    <div class="form-group">
-                        <label for="durationMinutes">Durée (minutes)</label>
-                        <input id="durationMinutes" type="number" min="30" step="1" formControlName="durationMinutes" placeholder="60" />
-                        @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['required']) {
-                            <p class="field-error">La durée est obligatoire.</p>
-                        }
-                        @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['min']) {
-                            <p class="field-error">La durée minimale est de 30 minutes.</p>
-                        }
-                    </div>
-
-                    <div class="form-group">
-                        <label for="capacity">Capacité</label>
-                        <input id="capacity" type="number" min="2" step="1" formControlName="capacity" placeholder="30" />
-                        @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['required']) {
-                            <p class="field-error">La capacité est obligatoire.</p>
-                        }
-                        @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['min']) {
-                            <p class="field-error">La capacité minimale est de 2 participants.</p>
-                        }
-                    </div>
-                </div>
+            <div class="form-group">
+              <label for="category">Catégorie</label>
+              <div class="select-wrapper">
+                <select id="category" class="form-select" formControlName="category" (change)="onCategoryChange()">
+                  <option value="">Sélectionner une catégorie</option>
+                  @for (option of categoryOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              </div>
+              @if (form.get('category')?.touched && form.get('category')?.errors?.['required']) {
+                <span class="field-error">La catégorie est requise.</span>
+              }
             </div>
 
-            <!-- Section: Location -->
-            <div class="form-section">
-                <h2 class="section-title">Lieu</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="locationType">Type de lieu</label>
-                        <select id="locationType" formControlName="locationType" (change)="onLocationTypeChange()">
-                            <option value="ONSITE">SUR SITE</option>
-                            <option value="ONLINE">EN LIGNE</option>
-                            <option value="EXTERNAL">EXTERNE</option>
-                        </select>
-                    </div>
-
-                    @if (form.getRawValue().locationType === 'ONSITE') {
-                        <div class="form-group">
-                            <label for="locationName">Lieu</label>
-                            <input id="locationName" type="text" formControlName="locationName" placeholder="Salle, bâtiment..." />
-                            @if (form.get('locationName')?.touched && form.get('locationName')?.errors?.['required']) {
-                                <p class="field-error">Le lieu est obligatoire pour un événement sur site.</p>
-                            }
-                        </div>
-                    }
-
-                    @if (form.getRawValue().locationType === 'ONLINE') {
-                        <div class="form-group">
-                            <label for="meetingUrl">Meeting URL</label>
-                            <input id="meetingUrl" type="text" formControlName="meetingUrl" placeholder="https://..." />
-                            @if (form.get('meetingUrl')?.touched && form.get('meetingUrl')?.errors?.['required']) {
-                                <p class="field-error">Le lien de réunion est obligatoire pour un événement en ligne.</p>
-                            }
-                        </div>
-                    }
-
-                    @if (form.getRawValue().locationType === 'EXTERNAL') {
-                        <div class="form-group">
-                            <label for="address">Adresse</label>
-                            <input id="address" type="text" formControlName="address" placeholder="Adresse complète..." />
-                            @if (form.get('address')?.touched && form.get('address')?.errors?.['required']) {
-                                <p class="field-error">L’adresse est obligatoire pour un événement externe.</p>
-                            }
-                        </div>
-                    }
-                </div>
+            <div class="form-group">
+              <label for="audience">Audience</label>
+              <div class="select-wrapper">
+                <select id="audience" class="form-select" formControlName="audience" (change)="onAudienceChange()">
+                  <option value="DEPARTMENT">Département</option>
+                  @if (isHr) {
+                    <option value="GLOBAL">Global</option>
+                  }
+                </select>
+              </div>
             </div>
 
-            <!-- Section: Image -->
-            <div class="form-section">
-                <h2 class="section-title">Image</h2>
-                <div class="image-upload-area">
-                    <label for="imageFile" class="upload-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                        Choisir une image
-                    </label>
-                    <input id="imageFile" type="file" accept="image/*" (change)="onImageSelected($event)" />
-                    <p class="helper-text">L'aperçu fonctionne déjà. L'enregistrement réel de l'image nécessitera un upload backend.</p>
+            @if (form.getRawValue().audience === 'DEPARTMENT') {
+              <div class="form-group">
+                <label for="targetDepartmentId">Département cible</label>
+                <div class="select-wrapper">
+                  <select id="targetDepartmentId" class="form-select" formControlName="targetDepartmentId">
+                    <option [ngValue]="null">Sélectionner un département</option>
+                    @for (department of departments; track department.id) {
+                      <option [ngValue]="department.id">{{ department.name }}</option>
+                    }
+                  </select>
                 </div>
-            </div>
-
-
-            @if (hasRegisteredParticipants) {
-                <div class="state-message loading-msg">
-                    <p>Attention : {{ originalRegisteredCount }} personne(s) sont déjà inscrites à cet événement.</p>
-                </div>
+                @if (form.get('targetDepartmentId')?.touched && form.get('targetDepartmentId')?.errors?.['required']) {
+                  <span class="field-error">Le département cible est requis.</span>
                 }
-
-                @if (capacityBelowRegistrations) {
-                <div class="state-message error-msg">
-                    <p>La capacité ne peut pas être inférieure au nombre actuel d’inscrits : {{ originalRegisteredCount }}.</p>
-                </div>
+              </div>
             }
 
-            <!-- Submit -->
-            <div class="form-actions">
-                <button type="submit" class="btn-submit" [disabled]="submitting">
-                    {{ submitting ? 'Enregistrement...' : 'Enregistrer les modifications' }}
-                </button>
+            <div class="form-group full-width">
+              <label for="description">Description <span class="optional-tag">(optionnelle)</span></label>
+              <div class="input-wrapper">
+                <textarea id="description" class="form-textarea" rows="5" formControlName="description" placeholder="Détaillez le programme et les objectifs..."></textarea>
+              </div>
             </div>
-        </form>
+          </div>
+        </section>
+
+        <!-- Section: Date & Capacity -->
+        <section class="admin-card form-section">
+          <div class="card-header">
+            <h2 class="card-title">Planification et logistique</h2>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="startAt">Date et heure de début</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <input id="startAt" type="datetime-local" class="form-input" formControlName="startAt" />
+              </div>
+              @if (form.get('startAt')?.touched && form.get('startAt')?.errors?.['required']) {
+                <span class="field-error">La date de début est requise.</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="registrationDeadline">Clôture des inscriptions</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <input id="registrationDeadline" type="datetime-local" class="form-input" formControlName="registrationDeadline" />
+              </div>
+              @if (form.get('registrationDeadline')?.touched && form.get('registrationDeadline')?.errors?.['required']) {
+                <span class="field-error">La date limite est requise.</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="durationMinutes">Durée (minutes)</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <input id="durationMinutes" type="number" class="form-input" min="30" step="1" formControlName="durationMinutes" placeholder="Ex: 60" />
+              </div>
+              @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['required']) {
+                <span class="field-error">La durée est requise.</span>
+              }
+              @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['min']) {
+                <span class="field-error">Minimum 30 minutes.</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="capacity">Capacité (places)</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <input id="capacity" type="number" class="form-input" min="2" step="1" formControlName="capacity" placeholder="Ex: 30" />
+              </div>
+              @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['required']) {
+                <span class="field-error">La capacité est requise.</span>
+              }
+              @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['min']) {
+                <span class="field-error">Minimum 2 places.</span>
+              }
+            </div>
+
+            <!-- Location -->
+            <div class="form-group full-width group-separator">
+              <label for="locationType">Type de lieu</label>
+              <div class="select-wrapper">
+                <select id="locationType" class="form-select" formControlName="locationType" (change)="onLocationTypeChange()">
+                  <option value="ONSITE">Présentiel (Sur site)</option>
+                  <option value="ONLINE">À distance  (En ligne)</option>
+                  <option value="EXTERNAL">Externe</option>
+                </select>
+              </div>
+            </div>
+
+            @if (form.getRawValue().locationType === 'ONSITE') {
+              <div class="form-group full-width">
+                <label for="locationName">Salle / Bâtiment</label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  <input id="locationName" type="text" class="form-input" formControlName="locationName" placeholder="Ex: Salle B" />
+                </div>
+                @if (form.get('locationName')?.touched && form.get('locationName')?.errors?.['required']) {
+                  <span class="field-error">Le lieu est requis.</span>
+                }
+              </div>
+            }
+
+            @if (form.getRawValue().locationType === 'ONLINE') {
+              <div class="form-group full-width">
+                <label for="meetingUrl">Lien de la visioconférence</label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                  <input id="meetingUrl" type="url" class="form-input" formControlName="meetingUrl" placeholder="https://..." />
+                </div>
+                @if (form.get('meetingUrl')?.touched && form.get('meetingUrl')?.errors?.['required']) {
+                  <span class="field-error">Le lien est requis.</span>
+                }
+              </div>
+            }
+
+            @if (form.getRawValue().locationType === 'EXTERNAL') {
+              <div class="form-group full-width">
+                <label for="address">Adresse complète</label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  <input id="address" type="text" class="form-input" formControlName="address" placeholder="Adresse complète" />
+                </div>
+                @if (form.get('address')?.touched && form.get('address')?.errors?.['required']) {
+                  <span class="field-error">L'adresse est requise.</span>
+                }
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Section: Image -->
+        <section class="admin-card form-section">
+          <div class="card-header">
+            <h2 class="card-title">Image de couverture</h2>
+          </div>
+
+          <div class="form-group full-width">
+            <div class="image-upload-wrapper">
+              <label for="imageFile" class="btn-secondary upload-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Importer une image
+              </label>
+              <input id="imageFile" type="file" accept="image/*" class="file-input-hidden" (change)="onImageSelected($event)" />
+              <p class="helper-text-inline">Format JPG ou PNG. Taille idéale 800x400px.</p>
+            </div>
+            <!-- The old template had a hardcoded text message since image upload doesn't work locally without backend. -->
+          </div>
+        </section>
+
+        <!-- Warnings -->
+        @if (hasRegisteredParticipants) {
+          <div class="state-message warning-msg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <p>Attention : {{ originalRegisteredCount }} personne(s) sont déjà inscrites. Modifier la date ou le lieu peut impacter leur organisation.</p>
+          </div>
+        }
+
+        @if (capacityBelowRegistrations) {
+          <div class="state-message error-msg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <p>La capacité d'accueil ne peut pas être inférieure au nombre d'inscrits actuels ({{ originalRegisteredCount }}).</p>
+          </div>
+        }
+
+        <!-- Float Action Bar -->
+        <div class="form-actions-bar">
+          <button type="submit" class="btn-primary" [disabled]="submitting || form.invalid || capacityBelowRegistrations">
+            @if (submitting) {
+              <div class="spinner mini-spinner"></div>
+              Enregistrement...
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              Enregistrer les modifications
+            }
+          </button>
+        </div>
+      </form>
     }
+  </div>
 </div>

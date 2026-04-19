@@ -1,313 +1,332 @@
 <div class="create-event-page">
+  <div class="page-container">
 
     <!-- Header -->
     <div class="page-header">
-        <a routerLink="/admin/hr" class="back-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            Retour
-        </a>
-        <div class="header-text">
-            @if (isHr) {
-                <p class="header-sub">Créez un événement pour un département précis ou pour toute l'entreprise.</p>
-            }
-            @if (isManager) {
-                <p class="header-sub">Créez un événement pour votre département: {{ currentDepartmentName }}</p>
-            }
-        </div>
+      <a [routerLink]="adminDashboardRoute" class="btn-back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Retour
+      </a>
+      <div class="header-text">
+        <h1>Créer un événement</h1>
+        @if (isHr) {
+          <p class="header-sub">Créez un événement stratégique pour l'organisation.</p>
+        }
+        @if (isManager) {
+          <p class="header-sub">Créez un événement pour l'équipe: {{ currentDepartmentName }}</p>
+        }
+      </div>
     </div>
 
     <!-- State Messages -->
     @if (loading) {
-        <div class="state-message loading-msg">
-            <div class="spinner"></div>
-            <p>Chargement des données...</p>
-        </div>
+      <div class="state-message loading-msg">
+        <div class="spinner"></div>
+        <p>Chargement des données...</p>
+      </div>
     }
 
     @if (errorMessage) {
-        <div class="state-message error-msg">
-            <p>{{ errorMessage }}</p>
-        </div>
+      <div class="state-message error-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>{{ errorMessage }}</p>
+      </div>
     }
 
     @if (successMessage) {
-        <div class="state-message success-msg">
-            <p>{{ successMessage }}</p>
-        </div>
+      <div class="state-message success-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <p>{{ successMessage }}</p>
+      </div>
     }
 
     <!-- Form -->
     <form class="event-form" [formGroup]="form">
 
-        <!-- Section: General Info -->
-        <div class="form-section">
-            <h2 class="section-title">Informations générales</h2>
-            <div class="form-grid">
-                <div class="form-group full-width">
-                    <label for="title">Titre</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                        <input id="title" type="text" formControlName="title" placeholder="Nom de l'événement" />
-                    </div>
-                    @if (form.get('title')?.touched && form.get('title')?.errors?.['required']) {
-                        <p class="field-error">Le titre est obligatoire.</p>
-                    }
-                </div>
-
-                <div class="form-group">
-                    <label for="category">Catégorie</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                        <select id="category" formControlName="category" (change)="onCategoryChange()">
-                            <option value="">Sélectionnez une catégorie</option>
-                            @for (option of categoryOptions; track option.value) {
-                            <option [value]="option.value">{{ option.label }}</option>
-                            }
-                        </select>
-                    </div>
-                    @if (form.get('category')?.touched && form.get('category')?.errors?.['required']) {
-                        <p class="field-error">La catégorie est obligatoire.</p>
-                    }
-                </div>
-
-                <div class="form-group">
-                    <label for="audience">Audience</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                        <select id="audience" formControlName="audience" (change)="onAudienceChange()">
-                            <option value="DEPARTMENT">Département</option>
-                            @if (isHr) {
-                                <option value="GLOBAL">Global</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-
-                @if (form.getRawValue().audience === 'DEPARTMENT' && isHr) {
-                    <div class="form-group">
-                        <label for="targetDepartmentId">Département cible</label>
-                        <div class="input-wrapper">
-                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                            <select id="targetDepartmentId" formControlName="targetDepartmentId">
-                                <option [ngValue]="null">Sélectionnez un département</option>
-                                @for (department of departments; track department.id) {
-                                    <option [ngValue]="department.id">{{ department.name }}</option>
-                                }
-                            </select>
-                        </div>
-                        @if (form.get('targetDepartmentId')?.touched && form.get('targetDepartmentId')?.errors?.['required']) {
-                               <p class="field-error">Le département cible est obligatoire.</p>
-                        }
-                    </div>
-                }
-
-                @if (isManager) {
-                    <div class="form-group">
-                        <label>Département cible</label>
-                        <div class="input-wrapper">
-                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                            <input type="text" [value]="currentDepartmentName" disabled />
-                        </div>
-                    </div>
-                }
-
-                <div class="form-group full-width">
-                    <label for="description">Description (optionnelle)</label>
-                    <div class="input-wrapper text-area-wrapper">
-                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>
-                        <textarea id="description" rows="4" formControlName="description" placeholder="Décrivez l'événement..."></textarea>
-                    </div>
-                </div>
-            </div>
+      <!-- Section: General Info -->
+      <section class="admin-card form-section">
+        <div class="card-header">
+          <h2 class="card-title">Informations générales</h2>
         </div>
 
-        <!-- Section: Date & Capacity -->
-        <div class="form-section">
-            <h2 class="section-title">Date et capacité</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="startAt">Date de début</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        <input id="startAt" type="datetime-local" formControlName="startAt" />
-                    </div>
-                    @if (form.get('startAt')?.touched && form.get('startAt')?.errors?.['required']) {
-                        <p class="field-error">La date de début est obligatoire.</p>
-                    }
-                </div>
-
-                <div class="form-group">
-                    <label for="registrationDeadline">Date limite d'inscription</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        <input id="registrationDeadline" type="datetime-local" formControlName="registrationDeadline" />
-                    </div>
-                    @if (form.get('registrationDeadline')?.touched && form.get('registrationDeadline')?.errors?.['required']) {
-                        <p class="field-error">La date limite d’inscription est obligatoire.</p>
-                    }
-                </div>
-
-                <div class="form-group">
-                        <label for="durationMinutes">Durée (minutes)</label>
-                        <div class="input-wrapper">
-                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                            <input id="durationMinutes" type="number" min="30" step="1" formControlName="durationMinutes" placeholder="60" />
-                        </div>
-                        @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['required']) {
-                            <p class="field-error">La durée est obligatoire.</p>
-                        }
-                        @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['min']) {
-                            <p class="field-error">La durée minimale est de 30 minutes.</p>
-                        }
-                </div>
-
-                <div class="form-group">
-                        <label for="capacity">Capacité</label>
-                        <div class="input-wrapper">
-                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                            <input id="capacity" type="number" min="2" step="1" formControlName="capacity" placeholder="30" />
-                        </div>
-                        @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['required']) {
-                            <p class="field-error">La capacité est obligatoire.</p>
-                        }
-                        @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['min']) {
-                            <p class="field-error">La capacité minimale est de 2 participants.</p>
-                        }
-                </div>
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="title">Titre</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <input id="title" type="text" class="form-input" formControlName="title" placeholder="Saisissez le nom de l'événement" />
             </div>
+            @if (form.get('title')?.touched && form.get('title')?.errors?.['required']) {
+              <span class="field-error">Le titre est obligatoire.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="category">Catégorie</label>
+            <div class="select-wrapper">
+              <select id="category" class="form-select" formControlName="category" (change)="onCategoryChange()">
+                <option value="">Sélectionner une catégorie</option>
+                @for (option of categoryOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+            @if (form.get('category')?.touched && form.get('category')?.errors?.['required']) {
+              <span class="field-error">La catégorie est obligatoire.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="audience">Audience</label>
+            <div class="select-wrapper">
+              <select id="audience" class="form-select" formControlName="audience" (change)="onAudienceChange()">
+                <option value="DEPARTMENT">Département</option>
+                @if (isHr) {
+                  <option value="GLOBAL">Global</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          @if (form.getRawValue().audience === 'DEPARTMENT' && isHr) {
+            <div class="form-group">
+              <label for="targetDepartmentId">Département cible</label>
+              <div class="select-wrapper">
+                <select id="targetDepartmentId" class="form-select" formControlName="targetDepartmentId">
+                  <option [ngValue]="null">Sélectionner un département</option>
+                  @for (department of departments; track department.id) {
+                    <option [ngValue]="department.id">{{ department.name }}</option>
+                  }
+                </select>
+              </div>
+              @if (form.get('targetDepartmentId')?.touched && form.get('targetDepartmentId')?.errors?.['required']) {
+                <span class="field-error">Le département cible est obligatoire.</span>
+              }
+            </div>
+          }
+
+          @if (isManager) {
+            <div class="form-group">
+              <label>Département cible</label>
+              <div class="input-wrapper disabled-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <input type="text" class="form-input" [value]="currentDepartmentName" disabled />
+              </div>
+            </div>
+          }
+
+          <div class="form-group full-width">
+            <label for="description">Description <span class="optional-tag">(optionnelle)</span></label>
+            <div class="input-wrapper">
+              <textarea id="description" class="form-textarea" rows="5" formControlName="description" placeholder="Détaillez le programme et les objectifs..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Date & Capacity -->
+      <section class="admin-card form-section">
+        <div class="card-header">
+          <h2 class="card-title">Planification et logistique</h2>
         </div>
 
-        <!-- Section: Location -->
-        <div class="form-section">
-            <h2 class="section-title">Lieu</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="locationType">Type de lieu</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
-                        <select id="locationType" formControlName="locationType" (change)="onLocationTypeChange()">
-                            <option value="ONSITE">Sur Site</option> <!-- Better capitalising -->
-                            <option value="ONLINE">En Ligne</option>
-                            <option value="EXTERNAL">Externe</option>
-                        </select>
-                    </div>
-                </div>
-
-                @if (form.getRawValue().locationType === 'ONSITE') {
-                    <div class="form-group">
-                        <label for="locationName">Lieu</label>
-                        <div class="input-wrapper">
-                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                            <input id="locationName" type="text" formControlName="locationName" placeholder="Salle, bâtiment..." />
-                        </div>
-                        @if (form.get('locationName')?.touched && form.get('locationName')?.errors?.['required']) {
-                            <p class="field-error">Le lieu est obligatoire pour un événement sur site.</p>
-                        }
-                    </div>
-                }
-
-                @if (form.getRawValue().locationType === 'ONLINE') {
-                    <div class="form-group">
-                        <label for="meetingUrl">Meeting URL</label>
-                        <div class="input-wrapper">
-                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                            <input id="meetingUrl" type="text" formControlName="meetingUrl" placeholder="https://..." />
-                        </div>
-                        @if (form.get('meetingUrl')?.touched && form.get('meetingUrl')?.errors?.['required']) {
-                            <p class="field-error">Le lien de réunion est obligatoire pour un événement en ligne.</p>
-                        }
-                    </div>
-                }
-
-                @if (form.getRawValue().locationType === 'EXTERNAL') {
-                    <div class="form-group">
-                        <label for="address">Adresse</label>
-                        <div class="input-wrapper">
-                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                            <input id="address" type="text" formControlName="address" placeholder="Adresse complète..." />
-                        </div>
-                        @if (form.get('address')?.touched && form.get('address')?.errors?.['required']) {
-                            <p class="field-error">L’adresse est obligatoire pour un événement externe.</p>
-                        }
-                    </div>
-                }
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="startAt">Date et heure de début</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <input id="startAt" type="datetime-local" class="form-input" formControlName="startAt" />
             </div>
-        </div>
+            @if (form.get('startAt')?.touched && form.get('startAt')?.errors?.['required']) {
+              <span class="field-error">La date de début est requise.</span>
+            }
+          </div>
 
+          <div class="form-group">
+            <label for="registrationDeadline">Clôture des inscriptions</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <input id="registrationDeadline" type="datetime-local" class="form-input" formControlName="registrationDeadline" />
+            </div>
+            @if (form.get('registrationDeadline')?.touched && form.get('registrationDeadline')?.errors?.['required']) {
+              <span class="field-error">La date limite est requise.</span>
+            }
+          </div>
 
-        <div class="form-section">
-            <h2 class="section-title">Image de l’événement</h2>
+          <div class="form-group">
+            <label for="durationMinutes">Durée (minutes)</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <input id="durationMinutes" type="number" class="form-input" min="30" step="1" formControlName="durationMinutes" placeholder="Ex: 60" />
+            </div>
+            @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['required']) {
+              <span class="field-error">La durée est requise.</span>
+            }
+            @if (form.get('durationMinutes')?.touched && form.get('durationMinutes')?.errors?.['min']) {
+              <span class="field-error">Minimum 30 minutes.</span>
+            }
+          </div>
 
+          <div class="form-group">
+            <label for="capacity">Capacité (places)</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <input id="capacity" type="number" class="form-input" min="2" step="1" formControlName="capacity" placeholder="Ex: 30" />
+            </div>
+            @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['required']) {
+              <span class="field-error">La capacité est requise.</span>
+            }
+            @if (form.get('capacity')?.touched && form.get('capacity')?.errors?.['min']) {
+              <span class="field-error">Minimum 2 places.</span>
+            }
+          </div>
+
+          <!-- Location Sub-section -->
+          <div class="form-group full-width group-separator">
+            <label for="locationType">Type de lieu</label>
+            <div class="select-wrapper type-select">
+              <select id="locationType" class="form-select" formControlName="locationType" (change)="onLocationTypeChange()">
+                <option value="ONSITE">Présentiel (Sur site)</option>
+                <option value="ONLINE">À distance (En ligne)</option>
+                <option value="EXTERNAL">Externe</option>
+              </select>
+            </div>
+          </div>
+
+          @if (form.getRawValue().locationType === 'ONSITE') {
             <div class="form-group full-width">
-                <label>Choix de l’image</label>
-
-                <div class="image-mode-switch">
-                    <button type="button" [class.active]="imageMode === 'AUTO'" (click)="onImageModeChange('AUTO')">
-                        Automatique selon la catégorie
-                    </button>
-                    <button type="button" [class.active]="imageMode === 'PRESET'" (click)="onImageModeChange('PRESET')">
-                        Choisir une image preset
-                    </button>
-                    <button type="button" [class.active]="imageMode === 'CUSTOM_URL'" (click)="onImageModeChange('CUSTOM_URL')">
-                        URL personnalisée
-                    </button>
-                </div>
-
-                @if (imageMode === 'PRESET') {
-                    <div class="image-preset-grid">
-                        @for (preset of eventImagePresets; track preset.url) {
-                            <button
-                                type="button"
-                                class="image-card"
-                                [class.selected]="selectedPresetImageUrl === preset.url"
-                                (click)="selectEventPreset(preset.url)">
-                                <img [src]="preset.url" [alt]="preset.label" />
-                                <span>{{ preset.label }}</span>
-                            </button>
-                        }
-                    </div>
-                }
-
-                @if (imageMode === 'CUSTOM_URL') {
-                    <div class="input-wrapper">
-                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                        <input type="text" formControlName="imageUrl" placeholder="https://..." />
-                    </div>
-                }
-
-                <div class="image-preview-box">
-                    <img [src]="previewEventImageUrl" alt="Aperçu de l’événement" />
-                </div>
+              <label for="locationName">Salle / Bâtiment</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <input id="locationName" type="text" class="form-input" formControlName="locationName" placeholder="Ex: Salle de réunion A" />
+              </div>
+              @if (form.get('locationName')?.touched && form.get('locationName')?.errors?.['required']) {
+                <span class="field-error">Le lieu est requis.</span>
+              }
             </div>
+          }
+
+          @if (form.getRawValue().locationType === 'ONLINE') {
+            <div class="form-group full-width">
+              <label for="meetingUrl">Lien de la visioconférence</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                <input id="meetingUrl" type="url" class="form-input" formControlName="meetingUrl" placeholder="Ex: https://teams.microsoft.com/..." />
+              </div>
+              @if (form.get('meetingUrl')?.touched && form.get('meetingUrl')?.errors?.['required']) {
+                <span class="field-error">Le lien est requis.</span>
+              }
+            </div>
+          }
+
+          @if (form.getRawValue().locationType === 'EXTERNAL') {
+            <div class="form-group full-width">
+              <label for="address">Adresse complète</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <input id="address" type="text" class="form-input" formControlName="address" placeholder="Saisissez l'adresse de l'événement" />
+              </div>
+              @if (form.get('address')?.touched && form.get('address')?.errors?.['required']) {
+                <span class="field-error">L'adresse est requise.</span>
+              }
+            </div>
+          }
+        </div>
+      </section>
+
+
+      <!-- Section: Visuals -->
+      <section class="admin-card form-section">
+        <div class="card-header">
+          <h2 class="card-title">Identité visuelle</h2>
         </div>
 
-        <!-- Submit -->
-        <div class="form-actions">
-            <button
-                type="button"
-                class="btn-secondary"
-                (click)="saveAsDraft()"
-                [disabled]="savingDraft || publishing"
-            >
-                @if (savingDraft) {
-                    Enregistrement...
-                } @else {
-                    Enregistrer en brouillon
-                }
-            </button>
+        <div class="form-group full-width">
+          <label>Source de l'image de couverture</label>
 
-            <button
-                type="button"
-                class="btn-primary"
-                (click)="createAndPublish()"
-                [disabled]="savingDraft || publishing"
-            >
-                @if (publishing) {
-                    Création...
-                } @else {
-                    Créer et publier
-                }
+          <div class="segmented-control">
+            <button type="button" class="segment-btn" [class.active]="imageMode === 'AUTO'" (click)="onImageModeChange('AUTO')">
+              Automatique
             </button>
+            <button type="button" class="segment-btn" [class.active]="imageMode === 'PRESET'" (click)="onImageModeChange('PRESET')">
+              Galerie
+            </button>
+            <button type="button" class="segment-btn" [class.active]="imageMode === 'CUSTOM_URL'" (click)="onImageModeChange('CUSTOM_URL')">
+              Lien externe
+            </button>
+          </div>
+
+          @if (imageMode === 'PRESET') {
+            <div class="preset-gallery">
+              @for (preset of eventImagePresets; track preset.url) {
+                <button
+                  type="button"
+                  class="preset-item"
+                  [class.selected]="selectedPresetImageUrl === preset.url"
+                  (click)="selectEventPreset(preset.url)">
+                  <img [src]="preset.url" [alt]="preset.label" />
+                  <span class="preset-label">{{ preset.label }}</span>
+                </button>
+              }
+            </div>
+          }
+
+          @if (imageMode === 'CUSTOM_URL') {
+            <div class="input-wrapper custom-url-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              <input type="url" class="form-input" formControlName="imageUrl" placeholder="Entrez l'URL de votre image (https://...)" />
+            </div>
+          }
+
+          <div class="preview-container">
+            <span class="preview-label">Aperçu du rendu final</span>
+            <div class="image-preview">
+              @if (previewEventImageUrl) {
+                <img [src]="previewEventImageUrl" alt="Aperçu de l'événement" />
+              } @else {
+                <div class="preview-placeholder">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <span>Image à définir</span>
+                </div>
+              }
+            </div>
+          </div>
         </div>
+      </section>
+
+      <!-- Float Action Bar -->
+      <div class="form-actions-bar">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="saveAsDraft()"
+          [disabled]="savingDraft || publishing"
+        >
+          @if (savingDraft) {
+            <div class="spinner mini-spinner"></div>
+            Sauvegarde...
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            Enregistrer comme brouillon
+          }
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="createAndPublish()"
+          [disabled]="savingDraft || publishing || form.invalid"
+        >
+          @if (publishing) {
+            <div class="spinner mini-spinner"></div>
+            Publication...
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            Créer et publier
+          }
+        </button>
+      </div>
+
     </form>
+  </div>
 </div>

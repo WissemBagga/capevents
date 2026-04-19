@@ -79,6 +79,10 @@ export class EditEvent {
     return this.currentUser?.departmentId || null;
   }
 
+  get adminDashboardRoute(): string {
+    return this.isHr ? '/admin/hr' : '/admin/manager';
+  }
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
 

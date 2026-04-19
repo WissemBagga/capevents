@@ -171,7 +171,7 @@ export class CreateEvent {
     return new Date(value).toISOString();
   }
 
-  private getAdminDashboardRoute(): string {
+  get adminDashboardRoute(): string {
     return this.isHr ? '/admin/hr' : '/admin/manager';
   }
 
@@ -195,7 +195,7 @@ export class CreateEvent {
         this.cdr.markForCheck();
 
         setTimeout(() => {
-          this.router.navigate([this.getAdminDashboardRoute()]);
+          this.router.navigate([this.adminDashboardRoute]);
         }, 1000);
       },
       error: (err) => {
@@ -232,7 +232,7 @@ export class CreateEvent {
               this.cdr.markForCheck();
 
               setTimeout(() => {
-                this.router.navigate([this.getAdminDashboardRoute()]);
+                this.router.navigate([this.adminDashboardRoute]);
               }, 1000);
             },
             error: (err) => {
