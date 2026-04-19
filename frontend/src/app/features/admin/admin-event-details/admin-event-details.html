@@ -36,7 +36,9 @@
         <section class="hero-section">
             <div class="hero-image-wrap">
                 <img [src]="eventHeroImageUrl" [alt]="event.title" class="hero-img" />
-                <div class="hero-overlay"></div>
+            </div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
                 <div class="hero-badges">
                     <span class="hero-category-tag">{{ event.category || 'Sans catégorie' }}</span>
                     <span class="hero-status-tag"
@@ -47,8 +49,6 @@
                         {{ statusLabel(event.status) }}
                     </span>
                 </div>
-            </div>
-            <div class="hero-content">
                 <div class="hero-content-left">
                     <h1 class="hero-title">{{ event.title }}</h1>
                     <div class="hero-meta-row">
