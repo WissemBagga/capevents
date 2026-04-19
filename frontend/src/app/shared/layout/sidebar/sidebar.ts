@@ -180,4 +180,9 @@ export class Sidebar {
 
     return currentUrl === itemRoute || currentUrl.startsWith(itemRoute + '/');
   }
+
+  get userSubtitle(): string {
+    const jobTitle = this.currentUser?.jobTitle?.trim();
+    return jobTitle || this.roleLabel;
+  }
 }

@@ -73,15 +73,35 @@ export class Register implements OnInit {
     avatarUrl: [this.avatarPresets[0].url]
   });
 
-  onSubmit(): void{
-    if(this.registerForm.invalid){
+  private isHttpUrl(value: string | null | undefined): boolean {
+    if (!value?.trim()) return false;
+
+    try {
+      const url = new URL(value.trim());
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  }
+
+  onSubmit(): void {
+    if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
     this.loading = true;
     this.errorMessage = '';
-    this.successMessage='';
+    this.successMessage = '';
+
+    const rawAvatar = this.registerForm.value.avatarUrl?.trim() || '';
+
+    if (this.avatarMode === 'CUSTOM_URL' && rawAvatar && !this.isHttpUrl(rawAvatar)) {
+      this.loading = false;
+      this.errorMessage = 'Veuillez saisir une URL valide commençant par http:// ou https://';
+      this.cdr.markForCheck();
+      return;
+    }
 
     const payload = {
       firstName: this.registerForm.value.firstName ?? '',
@@ -90,7 +110,7 @@ export class Register implements OnInit {
       password: this.registerForm.value.password ?? '',
       phone: this.registerForm.value.phone ?? '',
       departmentId: this.registerForm.value.departmentId ?? null,
-      avatarUrl: this.registerForm.value.avatarUrl?.trim() || null
+      avatarUrl: rawAvatar || null
     };
 
     this.authService.register(payload).subscribe({

@@ -186,6 +186,14 @@ export class CreateEvent {
     this.successMessage = '';
     this.cdr.markForCheck();
 
+    const rawImage = this.form.get('imageUrl')?.value?.trim() || '';
+
+    if (this.imageMode === 'CUSTOM_URL' && rawImage && !this.isHttpUrl(rawImage)) {
+      this.errorMessage = 'Veuillez saisir une URL image valide commençant par http:// ou https://';
+      this.cdr.markForCheck();
+      return;
+    }
+
     const payload = this.buildPayload();
 
     this.eventService.createEvent(payload).subscribe({
@@ -219,6 +227,14 @@ export class CreateEvent {
     this.errorMessage = '';
     this.successMessage = '';
     this.cdr.markForCheck();
+
+    const rawImage = this.form.get('imageUrl')?.value?.trim() || '';
+
+    if (this.imageMode === 'CUSTOM_URL' && rawImage && !this.isHttpUrl(rawImage)) {
+      this.errorMessage = 'Veuillez saisir une URL image valide commençant par http:// ou https://';
+      this.cdr.markForCheck();
+      return;
+    }
 
     const payload = this.buildPayload();
 
@@ -327,5 +343,16 @@ export class CreateEvent {
 
     this.imagePreviewUrl = this.previewEventImageUrl;
     this.cdr.markForCheck();
+  }
+
+  private isHttpUrl(value: string | null | undefined): boolean {
+    if (!value?.trim()) return false;
+
+    try {
+      const url = new URL(value.trim());
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+      return false;
+    }
   }
 }

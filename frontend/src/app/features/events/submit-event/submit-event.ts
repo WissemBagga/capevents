@@ -136,6 +136,14 @@ export class SubmitEvent {
       return;
     }
 
+    const rawImage = this.form.get('imageUrl')?.value?.trim() || '';
+
+    if (this.imageMode === 'CUSTOM_URL' && rawImage && !this.isHttpUrl(rawImage)) {
+      this.errorMessage = 'Veuillez saisir une URL image valide commençant par http:// ou https://';
+      this.cdr.markForCheck();
+      return;
+    }
+
     this.loading = true;
     this.errorMessage = '';
     this.successMessage = '';
@@ -174,8 +182,11 @@ export class SubmitEvent {
             targetDepartmentId: this.currentDepartmentId
           });
 
+          this.imageMode = 'AUTO';
+          this.selectedPresetImageUrl = '';
           this.onLocationTypeChange();
           this.onAudienceChange();
+          this.syncEventImageSelection();
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -257,5 +268,16 @@ export class SubmitEvent {
     }
 
     this.cdr.markForCheck();
+  }
+
+  private isHttpUrl(value: string | null | undefined): boolean {
+    if (!value?.trim()) return false;
+
+    try {
+      const url = new URL(value.trim());
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+      return false;
+    }
   }
 }

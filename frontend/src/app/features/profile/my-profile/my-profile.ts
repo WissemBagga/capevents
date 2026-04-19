@@ -87,12 +87,20 @@ export class MyProfile {
     this.successMessage = '';
 
     const v = this.form.getRawValue();
+    const rawAvatar = v.avatarUrl?.trim() || '';
+
+    if (this.avatarMode === 'CUSTOM_URL' && rawAvatar && !this.isHttpUrl(rawAvatar)) {
+      this.saving = false;
+      this.errorMessage = 'Veuillez saisir une URL valide commençant par http:// ou https://';
+      this.cdr.markForCheck();
+      return;
+    }
 
     this.profileService.updateMyProfile({
       firstName: v.firstName ?? '',
       lastName: v.lastName ?? '',
       jobTitle: v.jobTitle?.trim() ? v.jobTitle.trim() : null,
-      avatarUrl: v.avatarUrl?.trim() ? v.avatarUrl.trim() : null
+      avatarUrl: rawAvatar ? rawAvatar : null
     })
     .pipe(finalize(() => {
       this.saving = false;
@@ -103,9 +111,16 @@ export class MyProfile {
         this.profile = profile;
         this.successMessage = 'Profil mis à jour avec succès.';
         this.cdr.markForCheck();
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 600);
       },
       error: (err) => {
-        this.errorMessage = err?.error?.message || err?.error || 'Impossible de mettre à jour le profil.';
+        this.errorMessage =
+          err?.error?.message ||
+          err?.error ||
+          'Impossible de mettre à jour le profil.';
         this.cdr.markForCheck();
       }
     });
@@ -116,6 +131,17 @@ export class MyProfile {
     this.selectedAvatarPresetUrl = url;
     this.form.patchValue({ avatarUrl: url });
     this.cdr.markForCheck();
+  }
+
+  private isHttpUrl(value: string | null | undefined): boolean {
+    if (!value?.trim()) return false;
+
+    try {
+      const url = new URL(value.trim());
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+      return false;
+    }
   }
 
   onAvatarModeChange(mode: 'PRESET' | 'CUSTOM_URL'): void {
