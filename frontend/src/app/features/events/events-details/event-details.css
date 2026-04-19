@@ -30,7 +30,6 @@
   text-decoration: none;
   transition: color 0.2s ease, transform 0.2s ease;
   cursor:pointer;
-
 }
 
 .back-link:hover {
