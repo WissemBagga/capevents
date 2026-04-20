@@ -31,13 +31,23 @@
         @if (isHr) {
           <div class="form-group">
             <label for="departmentId">Département</label>
-            <input id="departmentId" type="number" [(ngModel)]="filters.departmentId" placeholder="ID département" />
+            <select id="departmentId" [(ngModel)]="filters.departmentId">
+              <option [ngValue]="null">Tous les départements</option>
+              @for (department of departments; track trackByDepartmentOption($index, department)) {
+                <option [ngValue]="department.id">{{ department.name }}</option>
+              }
+            </select>
           </div>
         }
 
         <div class="form-group">
           <label for="category">Catégorie</label>
-          <input id="category" type="text" [(ngModel)]="filters.category" placeholder="Ex: Sport" />
+          <select id="category" [(ngModel)]="filters.category">
+            <option value="">Toutes les catégories</option>
+            @for (category of categoryOptions; track trackByCategoryOption($index, category)) {
+              <option [value]="category.value">{{ category.label }}</option>
+            }
+          </select>
         </div>
       </div>
 
@@ -148,70 +158,36 @@
               </article>
             </div>
 
-            <div class="two-columns">
-              <div>
-                <h3 class="subsection-title">Top 5 membres engagés</h3>
-
-                @if (analytics.topMembers.length === 0) {
-                  <div class="state-message info-msg">
-                    <p>Aucune donnée membre disponible.</p>
-                  </div>
-                }
-
-                @if (analytics.topMembers.length > 0) {
-                  <div class="stats-list">
-                    @for (item of analytics.topMembers; track trackByMemberEmail($index, item)) {
-                      <article class="stat-list-item">
-                        <div class="item-main">
-                          <h3 class="event-title">{{ item.fullName }}</h3>
-                          <span class="muted-text">{{ item.email }}</span>
-                        </div>
-
-                        <div class="item-metrics three-cols">
-                          <div class="metric-cell">
-                            <span class="metric-label">Inscrits</span>
-                            <strong class="metric-value">{{ item.registeredCount }}</strong>
-                          </div>
-
-                          <div class="metric-cell">
-                            <span class="metric-label">Présents</span>
-                            <strong class="metric-value">{{ item.presentCount }}</strong>
-                          </div>
-
-                          <div class="metric-cell highlight">
-                            <span class="metric-label">Taux présence</span>
-                            <strong class="metric-value">{{ item.attendanceRate | number:'1.0-2' }}%</strong>
-                          </div>
-                        </div>
-                      </article>
-                    }
-                  </div>
-                }
-              </div>
-
-              <div>
+            <div class="single-column-block">
+              <div class="section-header compact-header">
                 <h3 class="subsection-title">Tendance mensuelle</h3>
 
-                @if (analytics.monthlyTrend.length === 0) {
-                  <div class="state-message info-msg">
-                    <p>Aucune tendance disponible.</p>
-                  </div>
-                }
-
-                @if (analytics.monthlyTrend.length > 0) {
-                  <div class="trend-list">
-                    @for (point of analytics.monthlyTrend; track trackByMonth($index, point)) {
-                      <div class="trend-row">
-                        <span class="trend-label">{{ point.month }}</span>
-                        <div class="trend-bar-track">
-                          <div class="trend-bar-fill" [style.width]="barWidth(point.registrations, maxMonthlyRegistrations)"></div>
-                        </div>
-                        <strong class="trend-value">{{ point.registrations }}</strong>
-                      </div>
-                    }
-                  </div>
+                @if (analytics.memberRows.length > 0) {
+                  <button type="button" class="btn-secondary" (click)="exportMembersExcel()">
+                    Export Excel
+                  </button>
                 }
               </div>
+
+              @if (analytics.monthlyTrend.length === 0) {
+                <div class="state-message info-msg">
+                  <p>Aucune tendance disponible.</p>
+                </div>
+              }
+
+              @if (analytics.monthlyTrend.length > 0) {
+                <div class="trend-list">
+                  @for (point of analytics.monthlyTrend; track trackByMonth($index, point)) {
+                    <div class="trend-row">
+                      <span class="trend-label">{{ point.month }}</span>
+                      <div class="trend-bar-track">
+                        <div class="trend-bar-fill" [style.width]="barWidth(point.registrations, maxMonthlyRegistrations)"></div>
+                      </div>
+                      <strong class="trend-value">{{ point.registrations }}</strong>
+                    </div>
+                  }
+                </div>
+              }
             </div>
           </section>
         }
@@ -300,56 +276,6 @@
                   Export Excel
                 </button>
               }
-            </div>
-
-            <div class="stats-list">
-              @for (item of analytics.topMembers; track trackByTopMember($index, item)) {
-                <article class="stat-list-item">
-                  <div class="item-main">
-                    <div class="rank-title-row">
-                      <span class="rank-badge">#{{ $index + 1 }}</span>
-                      <div>
-                        <h3 class="event-title">{{ item.fullName }}</h3>
-                        <span class="muted-text">{{ item.email }} · {{ item.departmentName || 'Sans département' }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="item-metrics three-cols">
-                    <div class="metric-cell">
-                      <span class="metric-label">Inscrits</span>
-                      <strong class="metric-value">{{ item.registeredCount }}</strong>
-                    </div>
-
-                    <div class="metric-cell">
-                      <span class="metric-label">Présents</span>
-                      <strong class="metric-value">{{ item.presentCount }}</strong>
-                    </div>
-
-                    <div class="metric-cell highlight">
-                      <span class="metric-label">Taux présence</span>
-                      <strong class="metric-value">{{ item.attendanceRate | number:'1.0-2' }}%</strong>
-                    </div>
-                  </div>
-                </article>
-              }
-            </div>
-          </section>
-        }
-
-        @if (analytics.topMembers.length > 0) {
-          <section class="admin-card stats-section">
-            <div class="card-header">
-              <div class="header-text-group">
-                <h2 class="card-title">Top 5 participants</h2>
-                <p class="card-subtitle">
-                  @if (isHr) {
-                    Classement global tous départements confondus.
-                  } @else {
-                    Classement des participants les plus engagés de votre département.
-                  }
-                </p>
-              </div>
             </div>
 
             <div class="stats-list">

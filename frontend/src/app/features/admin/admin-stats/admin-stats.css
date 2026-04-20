@@ -629,3 +629,25 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.single-column-block {
+  margin-top: 24px;
+}
+
+.compact-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.filter-grid select,
+.filter-grid input {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font: inherit;
+  background: #fff;
+}

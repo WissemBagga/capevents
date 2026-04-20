@@ -2,18 +2,20 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-
-import {FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import * as XLSX from 'xlsx';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { AdminAnalyticsOverviewResponse, EventEngagementResponse } from '../../../core/models/admin-analytics.model';
 import { AdminAnalyticsService } from '../../../core/services/admin-analytics.service';
-import * as XLSX from 'xlsx';
+import { UserService } from '../../../core/services/user.service';
+import { Department } from '../../../core/models/department.model';
+import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
 @Component({
   selector: 'app-admin-stats',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, FormsModule ],
+  imports: [RouterLink, DecimalPipe, FormsModule],
   templateUrl: './admin-stats.html',
   styleUrl: './admin-stats.css',
 })
@@ -21,11 +23,16 @@ export class AdminStats {
   private cdr = inject(ChangeDetectorRef);
   private authService = inject(AuthService);
   private adminAnalyticsService = inject(AdminAnalyticsService);
+  private userService = inject(UserService);
 
   analytics: AdminAnalyticsOverviewResponse | null = null;
 
   loading = false;
+  loadingDepartments = false;
   errorMessage = '';
+
+  departments: Department[] = [];
+  readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
 
   filters = {
     from: '',
@@ -35,7 +42,28 @@ export class AdminStats {
   };
 
   ngOnInit(): void {
+    if (this.isHr) {
+      this.loadDepartments();
+    }
     this.loadAnalytics();
+  }
+
+  private loadDepartments(): void {
+    this.loadingDepartments = true;
+    this.cdr.markForCheck();
+
+    this.userService.getDepartments().subscribe({
+      next: (departments) => {
+        this.departments = departments;
+        this.loadingDepartments = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.loadingDepartments = false;
+        this.errorMessage = 'Impossible de charger la liste des départements.';
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   loadAnalytics(): void {
@@ -77,7 +105,6 @@ export class AdminStats {
     };
     this.loadAnalytics();
   }
-
 
   statusLabel(status: string): string {
     const labels: Record<string, string> = {
@@ -124,9 +151,24 @@ export class AdminStats {
     return item.email;
   }
 
-
   trackByMonth(_: number, item: { month: string }): string {
     return item.month;
+  }
+
+  trackByTopMember(_: number, item: { email: string }): string {
+    return item.email;
+  }
+
+  trackByDepartment(_: number, item: { departmentId: number }): number {
+    return item.departmentId;
+  }
+
+  trackByDepartmentOption(_: number, item: Department): number {
+    return item.id;
+  }
+
+  trackByCategoryOption(_: number, item: { value: string }): string {
+    return item.value;
   }
 
   get maxMonthlyRegistrations(): number {
@@ -137,14 +179,6 @@ export class AdminStats {
   barWidth(value: number, max: number): string {
     if (max <= 0) return '0%';
     return `${Math.max(8, (value / max) * 100)}%`;
-  }
-
-  trackByTopMember(_: number, item: { email: string }): string {
-    return item.email;
-  }
-
-  trackByDepartment(_: number, item: { departmentId: number }): number {
-    return item.departmentId;
   }
 
   departmentBarWidth(rate: number): string {

@@ -189,9 +189,6 @@ public class AdminAnalyticsService {
                 ? buildDepartmentRows(eligibleEvents)
                 : List.of();
 
-
-
-
         return new AdminAnalyticsOverviewResponse(
                 totalEvents,
                 publishedEvents,
