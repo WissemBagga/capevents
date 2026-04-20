@@ -12,6 +12,13 @@ import { UserService } from '../../../core/services/user.service';
 import { Department } from '../../../core/models/department.model';
 import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
+type TrendPointVm = {
+  month: string;
+  registrations: number;
+  x: number;
+  y: number;
+};
+
 @Component({
   selector: 'app-admin-stats',
   standalone: true,
@@ -24,6 +31,14 @@ export class AdminStats {
   private authService = inject(AuthService);
   private adminAnalyticsService = inject(AdminAnalyticsService);
   private userService = inject(UserService);
+
+
+  readonly trendChartWidth = 640;
+  readonly trendChartHeight = 260;
+  readonly trendChartPaddingLeft = 36;
+  readonly trendChartPaddingRight = 20;
+  readonly trendChartPaddingTop = 20;
+  readonly trendChartPaddingBottom = 42;
 
   analytics: AdminAnalyticsOverviewResponse | null = null;
 
@@ -207,5 +222,117 @@ export class AdminStats {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Membres');
     XLSX.writeFile(workbook, 'liste-membres-engagement.xlsx');
+  }
+
+
+  get monthlyTrendPoints(): TrendPointVm[] {
+    const data = this.analytics?.monthlyTrend ?? [];
+    if (!data.length) return [];
+
+    const max = Math.max(...data.map(item => item.registrations), 1);
+    const drawWidth =
+      this.trendChartWidth - this.trendChartPaddingLeft - this.trendChartPaddingRight;
+    const drawHeight =
+      this.trendChartHeight - this.trendChartPaddingTop - this.trendChartPaddingBottom;
+
+    const step = data.length > 1 ? drawWidth / (data.length - 1) : 0;
+
+    return data.map((item, index) => {
+      const x = this.trendChartPaddingLeft + index * step;
+      const y =
+        this.trendChartPaddingTop +
+        drawHeight * (1 - item.registrations / max);
+
+      return {
+        month: item.month,
+        registrations: item.registrations,
+        x,
+        y
+      };
+    });
+  }
+
+  get trendPolylinePoints(): string {
+    return this.monthlyTrendPoints.map(point => `${point.x},${point.y}`).join(' ');
+  }
+
+  get trendAreaPoints(): string {
+    const points = this.monthlyTrendPoints;
+    if (!points.length) return '';
+
+    const baseline = this.trendChartHeight - this.trendChartPaddingBottom;
+    const first = points[0];
+    const last = points[points.length - 1];
+
+    return [
+      `${first.x},${baseline}`,
+      ...points.map(point => `${point.x},${point.y}`),
+      `${last.x},${baseline}`
+    ].join(' ');
+  }
+
+  get trendGridLines(): { y: number; value: number }[] {
+    const data = this.analytics?.monthlyTrend ?? [];
+    if (!data.length) return [];
+
+    const max = Math.max(...data.map(item => item.registrations), 1);
+    const levels = 4;
+    const drawHeight =
+      this.trendChartHeight - this.trendChartPaddingTop - this.trendChartPaddingBottom;
+
+    return Array.from({ length: levels + 1 }, (_, index) => {
+      const ratio = index / levels;
+      const value = Math.round(max * (1 - ratio));
+      const y = this.trendChartPaddingTop + drawHeight * ratio;
+
+      return { y, value };
+    });
+  }
+
+  get trendPeakPoint(): TrendPointVm | null {
+    const points = this.monthlyTrendPoints;
+    if (!points.length) return null;
+
+    return points.reduce((best, current) =>
+      current.registrations > best.registrations ? current : best
+    );
+  }
+
+  get trendTotalRegistrations(): number {
+    return (this.analytics?.monthlyTrend ?? [])
+      .reduce((sum, item) => sum + item.registrations, 0);
+  }
+
+  get trendDeltaPercent(): number | null {
+    const data = this.analytics?.monthlyTrend ?? [];
+    if (data.length < 2) return null;
+
+    const first = data[0].registrations;
+    const last = data[data.length - 1].registrations;
+
+    if (first === 0 && last === 0) return 0;
+    if (first === 0) return 100;
+
+    return Math.round(((last - first) / first) * 100);
+  }
+
+  get trendDeltaLabel(): string {
+    const delta = this.trendDeltaPercent;
+    if (delta === null) return 'Variation N/D';
+    if (delta > 0) return `+${delta}% vs début période`;
+    if (delta < 0) return `${delta}% vs début période`;
+    return 'Stable sur la période';
+  }
+
+  get trendDeltaClass(): string {
+    const delta = this.trendDeltaPercent;
+    if (delta === null) return 'neutral-chip';
+    if (delta > 0) return 'positive-chip';
+    if (delta < 0) return 'negative-chip';
+    return 'neutral-chip';
+  }
+
+  get departmentChampion() {
+    return this.analytics?.departmentRows?.[0] ?? null;
   }
 }

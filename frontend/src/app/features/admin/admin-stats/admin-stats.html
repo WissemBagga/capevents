@@ -160,7 +160,10 @@
 
             <div class="single-column-block">
               <div class="section-header compact-header">
-                <h3 class="subsection-title">Tendance mensuelle</h3>
+                <div>
+                  <h3 class="subsection-title">Tendance mensuelle du département</h3>
+                  <p class="chart-subtitle">Évolution des inscriptions confirmées sur la période sélectionnée.</p>
+                </div>
 
                 @if (analytics.memberRows.length > 0) {
                   <button type="button" class="btn-secondary" (click)="exportMembersExcel()">
@@ -176,16 +179,90 @@
               }
 
               @if (analytics.monthlyTrend.length > 0) {
-                <div class="trend-list">
-                  @for (point of analytics.monthlyTrend; track trackByMonth($index, point)) {
-                    <div class="trend-row">
-                      <span class="trend-label">{{ point.month }}</span>
-                      <div class="trend-bar-track">
-                        <div class="trend-bar-fill" [style.width]="barWidth(point.registrations, maxMonthlyRegistrations)"></div>
-                      </div>
-                      <strong class="trend-value">{{ point.registrations }}</strong>
+                <div class="trend-showcase-card">
+                  <div class="trend-summary-grid">
+                    <div class="trend-summary-pill">
+                      <span class="summary-label">Pic mensuel</span>
+                      <strong class="summary-value">
+                        {{ trendPeakPoint?.registrations || 0 }}
+                      </strong>
+                      <span class="summary-sub">{{ trendPeakPoint?.month || '—' }}</span>
                     </div>
-                  }
+
+                    <div class="trend-summary-pill">
+                      <span class="summary-label">Total période</span>
+                      <strong class="summary-value">{{ trendTotalRegistrations }}</strong>
+                      <span class="summary-sub">Inscriptions confirmées</span>
+                    </div>
+
+                    <div class="trend-summary-pill" [class]="trendDeltaClass">
+                      <span class="summary-label">Variation</span>
+                      <strong class="summary-value">
+                        @if (trendDeltaPercent !== null) {
+                          {{ trendDeltaPercent > 0 ? '+' : '' }}{{ trendDeltaPercent }}%
+                        } @else {
+                          N/D
+                        }
+                      </strong>
+                      <span class="summary-sub">{{ trendDeltaLabel }}</span>
+                    </div>
+                  </div>
+
+                  <div class="trend-chart-wrapper">
+                    <svg
+                      class="trend-chart-svg"
+                      [attr.viewBox]="'0 0 ' + trendChartWidth + ' ' + trendChartHeight"
+                      preserveAspectRatio="none"
+                    >
+                      <defs>
+                        <linearGradient id="trendAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.30" />
+                          <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.02" />
+                        </linearGradient>
+                      </defs>
+
+                      @for (line of trendGridLines; track $index) {
+                        <line
+                          class="chart-grid-line"
+                          [attr.x1]="trendChartPaddingLeft"
+                          [attr.y1]="line.y"
+                          [attr.x2]="trendChartWidth - trendChartPaddingRight"
+                          [attr.y2]="line.y"
+                        />
+                        <text
+                          class="chart-grid-label"
+                          [attr.x]="6"
+                          [attr.y]="line.y + 4"
+                        >
+                          {{ line.value }}
+                        </text>
+                      }
+
+                      <polygon
+                        class="trend-area"
+                        [attr.points]="trendAreaPoints"
+                      ></polygon>
+
+                      <polyline
+                        class="trend-line"
+                        [attr.points]="trendPolylinePoints"
+                      ></polyline>
+
+                      @for (point of monthlyTrendPoints; track trackByMonth($index, point)) {
+                        <circle class="trend-point" [attr.cx]="point.x" [attr.cy]="point.y" r="5"></circle>
+                        <text class="trend-point-value" [attr.x]="point.x" [attr.y]="point.y - 12">
+                          {{ point.registrations }}
+                        </text>
+                        <text
+                          class="trend-point-label"
+                          [attr.x]="point.x"
+                          [attr.y]="trendChartHeight - 12"
+                        >
+                          {{ point.month }}
+                        </text>
+                      }
+                    </svg>
+                  </div>
                 </div>
               }
             </div>
@@ -208,50 +285,85 @@
             }
 
             @if (analytics.departmentRows.length > 0) {
-              <div class="stats-list">
-                @for (row of analytics.departmentRows; track trackByDepartment($index, row)) {
-                  <article class="stat-list-item">
-                    <div class="item-main">
-                      <div class="rank-title-row">
-                        <span class="rank-badge">#{{ $index + 1 }}</span>
-                        <h3 class="event-title">{{ row.departmentName }}</h3>
-                      </div>
-                    </div>
-
-                    <div class="item-metrics four-cols">
-                      <div class="metric-cell">
-                        <span class="metric-label">Actifs</span>
-                        <strong class="metric-value">{{ row.activeEmployees }}</strong>
-                      </div>
-
-                      <div class="metric-cell">
-                        <span class="metric-label">Total</span>
-                        <strong class="metric-value">{{ row.totalEmployees }}</strong>
+              <div class="department-analytics-layout">
+                <div class="stats-list">
+                  @for (row of analytics.departmentRows; track trackByDepartment($index, row)) {
+                    <article class="stat-list-item">
+                      <div class="item-main">
+                        <div class="rank-title-row">
+                          <span class="rank-badge">#{{ $index + 1 }}</span>
+                          <div>
+                            <h3 class="event-title">{{ row.departmentName }}</h3>
+                            <span class="muted-text">
+                              {{ row.activeEmployees }} actifs / {{ row.totalEmployees }} employés
+                            </span>
+                          </div>
+                        </div>
                       </div>
 
-                      <div class="metric-cell highlight">
-                        <span class="metric-label">Participation</span>
-                        <strong class="metric-value">{{ row.participationRate | number:'1.0-2' }}%</strong>
-                      </div>
+                      <div class="item-metrics four-cols">
+                        <div class="metric-cell">
+                          <span class="metric-label">Actifs</span>
+                          <strong class="metric-value">{{ row.activeEmployees }}</strong>
+                        </div>
 
-                      <div class="metric-cell">
-                        <span class="metric-label">Satisfaction</span>
-                        <strong class="metric-value">
-                          @if (row.averageRating !== null) {
-                            {{ row.averageRating | number:'1.1-2' }}/5
-                          } @else {
-                            N/D
-                          }
+                        <div class="metric-cell">
+                          <span class="metric-label">Total</span>
+                          <strong class="metric-value">{{ row.totalEmployees }}</strong>
+                        </div>
+
+                        <div class="metric-cell highlight">
+                          <span class="metric-label">Participation</span>
+                          <strong class="metric-value">{{ row.participationRate | number:'1.0-2' }}%</strong>
+                        </div>
+
+                        <div class="metric-cell">
+                          <span class="metric-label">Satisfaction</span>
+                          <strong class="metric-value">
+                            @if (row.averageRating !== null) {
+                              {{ row.averageRating | number:'1.1-2' }}/5
+                            } @else {
+                              N/D
+                            }
+                          </strong>
+                        </div>
+                      </div>
+                    </article>
+                  }
+                </div>
+
+                <div class="department-chart-card">
+                  <div class="chart-card-header">
+                    <h3 class="subsection-title">Comparatif horizontal</h3>
+                    @if (departmentChampion) {
+                      <span class="champion-badge">
+                        Leader : {{ departmentChampion.departmentName }}
+                      </span>
+                    }
+                  </div>
+
+                  <div class="department-chart-list">
+                    @for (row of analytics.departmentRows; track trackByDepartment($index, row)) {
+                      <div class="department-chart-row">
+                        <div class="department-chart-label">
+                          <span class="mini-rank">#{{ $index + 1 }}</span>
+                          <span class="dept-name-text">{{ row.departmentName }}</span>
+                        </div>
+
+                        <div class="department-chart-track">
+                          <div
+                            class="department-chart-fill"
+                            [style.width]="departmentBarWidth(row.participationRate)"
+                          ></div>
+                        </div>
+
+                        <strong class="department-chart-value">
+                          {{ row.participationRate | number:'1.0-2' }}%
                         </strong>
                       </div>
-                    </div>
-                    <div class="department-bar-block">
-                      <div class="department-bar-track">
-                        <div class="department-bar-fill" [style.width]="departmentBarWidth(row.participationRate)"></div>
-                      </div>
-                    </div>
-                  </article>
-                }
+                    }
+                  </div>
+                </div>
               </div>
             }
           </section>
