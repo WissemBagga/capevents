@@ -19,7 +19,19 @@ public class AdminAnalyticsController {
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
     @GetMapping("/overview")
-    public AdminAnalyticsOverviewResponse getOverview(Authentication auth) {
-        return adminAnalyticsService.getOverview(auth.getName());
+    public AdminAnalyticsOverviewResponse getOverview(
+            Authentication auth,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) Long departmentId,
+            @RequestParam(required = false) String category
+    ) {
+        return adminAnalyticsService.getOverview(
+                auth.getName(),
+                from,
+                to,
+                departmentId,
+                category
+        );
     }
 }

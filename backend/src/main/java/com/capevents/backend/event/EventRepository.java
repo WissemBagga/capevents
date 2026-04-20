@@ -260,4 +260,15 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             Pageable pageable
     );
 
+    @Query("""
+    select distinct e from Event e
+    left join fetch e.targetDepartment td
+    left join fetch e.createdBy cb
+    left join fetch cb.department cd
+    where e.audience = com.capevents.backend.event.EventAudience.GLOBAL
+       or td.id = :departmentId
+       or cd.id = :departmentId
+    order by e.createdAt desc
+    """)
+    List<Event> findAllForAnalyticsByManagerScope(@Param("departmentId") Long departmentId);
 }

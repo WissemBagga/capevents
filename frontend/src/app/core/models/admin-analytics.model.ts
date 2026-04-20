@@ -36,6 +36,7 @@ export interface AdminAnalyticsOverviewResponse {
   activeMembers: number;
   pendingProposals: number;
   topMembers: TopMemberAnalyticsResponse[];
+  memberRows: TopMemberAnalyticsResponse[];
   monthlyTrend: MonthlyTrendPointResponse[];
   departmentRows: DepartmentAnalyticsRowResponse[];
 }

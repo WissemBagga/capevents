@@ -21,6 +21,7 @@ public record AdminAnalyticsOverviewResponse(
         long activeMembers,
         long pendingProposals,
         List<TopMemberAnalyticsResponse> topMembers,
+        List<TopMemberAnalyticsResponse> memberRows,
         List<MonthlyTrendPointResponse> monthlyTrend,
         List<DepartmentAnalyticsRowResponse> departmentRows
 ) {

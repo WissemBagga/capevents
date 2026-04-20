@@ -43,11 +43,23 @@ public class AdminAnalyticsService {
     }
 
     @Transactional(readOnly = true)
-    public AdminAnalyticsOverviewResponse getOverview(String actorEmail) {
+    public AdminAnalyticsOverviewResponse getOverview(
+            String actorEmail,
+            String from,
+            String to,
+            Long departmentId,
+            String category
+    ) {
         User actor = userRepository.findByEmailWithRolesAndDepartment(actorEmail)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_MESSAGE));
 
-        List<Event> scopedEvents = resolveScopedEvents(actor);
+        List<Event> scopedEvents = applyFilters(
+                resolveScopedEvents(actor),
+                from,
+                to,
+                departmentId,
+                category
+        );
 
         long totalEvents = scopedEvents.size();
         long publishedEvents = scopedEvents.stream()
@@ -159,22 +171,26 @@ public class AdminAnalyticsService {
                 ? round2((totalFeedbacks * 100.0) / totalPresent)
                 : 0.0;
 
+
+
+        List<TopMemberAnalyticsResponse> allTopMembers = buildTopMembers(actor, eligibleEvents);
+
         long pendingProposals = scopedEvents.stream()
                 .filter(e -> e.getStatus() == EventStatus.PENDING)
                 .count();
 
-        List<TopMemberAnalyticsResponse> allTopMembers = buildTopMembers(actor, eligibleEvents);
-        long activeMembers = allTopMembers.size();
+        List<TopMemberAnalyticsResponse> memberRows = buildMemberRows(actor, eligibleEvents);
+        List<TopMemberAnalyticsResponse> topMembers = memberRows.stream().limit(5).toList();
 
-        List<TopMemberAnalyticsResponse> topMembers = allTopMembers.stream()
-                .limit(5)
-                .toList();
+        long activeMembers = memberRows.size();
 
         List<MonthlyTrendPointResponse> monthlyTrend = buildMonthlyTrend(actor, eligibleEvents);
-
         List<DepartmentAnalyticsRowResponse> departmentRows = isHr(actor)
                 ? buildDepartmentRows(eligibleEvents)
                 : List.of();
+
+
+
 
         return new AdminAnalyticsOverviewResponse(
                 totalEvents,
@@ -193,6 +209,7 @@ public class AdminAnalyticsService {
                 activeMembers,
                 pendingProposals,
                 topMembers,
+                memberRows,
                 monthlyTrend,
                 departmentRows
 
@@ -214,7 +231,7 @@ public class AdminAnalyticsService {
             throw new BadRequestException("Le manager n’a pas de département");
         }
 
-        return eventRepository.findAllForAnalyticsByCreatorDepartment(actor.getDepartment().getId());
+        return eventRepository.findAllForAnalyticsByManagerScope(actor.getDepartment().getId());
     }
 
     private boolean isAnalyticsEligibleEvent(Event event) {
@@ -253,6 +270,61 @@ public class AdminAnalyticsService {
 
     private boolean isManager(User actor) {
         return actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
+    }
+
+    private List<TopMemberAnalyticsResponse> buildMemberRows(User actor, List<Event> eligibleEvents) {
+        Map<UUID, MemberAccumulator> memberMap = new HashMap<>();
+
+        boolean hr = isHr(actor);
+        Long managerDeptId = actor.getDepartment() != null ? actor.getDepartment().getId() : null;
+
+        for (Event event : eligibleEvents) {
+            List<EventRegistration> regs =
+                    registrationRepository.findByEventAndStatusOrderByRegisteredAtAsc(event, RegistrationStatus.REGISTERED);
+
+            for (EventRegistration reg : regs) {
+                User user = reg.getUser();
+                if (user == null) continue;
+
+                if (!hr) {
+                    Long userDeptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
+                    if (managerDeptId == null || !managerDeptId.equals(userDeptId)) {
+                        continue;
+                    }
+                }
+
+                MemberAccumulator acc = memberMap.computeIfAbsent(
+                        user.getId(),
+                        id -> new MemberAccumulator(
+                                buildFullName(user.getFirstName(), user.getLastName()),
+                                user.getEmail(),
+                                user.getDepartment() != null ? user.getDepartment().getName() : null
+                        )
+                );
+
+                acc.registeredCount++;
+                if (reg.getAttendanceStatus() == AttendanceStatus.PRESENT) {
+                    acc.presentCount++;
+                }
+            }
+        }
+
+        return memberMap.values().stream()
+                .map(acc -> new TopMemberAnalyticsResponse(
+                        acc.fullName,
+                        acc.email,
+                        acc.departmentName,
+                        acc.registeredCount,
+                        acc.presentCount,
+                        acc.attendanceRate()
+                ))
+                .sorted(
+                        Comparator.comparing(TopMemberAnalyticsResponse::presentCount).reversed()
+                                .thenComparing(TopMemberAnalyticsResponse::registeredCount).reversed()
+                                .thenComparing(TopMemberAnalyticsResponse::attendanceRate).reversed()
+                                .thenComparing(TopMemberAnalyticsResponse::fullName)
+                )
+                .toList();
     }
 
     private List<TopMemberAnalyticsResponse> buildTopMembers(User actor, List<Event> eligibleEvents) {
@@ -314,8 +386,8 @@ public class AdminAnalyticsService {
     private List<MonthlyTrendPointResponse> buildMonthlyTrend(User actor, List<Event> eligibleEvents) {
         Map<YearMonth, Long> monthCounts = new HashMap<>();
 
+        boolean hr = isHr(actor);
         Long managerDeptId = actor.getDepartment() != null ? actor.getDepartment().getId() : null;
-        boolean actorIsHr = isHr(actor);
 
         for (Event event : eligibleEvents) {
             List<EventRegistration> regs =
@@ -325,7 +397,7 @@ public class AdminAnalyticsService {
                 User user = reg.getUser();
                 if (user == null || reg.getRegisteredAt() == null) continue;
 
-                if (!actorIsHr) {
+                if (!hr) {
                     Long userDeptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
                     if (managerDeptId == null || !managerDeptId.equals(userDeptId)) {
                         continue;
@@ -348,6 +420,49 @@ public class AdminAnalyticsService {
                 .toList();
     }
 
+    private List<Event> applyFilters(
+            List<Event> events,
+            String from,
+            String to,
+            Long departmentId,
+            String category
+    ) {
+        return events.stream()
+                .filter(event -> {
+                    if (from != null && !from.isBlank() && event.getStartAt() != null) {
+                        java.time.LocalDate fromDate = java.time.LocalDate.parse(from);
+                        if (event.getStartAt().atZone(java.time.ZoneId.systemDefault()).toLocalDate().isBefore(fromDate)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .filter(event -> {
+                    if (to != null && !to.isBlank() && event.getStartAt() != null) {
+                        java.time.LocalDate toDate = java.time.LocalDate.parse(to);
+                        if (event.getStartAt().atZone(java.time.ZoneId.systemDefault()).toLocalDate().isAfter(toDate)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .filter(event -> {
+                    if (departmentId != null) {
+                        return event.getTargetDepartment() != null
+                                && departmentId.equals(event.getTargetDepartment().getId());
+                    }
+                    return true;
+                })
+                .filter(event -> {
+                    if (category != null && !category.isBlank()) {
+                        return event.getCategory() != null
+                                && event.getCategory().trim().equalsIgnoreCase(category.trim());
+                    }
+                    return true;
+                })
+                .toList();
+    }
+
     private List<DepartmentAnalyticsRowResponse> buildDepartmentRows(List<Event> eligibleEvents) {
         List<User> employees = userRepository.findActiveVerifiedEmployeeUsers();
 
@@ -361,9 +476,7 @@ public class AdminAnalyticsService {
             if (user.getDepartment() == null) continue;
 
             Long deptId = user.getDepartment().getId();
-            String deptName = user.getDepartment().getName();
-
-            departmentNames.put(deptId, deptName);
+            departmentNames.put(deptId, user.getDepartment().getName());
             totalEmployeesByDept.merge(deptId, 1L, Long::sum);
         }
 
@@ -376,9 +489,7 @@ public class AdminAnalyticsService {
                 if (user == null || user.getDepartment() == null) continue;
 
                 Long deptId = user.getDepartment().getId();
-                activeEmployeesByDept
-                        .computeIfAbsent(deptId, id -> new java.util.HashSet<>())
-                        .add(user.getId());
+                activeEmployeesByDept.computeIfAbsent(deptId, id -> new HashSet<>()).add(user.getId());
             }
 
             if (event.getTargetDepartment() != null) {

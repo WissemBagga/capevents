@@ -4,11 +4,7 @@
     <!-- Header -->
     <div class="page-header">
       <div class="header-text">
-        <p class="breadcrumb">
-          ACCUEIL
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          STATISTIQUES
-        </p>
+        
         <h1>{{ dashboardTitle }}</h1>
         <p class="header-sub">{{ dashboardSubtitle }}</p>
       </div>
@@ -17,6 +13,37 @@
         <a [routerLink]="managementRoute" class="btn-secondary">
           Gestion des événements
         </a>
+      </div>
+    </div>
+
+    <div class="admin-card filter-card">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label for="from">Période du</label>
+          <input id="from" type="date" [(ngModel)]="filters.from" />
+        </div>
+
+        <div class="form-group">
+          <label for="to">Au</label>
+          <input id="to" type="date" [(ngModel)]="filters.to" />
+        </div>
+
+        @if (isHr) {
+          <div class="form-group">
+            <label for="departmentId">Département</label>
+            <input id="departmentId" type="number" [(ngModel)]="filters.departmentId" placeholder="ID département" />
+          </div>
+        }
+
+        <div class="form-group">
+          <label for="category">Catégorie</label>
+          <input id="category" type="text" [(ngModel)]="filters.category" placeholder="Ex: Sport" />
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" class="btn-secondary" (click)="applyFilters()">Appliquer</button>
+        <button type="button" class="btn-secondary" (click)="resetFilters()">Réinitialiser</button>
       </div>
     </div>
 
@@ -206,7 +233,7 @@
 
             @if (analytics.departmentRows.length > 0) {
               <div class="stats-list">
-                @for (row of analytics.departmentRows; track trackByDepartmentId($index, row)) {
+                @for (row of analytics.departmentRows; track trackByDepartment($index, row)) {
                   <article class="stat-list-item">
                     <div class="item-main">
                       <div class="rank-title-row">
@@ -242,10 +269,71 @@
                         </strong>
                       </div>
                     </div>
+                    <div class="department-bar-block">
+                      <div class="department-bar-track">
+                        <div class="department-bar-fill" [style.width]="departmentBarWidth(row.participationRate)"></div>
+                      </div>
+                    </div>
                   </article>
                 }
               </div>
             }
+          </section>
+        }
+
+        @if (analytics.topMembers.length > 0) {
+          <section class="admin-card stats-section">
+            <div class="card-header">
+              <div class="header-text-group">
+                <h2 class="card-title">Top 5 participants</h2>
+                <p class="card-subtitle">
+                  @if (isHr) {
+                    Classement global tous départements confondus.
+                  } @else {
+                    Classement des participants de votre périmètre.
+                  }
+                </p>
+              </div>
+
+              @if (isManager && analytics.memberRows.length > 0) {
+                <button type="button" class="btn-secondary" (click)="exportMembersExcel()">
+                  Export Excel
+                </button>
+              }
+            </div>
+
+            <div class="stats-list">
+              @for (item of analytics.topMembers; track trackByTopMember($index, item)) {
+                <article class="stat-list-item">
+                  <div class="item-main">
+                    <div class="rank-title-row">
+                      <span class="rank-badge">#{{ $index + 1 }}</span>
+                      <div>
+                        <h3 class="event-title">{{ item.fullName }}</h3>
+                        <span class="muted-text">{{ item.email }} · {{ item.departmentName || 'Sans département' }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="item-metrics three-cols">
+                    <div class="metric-cell">
+                      <span class="metric-label">Inscrits</span>
+                      <strong class="metric-value">{{ item.registeredCount }}</strong>
+                    </div>
+
+                    <div class="metric-cell">
+                      <span class="metric-label">Présents</span>
+                      <strong class="metric-value">{{ item.presentCount }}</strong>
+                    </div>
+
+                    <div class="metric-cell highlight">
+                      <span class="metric-label">Taux présence</span>
+                      <strong class="metric-value">{{ item.attendanceRate | number:'1.0-2' }}%</strong>
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
           </section>
         }
 
@@ -403,6 +491,15 @@
                       Détails
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </a>
+                  </div>
+                  <div class="progress-block">
+                    <div class="progress-header">
+                      <span>Progression inscriptions</span>
+                      <strong>{{ registrationProgress(item) | number:'1.0-0' }}%</strong>
+                    </div>
+                    <div class="progress-track">
+                      <div class="progress-fill" [style.width]="registrationProgress(item) + '%'"></div>
+                    </div>
                   </div>
                 </article>
               }
