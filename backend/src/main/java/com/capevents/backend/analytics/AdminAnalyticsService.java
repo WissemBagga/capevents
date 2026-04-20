@@ -8,6 +8,7 @@ import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
 import com.capevents.backend.feedback.EventFeedbackRepository;
 import com.capevents.backend.registration.AttendanceStatus;
+import com.capevents.backend.registration.EventRegistration;
 import com.capevents.backend.registration.EventRegistrationRepository;
 import com.capevents.backend.registration.RegistrationStatus;
 import com.capevents.backend.user.User;
@@ -15,8 +16,10 @@ import com.capevents.backend.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class AdminAnalyticsService {
@@ -160,15 +163,18 @@ public class AdminAnalyticsService {
                 .filter(e -> e.getStatus() == EventStatus.PENDING)
                 .count();
 
-        long activeMembers = eligibleEvents.stream()
-                .flatMap(event -> registrationRepository.findByEventAndStatusOrderByRegisteredAtAsc(event, RegistrationStatus.REGISTERED).stream())
-                .map(reg -> reg.getUser().getId())
-                .distinct()
-                .count();
+        List<TopMemberAnalyticsResponse> allTopMembers = buildTopMembers(actor, eligibleEvents);
+        long activeMembers = allTopMembers.size();
 
-        List<TopMemberAnalyticsResponse> topMembers = List.of();
-        List<MonthlyTrendPointResponse> monthlyTrend = List.of();
-        List<DepartmentAnalyticsRowResponse> departmentRows = List.of();
+        List<TopMemberAnalyticsResponse> topMembers = allTopMembers.stream()
+                .limit(5)
+                .toList();
+
+        List<MonthlyTrendPointResponse> monthlyTrend = buildMonthlyTrend(actor, eligibleEvents);
+
+        List<DepartmentAnalyticsRowResponse> departmentRows = isHr(actor)
+                ? buildDepartmentRows(eligibleEvents)
+                : List.of();
 
         return new AdminAnalyticsOverviewResponse(
                 totalEvents,
@@ -219,5 +225,209 @@ public class AdminAnalyticsService {
 
     private double round2(double value) {
         return Math.round(value * 100.0) / 100.0;
+    }
+
+    private static class MemberAccumulator {
+        String fullName;
+        String email;
+        String departmentName;
+        long registeredCount;
+        long presentCount;
+
+        MemberAccumulator(String fullName, String email, String departmentName) {
+            this.fullName = fullName;
+            this.email = email;
+            this.departmentName = departmentName;
+        }
+
+        double attendanceRate() {
+            return registeredCount > 0
+                    ? Math.round((presentCount * 10000.0) / registeredCount) / 100.0
+                    : 0.0;
+        }
+    }
+
+    private boolean isHr(User actor) {
+        return actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
+    }
+
+    private boolean isManager(User actor) {
+        return actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
+    }
+
+    private List<TopMemberAnalyticsResponse> buildTopMembers(User actor, List<Event> eligibleEvents) {
+        Map<UUID, MemberAccumulator> memberMap = new HashMap<>();
+
+        Long managerDeptId = actor.getDepartment() != null ? actor.getDepartment().getId() : null;
+        boolean actorIsHr = isHr(actor);
+
+        for (Event event : eligibleEvents) {
+            List<EventRegistration> regs =
+                    registrationRepository.findByEventAndStatusOrderByRegisteredAtAsc(event, RegistrationStatus.REGISTERED);
+
+            for (EventRegistration reg : regs) {
+                User user = reg.getUser();
+                if (user == null) continue;
+
+                if (!actorIsHr) {
+                    Long userDeptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
+                    if (managerDeptId == null || !managerDeptId.equals(userDeptId)) {
+                        continue;
+                    }
+                }
+
+                MemberAccumulator acc = memberMap.computeIfAbsent(
+                        user.getId(),
+                        id -> new MemberAccumulator(
+                                buildFullName(user.getFirstName(), user.getLastName()),
+                                user.getEmail(),
+                                user.getDepartment() != null ? user.getDepartment().getName() : null
+                        )
+                );
+
+                acc.registeredCount++;
+
+                if (reg.getAttendanceStatus() == AttendanceStatus.PRESENT) {
+                    acc.presentCount++;
+                }
+            }
+        }
+
+        return memberMap.values().stream()
+                .map(acc -> new TopMemberAnalyticsResponse(
+                        acc.fullName,
+                        acc.email,
+                        acc.departmentName,
+                        acc.registeredCount,
+                        acc.presentCount,
+                        acc.attendanceRate()
+                ))
+                .sorted(
+                        Comparator.comparing(TopMemberAnalyticsResponse::presentCount).reversed()
+                                .thenComparing(TopMemberAnalyticsResponse::registeredCount).reversed()
+                                .thenComparing(TopMemberAnalyticsResponse::attendanceRate).reversed()
+                                .thenComparing(TopMemberAnalyticsResponse::fullName)
+                )
+                .toList();
+    }
+
+    private List<MonthlyTrendPointResponse> buildMonthlyTrend(User actor, List<Event> eligibleEvents) {
+        Map<YearMonth, Long> monthCounts = new HashMap<>();
+
+        Long managerDeptId = actor.getDepartment() != null ? actor.getDepartment().getId() : null;
+        boolean actorIsHr = isHr(actor);
+
+        for (Event event : eligibleEvents) {
+            List<EventRegistration> regs =
+                    registrationRepository.findByEventAndStatusOrderByRegisteredAtAsc(event, RegistrationStatus.REGISTERED);
+
+            for (EventRegistration reg : regs) {
+                User user = reg.getUser();
+                if (user == null || reg.getRegisteredAt() == null) continue;
+
+                if (!actorIsHr) {
+                    Long userDeptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
+                    if (managerDeptId == null || !managerDeptId.equals(userDeptId)) {
+                        continue;
+                    }
+                }
+
+                YearMonth ym = YearMonth.from(reg.getRegisteredAt().atZone(ZoneId.systemDefault()));
+                monthCounts.merge(ym, 1L, Long::sum);
+            }
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yyyy", Locale.FRENCH);
+
+        return monthCounts.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(entry -> new MonthlyTrendPointResponse(
+                        entry.getKey().format(formatter),
+                        entry.getValue()
+                ))
+                .toList();
+    }
+
+    private List<DepartmentAnalyticsRowResponse> buildDepartmentRows(List<Event> eligibleEvents) {
+        List<User> employees = userRepository.findActiveVerifiedEmployeeUsers();
+
+        Map<Long, String> departmentNames = new HashMap<>();
+        Map<Long, Long> totalEmployeesByDept = new HashMap<>();
+        Map<Long, Set<UUID>> activeEmployeesByDept = new HashMap<>();
+        Map<Long, Double> ratingWeightedSumByDept = new HashMap<>();
+        Map<Long, Long> feedbackCountByDept = new HashMap<>();
+
+        for (User user : employees) {
+            if (user.getDepartment() == null) continue;
+
+            Long deptId = user.getDepartment().getId();
+            String deptName = user.getDepartment().getName();
+
+            departmentNames.put(deptId, deptName);
+            totalEmployeesByDept.merge(deptId, 1L, Long::sum);
+        }
+
+        for (Event event : eligibleEvents) {
+            List<EventRegistration> regs =
+                    registrationRepository.findByEventAndStatusOrderByRegisteredAtAsc(event, RegistrationStatus.REGISTERED);
+
+            for (EventRegistration reg : regs) {
+                User user = reg.getUser();
+                if (user == null || user.getDepartment() == null) continue;
+
+                Long deptId = user.getDepartment().getId();
+                activeEmployeesByDept
+                        .computeIfAbsent(deptId, id -> new java.util.HashSet<>())
+                        .add(user.getId());
+            }
+
+            if (event.getTargetDepartment() != null) {
+                Long deptId = event.getTargetDepartment().getId();
+                Double avg = feedbackRepository.findAverageRatingByEventId(event.getId());
+                long count = feedbackRepository.countByEventId(event.getId());
+
+                if (avg != null && count > 0) {
+                    ratingWeightedSumByDept.merge(deptId, avg * count, Double::sum);
+                    feedbackCountByDept.merge(deptId, count, Long::sum);
+                }
+            }
+        }
+
+        return totalEmployeesByDept.entrySet().stream()
+                .map(entry -> {
+                    Long deptId = entry.getKey();
+                    long totalEmployees = entry.getValue();
+                    long activeEmployees = activeEmployeesByDept.getOrDefault(deptId, Set.of()).size();
+
+                    double participationRate = totalEmployees > 0
+                            ? round2((activeEmployees * 100.0) / totalEmployees)
+                            : 0.0;
+
+                    Long feedbackCount = feedbackCountByDept.getOrDefault(deptId, 0L);
+                    Double averageRating = feedbackCount > 0
+                            ? round2(ratingWeightedSumByDept.getOrDefault(deptId, 0.0) / feedbackCount)
+                            : null;
+
+                    return new DepartmentAnalyticsRowResponse(
+                            deptId,
+                            departmentNames.getOrDefault(deptId, "Département"),
+                            totalEmployees,
+                            activeEmployees,
+                            participationRate,
+                            averageRating
+                    );
+                })
+                .sorted(
+                        Comparator.comparing(DepartmentAnalyticsRowResponse::participationRate).reversed()
+                                .thenComparing(DepartmentAnalyticsRowResponse::activeEmployees).reversed()
+                                .thenComparing(DepartmentAnalyticsRowResponse::departmentName)
+                )
+                .toList();
+    }
+
+    private String buildFullName(String firstName, String lastName) {
+        String safeFirstName = firstName != null ? firstName.trim() : "";
+        String safeLastName = lastName != null ? lastName.trim() : "";
+        return (safeFirstName + " " + safeLastName).trim();
     }
 }

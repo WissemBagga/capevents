@@ -116,4 +116,12 @@ export class AdminStats {
     if (max <= 0) return '0%';
     return `${Math.max(8, (value / max) * 100)}%`;
   }
+
+  trackByTopMember(_: number, item: { email: string }): string {
+    return item.email;
+  }
+
+  trackByDepartment(_: number, item: { departmentId: number }): number {
+    return item.departmentId;
+  }
 }
