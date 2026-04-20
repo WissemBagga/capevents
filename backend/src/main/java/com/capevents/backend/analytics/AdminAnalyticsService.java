@@ -1,8 +1,6 @@
 package com.capevents.backend.analytics;
 
-import com.capevents.backend.analytics.dto.AdminAnalyticsOverviewResponse;
-import com.capevents.backend.analytics.dto.EventEngagementResponse;
-import com.capevents.backend.analytics.dto.EventFeedbackAnalyticsResponse;
+import com.capevents.backend.analytics.dto.*;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.event.Event;
@@ -158,6 +156,20 @@ public class AdminAnalyticsService {
                 ? round2((totalFeedbacks * 100.0) / totalPresent)
                 : 0.0;
 
+        long pendingProposals = scopedEvents.stream()
+                .filter(e -> e.getStatus() == EventStatus.PENDING)
+                .count();
+
+        long activeMembers = eligibleEvents.stream()
+                .flatMap(event -> registrationRepository.findByEventAndStatusOrderByRegisteredAtAsc(event, RegistrationStatus.REGISTERED).stream())
+                .map(reg -> reg.getUser().getId())
+                .distinct()
+                .count();
+
+        List<TopMemberAnalyticsResponse> topMembers = List.of();
+        List<MonthlyTrendPointResponse> monthlyTrend = List.of();
+        List<DepartmentAnalyticsRowResponse> departmentRows = List.of();
+
         return new AdminAnalyticsOverviewResponse(
                 totalEvents,
                 publishedEvents,
@@ -171,7 +183,13 @@ public class AdminAnalyticsService {
                 averageRating,
                 feedbackResponseRate,
                 topRatedEvents,
-                topEngagingEvents
+                topEngagingEvents,
+                activeMembers,
+                pendingProposals,
+                topMembers,
+                monthlyTrend,
+                departmentRows
+
         );
     }
 

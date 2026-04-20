@@ -86,4 +86,34 @@ export class AdminStats {
   get managementRoute(): string {
     return this.authService.isHr() ? '/admin/hr' : '/admin/manager';
   }
+
+  get isHr(): boolean {
+    return this.authService.isHr();
+  }
+
+  get isManager(): boolean {
+    return this.authService.isManager();
+  }
+
+  trackByMemberEmail(_: number, item: { email: string }): string {
+    return item.email;
+  }
+
+  trackByDepartmentId(_: number, item: { departmentId: number }): number {
+    return item.departmentId;
+  }
+
+  trackByMonth(_: number, item: { month: string }): string {
+    return item.month;
+  }
+
+  get maxMonthlyRegistrations(): number {
+    if (!this.analytics?.monthlyTrend?.length) return 1;
+    return Math.max(...this.analytics.monthlyTrend.map(item => item.registrations), 1);
+  }
+
+  barWidth(value: number, max: number): string {
+    if (max <= 0) return '0%';
+    return `${Math.max(8, (value / max) * 100)}%`;
+  }
 }

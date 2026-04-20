@@ -16,7 +16,12 @@ public record AdminAnalyticsOverviewResponse(
         double averageRating,
         double feedbackResponseRate,
         List<EventFeedbackAnalyticsResponse> topRatedEvents,
+        List<EventEngagementResponse> topEngagingEvents,
 
-        List<EventEngagementResponse> topEngagingEvents
+        long activeMembers,
+        long pendingProposals,
+        List<TopMemberAnalyticsResponse> topMembers,
+        List<MonthlyTrendPointResponse> monthlyTrend,
+        List<DepartmentAnalyticsRowResponse> departmentRows
 ) {
 }

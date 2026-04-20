@@ -31,6 +31,34 @@ export interface AdminAnalyticsOverviewResponse {
   averageRating: number;
   feedbackResponseRate: number;
   topRatedEvents: EventFeedbackAnalyticsResponse[];
-
   topEngagingEvents: EventEngagementResponse[];
+
+  activeMembers: number;
+  pendingProposals: number;
+  topMembers: TopMemberAnalyticsResponse[];
+  monthlyTrend: MonthlyTrendPointResponse[];
+  departmentRows: DepartmentAnalyticsRowResponse[];
+}
+
+export interface DepartmentAnalyticsRowResponse {
+  departmentId: number;
+  departmentName: string;
+  totalEmployees: number;
+  activeEmployees: number;
+  participationRate: number;
+  averageRating: number | null;
+}
+
+export interface TopMemberAnalyticsResponse {
+  fullName: string;
+  email: string;
+  departmentName: string | null;
+  registeredCount: number;
+  presentCount: number;
+  attendanceRate: number;
+}
+
+export interface MonthlyTrendPointResponse {
+  month: string;
+  registrations: number;
 }

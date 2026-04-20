@@ -258,6 +258,74 @@
   color: #93c5fd;
 }
 
+
+.compact-grid {
+  margin-top: 18px;
+}
+
+.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.subsection-title {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.three-cols {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.four-cols {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.muted-text {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.trend-list {
+  display: grid;
+  gap: 12px;
+}
+
+.trend-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 50px;
+  align-items: center;
+  gap: 12px;
+}
+
+.trend-bar-track {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.trend-bar-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 999px;
+}
+
+.trend-label,
+.trend-value {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .two-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ===== Admin Card / Lists ===== */
 .admin-card {
   background: #ffffff;
