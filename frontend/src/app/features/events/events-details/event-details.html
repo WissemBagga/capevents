@@ -34,7 +34,7 @@
     <!-- Hero Banner -->
     <div class="event-hero">
       <div class="event-hero-image">
-        <img [src]="eventHeroImageUrl" [alt]="event.title" />
+        <img [src]="resolvedEventImageUrl" [alt]="event.title" (error)="onHeroImageError()" />
       </div>
       <div class="hero-overlay"></div>
       <div class="hero-content">

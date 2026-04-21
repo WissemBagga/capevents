@@ -12,7 +12,7 @@ export const EVENT_IMAGE_PRESETS: EventImagePreset[] = [
   { category: 'Webinaire', label: 'Webinaire', url: 'images/events/webinaire.jpg' },
   { category: 'Afterwork', label: 'Afterwork', url: 'images/events/afterwork.jpg' },
   { category: 'Bien-être', label: 'Bien-être', url: 'images/events/bien-etre.jpg' },
-  { category: 'Sport', label: 'Sport', url: 'images/events/sport.jpg' },
+  { category: 'Sport', label: 'Sport', url: 'images/events/Sport.jpg' },
   { category: 'RSE', label: 'RSE', url: 'images/events/rse.jpg' },
   { category: 'Networking', label: 'Networking', url: 'images/events/networking.jpg' },
   { category: 'Culture d’entreprise', label: 'Culture d’entreprise', url: 'images/events/culture-dentreprise.jpg' },

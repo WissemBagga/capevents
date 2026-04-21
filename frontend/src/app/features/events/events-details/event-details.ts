@@ -112,6 +112,7 @@ export class EventDetails {
       .subscribe({
         next: (event) => {
           this.event = event;
+          this.heroImageLoadFailed = false;
           this.cdr.markForCheck();
 
           if (this.authService.isLoggedIn() && this.canParticipate) {
@@ -716,6 +717,25 @@ export class EventDetails {
       default:
         return status;
     }
+  }
+
+  heroImageLoadFailed = false;
+
+  get resolvedEventImageUrl(): string {
+    if (!this.event) {
+      return getDefaultEventImage(null);
+    }
+
+    if (!this.heroImageLoadFailed && this.event.imageUrl?.trim()) {
+      return this.event.imageUrl.trim();
+    }
+
+    return getDefaultEventImage(this.event.category);
+  }
+
+  onHeroImageError(): void {
+    this.heroImageLoadFailed = true;
+    this.cdr.markForCheck();
   }
 
   goBack(): void {
