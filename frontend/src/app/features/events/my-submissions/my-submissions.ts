@@ -5,11 +5,13 @@ import { finalize } from 'rxjs';
 
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 
 @Component({
   selector: 'app-my-submissions',
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, ScrollToMessageDirective],
   templateUrl: './my-submissions.html',
   styleUrl: './my-submissions.css'
 })

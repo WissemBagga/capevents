@@ -9,10 +9,13 @@ import { EventResponse } from '../../../core/models/event.model';
 import { PageResponse } from '../../../core/models/page-response.model';
 import { AuthService } from '../../../core/services/auth.service';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
+
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [DatePipe, RouterLink, FormsModule],
+  imports: [DatePipe, RouterLink, FormsModule, ScrollToMessageDirective],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })

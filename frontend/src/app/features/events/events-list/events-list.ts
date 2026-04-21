@@ -13,12 +13,14 @@ import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories
 
 import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 
 
 @Component({
   selector: 'app-events-list',
   standalone: true,
-  imports: [RouterLink, FormsModule, DatePipe],
+  imports: [RouterLink, FormsModule, DatePipe, ScrollToMessageDirective],
   templateUrl: './events-list.html',
   styleUrl: './events-list.css'
 })

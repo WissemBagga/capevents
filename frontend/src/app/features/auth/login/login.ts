@@ -6,12 +6,15 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
+
 
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, ScrollToMessageDirective],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

@@ -25,7 +25,7 @@
   }
 
   @if (errorMessage && !event) {
-    <div class="state-message error">
+    <div class="state-message error" appScrollToMessage>
       <p>{{ errorMessage }}</p>
     </div>
   }
@@ -366,7 +366,7 @@
         </div>
 
         @if (registrationUnavailableMessage && !isRegistered) {
-          <div class="state-message error">
+          <div class="state-message error" appScrollToMessage>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -389,7 +389,7 @@
         <!-- Feedback Messages -->
 
         @if (successMessage && !isDeadlinePassed) {
-          <div class="state-message success">
+          <div class="state-message success" appScrollToMessage>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -409,7 +409,7 @@
         }
 
         @if (errorMessage && !loading && !isDeadlinePassed) {
-          <div class="state-message error">
+          <div class="state-message error" appScrollToMessage>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -438,7 +438,7 @@
     }
 
     @if (isDeadlinePassed) {
-      <div class="state-message error">
+      <div class="state-message error" appScrollToMessage>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"
@@ -947,13 +947,13 @@
             </svg>
           </button>
           @if (hasPendingSentInvitations) {
-            <div class="state-message error-msg">
+            <div class="state-message error-msg" appScrollToMessage>
               <p>{{ unregisterBlockingMessage }}</p>
             </div>
           }
         </div>
         @if (isLateUnregister) {
-          <div class="state-message error">
+          <div class="state-message error" appScrollToMessage>
             <p>Attention : vous annulez à moins de 24h du début de l’événement.</p>
           </div>
         }

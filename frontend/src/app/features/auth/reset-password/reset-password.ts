@@ -5,10 +5,12 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 
 import { AuthService } from '../../../core/services/auth.service';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ScrollToMessageDirective],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.css'
 })

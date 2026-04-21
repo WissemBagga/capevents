@@ -4,10 +4,13 @@ import { RouterLink, Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
+
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ScrollToMessageDirective],
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.css'
 })

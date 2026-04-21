@@ -196,11 +196,11 @@
                     </div>
 
                     @if (successMessage){
-                        <p class="success-message">{{successMessage}}</p>
+                        <p class="success-message" appScrollToMessage>{{successMessage}}</p>
                     }
 
                     @if (errorMessage){
-                        <p class="error-message">{{errorMessage}}</p>
+                        <p class="error-message" appScrollToMessage>{{errorMessage}}</p>
                     }
 
                     <div class="form-group full-width">

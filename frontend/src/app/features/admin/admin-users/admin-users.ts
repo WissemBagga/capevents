@@ -5,11 +5,12 @@ import { UserService } from '../../../core/services/user.service';
 import { UserSummary } from '../../../core/models/user-summary.model';
 import { PageResponse } from '../../../core/models/page-response.model';
 import { FormsModule } from '@angular/forms';
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ScrollToMessageDirective],
   templateUrl: './admin-users.html',
   styleUrl: './admin-users.css'
 })

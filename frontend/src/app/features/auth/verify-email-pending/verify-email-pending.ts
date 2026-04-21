@@ -3,11 +3,13 @@ import { AuthService } from '../../../core/services/auth.service';
 
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 
 @Component({
   selector: 'app-verify-email-pending',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ScrollToMessageDirective],
   templateUrl: './verify-email-pending.html',
   styleUrl: './verify-email-pending.css'
 })

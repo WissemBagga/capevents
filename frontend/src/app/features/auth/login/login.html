@@ -103,7 +103,7 @@
                     </div>
 
                     @if (errorMessage) {
-                        <p class="error-message">{{errorMessage}}</p>
+                        <p class="error-message" appScrollToMessage>{{errorMessage}}</p>
                     }
 
                     <button type="submit" [disabled]="loading">

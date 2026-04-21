@@ -5,10 +5,13 @@ import { finalize, forkJoin } from 'rxjs';
 import { InterestService } from '../../../core/services/interest.service';
 import { InterestResponse } from '../../../core/models/interest.model';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
+
 @Component({
   selector: 'app-my-interests',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ScrollToMessageDirective],
   templateUrl: './my-interests.html',
   styleUrl: './my-interests.css'
 })

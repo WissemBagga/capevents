@@ -10,10 +10,13 @@ import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories
 
 import { EVENT_IMAGE_PRESETS, getDefaultEventImage } from '../../../core/constants/event-image-presets';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
+
 @Component({
   selector: 'app-create-event',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ScrollToMessageDirective],
   templateUrl: './create-event.html',
   styleUrl: './create-event.css'
 })

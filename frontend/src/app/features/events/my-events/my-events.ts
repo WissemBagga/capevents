@@ -7,13 +7,15 @@ import { EventService } from '../../../core/services/event.service';
 import { RegistrationResponse } from '../../../core/models/registration.model';
 import { FormsModule } from '@angular/forms';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 type MyEventsFilter = 'ALL' | 'UPCOMING' | 'PAST';
 
 
 @Component({
   selector: 'app-my-events',
   standalone: true,
-  imports: [DatePipe, RouterLink, FormsModule],
+  imports: [DatePipe, RouterLink, FormsModule, ScrollToMessageDirective],
   templateUrl: './my-events.html',
   styleUrl: './my-events.css'
 })

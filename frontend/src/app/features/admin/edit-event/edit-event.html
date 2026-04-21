@@ -28,14 +28,14 @@
     }
 
     @if (errorMessage) {
-      <div class="state-message error-msg">
+      <div class="state-message error-msg" appScrollToMessage>
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <p>{{ errorMessage }}</p>
       </div>
     }
 
     @if (successMessage) {
-      <div class="state-message success-msg">
+      <div class="state-message success-msg" appScrollToMessage>
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         <p>{{ successMessage }}</p>
       </div>
@@ -241,20 +241,19 @@
               <input id="imageFile" type="file" accept="image/*" class="file-input-hidden" (change)="onImageSelected($event)" />
               <p class="helper-text-inline">Format JPG ou PNG. Taille idéale 800x400px.</p>
             </div>
-            <!-- The old template had a hardcoded text message since image upload doesn't work locally without backend. -->
           </div>
         </section>
 
         <!-- Warnings -->
         @if (hasRegisteredParticipants) {
-          <div class="state-message warning-msg">
+          <div class="state-message warning-msg" appScrollToMessage>
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             <p>Attention : {{ originalRegisteredCount }} personne(s) sont déjà inscrites. Modifier la date ou le lieu peut impacter leur organisation.</p>
           </div>
         }
 
         @if (capacityBelowRegistrations) {
-          <div class="state-message error-msg">
+          <div class="state-message error-msg" appScrollToMessage>
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <p>La capacité d'accueil ne peut pas être inférieure au nombre d'inscrits actuels ({{ originalRegisteredCount }}).</p>
           </div>

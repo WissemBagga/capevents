@@ -7,11 +7,14 @@ import { inject } from '@angular/core';
 import { MyInvitationResponse, InvitationResponseStatus } from '../../../core/models/invitation.model';
 import { finalize } from 'rxjs';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
+
 
 @Component({
   selector: 'app-my-invitations',
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, ScrollToMessageDirective],
   templateUrl: './my-invitations.html',
   styleUrl: './my-invitations.css',
 })

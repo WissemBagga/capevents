@@ -3,11 +3,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { UserService } from '../../../core/services/user.service';
 import { Department } from '../../../core/models/department.model';
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
 @Component({
   selector: 'app-admin-departments',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ScrollToMessageDirective],
   templateUrl: './admin-departments.html',
   styleUrl: './admin-departments.css'
 })

@@ -11,10 +11,12 @@ import { RegistrationResponse } from '../../../core/models/registration.model';
 
 import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, ScrollToMessageDirective],
   templateUrl: './employee-dashboard.html',
   styleUrl: './employee-dashboard.css'
 })

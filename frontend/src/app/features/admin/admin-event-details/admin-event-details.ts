@@ -19,10 +19,13 @@ import { Router } from '@angular/router';
 
 import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
+
 @Component({
   selector: 'app-admin-event-details',
   standalone: true,
-  imports: [DatePipe, UpperCasePipe, FormsModule],
+  imports: [DatePipe, UpperCasePipe, FormsModule, ScrollToMessageDirective],
   templateUrl: './admin-event-details.html',
   styleUrl: './admin-event-details.css'
 })

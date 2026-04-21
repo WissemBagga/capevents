@@ -8,10 +8,12 @@ import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
 import { EventFeedbackResponse } from '../../../core/models/feedback.model';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 @Component({
   selector: 'app-feedback-event',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DatePipe],
+  imports: [ReactiveFormsModule, DatePipe, ScrollToMessageDirective],
   templateUrl: './feedback-event.html',
   styleUrl: './feedback-event.css'
 })

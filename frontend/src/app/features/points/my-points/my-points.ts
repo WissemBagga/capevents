@@ -6,10 +6,12 @@ import { finalize } from 'rxjs';
 import { PointService } from '../../../core/services/point.service';
 import { MyPointsResponse, PointTransactionResponse } from '../../../core/models/points.model';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 @Component({
   selector: 'app-my-points',
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, ScrollToMessageDirective],
   templateUrl: './my-points.html',
   styleUrl: './my-points.css'
 })

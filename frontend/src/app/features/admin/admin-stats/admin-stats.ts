@@ -11,6 +11,7 @@ import { AdminAnalyticsService } from '../../../core/services/admin-analytics.se
 import { UserService } from '../../../core/services/user.service';
 import { Department } from '../../../core/models/department.model';
 import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
 type TrendPointVm = {
   month: string;
@@ -22,7 +23,7 @@ type TrendPointVm = {
 @Component({
   selector: 'app-admin-stats',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, FormsModule],
+  imports: [RouterLink, DecimalPipe, FormsModule, ScrollToMessageDirective],
   templateUrl: './admin-stats.html',
   styleUrl: './admin-stats.css',
 })

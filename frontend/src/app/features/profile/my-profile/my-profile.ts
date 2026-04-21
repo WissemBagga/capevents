@@ -5,10 +5,12 @@ import { ProfileService } from '../../../core/services/profile.service';
 
 import { AVATAR_PRESETS } from '../../../core/constants/avatar-presets';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 @Component({
   selector: 'app-my-profile',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ScrollToMessageDirective],
   templateUrl: './my-profile.html',
   styleUrl: './my-profile.css'
 })

@@ -7,10 +7,13 @@ import { finalize } from 'rxjs';
 import { EventService } from '../../../core/services/event.service';
 import { EventResponse } from '../../../core/models/event.model';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
+
 @Component({
   selector: 'app-pending-events',
   standalone: true,
-  imports: [DatePipe, RouterLink, FormsModule],
+  imports: [DatePipe, RouterLink, FormsModule, ScrollToMessageDirective],
   templateUrl: './pending-events.html',
   styleUrl: './pending-events.css'
 })

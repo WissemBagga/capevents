@@ -7,11 +7,13 @@ import { Department } from '../../../core/models/department.model';
 
 import { AVATAR_PRESETS } from '../../../core/constants/avatar-presets';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ScrollToMessageDirective],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })

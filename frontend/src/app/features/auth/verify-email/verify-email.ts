@@ -2,10 +2,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 
 @Component({
   selector: 'app-verify-email',
-  imports: [RouterLink],
+  imports: [RouterLink, ScrollToMessageDirective],
   templateUrl: './verify-email.html',
   styleUrl: './verify-email.css',
 })
