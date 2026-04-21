@@ -3,6 +3,7 @@ package com.capevents.backend.user;
 import com.capevents.backend.common.dto.PageResponse;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
+import com.capevents.backend.mail.EmailService;
 import com.capevents.backend.role.Role;
 import com.capevents.backend.role.RoleRepository;
 import com.capevents.backend.user.dto.MyProfileResponse;
@@ -21,10 +22,12 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final EmailService emailService;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.emailService = emailService;
     }
 
     @Transactional(readOnly = true)
@@ -134,13 +137,23 @@ public class UserService {
     }
 
     @Transactional
-    public UserSummaryDto updateUserRole(UUID userId, String roleCode) {
+    public UserSummaryDto updateUserRole(UUID userId, String roleCode, boolean confirmHrPromotion) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         Set<String> allowed = Set.of("ROLE_EMPLOYEE", "ROLE_MANAGER", "ROLE_HR");
         if (!allowed.contains(roleCode)) {
             throw new BadRequestException("Rôle invalide");
+        }
+
+        String currentPrimaryRole = resolvePrimaryRole(user);
+
+        if (roleCode.equals(currentPrimaryRole)) {
+            return toSummaryDto(user);
+        }
+
+        if ("ROLE_HR".equals(roleCode) && !confirmHrPromotion) {
+            throw new BadRequestException("La confirmation est obligatoire pour accorder le rôle RH");
         }
 
         Role newRole = roleRepository.findByCode(roleCode)
@@ -155,7 +168,38 @@ public class UserService {
         user.getRoles().add(newRole);
 
         User saved = userRepository.save(user);
+
+        emailService.sendRoleChangedEmail(
+                saved.getEmail(),
+                buildFullName(saved.getFirstName(), saved.getLastName()),
+                toRoleLabel(roleCode)
+        );
+
         return toSummaryDto(saved);
+    }
+
+    private String resolvePrimaryRole(User user) {
+        Set<String> roles = user.getRoles().stream()
+                .map(Role::getCode)
+                .collect(Collectors.toSet());
+
+        if (roles.contains("ROLE_HR")) return "ROLE_HR";
+        if (roles.contains("ROLE_MANAGER")) return "ROLE_MANAGER";
+        return "ROLE_EMPLOYEE";
+    }
+
+    private String buildFullName(String firstName, String lastName) {
+        String safeFirstName = firstName != null ? firstName.trim() : "";
+        String safeLastName = lastName != null ? lastName.trim() : "";
+        return (safeFirstName + " " + safeLastName).trim();
+    }
+
+    private String toRoleLabel(String roleCode) {
+        return switch (roleCode) {
+            case "ROLE_HR" -> "RH";
+            case "ROLE_MANAGER" -> "Manager";
+            default -> "Employé";
+        };
     }
 
 }

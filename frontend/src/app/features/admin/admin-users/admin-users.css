@@ -258,6 +258,69 @@
   border: 0;
 }
 
+
+.btn-save-role {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-save-role:hover:not(:disabled) {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.btn-save-role:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hr-warning-box {
+  grid-column: 1 / -1;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.hr-warning-title {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #b91c1c;
+  margin-bottom: 6px;
+}
+
+.hr-warning-text {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: #991b1b;
+  line-height: 1.5;
+}
+
+.hr-confirm-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #7f1d1d;
+}
+
+.hr-confirm-row input {
+  margin-top: 2px;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
   .user-card {

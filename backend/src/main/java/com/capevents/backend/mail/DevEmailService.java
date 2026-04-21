@@ -93,4 +93,12 @@ public class DevEmailService implements EmailService {
                 + " | event=" + event.getTitle()
                 + " | link=" + mailProperties.getFrontendBaseUrl() + "/my-submissions");
     }
+
+    @Override
+    public void sendRoleChangedEmail(String to, String fullName, String roleLabel) {
+        System.out.println("[DEV EMAIL] Role changed for " + to
+                + " | user=" + fullName
+                + " | newRole=" + roleLabel
+                + " | message=Votre rôle a été mis à jour. Il sera pris en compte à la prochaine connexion.");
+    }
 }

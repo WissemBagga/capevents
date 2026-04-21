@@ -18,4 +18,6 @@ public interface EmailService {
     void sendEventProposalSubmittedEmail(String to, Event event, User creator);
     void sendEventProposalApprovedEmail(String to, Event event);
     void sendEventProposalRejectedEmail(String to, Event event, String reason);
+
+    void sendRoleChangedEmail(String to, String fullName, String roleLabel);
 }

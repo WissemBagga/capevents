@@ -74,7 +74,11 @@ public class UserController {
             @PathVariable UUID id,
             @Valid @RequestBody UpdateUserRoleRequest req
     ) {
-        return userService.updateUserRole(id, req.roleCode());
+        return userService.updateUserRole(
+                id,
+                req.roleCode(),
+                Boolean.TRUE.equals(req.confirmHrPromotion())
+        );
     }
 
 }

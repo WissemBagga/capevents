@@ -227,4 +227,21 @@ public class MailtrapEmailService implements EmailService {
         mailSender.send(message);
     }
 
+    @Override
+    public void sendRoleChangedEmail(String to, String fullName, String roleLabel) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailProperties.getFrom());
+        message.setTo(to);
+        message.setSubject("Mise à jour de votre rôle - CapEvents");
+        message.setText(
+                "Bonjour " + (fullName == null || fullName.isBlank() ? "" : fullName) + ",\n\n" +
+                        "Votre rôle dans CapEvents a été mis à jour.\n" +
+                        "Nouveau rôle : " + roleLabel + "\n\n" +
+                        "Ce changement sera pris en compte à votre prochaine connexion.\n\n" +
+                        "CapEvents"
+        );
+
+        mailSender.send(message);
+    }
+
 }

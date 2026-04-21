@@ -34,8 +34,12 @@ export class UserService {
     return this.http.get<PageResponse<UserSummary>>(this.usersAdminUrl, { params });
   } 
 
-  updateUserRole(userId: string, roleCode: string) {
-    return this.http.patch<UserSummary>(`${this.usersAdminUrl}/${userId}/role`, { roleCode });
+
+  updateUserRole(userId: string, roleCode: string, confirmHrPromotion = false) {
+    return this.http.patch<UserSummary>(`${this.usersAdminUrl}/admin/${userId}/role`, {
+      roleCode,
+      confirmHrPromotion
+    });
   }
 
   createDepartment(name: string) {
