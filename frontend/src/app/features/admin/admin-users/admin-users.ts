@@ -177,4 +177,17 @@ export class AdminUsers {
         }
       });
   }
+
+  getAvatarUrl(user: UserSummary): string | null {
+    const avatar = user.avatarUrl?.trim();
+    return avatar ? avatar : null;
+  }
+
+  getInitials(user: UserSummary): string {
+    const first = user.firstName?.trim()?.charAt(0) ?? '';
+    const last = user.lastName?.trim()?.charAt(0) ?? '';
+    const initials = `${first}${last}`.toUpperCase();
+    return initials || 'U';
+  }
+
 }
