@@ -146,6 +146,12 @@ public class EventInvitationService {
 
         validateEmployeeColleagueInviteAccess(actor);
 
+        long registeredCount = registrationRepository.countByEventAndStatus(event, RegistrationStatus.REGISTERED);
+
+        if (event.getCapacity() != null && registeredCount >= event.getCapacity()) {
+            throw new BadRequestException("Impossible d’envoyer des invitations : l’événement est complet.");
+        }
+
         if (event.getStatus() != EventStatus.PUBLISHED) {
             throw new BadRequestException("Seuls les événements publiés peuvent être partagés.");
         }

@@ -362,6 +362,7 @@ export class EventDetails {
     return this.authService.hasEmployeeRole()
       && !!this.event
       && !this.isDeadlinePassed
+      && !this.isFull
       && this.isRegistered
       && this.hasDepartmentForColleagueInvite;
   }
@@ -387,6 +388,10 @@ export class EventDetails {
   get invitationBlockingMessage(): string {
     if (!this.event) {
       return '';
+    }
+
+    if (this.isFull) {
+      return "Les invitations aux collègues sont fermées : l’événement est complet.";
     }
 
     if (!this.isRegistered) {
@@ -477,6 +482,13 @@ export class EventDetails {
     if (!this.isRegistered) {
       this.employeeInviteErrorMessage =
         "Vous devez d'abord vous inscrire à cet événement avant d'inviter des collègues.";
+      this.cdr.markForCheck();
+      return;
+    }
+
+    if (this.isFull) {
+      this.employeeInviteErrorMessage =
+        "Impossible d’envoyer des invitations : l’événement est complet.";
       this.cdr.markForCheck();
       return;
     }
