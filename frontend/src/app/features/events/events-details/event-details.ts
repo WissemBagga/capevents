@@ -738,6 +738,20 @@ export class EventDetails {
     this.cdr.markForCheck();
   }
 
+  get deadlineClosedMessage(): string {
+    if (!this.event) return '';
+
+    if (this.isDeadlinePassed) {
+      return "La date limite d'inscription est dépassée. Les nouvelles inscriptions et les invitations aux collègues sont fermées.";
+    }
+
+    if (this.isFull && !this.isRegistered) {
+      return "Cet événement est complet. Aucune place n’est disponible.";
+    }
+
+    return '';
+  }
+
   goBack(): void {
     this.location.back();
   }

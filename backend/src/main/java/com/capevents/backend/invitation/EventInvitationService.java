@@ -129,7 +129,7 @@ public class EventInvitationService {
         return new SendInvitationResponse(
                 created,
                 skipped,
-                created + " invitation(s) created, " + skipped + " skipped",
+                created + " invitation(s) envoyée(s), " + skipped + " ignorée(s)",
                 invitedItems,
                 skippedItems
         );
@@ -251,7 +251,7 @@ public class EventInvitationService {
         return new SendInvitationResponse(
                 created,
                 skipped,
-                created + " invitation(s) created, " + skipped + " skipped",
+                created + " invitation(s) envoyée(s), " + skipped + " ignorée(s)",
                 invitedItems,
                 skippedItems
         );
