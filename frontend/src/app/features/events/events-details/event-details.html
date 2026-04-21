@@ -341,7 +341,7 @@
                 [disabled]="actionLoading"
               >
                 @if (actionLoading) {
-                  <span class="spinner-small"></span> Inscription...
+                  <span class="spinner-small" appScrollToMessage></span> Inscription...
                 } @else {
                   S'inscrire
                 }
@@ -356,7 +356,7 @@
                 [disabled]="actionLoading || isDeadlinePassed || hasPendingSentInvitations"
               >
                 @if (actionLoading) {
-                  <span class="spinner-small"></span> Traitement...
+                  <span class="spinner-small" appScrollToMessage></span> Traitement...
                 } @else {
                   Se désinscrire
                 }
