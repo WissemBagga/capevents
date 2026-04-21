@@ -314,5 +314,17 @@ public class NotificationService {
     }
 
 
+    @Transactional
+    public void notifyUserRoleChanged(User user, String roleLabel) {
+        createNotification(
+                user,
+                NotificationType.USER_ROLE_CHANGED,
+                "Rôle mis à jour",
+                "Votre rôle a été mis à jour : " + roleLabel + ". Le changement sera pris en compte à la prochaine connexion.",
+                null
+        );
+    }
+
+
 
 }

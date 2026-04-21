@@ -112,6 +112,27 @@
                 </div>
               }
 
+              @if (showHrWarningByUserId[user.id]) {
+                <div class="hr-warning-box">
+                  <div class="hr-warning-title">
+                    Attention : promotion vers RH
+                  </div>
+                  <p class="hr-warning-text">
+                    Le rôle RH donne un accès global à la gestion et aux statistiques de la plateforme.
+                    Vérifiez bien cette action avant validation.
+                  </p>
+
+                  <label class="hr-confirm-row">
+                    <input
+                      type="checkbox"
+                      [ngModel]="confirmHrPromotionByUserId[user.id]"
+                      (ngModelChange)="confirmHrPromotionByUserId[user.id] = $event"
+                    />
+                    <span>Je confirme vouloir accorder le rôle RH à cet utilisateur.</span>
+                  </label>
+                </div>
+              }
+
             </article>
           }
         </div>

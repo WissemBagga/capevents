@@ -4,6 +4,7 @@ import com.capevents.backend.common.dto.PageResponse;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.mail.EmailService;
+import com.capevents.backend.notification.NotificationService;
 import com.capevents.backend.role.Role;
 import com.capevents.backend.role.RoleRepository;
 import com.capevents.backend.user.dto.MyProfileResponse;
@@ -23,11 +24,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final EmailService emailService;
+    private final NotificationService notificationService;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, EmailService emailService) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, EmailService emailService, NotificationService notificationService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.emailService = emailService;
+
+        this.notificationService = notificationService;
     }
 
     @Transactional(readOnly = true)
@@ -156,6 +160,28 @@ public class UserService {
             throw new BadRequestException("La confirmation est obligatoire pour accorder le rôle RH");
         }
 
+        if ("ROLE_MANAGER".equals(roleCode)) {
+            if (user.getDepartment() == null) {
+                throw new BadRequestException("Impossible d’attribuer le rôle Manager à un utilisateur sans département");
+            }
+
+            long otherManagers = userRepository.countOtherManagersInDepartment(
+                    user.getDepartment().getId(),
+                    user.getId()
+            );
+
+            if (otherManagers > 0) {
+                throw new BadRequestException("Ce département a déjà un manager");
+            }
+        }
+
+        if ("ROLE_HR".equals(currentPrimaryRole) && !"ROLE_HR".equals(roleCode)) {
+            long hrCount = userRepository.countUsersByRoleCode("ROLE_HR");
+            if (hrCount <= 1) {
+                throw new BadRequestException("Impossible de modifier le rôle du dernier RH");
+            }
+        }
+
         Role newRole = roleRepository.findByCode(roleCode)
                 .orElseThrow(() -> new NotFoundException("Rôle introuvable"));
 
@@ -169,10 +195,13 @@ public class UserService {
 
         User saved = userRepository.save(user);
 
+        String roleLabel = toRoleLabel(roleCode);
+
+        notificationService.notifyUserRoleChanged(saved, roleLabel);
         emailService.sendRoleChangedEmail(
                 saved.getEmail(),
                 buildFullName(saved.getFirstName(), saved.getLastName()),
-                toRoleLabel(roleCode)
+                roleLabel
         );
 
         return toSummaryDto(saved);

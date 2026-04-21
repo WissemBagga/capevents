@@ -36,7 +36,7 @@ export class UserService {
 
 
   updateUserRole(userId: string, roleCode: string, confirmHrPromotion = false) {
-    return this.http.patch<UserSummary>(`${this.usersAdminUrl}/admin/${userId}/role`, {
+    return this.http.patch<UserSummary>(`${this.usersAdminUrl}/${userId}/role`, {
       roleCode,
       confirmHrPromotion
     });

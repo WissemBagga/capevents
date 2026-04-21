@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { UserService } from '../../../core/services/user.service';
 import { UserSummary } from '../../../core/models/user-summary.model';
@@ -36,6 +37,28 @@ export class AdminUsers {
     this.loadUsers();
   }
 
+  private extractErrorMessage(err: unknown, fallback: string): string {
+    const httpErr = err as HttpErrorResponse;
+
+    if (httpErr?.error instanceof ProgressEvent || httpErr?.status === 0) {
+      return 'Impossible de contacter le serveur. Vérifiez que le backend est lancé et accessible.';
+    }
+
+    if (typeof httpErr?.error === 'string' && httpErr.error.trim()) {
+      return httpErr.error;
+    }
+
+    if (httpErr?.error?.message) {
+      return httpErr.error.message;
+    }
+
+    if (httpErr?.message) {
+      return httpErr.message;
+    }
+
+    return fallback;
+  }
+
   loadUsers(): void {
     this.loading = true;
     this.errorMessage = '';
@@ -58,8 +81,10 @@ export class AdminUsers {
           this.cdr.markForCheck();
         },
         error: (err) => {
-          this.errorMessage =
-            err?.error?.message || err?.error || 'Impossible de charger les utilisateurs.';
+          this.errorMessage = this.extractErrorMessage(
+            err,
+            'Impossible de charger les utilisateurs.'
+          );
           this.cdr.markForCheck();
         }
       });
@@ -76,7 +101,9 @@ export class AdminUsers {
     this.errorMessage = '';
     this.successMessage = '';
 
-    const promotingToHr = roleCode === 'ROLE_HR' && this.getPrimaryRole(user) !== 'ROLE_HR';
+    const promotingToHr =
+      roleCode === 'ROLE_HR' && this.getPrimaryRole(user) !== 'ROLE_HR';
+
     this.showHrWarningByUserId[user.id] = promotingToHr;
 
     if (!promotingToHr) {
@@ -136,13 +163,15 @@ export class AdminUsers {
 
           this.successMessage =
             `Rôle mis à jour pour ${updatedUser.firstName} ${updatedUser.lastName}. `
-            + `Un email de notification a été envoyé.`;
+            + `Email et notification envoyés.`;
 
           this.cdr.markForCheck();
         },
         error: (err) => {
-          this.errorMessage =
-            err?.error?.message || err?.error || 'Impossible de modifier le rôle.';
+          this.errorMessage = this.extractErrorMessage(
+            err,
+            'Impossible de modifier le rôle.'
+          );
           this.cdr.markForCheck();
         }
       });

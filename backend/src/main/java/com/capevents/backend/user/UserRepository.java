@@ -72,4 +72,21 @@ public interface UserRepository extends JpaRepository<User, UUID> {
       and u.department.id = :departmentId
     """)
     List<User> findActiveVerifiedEmployeeUsersByDepartmentId(@Param("departmentId") Long departmentId);
+
+    @Query("""
+    select count(distinct u) from User u
+    join u.roles r
+    where r.code = :roleCode
+    """)
+    long countUsersByRoleCode(@Param("roleCode") String roleCode);
+
+    @Query("""
+    select count(distinct u) from User u
+    join u.roles r
+    where r.code = 'ROLE_MANAGER'
+      and u.department.id = :departmentId
+      and u.id <> :excludedUserId
+    """)
+    long countOtherManagersInDepartment(@Param("departmentId") Long departmentId,
+                                        @Param("excludedUserId") UUID excludedUserId);
 }
