@@ -370,7 +370,7 @@
         }
 
         @if (analytics.topMembers.length > 0) {
-          <section class="admin-card stats-section">
+          <section class="admin-card stats-section premium-stats-section">
             <div class="card-header">
               <div class="header-text-group">
                 <h2 class="card-title">Top 5 participants</h2>
@@ -429,7 +429,7 @@
           <div class="card-header">
             <div class="header-text-group">
               <h2 class="card-title">Événements les mieux notés</h2>
-              <p class="card-subtitle">Top 5 des événements selon la note moyenne des feedbacks.</p>
+              <p class="card-subtitle">Top 5 par note moyenne.</p>
             </div>
           </div>
 
@@ -477,7 +477,7 @@
           <div class="card-header">
             <div class="header-text-group">
               <h2 class="card-title">Événements les plus engageants</h2>
-              <p class="card-subtitle">Le top 5 par taux d'inscription et présence globale.</p>
+              <p class="card-subtitle">Top 5 par participation.</p>
             </div>
           </div>
 
@@ -529,15 +529,6 @@
                       Détails
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </a>
-                  </div>
-                  <div class="progress-block">
-                    <div class="progress-header">
-                      <span>Progression inscriptions</span>
-                      <strong>{{ registrationProgress(item) | number:'1.0-0' }}%</strong>
-                    </div>
-                    <div class="progress-track">
-                      <div class="progress-fill" [style.width]="registrationProgress(item) + '%'"></div>
-                    </div>
                   </div>
                 </article>
               }
