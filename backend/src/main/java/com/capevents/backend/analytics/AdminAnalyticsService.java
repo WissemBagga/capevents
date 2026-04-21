@@ -179,15 +179,24 @@ public class AdminAnalyticsService {
                 .filter(e -> e.getStatus() == EventStatus.PENDING)
                 .count();
 
-        List<TopMemberAnalyticsResponse> memberRows = buildMemberRows(actor, eligibleEvents);
+        Long effectiveDepartmentId = null;
+
+        if (isManager(actor)) {
+            effectiveDepartmentId = actor.getDepartment() != null ? actor.getDepartment().getId() : null;
+        } else if (departmentId != null) {
+            effectiveDepartmentId = departmentId;
+        }
+
+        List<TopMemberAnalyticsResponse> memberRows = buildMemberRows(actor, eligibleEvents, effectiveDepartmentId);
+        List<MonthlyTrendPointResponse> monthlyTrend = buildMonthlyTrend(actor, eligibleEvents, effectiveDepartmentId);
+        List<DepartmentAnalyticsRowResponse> departmentRows = isHr(actor)
+                ? buildDepartmentRows(eligibleEvents, effectiveDepartmentId)
+                : List.of();
+
         List<TopMemberAnalyticsResponse> topMembers = memberRows.stream().limit(5).toList();
 
         long activeMembers = memberRows.size();
 
-        List<MonthlyTrendPointResponse> monthlyTrend = buildMonthlyTrend(actor, eligibleEvents);
-        List<DepartmentAnalyticsRowResponse> departmentRows = isHr(actor)
-                ? buildDepartmentRows(eligibleEvents)
-                : List.of();
 
         return new AdminAnalyticsOverviewResponse(
                 totalEvents,
@@ -269,7 +278,7 @@ public class AdminAnalyticsService {
         return actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));
     }
 
-    private List<TopMemberAnalyticsResponse> buildMemberRows(User actor, List<Event> eligibleEvents) {
+    private List<TopMemberAnalyticsResponse> buildMemberRows(User actor, List<Event> eligibleEvents, Long departmentFilterId) {
         Map<UUID, MemberAccumulator> memberMap = new HashMap<>();
 
         boolean hr = isHr(actor);
@@ -285,10 +294,15 @@ public class AdminAnalyticsService {
 
                 if (!hr) {
                     Long userDeptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
+                    if (departmentFilterId != null && !departmentFilterId.equals(userDeptId)) {
+                        continue;
+                    }
                     if (managerDeptId == null || !managerDeptId.equals(userDeptId)) {
                         continue;
                     }
                 }
+
+
 
                 MemberAccumulator acc = memberMap.computeIfAbsent(
                         user.getId(),
@@ -380,7 +394,7 @@ public class AdminAnalyticsService {
                 .toList();
     }
 
-    private List<MonthlyTrendPointResponse> buildMonthlyTrend(User actor, List<Event> eligibleEvents) {
+    private List<MonthlyTrendPointResponse> buildMonthlyTrend(User actor, List<Event> eligibleEvents, Long departmentFilterId) {
         Map<YearMonth, Long> monthCounts = new HashMap<>();
 
         boolean hr = isHr(actor);
@@ -396,6 +410,9 @@ public class AdminAnalyticsService {
 
                 if (!hr) {
                     Long userDeptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
+                    if (departmentFilterId != null && !departmentFilterId.equals(userDeptId)) {
+                        continue;
+                    }
                     if (managerDeptId == null || !managerDeptId.equals(userDeptId)) {
                         continue;
                     }
@@ -460,7 +477,7 @@ public class AdminAnalyticsService {
                 .toList();
     }
 
-    private List<DepartmentAnalyticsRowResponse> buildDepartmentRows(List<Event> eligibleEvents) {
+    private List<DepartmentAnalyticsRowResponse> buildDepartmentRows(List<Event> eligibleEvents, Long departmentFilterId) {
         List<User> employees = userRepository.findActiveVerifiedEmployeeUsers();
 
         Map<Long, String> departmentNames = new HashMap<>();
@@ -525,6 +542,7 @@ public class AdminAnalyticsService {
                             averageRating
                     );
                 })
+                .filter(row -> departmentFilterId == null || departmentFilterId.equals(row.departmentId()))
                 .sorted(
                         Comparator.comparing(DepartmentAnalyticsRowResponse::participationRate).reversed()
                                 .thenComparing(DepartmentAnalyticsRowResponse::activeEmployees).reversed()
