@@ -198,7 +198,7 @@ public class NotificationService {
                 NotificationType.EVENT_PROPOSAL_SUBMITTED,
                 "Nouvelle demande d’événement",
                 message,
-                "/admin/events/" + event.getId()
+                "/admin/pending-events"
         );
     }
 
@@ -224,7 +224,7 @@ public class NotificationService {
                 NotificationType.EVENT_PROPOSAL_REJECTED,
                 "Demande refusée",
                 "Votre événement \"" + event.getTitle() + "\" a été refusé. Raison : " + safeReason,
-                null
+                "/my-submissions"
         );
     }
 
