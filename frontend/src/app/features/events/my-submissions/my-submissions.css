@@ -301,6 +301,7 @@
 .status-pending   { background: #eff6ff; color: #2563eb; }
 .status-draft     { background: #f8fafc; color: #64748b; }
 .status-cancelled { background: #fef2f2; color: #dc2626; }
+.status-rejected { background: #fef2f2; color: #c12525; }
 .status-archived  { background: #f1f5f9; color: #475467; }
 
 /* ===== Event Description ===== */
