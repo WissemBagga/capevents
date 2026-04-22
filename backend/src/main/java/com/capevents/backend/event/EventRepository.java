@@ -286,8 +286,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
           and (
             :q is null
             or lower(e.title) like lower(concat('%', :q, '%'))
-            or lower(coalesce(e.description, '')) like lower(concat('%', :q, '%'))
-      )
+          )
     """)
     Page<Event> findPastVisibleEvents(
             @Param("statuses") List<EventStatus> statuses,

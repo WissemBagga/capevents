@@ -86,9 +86,10 @@ export class Sidebar {
   get mainLinks(): NavItem[] {
     if (this.authService.isHr()) {
       return [
-        { label: 'Statistiques RH', route: '/admin/hr/stats' },
+        { label: 'Statistiques', route: '/admin/hr/stats' },
         { label: 'Gestion des événements', route: '/admin/hr' },
         { label: 'Événements', route: '/events' },
+        { label: 'Événements passés', route: '/events/past' },
         { label: 'Départements', route: '/admin/admin-departments' },
         { label: 'Utilisateurs & rôles', route: '/admin/admin-users' }
       ];
@@ -98,13 +99,15 @@ export class Sidebar {
       return [
         { label: 'Statistiques', route: '/admin/manager/stats' },
         { label: 'Gestion des événements', route: '/admin/manager' },
-        { label: 'Événements', route: '/events' }
+        { label: 'Événements', route: '/events' },
+        { label: 'Événements passés', route: '/events/past' }
       ];
     }
 
     return [
       { label: 'Tableau de bord', route: '/dashboard/employee' },
-      { label: 'Événements', route: '/events' }
+      { label: 'Événements', route: '/events' },
+      { label: 'Événements passés', route: '/events/past' }
     ];
   }
 
@@ -132,7 +135,7 @@ export class Sidebar {
       { label: 'Mes invitations', route: '/my-invitations' },
       { label: 'Mes points', route: '/my-points' },
       { label: 'Mes intérêts', route: '/my-interests' },
-      { label: 'Événement passés', route: 'events/past'}
+      { label: 'Événements passés', route: '/events/past' }
     ];
   }
 

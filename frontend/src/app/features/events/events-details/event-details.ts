@@ -117,51 +117,58 @@ export class EventDetails {
     this.eventService.getPublishedById(id).subscribe({
       next: (event) => {
         this.event = event;
-        this.heroImageLoadFailed = false;
-
-        if (this.isPastEvent) {
-          this.loadPublicFeedback(event.id);
-        }
+        this.loading = false;
+        this.cdr.markForCheck();
 
         if (this.authService.isLoggedIn() && this.canParticipate) {
           this.loadRegistrationStatus(event.id);
         }
-
-        this.cdr.markForCheck();
       },
-      error: () => {
-        this.eventService.getPastById(id).subscribe({
-          next: (event) => {
-            this.event = event;
-            this.heroImageLoadFailed = false;
-            this.loadPublicFeedback(event.id);
+      error: (err) => {
+        if (err?.status !== 404) {
+          this.loading = false;
+          this.errorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de charger cet événement.';
+          this.cdr.markForCheck();
+          return;
+        }
 
-            if (this.authService.isLoggedIn() && this.canParticipate) {
-              this.loadRegistrationStatus(event.id);
-            }
-
+        this.eventService.getPastById(id)
+          .pipe(finalize(() => {
+            this.loading = false;
             this.cdr.markForCheck();
-          },
-          error: (err) => {
-            const status = err?.status;
+          }))
+          .subscribe({
+            next: (event) => {
+              this.event = event;
+              this.cdr.markForCheck();
 
-            if (status === 404) {
-              this.router.navigate(['/not-found']);
-              return;
+              if (this.authService.isLoggedIn() && this.canParticipate) {
+                this.loadRegistrationStatus(event.id);
+              }
+            },
+            error: (pastErr) => {
+              const status = pastErr?.status;
+
+              if (status === 404) {
+                this.router.navigate(['/not-found']);
+                return;
+              }
+
+              if (status === 403) {
+                this.router.navigate(['/forbidden']);
+                return;
+              }
+
+              this.errorMessage =
+                pastErr?.error?.message ||
+                pastErr?.error ||
+                'Impossible de charger cet événement.';
+              this.cdr.markForCheck();
             }
-
-            if (status === 403) {
-              this.router.navigate(['/forbidden']);
-              return;
-            }
-
-            this.errorMessage =
-              err?.error?.message ||
-              err?.error ||
-              'Impossible de charger cet événement.';
-            this.cdr.markForCheck();
-          }
-        });
+          });
       }
     });
   }
