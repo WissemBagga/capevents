@@ -226,6 +226,11 @@ export class AdminEventDetails {
   }
 
   markAttendance(registrationId: number, attendanceStatus: AttendanceStatus): void {
+    if (!this.isAttendanceOpen) {
+      this.errorMessage = this.attendanceLockedMessage;
+      this.cdr.markForCheck();
+      return;
+    }
     this.attendanceLoadingById[registrationId] = true;
     this.cdr.markForCheck();
 
@@ -714,6 +719,12 @@ export class AdminEventDetails {
   }
 
   markAllPresent(): void {
+    if (!this.isAttendanceOpen) {
+      this.errorMessage = this.attendanceLockedMessage;
+      this.cdr.markForCheck();
+      return;
+    }
+
     const targets = this.participants
       .filter(p => p.attendanceStatus !== 'PRESENT')
       .map(p => this.eventService.markAttendance(p.registrationId, 'PRESENT'));
@@ -744,6 +755,12 @@ export class AdminEventDetails {
   }
 
   markAllAbsent(): void {
+    if (!this.isAttendanceOpen) {
+      this.errorMessage = this.attendanceLockedMessage;
+      this.cdr.markForCheck();
+      return;
+    }
+
     const targets = this.participants
       .filter(p => p.attendanceStatus !== 'ABSENT')
       .map(p => this.eventService.markAttendance(p.registrationId, 'ABSENT'));
@@ -873,6 +890,15 @@ export class AdminEventDetails {
     }
 
     return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
+  }
+
+  get isAttendanceOpen(): boolean {
+    if (!this.event) return false;
+    return new Date(this.event.startAt).getTime() <= Date.now();
+  }
+
+  get attendanceLockedMessage(): string {
+    return "La présence pourra être saisie à partir du début de l’événement.";
   }
 
 

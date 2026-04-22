@@ -293,6 +293,11 @@
 
                         @if (!participantsLoading && participants.length > 0) {
                             <!-- Attendance Toolbar -->
+                            @if (!isAttendanceOpen) {
+                                <div class="state-message info-msg" appScrollToMessage>
+                                    <p>{{ attendanceLockedMessage }}</p>
+                                </div>
+                            }
                             <div class="attendance-toolbar">
                                 <div class="attendance-summary">
                                     <span class="att-chip att-present">
@@ -309,11 +314,11 @@
                                     </span>
                                 </div>
                                 <div class="attendance-bulk-actions">
-                                    <button type="button" class="btn-bulk present" (click)="markAllPresent()">
+                                    <button type="button" class="btn-bulk present" (click)="markAllPresent()" [disabled]="!isAttendanceOpen">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                         Tout cocher
                                     </button>
-                                    <button type="button" class="btn-bulk absent" (click)="markAllAbsent()">
+                                    <button type="button" class="btn-bulk absent" (click)="markAllAbsent()" [disabled]="!isAttendanceOpen">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                         Tout décocher
                                     </button>
@@ -362,7 +367,7 @@
                                             <button type="button"
                                                 class="attendance-btn present-btn"
                                                 [class.active]="participant.attendanceStatus === 'PRESENT'"
-                                                [disabled]="attendanceLoadingById[participant.registrationId]"
+                                                [disabled]="!isAttendanceOpen || attendanceLoadingById[participant.registrationId]"
                                                 (click)="markAttendance(participant.registrationId, 'PRESENT')">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                                 Présent
@@ -370,7 +375,7 @@
                                             <button type="button"
                                                 class="attendance-btn absent-btn"
                                                 [class.active]="participant.attendanceStatus === 'ABSENT'"
-                                                [disabled]="attendanceLoadingById[participant.registrationId]"
+                                                [disabled]="!isAttendanceOpen || attendanceLoadingById[participant.registrationId]"
                                                 (click)="markAttendance(participant.registrationId, 'ABSENT')">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                                 Absent

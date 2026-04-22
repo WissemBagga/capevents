@@ -85,6 +85,10 @@ public class EventRegistrationService {
         User user = userRepository.findByEmailWithRolesAndDepartment(userEmail.toLowerCase())
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
+        if (event.getStartAt() != null && !event.getStartAt().isAfter(Instant.now())) {
+            throw new BadRequestException("Impossible de vous désinscrire : l’événement a déjà commencé.");
+        }
+
         boolean hasPendingSentInvitations =
                 invitationRepository.existsByEventAndInvitedByAndRsvpResponseIsNull(event, user);
 
@@ -188,6 +192,10 @@ public class EventRegistrationService {
                 .orElseThrow(() -> new NotFoundException("Utilisateur introuvable"));
 
         Event event = registration.getEvent();
+
+        if (event.getStartAt() != null && event.getStartAt().isAfter(Instant.now())) {
+            throw new BadRequestException("La présence ne peut être saisie qu’à partir du début de l’événement.");
+        }
 
         boolean isHr = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_HR"));
         boolean isManager = actor.getRoles().stream().anyMatch(r -> r.getCode().equals("ROLE_MANAGER"));

@@ -287,6 +287,12 @@ export class EventDetails {
 
   openUnregisterModal(): void {
     if (!this.event || !this.isRegistered) return;
+    if (this.isEventStarted) {
+      this.successMessage = '';
+      this.errorMessage = "Impossible de vous désinscrire : l’événement a déjà commencé.";
+      this.cdr.markForCheck();
+      return;
+    }
 
     this.unregisterErrorMessage = '';
     this.unregisterReason = '';
@@ -701,6 +707,19 @@ export class EventDetails {
     }
 
     return '';
+  }
+
+
+  get isEventStarted(): boolean {
+    if (!this.event) return false;
+    return new Date(this.event.startAt).getTime() <= Date.now();
+  }
+
+  get canUnregisterNow(): boolean {
+    return !!this.event
+      && this.isRegistered
+      && !this.isEventStarted
+      && !this.hasPendingSentInvitations;
   }
 
   statusLabel(status: string): string {

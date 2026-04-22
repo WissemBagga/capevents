@@ -353,7 +353,7 @@
                 class="btn-danger"
                 type="button"
                 (click)="openUnregisterModal()"
-                [disabled]="actionLoading || isDeadlinePassed || hasPendingSentInvitations"
+                [disabled]="actionLoading || !canUnregisterNow"
               >
                 @if (actionLoading) {
                   <span class="spinner-small" appScrollToMessage></span> Traitement...
@@ -431,11 +431,7 @@
       </div>
     }
 
-    @if (canParticipate && event && !isRegistered && !isDeadlinePassed) {
-      <div class="state-message info">
-        <p>Inscrivez-vous d’abord à cet événement pour pouvoir inviter des collègues.</p>
-      </div>
-    }
+    
 
     @if (deadlineClosedMessage) {
       <div class="state-message error" appScrollToMessage>
@@ -457,13 +453,28 @@
         <p>{{ deadlineClosedMessage }}</p>
       </div>
     }
-    @if (isRegistered && canParticipate && !hasDepartmentForColleagueInvite && !isDeadlinePassed) {
-      <div class="state-message info">
-        <p>
-          L’invitation entre collègues n’est pas disponible pour un utilisateur sans département.
-        </p>
+
+    @if (canParticipate && invitationBlockingMessage) {
+      <div class="state-message info" appScrollToMessage>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <p>{{ invitationBlockingMessage }}</p>
       </div>
     }
+    
     @if (canInviteColleagues) {
       <section class="invitation-section">
         <!-- Section Header -->
