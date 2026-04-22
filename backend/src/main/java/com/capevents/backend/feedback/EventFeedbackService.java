@@ -113,68 +113,46 @@ public class EventFeedbackService {
             String q,
             org.springframework.data.domain.Pageable pageable
     ) {
-        List<Event> allEvents = eventRepository.findAllPastVisibleEvents(
-                List.of(EventStatus.PUBLISHED, EventStatus.ARCHIVED),
-                Instant.now()
-        );
+        // Fetch all candidates. Simple basic query to avoid complex SQL issues.
+        List<EventStatus> targetStatuses = List.of(EventStatus.PUBLISHED, EventStatus.ARCHIVED);
+        List<Event> allEvents = eventRepository.findAllPastVisibleEvents(targetStatuses, Instant.now());
 
-        String normalizedCategory = category != null ? category.trim() : null;
-        String normalizedAudience = audience != null ? audience.trim() : null;
-        String normalizedQuery = q != null ? q.trim().toLowerCase() : null;
+        // Apply filters in Java layer for maximum predictability
+        String normalizedQuery = (q != null && !q.isBlank()) ? q.trim().toLowerCase() : null;
 
         List<PastEventCardResponse> filtered = allEvents.stream()
-                .filter(event -> {
-                    if (normalizedCategory != null && !normalizedCategory.isBlank()) {
-                        String eventCategory = event.getCategory() != null ? event.getCategory().trim() : "";
-                        if (!eventCategory.equalsIgnoreCase(normalizedCategory)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                })
-                .filter(event -> {
-                    if (departmentId != null) {
-                        Long targetDeptId = event.getTargetDepartment() != null
-                                ? event.getTargetDepartment().getId()
-                                : null;
-                        return departmentId.equals(targetDeptId);
-                    }
-                    return true;
-                })
-                .filter(event -> {
-                    if (normalizedAudience != null && !normalizedAudience.isBlank()) {
-                        return event.getAudience() != null
-                                && event.getAudience().name().equalsIgnoreCase(normalizedAudience);
-                    }
-                    return true;
-                })
-                .filter(event -> {
-                    if (normalizedQuery != null && !normalizedQuery.isBlank()) {
-                        String title = event.getTitle() != null ? event.getTitle().toLowerCase() : "";
-                        String description = event.getDescription() != null ? event.getDescription().toLowerCase() : "";
-                        return title.contains(normalizedQuery) || description.contains(normalizedQuery);
-                    }
-                    return true;
-                })
+                .filter(event -> category == null || category.isBlank() || 
+                        (event.getCategory() != null && event.getCategory().equalsIgnoreCase(category.trim())))
+                .filter(event -> departmentId == null || 
+                        (event.getTargetDepartment() != null && departmentId.equals(event.getTargetDepartment().getId())))
+                .filter(event -> audience == null || audience.isBlank() || 
+                        (event.getAudience() != null && event.getAudience().name().equalsIgnoreCase(audience.trim())))
+                .filter(event -> normalizedQuery == null || 
+                        (event.getTitle() != null && event.getTitle().toLowerCase().contains(normalizedQuery)) ||
+                        (event.getDescription() != null && event.getDescription().toLowerCase().contains(normalizedQuery)))
                 .map(this::toPastEventCardResponse)
                 .toList();
 
-        int pageNumber = pageable.getPageNumber();
+        // Safe manual pagination
+        int totalItems = filtered.size();
         int pageSize = pageable.getPageSize();
-        int fromIndex = Math.min(pageNumber * pageSize, filtered.size());
-        int toIndex = Math.min(fromIndex + pageSize, filtered.size());
+        int currentPage = pageable.getPageNumber();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        if (totalPages == 0) totalPages = 1;
+
+        int fromIndex = Math.min(currentPage * pageSize, totalItems);
+        int toIndex = Math.min(fromIndex + pageSize, totalItems);
 
         List<PastEventCardResponse> pageItems = filtered.subList(fromIndex, toIndex);
-        int totalPages = filtered.isEmpty() ? 1 : (int) Math.ceil((double) filtered.size() / pageSize);
 
         return new PageResponse<>(
                 pageItems,
-                pageNumber,
+                currentPage,
                 pageSize,
                 totalPages,
-                filtered.size(),
-                pageNumber + 1 < totalPages,
-                pageNumber > 0
+                totalItems,
+                currentPage + 1 < totalPages,
+                currentPage > 0
         );
     }
 

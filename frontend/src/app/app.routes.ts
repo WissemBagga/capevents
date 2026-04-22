@@ -63,6 +63,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'events', component: EventsList },
+      { path: 'events/past', component: PastEvents },
+      {
+        path: 'events/:id/feedback',
+        component: FeedbackEvent,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE'] }
+      },
       { path: 'events/:id', component: EventDetails },
 
       { path: 'admin/events/:id',
@@ -178,7 +185,7 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['ROLE_HR'] }
       },
-      { path: 'events/past', component: PastEvents }
+
     ]
   },
 

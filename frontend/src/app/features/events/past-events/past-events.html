@@ -3,7 +3,7 @@
     <div class="page-header">
       <div class="header-text">
         <h1>Événements passés</h1>
-        <p class="header-sub">Découvrez les retours des participants et les événements qui ont marqué la plateforme.</p>
+        <p class="header-sub">Parcourez les événements terminés et découvrez l'impact qu'ils ont eu sur la communauté.</p>
       </div>
     </div>
 
@@ -14,107 +14,137 @@
     }
 
     <section class="admin-card filter-card">
-      <div class="filter-grid">
+      <div class="card-header">
+        <h2 class="card-title">Analyse & Archives</h2>
+        <p class="card-subtitle">Filtrez les événements passés pour consulter les statistiques et feedbacks.</p>
+      </div>
+
+      <div class="form-grid filters-grid">
         <div class="form-group">
           <label>Catégorie</label>
-          <select [(ngModel)]="filters.category">
-            <option value="">Toutes les catégories</option>
-            @for (item of categoryOptions; track item.value) {
-              <option [value]="item.value">{{ item.label }}</option>
-            }
-          </select>
+          <div class="select-wrapper">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <select [(ngModel)]="filters.category" class="form-select">
+              <option value="">Toutes les catégories</option>
+              @for (item of categoryOptions; track item.value) {
+                <option [value]="item.value">{{ item.label }}</option>
+              }
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
           <label>Département</label>
-          <select [(ngModel)]="filters.departmentId">
-            <option [ngValue]="null">Tous</option>
-            @for (department of departments; track department.id) {
-              <option [ngValue]="department.id">{{ department.name }}</option>
-            }
-          </select>
+          <div class="select-wrapper">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            <select [(ngModel)]="filters.departmentId" class="form-select">
+              <option [ngValue]="null">Tous les départements</option>
+              @for (department of departments; track department.id) {
+                <option [ngValue]="department.id">{{ department.name }}</option>
+              }
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
           <label>Audience</label>
-          <select [(ngModel)]="filters.audience">
-            <option value="">Toutes</option>
-            <option value="GLOBAL">Globale</option>
-            <option value="DEPARTMENT">Département</option>
-          </select>
+          <div class="select-wrapper">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <select [(ngModel)]="filters.audience" class="form-select">
+              <option value="">Toutes les audiences</option>
+              <option value="GLOBAL">Globale</option>
+              <option value="DEPARTMENT">Départementale</option>
+            </select>
+          </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group full-width">
           <label>Recherche</label>
-          <input type="text" [(ngModel)]="filters.q" placeholder="Titre ou mot-clé" />
+          <div class="input-wrapper">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" [(ngModel)]="filters.q" (keyup.enter)="applyFilters()" class="form-input" placeholder="Titre ou mot-clé..." />
+          </div>
         </div>
       </div>
 
-      <div class="filter-actions">
-        <button type="button" class="btn-secondary" (click)="applyFilters()">Appliquer</button>
-        <button type="button" class="btn-secondary" (click)="resetFilters()">Réinitialiser</button>
+      <div class="filters-footer">
+        <div></div>
+        <div class="filter-actions">
+          <button type="button" class="btn-secondary" (click)="resetFilters()">Réinitialiser</button>
+          <button type="button" class="btn-primary" (click)="applyFilters()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Filtrer les résultats
+          </button>
+        </div>
       </div>
     </section>
 
     @if (loading) {
       <div class="state-message loading-msg">
         <div class="spinner"></div>
-        <p>Chargement des événements passés...</p>
+        <p>Chargement des événements passés en cours...</p>
       </div>
     }
 
     @if (!loading && events.length === 0) {
       <div class="state-message info-msg">
-        <p>Aucun événement passé trouvé.</p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <p>Aucun événement passé n'a été trouvé pour ces critères.</p>
       </div>
     }
 
     @if (!loading && events.length > 0) {
       <div class="past-events-grid">
         @for (event of events; track event.eventId) {
-          <article class="past-event-card">
-            <img [src]="event.imageUrl || 'images/events/default-event.jpg'" [alt]="event.title" class="card-image" />
+          <article class="event-card past-event-card">
+            <div class="event-image" [style.background-image]="'url(' + (event.imageUrl || 'assets/images/default-event.jpg') + ')'">
+              <div class="badge-overlay">
+                <span class="overlay-badge registered-badge">{{ event.category || 'Événement' }}</span>
+              </div>
+            </div>
 
-            <div class="card-body">
-              <div class="card-top">
-                <span class="category-badge">{{ event.category || 'Sans catégorie' }}</span>
-                <span class="audience-badge">{{ event.audience }}</span>
+            <div class="event-body">
+              <div class="meta-list">
+                <div class="meta-row">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <span>{{ event.startAt | date:'mediumDate' }}</span>
+                </div>
+                <div class="meta-row">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                  <span>{{ event.departmentName }}</span>
+                </div>
               </div>
 
-              <h2>{{ event.title }}</h2>
+              <h3>{{ event.title }}</h3>
 
-              <div class="meta-line">
-                <span>{{ event.startAt | date:'mediumDate' }}</span>
-                <span>•</span>
-                <span>{{ event.departmentName }}</span>
+              <div class="rating-summary-row">
+                <span class="rating-avg">{{ (event.averageRating || 0) | number:'1.1-1' }} / 5</span>
+                <span class="rating-count">({{ event.feedbackCount }} avis)</span>
               </div>
 
-              <div class="rating-row">
-                <strong>{{ event.averageRating | number:'1.1-2' }}/5</strong>
-                <span>{{ event.feedbackCount }} avis</span>
-                <span>•</span>
-                <span>{{ event.presentCount }} présents</span>
+              <div class="card-footer-actions">
+                <span class="presence-stat">{{ event.presentCount }} présents</span>
+                <a [routerLink]="['/events', event.eventId]" class="btn-details">Détails</a>
               </div>
-
-              <p class="teaser">{{ event.teaser }}</p>
-
-              <a [routerLink]="['/events', event.eventId]" class="btn-view-feedback">
-                Voir les retours
-              </a>
             </div>
           </article>
         }
       </div>
 
       <div class="pagination-bar">
-        <button type="button" class="btn-secondary" (click)="previousPage()" [disabled]="currentPage === 0">
-          Précédent
-        </button>
-        <span>Page {{ currentPage + 1 }} / {{ totalPages }}</span>
-        <button type="button" class="btn-secondary" (click)="nextPage()" [disabled]="currentPage + 1 >= totalPages">
-          Suivant
-        </button>
+        <div class="pagination-controls">
+          <button type="button" class="btn-secondary page-btn" (click)="previousPage()" [disabled]="currentPage === 0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Précédent
+          </button>
+          <span class="page-info">Page {{ currentPage + 1 }} / {{ totalPages }}</span>
+          <button type="button" class="btn-secondary page-btn" (click)="nextPage()" [disabled]="currentPage + 1 >= totalPages">
+            Suivant
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+        <p class="page-total">Total: {{ totalItems }} événements</p>
       </div>
     }
   </div>
-</div>
+</div>

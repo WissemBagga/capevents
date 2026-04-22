@@ -72,7 +72,12 @@ export class PastEvents {
       }))
       .subscribe({
         next: (page: PageResponse<PastEventCardResponse>) => {
-          this.events = page.items ?? [];
+          this.events = (page.items ?? []).map(e => ({
+            ...e,
+            averageRating: e.averageRating || 0,
+            feedbackCount: e.feedbackCount || 0,
+            presentCount: e.presentCount || 0
+          }));
           this.totalPages = page.totalPages || 1;
           this.totalItems = page.totalItems || 0;
           this.cdr.markForCheck();
@@ -82,7 +87,7 @@ export class PastEvents {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de charger les événements passés.';
+            'Une erreur est survenue lors du chargement des événements passés. Veuillez réessayer ultérieurement.';
           this.cdr.markForCheck();
         }
       });

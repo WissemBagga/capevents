@@ -199,41 +199,44 @@ export class EventService {
     return this.http.get<PageResponse<EventResponse>>(`${this.apiUrl}/me/submissions`, { params });
   }
 
-  createFeedback(eventId: string, payload: CreateEventFeedbackRequest) {
-    return this.http.post<EventFeedbackResponse>(`${this.apiUrl}/${eventId}/feedback`, payload);
-  }
-
-  getMyFeedback(eventId: string) {
-    return this.http.get<EventFeedbackResponse>(`${this.apiUrl}/${eventId}/feedback/me`);
-  }
   getPastEvents(
-    page = 0,
-    size = 9,
-    filters?: {
-      category?: string | null;
-      departmentId?: number | null;
-      audience?: string | null;
-      q?: string | null;
-    }
-  ) {
-    let params = new HttpParams()
-      .set('page', page)
-      .set('size', size);
-
-    if (filters?.category) params = params.set('category', filters.category);
-    if (filters?.departmentId) params = params.set('departmentId', filters.departmentId);
-    if (filters?.audience) params = params.set('audience', filters.audience);
-    if (filters?.q?.trim()) params = params.set('q', filters.q.trim());
-
-    return this.http.get<PageResponse<PastEventCardResponse>>(`${this.apiUrl}/past`, { params });
+  page = 0,
+  size = 8,
+  filters?: {
+    category?: string | null;
+    departmentId?: number | null;
+    audience?: string | null;
+    q?: string | null;
   }
+) {
+  let params = new HttpParams()
+    .set('page', page)
+    .set('size', size);
 
-  getPastById(id: string) {
-    return this.http.get<EventResponse>(`${this.apiUrl}/past/${id}`);
+  if (filters?.category) params = params.set('category', filters.category);
+  if (filters?.departmentId !== null && filters?.departmentId !== undefined) {
+    params = params.set('departmentId', filters.departmentId);
   }
+  if (filters?.audience) params = params.set('audience', filters.audience);
+  if (filters?.q?.trim()) params = params.set('q', filters.q.trim());
 
-  getPublicFeedbackDetails(eventId: string) {
-    return this.http.get<PastEventFeedbackDetailsResponse>(`${this.apiUrl}/${eventId}/public-feedback`);
-  }
-  
+  return this.http.get<PageResponse<PastEventCardResponse>>(`${this.apiUrl}/past`, { params });
+}
+
+getPastById(id: string) {
+  return this.http.get<EventResponse>(`${this.apiUrl}/past/${id}`);
+}
+
+getPublicFeedbackDetails(eventId: string) {
+  return this.http.get<PastEventFeedbackDetailsResponse>(`${this.apiUrl}/${eventId}/public-feedback`);
+}
+
+createFeedback(eventId: string, payload: CreateEventFeedbackRequest) {
+  return this.http.post<EventFeedbackResponse>(`${this.apiUrl}/${eventId}/feedback`, payload);
+}
+
+getMyFeedback(eventId: string) {
+  return this.http.get<EventFeedbackResponse>(`${this.apiUrl}/${eventId}/feedback/me`);
+}
+
 }
