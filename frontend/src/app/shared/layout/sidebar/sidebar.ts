@@ -80,7 +80,9 @@ export class Sidebar {
   }
 
   get hasParticipationAccess(): boolean {
-    return this.authService.hasEmployeeRole();
+    return this.authService.hasEmployeeRole()
+      || this.authService.isHr()
+      || this.authService.isManager();
   }
 
   get mainLinks(): NavItem[] {

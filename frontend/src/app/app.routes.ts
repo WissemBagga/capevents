@@ -55,8 +55,8 @@ export const routes: Routes = [
   { path: 'forbidden', component: Forbidden },
   { path: 'not-found', component: NotFound },
 
-  { path: 'events/past', component: PastEvents },
-  
+
+
  {
     path: '',
     component: AppShell,
@@ -64,7 +64,7 @@ export const routes: Routes = [
     children: [
       { path: 'events', component: EventsList },
       { path: 'events/:id', component: EventDetails },
-      
+
       { path: 'admin/events/:id',
         component: AdminEventDetails,
         canActivate: [roleGuard],
@@ -99,7 +99,7 @@ export const routes: Routes = [
         component: AdminStats,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_MANAGER'] }
-      },  
+      },
       {
         path: 'admin/create-event',
         component: CreateEvent,
@@ -153,7 +153,7 @@ export const routes: Routes = [
         component: MyPoints,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
-      }, 
+      },
       {
         path: 'my-interests',
         component: MyInterests,
@@ -178,6 +178,7 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['ROLE_HR'] }
       },
+      { path: 'events/past', component: PastEvents }
     ]
   },
 
