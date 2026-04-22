@@ -233,13 +233,56 @@
           </div>
 
           <div class="form-group full-width">
-            <div class="image-upload-wrapper">
-              <label for="imageFile" class="btn-secondary upload-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                Importer une image
-              </label>
-              <input id="imageFile" type="file" accept="image/*" class="file-input-hidden" (change)="onImageSelected($event)" />
-              <p class="helper-text-inline">Format JPG ou PNG. Taille idéale 800x400px.</p>
+            <label>Choix de l’image</label>
+
+            <div class="image-mode-switch">
+              <button
+                type="button"
+                [class.active]="imageMode === 'AUTO'"
+                (click)="onImageModeChange('AUTO')">
+                Automatique selon la catégorie
+              </button>
+
+              <button
+                type="button"
+                [class.active]="imageMode === 'PRESET'"
+                (click)="onImageModeChange('PRESET')">
+                Choisir une image preset
+              </button>
+
+              <button
+                type="button"
+                [class.active]="imageMode === 'CUSTOM_URL'"
+                (click)="onImageModeChange('CUSTOM_URL')">
+                URL personnalisée
+              </button>
+            </div>
+
+            @if (imageMode === 'PRESET') {
+              <div class="image-preset-grid">
+                @for (preset of eventImagePresets; track preset.url) {
+                  <button
+                    type="button"
+                    class="image-card"
+                    [class.selected]="selectedPresetImageUrl === preset.url"
+                    (click)="selectEventPreset(preset.url)">
+                    <img [src]="preset.url" [alt]="preset.label" />
+                    <span>{{ preset.label }}</span>
+                  </button>
+                }
+              </div>
+            }
+
+            @if (imageMode === 'CUSTOM_URL') {
+              <input
+                type="text"
+                class="form-input"
+                formControlName="imageUrl"
+                placeholder="https://..." />
+            }
+
+            <div class="image-preview-box">
+              <img [src]="previewEventImageUrl" alt="Aperçu de l’événement" />
             </div>
           </div>
         </section>

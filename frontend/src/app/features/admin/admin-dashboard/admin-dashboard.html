@@ -45,6 +45,32 @@
           </select>
         </div>
       </div>
+      @if (isHr) {
+        <div class="filter-container">
+          <label for="audience">Audience :</label>
+          <div class="select-wrapper">
+            <select id="audience" [(ngModel)]="selectedAudience" (change)="onAudienceChange()">
+              <option value="ALL">Toutes</option>
+              <option value="GLOBAL">Globale</option>
+              <option value="DEPARTMENT">Département</option>
+            </select>
+          </div>
+        </div>
+
+        @if (selectedAudience === 'DEPARTMENT') {
+          <div class="filter-container">
+            <label for="departmentFilter">Département :</label>
+            <div class="select-wrapper">
+              <select id="departmentFilter" [(ngModel)]="selectedDepartmentId" (change)="onDepartmentFilterChange()">
+                <option [ngValue]="null">Tous les départements</option>
+                @for (department of departments; track department.id) {
+                  <option [ngValue]="department.id">{{ department.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        }
+      }
     </div>
 
     <!-- Loading -->

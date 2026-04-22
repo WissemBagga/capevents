@@ -270,12 +270,9 @@ export class EventDetails {
       .subscribe({
         next: () => {
           this.isRegistered = true;
-          if (!this.isDeadlinePassed) {
-            this.loadInvitableUsers();
-          }
           this.incrementCapacity();
           this.successMessage = 'Inscription réussie.';
-          this.loadMySentInvitations();
+          this.loadRegistrationStatus(this.event!.id);
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -386,12 +383,8 @@ export class EventDetails {
   }
 
   get invitationBlockingMessage(): string {
-    if (!this.event) {
+    if (!this.event || this.isDeadlinePassed) {
       return '';
-    }
-
-    if (this.isFull) {
-      return "Les invitations aux collègues sont fermées : l’événement est complet.";
     }
 
     if (!this.isRegistered) {
@@ -402,8 +395,8 @@ export class EventDetails {
       return "L’invitation entre collègues n’est pas disponible pour un utilisateur sans département. Utilisez l’invitation administrateur.";
     }
 
-    if (this.isDeadlinePassed) {
-      return "Les invitations aux collègues sont fermées : la date limite d'inscription est dépassée.";
+    if (this.isFull) {
+      return "Les invitations aux collègues sont fermées : l’événement est complet.";
     }
 
     return '';
@@ -445,7 +438,7 @@ export class EventDetails {
     if (!this.hasDepartmentForColleagueInvite) {
       this.showEmployeeInvitePanel = false;
       this.employeeInviteErrorMessage =
-        "L’invitation entre collègues n’est pas disponible pour un utilisateur sans département.";
+        "L’invitation entre collègues n’est pas disponible pour un utilisateur sans département. Utilisez l’invitation administrateur.";
       this.employeeInviteSuccessMessage = '';
       this.cdr.markForCheck();
       return;
@@ -587,15 +580,11 @@ export class EventDetails {
   }
 
   get registrationUnavailableMessage(): string {
-    if (!this.event) {
+    if (!this.event || this.isRegistered || this.isDeadlinePassed) {
       return '';
     }
 
-    if (this.isDeadlinePassed) {
-      return "La date limite d'inscription est dépassée. Les nouvelles inscriptions sont fermées.";
-    }
-
-    if (this.isFull && !this.isRegistered) {
+    if (this.isFull) {
       return "Cet événement est complet. Aucune place n’est disponible.";
     }
 
@@ -751,17 +740,15 @@ export class EventDetails {
   }
 
   get deadlineClosedMessage(): string {
-    if (!this.event) return '';
-
-    if (this.isDeadlinePassed) {
-      return "La date limite d'inscription est dépassée. Les nouvelles inscriptions et les invitations aux collègues sont fermées.";
+    if (!this.event || !this.isDeadlinePassed) {
+      return '';
     }
 
-    if (this.isFull && !this.isRegistered) {
-      return "Cet événement est complet. Aucune place n’est disponible.";
+    if (this.isRegistered) {
+      return "La date limite d'inscription est dépassée. Les invitations aux collègues sont fermées.";
     }
 
-    return '';
+    return "La date limite d'inscription est dépassée. Les nouvelles inscriptions sont fermées.";
   }
 
   goBack(): void {

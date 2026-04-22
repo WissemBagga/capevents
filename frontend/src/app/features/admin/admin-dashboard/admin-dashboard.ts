@@ -11,6 +11,9 @@ import { AuthService } from '../../../core/services/auth.service';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
+import { UserService } from '../../../core/services/user.service';
+import { Department } from '../../../core/models/department.model';
+
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -24,7 +27,13 @@ export class AdminDashboard {
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   
-  private authService = inject(AuthService)
+  private authService = inject(AuthService);
+
+  private userService = inject(UserService);
+
+  departments: Department[] = [];
+  selectedAudience = 'ALL';
+  selectedDepartmentId: number | null = null;
 
 
   events: EventResponse[] = [];
@@ -47,7 +56,25 @@ export class AdminDashboard {
 
 
   ngOnInit(): void {
+    if (this.authService.isHr()) {
+      this.loadDepartments();
+    }
     this.loadEvents();
+  }
+
+
+
+  loadDepartments(): void {
+    this.userService.getDepartments().subscribe({
+      next: (departments) => {
+        this.departments = departments ?? [];
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.departments = [];
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   loadEvents(): void {
@@ -95,11 +122,21 @@ export class AdminDashboard {
   }
 
   private applyStatusFilter(): void {
-    if (this.selectedStatus === 'ALL') {
-      this.filteredEvents = [...this.events];
-    } else {
-      this.filteredEvents = this.events.filter(e => e.status === this.selectedStatus);
+    let result = [...this.events];
+
+    if (this.selectedStatus !== 'ALL') {
+      result = result.filter(e => e.status === this.selectedStatus);
     }
+
+    if (this.authService.isHr() && this.selectedAudience !== 'ALL') {
+      result = result.filter(e => e.audience === this.selectedAudience);
+    }
+
+    if (this.authService.isHr() && this.selectedAudience === 'DEPARTMENT' && this.selectedDepartmentId !== null) {
+      result = result.filter(e => e.targetDepartmentId === this.selectedDepartmentId);
+    }
+
+    this.filteredEvents = result;
 
     this.totalItems = this.filteredEvents.length;
     this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.pageSize));
@@ -109,7 +146,23 @@ export class AdminDashboard {
     } else if (this.currentPage >= this.totalPages) {
       this.currentPage = this.totalPages - 1;
     }
+
     this.updatePagedEvents();
+  }
+
+  onAudienceChange(): void {
+    if (this.selectedAudience !== 'DEPARTMENT') {
+      this.selectedDepartmentId = null;
+    }
+    this.currentPage = 0;
+    this.applyStatusFilter();
+    this.cdr.markForCheck();
+  }
+
+  onDepartmentFilterChange(): void {
+    this.currentPage = 0;
+    this.applyStatusFilter();
+    this.cdr.markForCheck();
   }
 
   private updatePagedEvents(): void {
@@ -238,4 +291,8 @@ export class AdminDashboard {
       ? 'Gérez le cycle de vie de tous les événements de la plateforme.'
       : 'Gérez les événements de votre périmètre.';
   } 
+
+  get isHr(): boolean{
+    return this.authService.isHr();
+  }
 }

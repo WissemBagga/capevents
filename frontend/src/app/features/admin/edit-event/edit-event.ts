@@ -138,6 +138,11 @@ export class EditEvent {
           targetDepartmentId: event.targetDepartmentId
         });
 
+        this.onLocationTypeChange();
+        this.onAudienceChange();
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
+
         this.originalRegisteredCount = event.registeredCount ?? 0;
 
         const currentImage = event.imageUrl?.trim() || '';
