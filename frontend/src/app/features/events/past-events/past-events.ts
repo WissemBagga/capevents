@@ -31,7 +31,7 @@ export class PastEvents {
   errorMessage = '';
 
   currentPage = 0;
-  pageSize = 8;
+  pageSize = 9;
   totalPages = 1;
   totalItems = 0;
 

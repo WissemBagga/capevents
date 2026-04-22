@@ -278,12 +278,12 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     select e
     from Event e
     left join fetch e.targetDepartment td
-    where e.status in :statuses
+    where (e.status = com.capevents.backend.event.EventStatus.PUBLISHED 
+       or e.status = com.capevents.backend.event.EventStatus.ARCHIVED)
       and e.startAt < :now
     order by e.startAt desc
 """)
     List<Event> findAllPastVisibleEvents(
-            @Param("statuses") List<EventStatus> statuses,
             @Param("now") Instant now
     );
 

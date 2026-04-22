@@ -201,7 +201,7 @@ export class EventService {
 
   getPastEvents(
   page = 0,
-  size = 8,
+  size = 9,
   filters?: {
     category?: string | null;
     departmentId?: number | null;

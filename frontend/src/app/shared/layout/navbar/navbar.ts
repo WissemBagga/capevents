@@ -150,7 +150,7 @@ export class Navbar {
       }))
       .subscribe({
         next: () => {
-          const now = new Date().toISOString(); 
+          const now = new Date().toISOString();
           this.notifications = this.notifications.map(item => ({
             ...item,
             read: true,
@@ -304,8 +304,15 @@ export class Navbar {
     const url = this.router.url;
 
     if (url.startsWith('/dashboard/employee')) return 'Tableau de bord';
+    if (url.startsWith('/admin/hr/stats')) return 'Statistiques RH';
     if (url.startsWith('/admin/hr')) return 'Dashboard RH';
+    if (url.startsWith('/admin/manager/stats')) return 'Statistiques Manager';
     if (url.startsWith('/admin/manager')) return 'Dashboard Manager';
+
+    if (url.startsWith('/events/past')) return 'Événements passés';
+    if (url.includes('/feedback')) return 'Feedback événement';
+    if (url.startsWith('/events')) return 'Événements';
+
     if (url.startsWith('/my-events')) return 'Mes événements';
     if (url.startsWith('/my-invitations')) return 'Mes invitations';
     if (url.startsWith('/my-points')) return 'Mes points';
@@ -315,7 +322,6 @@ export class Navbar {
     if (url.startsWith('/employee/submit-event')) return 'Proposer un événement';
     if (url.startsWith('/admin/create-event')) return 'Créer un événement';
     if (url.startsWith('/admin/pending-events')) return 'Demandes en attente';
-    if (url.startsWith('/events')) return 'Événements';
 
     return 'CapEvents';
   }
