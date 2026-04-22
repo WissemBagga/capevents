@@ -275,27 +275,16 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
 
     @Query("""
-        select e
-        from Event e
-        left join fetch e.targetDepartment td
-        where e.status in :statuses
-          and e.startAt < :now
-          and (:category is null or lower(e.category) = lower(:category))
-          and (:departmentId is null or td.id = :departmentId)
-          and (:audience is null or e.audience = :audience)
-          and (
-            :q is null
-            or lower(e.title) like lower(concat('%', :q, '%'))
-          )
-    """)
-    Page<Event> findPastVisibleEvents(
+    select e
+    from Event e
+    left join fetch e.targetDepartment td
+    where e.status in :statuses
+      and e.startAt < :now
+    order by e.startAt desc
+""")
+    List<Event> findAllPastVisibleEvents(
             @Param("statuses") List<EventStatus> statuses,
-            @Param("now") Instant now,
-            @Param("category") String category,
-            @Param("departmentId") Long departmentId,
-            @Param("audience") EventAudience audience,
-            @Param("q") String q,
-            Pageable pageable
+            @Param("now") Instant now
     );
 
     @Query("""

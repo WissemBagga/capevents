@@ -1,7 +1,169 @@
-.past-events-page .page-container {
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.past-events-page {
+  animation: fadeIn 0.3s ease-out both;
+  font-family: 'Verdana', sans-serif;
+}
+
+.page-container {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 28px;
+  padding: 32px 40px 40px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.header-text h1 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px;
+  letter-spacing: -0.3px;
+}
+
+.header-sub {
+  font-size: 13.5px;
+  color: #64748b;
+  margin: 0;
+}
+
+.admin-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+}
+
+.filter-card {
+  margin-bottom: 24px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.form-group select,
+.form-group input {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  background: #ffffff;
+  color: #0f172a;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.state-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-radius: 10px;
+  margin-bottom: 22px;
+  font-size: 13px;
+}
+
+.state-message p {
+  margin: 0;
+}
+
+.error-msg {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  color: #dc2626;
+}
+
+.info-msg {
+  background: #f8fafc;
+  border-left: 3px solid #cbd5e1;
+  color: #64748b;
+}
+
+.loading-msg {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
 }
 
 .past-events-grid {
@@ -16,6 +178,12 @@
   overflow: hidden;
   background: #fff;
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.past-event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
 }
 
 .card-image {
@@ -34,6 +202,7 @@
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .category-badge,
@@ -44,6 +213,14 @@
   border-radius: 999px;
   background: #eff6ff;
   color: #1d4ed8;
+}
+
+.card-body h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: 'Ubuntu', sans-serif;
 }
 
 .meta-line,
@@ -59,6 +236,7 @@
 .teaser {
   color: #334155;
   margin: 12px 0 16px;
+  line-height: 1.5;
 }
 
 .btn-view-feedback {
@@ -69,4 +247,42 @@
   padding: 10px 14px;
   border-radius: 10px;
   font-weight: 700;
+  transition: background 0.2s ease;
+}
+
+.btn-view-feedback:hover {
+  background: #1d4ed8;
+}
+
+.pagination-bar {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pagination-bar span {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 24px 18px 32px;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .past-events-grid {
+    grid-template-columns: 1fr;
+  }
 }

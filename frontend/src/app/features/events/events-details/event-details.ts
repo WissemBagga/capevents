@@ -118,6 +118,9 @@ export class EventDetails {
       next: (event) => {
         this.event = event;
         this.loading = false;
+        if (this.isPastEvent) {
+          this.loadPublicFeedback(event.id);
+        }
         this.cdr.markForCheck();
 
         if (this.authService.isLoggedIn() && this.canParticipate) {

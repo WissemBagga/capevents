@@ -113,34 +113,68 @@ public class EventFeedbackService {
             String q,
             org.springframework.data.domain.Pageable pageable
     ) {
-        EventAudience audienceEnum = null;
-
-        if (audience != null && !audience.isBlank()) {
-            audienceEnum = EventAudience.valueOf(audience);
-        }
-
-        var page = eventRepository.findPastVisibleEvents(
+        List<Event> allEvents = eventRepository.findAllPastVisibleEvents(
                 List.of(EventStatus.PUBLISHED, EventStatus.ARCHIVED),
-                Instant.now(),
-                category,
-                departmentId,
-                audienceEnum,
-                q,
-                pageable
+                Instant.now()
         );
 
-        var items = page.getContent().stream()
+        String normalizedCategory = category != null ? category.trim() : null;
+        String normalizedAudience = audience != null ? audience.trim() : null;
+        String normalizedQuery = q != null ? q.trim().toLowerCase() : null;
+
+        List<PastEventCardResponse> filtered = allEvents.stream()
+                .filter(event -> {
+                    if (normalizedCategory != null && !normalizedCategory.isBlank()) {
+                        String eventCategory = event.getCategory() != null ? event.getCategory().trim() : "";
+                        if (!eventCategory.equalsIgnoreCase(normalizedCategory)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .filter(event -> {
+                    if (departmentId != null) {
+                        Long targetDeptId = event.getTargetDepartment() != null
+                                ? event.getTargetDepartment().getId()
+                                : null;
+                        return departmentId.equals(targetDeptId);
+                    }
+                    return true;
+                })
+                .filter(event -> {
+                    if (normalizedAudience != null && !normalizedAudience.isBlank()) {
+                        return event.getAudience() != null
+                                && event.getAudience().name().equalsIgnoreCase(normalizedAudience);
+                    }
+                    return true;
+                })
+                .filter(event -> {
+                    if (normalizedQuery != null && !normalizedQuery.isBlank()) {
+                        String title = event.getTitle() != null ? event.getTitle().toLowerCase() : "";
+                        String description = event.getDescription() != null ? event.getDescription().toLowerCase() : "";
+                        return title.contains(normalizedQuery) || description.contains(normalizedQuery);
+                    }
+                    return true;
+                })
                 .map(this::toPastEventCardResponse)
                 .toList();
 
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        int fromIndex = Math.min(pageNumber * pageSize, filtered.size());
+        int toIndex = Math.min(fromIndex + pageSize, filtered.size());
+
+        List<PastEventCardResponse> pageItems = filtered.subList(fromIndex, toIndex);
+        int totalPages = filtered.isEmpty() ? 1 : (int) Math.ceil((double) filtered.size() / pageSize);
+
         return new PageResponse<>(
-                items,
-                page.getNumber(),
-                page.getSize(),
-                page.getTotalPages(),
-                page.getTotalElements(),
-                page.hasNext(),
-                page.hasPrevious()
+                pageItems,
+                pageNumber,
+                pageSize,
+                totalPages,
+                filtered.size(),
+                pageNumber + 1 < totalPages,
+                pageNumber > 0
         );
     }
 

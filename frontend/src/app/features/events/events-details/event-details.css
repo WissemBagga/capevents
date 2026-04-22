@@ -1240,10 +1240,6 @@
   padding: 16px;
 }
 
-.feedback-column h3 {
-  margin-top: 0;
-}
-
 .public-comments-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));

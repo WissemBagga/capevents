@@ -329,12 +329,11 @@
                     </article>
                   }
                 </div>
+              } @else {
+                <div class="state-message info-msg">
+                  <p>Aucun commentaire public n’est disponible pour cet événement.</p>
+                </div>
               }
-
-              <div class="feedback-cta">
-                <a routerLink="/events" class="btn-view-feedback">Voir les prochains événements</a>
-                <a routerLink="/events/past" class="btn-secondary">Explorer d’autres retours</a>
-              </div>
             </section>
           }
         </div>

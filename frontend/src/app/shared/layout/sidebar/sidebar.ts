@@ -89,7 +89,6 @@ export class Sidebar {
         { label: 'Statistiques', route: '/admin/hr/stats' },
         { label: 'Gestion des événements', route: '/admin/hr' },
         { label: 'Événements', route: '/events' },
-        { label: 'Événements passés', route: '/events/past' },
         { label: 'Départements', route: '/admin/admin-departments' },
         { label: 'Utilisateurs & rôles', route: '/admin/admin-users' }
       ];
@@ -100,14 +99,12 @@ export class Sidebar {
         { label: 'Statistiques', route: '/admin/manager/stats' },
         { label: 'Gestion des événements', route: '/admin/manager' },
         { label: 'Événements', route: '/events' },
-        { label: 'Événements passés', route: '/events/past' }
       ];
     }
 
     return [
       { label: 'Tableau de bord', route: '/dashboard/employee' },
       { label: 'Événements', route: '/events' },
-      { label: 'Événements passés', route: '/events/past' }
     ];
   }
 
