@@ -1535,7 +1535,230 @@
   color: #cbd5e1;
 }
 
-/* Empty State */
+/* ===== Public Feedback Section (Bottom) ===== */
+.public-feedback-outer {
+  margin-top: 48px;
+  padding-top: 48px;
+  border-top: 1px solid #f0f3f7;
+  animation: fadeIn 0.4s ease-out both;
+}
+
+.feedback-container {
+  max-width: 100%;
+}
+
+.feedback-header {
+  margin-bottom: 32px;
+}
+
+.feedback-header h2 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f1b2d;
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
+}
+
+.feedback-subtitle {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.public-feedback-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Stats Cards */
+.feedback-summary-cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.summary-stat-card {
+  flex: 1;
+  min-width: 160px;
+  background: #ffffff;
+  border: 1px solid #eef2f6;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02);
+}
+
+.stat-value {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #0c66e4;
+}
+
+.stat-label {
+  font-family: 'Verdana', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Highlights Grid */
+.feedback-highlights-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.highlight-box {
+  background: #ffffff;
+  border: 1px solid #eef2f6;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+}
+
+.highlight-box h3 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.highlight-box.positive h3 { color: #10b981; }
+.highlight-box.neutral h3 { color: #64748b; }
+
+.highlight-box ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.highlight-box li {
+  font-family: 'Verdana', sans-serif;
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+  padding-left: 20px;
+  position: relative;
+}
+
+.highlight-box.positive li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+.highlight-box.neutral li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1;
+  top: -1px;
+}
+
+.empty-list-item {
+  color: #94a3b8 !important;
+  font-style: italic;
+}
+.empty-list-item::before { content: "" !important; }
+
+/* Comments Area */
+.public-comments-area h3 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f1b2d;
+  margin: 0 0 20px;
+}
+
+.comments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.comment-card {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.comment-card:hover {
+  border-color: #0c66e4;
+  box-shadow: 0 8px 24px rgba(12, 102, 228, 0.06);
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-author {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.comment-rating {
+  display: flex;
+  gap: 2px;
+  color: #e2e8f0;
+}
+
+.star-filled {
+  color: #fca311;
+}
+
+.comment-text {
+  margin: 0;
+  font-family: 'Verdana', sans-serif;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.7;
+}
+
+.empty-feedback-message {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+}
+
+.empty-feedback-message p {
+  font-family: 'Verdana', sans-serif;
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ===== Empty State ===== */
 .empty-history-card {
   display: flex;
   flex-direction: column;

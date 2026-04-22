@@ -274,68 +274,7 @@
             </div>
           </section>
 
-          @if (isPastEvent && publicFeedback) {
-            <section class="section-card public-feedback-section">
-              <div class="section-card-header">
-                <h2>Retour des participants</h2>
-              </div>
 
-              <div class="public-feedback-summary">
-                <div class="summary-box">
-                  <strong>{{ publicFeedback.averageRating | number:'1.1-2' }}/5</strong>
-                  <span>Note moyenne</span>
-                </div>
-                <div class="summary-box">
-                  <strong>{{ publicFeedback.feedbackCount }}</strong>
-                  <span>Avis</span>
-                </div>
-                <div class="summary-box">
-                  <strong>{{ publicFeedback.feedbackResponseRate | number:'1.0-2' }}%</strong>
-                  <span>Taux de retour</span>
-                </div>
-                <div class="summary-box">
-                  <strong>{{ publicFeedback.presentCount }}</strong>
-                  <span>Présents</span>
-                </div>
-              </div>
-
-              <div class="feedback-columns">
-                <div class="feedback-column">
-                  <h3>Ce qu’ils ont aimé</h3>
-                  <ul>
-                    @for (item of publicFeedback.highlights; track $index) {
-                      <li>{{ item }}</li>
-                    }
-                  </ul>
-                </div>
-
-                <div class="feedback-column">
-                  <h3>À améliorer</h3>
-                  <ul>
-                    @for (item of publicFeedback.improvementPoints; track $index) {
-                      <li>{{ item }}</li>
-                    }
-                  </ul>
-                </div>
-              </div>
-
-              @if (publicFeedback.publicComments.length > 0) {
-                <div class="public-comments-grid">
-                  @for (comment of publicFeedback.publicComments; track $index) {
-                    <article class="public-comment-card">
-                      <div class="comment-rating">{{ comment.rating }}/5</div>
-                      <p>{{ comment.comment }}</p>
-                      <span class="comment-author">Participant anonyme</span>
-                    </article>
-                  }
-                </div>
-              } @else {
-                <div class="state-message info-msg">
-                  <p>Aucun commentaire public n’est disponible pour cet événement.</p>
-                </div>
-              }
-            </section>
-          }
         </div>
 
         <!-- Right: Sidebar Info -->
@@ -985,6 +924,93 @@
     }
   }
 
+  @if (event && (isPastEvent || event.status === 'ARCHIVED')) {
+    <section class="public-feedback-outer">
+      <div class="feedback-container">
+        <div class="feedback-header">
+          <h2>Feedback des participants</h2>
+          <p class="feedback-subtitle">Découvrez ce que les participants ont pensé de cet événement.</p>
+        </div>
+
+        @if (publicFeedbackLoading) {
+          <div class="state-message loading">
+            <div class="spinner"></div>
+            <p>Chargement des avis...</p>
+          </div>
+        } @else if (publicFeedback) {
+          <div class="public-feedback-grid">
+            <!-- Stats Summary -->
+            <div class="feedback-summary-cards">
+              <div class="summary-stat-card">
+                <span class="stat-value">{{ publicFeedback.averageRating | number:'1.1-1' }}</span>
+                <span class="stat-label">Note moyenne</span>
+              </div>
+              <div class="summary-stat-card">
+                <span class="stat-value">{{ publicFeedback.feedbackCount }}</span>
+                <span class="stat-label">Avis partagés</span>
+              </div>
+            </div>
+
+            <!-- Highlights & Improvements -->
+            <div class="feedback-highlights-row">
+              <div class="highlight-box positive">
+                <h3>Points forts</h3>
+                <ul>
+                  @for (item of publicFeedback.highlights; track $index) {
+                    <li>{{ item }}</li>
+                  }
+                  @if (publicFeedback.highlights.length === 0) {
+                    <li class="empty-list-item">Aucun point fort spécifique mentionné.</li>
+                  }
+                </ul>
+              </div>
+              <div class="highlight-box neutral">
+                <h3>Points d'attention</h3>
+                <ul>
+                  @for (item of publicFeedback.improvementPoints; track $index) {
+                    <li>{{ item }}</li>
+                  }
+                  @if (publicFeedback.improvementPoints.length === 0) {
+                    <li class="empty-list-item">Aucune suggestion d'amélioration partagée.</li>
+                  }
+                </ul>
+              </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="public-comments-area">
+              <h3>Commentaires publics</h3>
+              @if (publicFeedback.publicComments.length > 0) {
+                <div class="comments-grid">
+                  @for (item of publicFeedback.publicComments; track $index) {
+                    <article class="comment-card">
+                      <div class="comment-header">
+                        <span class="comment-author">Participant anonyme</span>
+                        <span class="comment-rating">
+                          @for (star of [1, 2, 3, 4, 5]; track star) {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" [attr.fill]="star <= item.rating ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.star-filled]="star <= item.rating"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                          }
+                        </span>
+                      </div>
+                      <p class="comment-text">{{ item.comment }}</p>
+                    </article>
+                  }
+                </div>
+              } @else {
+                <div class="empty-feedback-message">
+                  <p>Aucun feedback disponible</p>
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="empty-feedback-message">
+            <p>Aucun feedback disponible</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
   @if (showUnregisterModal) {
     <div class="modal-overlay" (click)="closeUnregisterModal()">
       <div class="modal-card" (click)="$event.stopPropagation()">
