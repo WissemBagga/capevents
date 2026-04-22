@@ -123,7 +123,11 @@ export class AdminUsers {
     const selectedRole = this.selectedRoleByUserId[user.id];
     const currentRole = this.getPrimaryRole(user);
 
-    if (!selectedRole || selectedRole === currentRole) {
+    if (!selectedRole) {
+      return false;
+    }
+
+    if (selectedRole === currentRole && !this.needsParticipationRoleRepair(user)) {
       return false;
     }
 
@@ -137,7 +141,15 @@ export class AdminUsers {
   saveRole(user: UserSummary): void {
     const roleCode = this.selectedRoleByUserId[user.id];
 
-    if (!roleCode || roleCode === this.getPrimaryRole(user)) {
+    if (!roleCode) {
+      return;
+    }
+
+    const currentRole = this.getPrimaryRole(user);
+    const repairingParticipationAccess =
+      roleCode === currentRole && this.needsParticipationRoleRepair(user);
+
+    if (roleCode === currentRole && !repairingParticipationAccess) {
       return;
     }
 
@@ -162,9 +174,9 @@ export class AdminUsers {
           this.showHrWarningByUserId[updatedUser.id] = false;
           this.confirmHrPromotionByUserId[updatedUser.id] = false;
 
-          this.successMessage =
-            `Rôle mis à jour pour ${updatedUser.firstName} ${updatedUser.lastName}. `
-            + `Email et notification envoyés.`;
+          this.successMessage = repairingParticipationAccess
+          ? `Accès Participation réactivé pour ${updatedUser.firstName} ${updatedUser.lastName}. Email et notification envoyés.`
+          : `Rôle mis à jour pour ${updatedUser.firstName} ${updatedUser.lastName}. Email et notification envoyés.`;
 
           this.cdr.markForCheck();
         },
@@ -181,6 +193,13 @@ export class AdminUsers {
   getAvatarUrl(user: UserSummary): string | null {
     const avatar = user.avatarUrl?.trim();
     return avatar ? avatar : null;
+  }
+
+  needsParticipationRoleRepair(user: UserSummary): boolean {
+    const primaryRole = this.getPrimaryRole(user);
+
+    return (primaryRole === 'ROLE_MANAGER' || primaryRole === 'ROLE_HR')
+      && !user.roles.includes('ROLE_EMPLOYEE');
   }
 
   getInitials(user: UserSummary): string {

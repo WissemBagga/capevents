@@ -70,6 +70,12 @@
                 <span class="dept-value">{{ user.departmentName || 'Non défini' }}</span>
               </div>
 
+              @if (needsParticipationRoleRepair(user)) {
+                <div class="role-repair-warning">
+                  Ce compte admin n’a pas l’accès Participation. Cliquez sur <strong>Enregistrer</strong> pour réactiver ROLE_EMPLOYEE.
+                </div>
+              }
+
               <div class="user-actions">
                 <label [for]="'role-' + user.id" class="sr-only">Rôle</label>
 

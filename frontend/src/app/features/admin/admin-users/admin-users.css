@@ -168,6 +168,18 @@
   gap: 4px;
 }
 
+.role-repair-warning {
+  grid-column: 1 / -1;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  color: #9a3412;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .dept-label {
   font-family: 'Verdana', sans-serif;
   font-size: 10.5px;

@@ -152,15 +152,21 @@ public class UserService {
 
         String currentPrimaryRole = resolvePrimaryRole(user);
 
-        if (roleCode.equals(currentPrimaryRole)) {
+        boolean missingEmployeeCompanionRole =
+                ("ROLE_MANAGER".equals(currentPrimaryRole) || "ROLE_HR".equals(currentPrimaryRole))
+                        && user.getRoles().stream().noneMatch(role -> "ROLE_EMPLOYEE".equals(role.getCode()));
+
+        if (roleCode.equals(currentPrimaryRole) && !missingEmployeeCompanionRole) {
             return toSummaryDto(user);
         }
 
-        if ("ROLE_HR".equals(roleCode) && !confirmHrPromotion) {
+        if ("ROLE_HR".equals(roleCode)
+                && !"ROLE_HR".equals(currentPrimaryRole)
+                && !confirmHrPromotion) {
             throw new BadRequestException("La confirmation est obligatoire pour accorder le rôle RH");
         }
 
-        if ("ROLE_MANAGER".equals(roleCode)) {
+        if ("ROLE_MANAGER".equals(roleCode) && !"ROLE_MANAGER".equals(currentPrimaryRole)) {
             if (user.getDepartment() == null) {
                 throw new BadRequestException("Impossible d’attribuer le rôle Manager à un utilisateur sans département");
             }
@@ -185,13 +191,21 @@ public class UserService {
         Role newRole = roleRepository.findByCode(roleCode)
                 .orElseThrow(() -> new NotFoundException("Rôle introuvable"));
 
+        Role employeeRole = roleRepository.findByCode("ROLE_EMPLOYEE")
+                .orElseThrow(() -> new NotFoundException("Rôle Employé introuvable"));
+
         user.getRoles().removeIf(role ->
                 "ROLE_EMPLOYEE".equals(role.getCode()) ||
                         "ROLE_MANAGER".equals(role.getCode()) ||
                         "ROLE_HR".equals(role.getCode())
         );
 
-        user.getRoles().add(newRole);
+        if ("ROLE_EMPLOYEE".equals(roleCode)) {
+            user.getRoles().add(employeeRole);
+        } else {
+            user.getRoles().add(employeeRole);
+            user.getRoles().add(newRole);
+        }
 
         User saved = userRepository.save(user);
 
