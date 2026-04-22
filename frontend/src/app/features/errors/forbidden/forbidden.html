@@ -10,7 +10,9 @@
 
       <div class="error-actions">
         <a routerLink="/events" class="btn-secondary">Voir les événements</a>
-        <a routerLink="/dashboard/employee" class="btn-primary">Retour à l'accueil</a>
+        <button type="button" class="btn-primary" (click)="goBackOrHome()">
+          Retour
+        </button>
       </div>
     </div>
   </div>
