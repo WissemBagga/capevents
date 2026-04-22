@@ -67,10 +67,17 @@
                 <span class="feedback-label">Commentaire</span>
                 <p class="comment-text">{{ existingFeedback.comment }}</p>
               </div>
-              <label class="checkbox-row">
-                <input type="checkbox" formControlName="shareCommentPublicly" />
-                <span>J’accepte que mon commentaire puisse être affiché de façon anonyme sur la page publique de l’événement.</span>
-              </label>
+
+              <div class="feedback-row">
+                <span class="feedback-label">Partage public</span>
+                <p class="comment-text">
+                  @if (existingFeedback.shareCommentPublicly) {
+                    Votre commentaire peut être affiché de façon anonyme sur la page publique de l’événement.
+                  } @else {
+                    Votre commentaire reste privé et visible uniquement dans les espaces prévus.
+                  }
+                </p>
+              </div>
             }
           </div>
 
@@ -112,7 +119,9 @@
               </div>
 
               <div class="form-group full-width">
-                <label for="comment">Commentaire <span class="optional-tag">(optionnel)</span></label>
+                <label for="comment">
+                  Commentaire <span class="optional-tag">(optionnel)</span>
+                </label>
                 <div class="input-wrapper">
                   <textarea
                     id="comment"
@@ -122,6 +131,15 @@
                     placeholder="Partagez votre ressenti sur l'organisation, le contenu, l'ambiance..."
                   ></textarea>
                 </div>
+              </div>
+
+              <div class="form-group full-width">
+                <label class="checkbox-row">
+                  <input type="checkbox" formControlName="shareCommentPublicly" />
+                  <span>
+                    J’accepte que mon commentaire puisse être affiché de façon anonyme sur la page publique de l’événement.
+                  </span>
+                </label>
               </div>
             </div>
           </section>

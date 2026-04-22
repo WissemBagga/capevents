@@ -131,7 +131,8 @@ export class Sidebar {
       { label: 'Mes événements', route: '/my-events' },
       { label: 'Mes invitations', route: '/my-invitations' },
       { label: 'Mes points', route: '/my-points' },
-      { label: 'Mes intérêts', route: '/my-interests' }
+      { label: 'Mes intérêts', route: '/my-interests' },
+      { label: 'Événement passés', route: 'events/past'}
     ];
   }
 

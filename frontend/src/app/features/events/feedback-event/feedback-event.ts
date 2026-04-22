@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 
@@ -32,8 +32,6 @@ export class FeedbackEvent {
   submitting = false;
   errorMessage = '';
   successMessage = '';
-
-  
 
   form = this.fb.group({
     rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
@@ -90,7 +88,8 @@ export class FeedbackEvent {
         this.existingFeedback = feedback;
         this.form.patchValue({
           rating: feedback.rating,
-          comment: feedback.comment || ''
+          comment: feedback.comment || '',
+          shareCommentPublicly: feedback.shareCommentPublicly
         });
         this.form.disable();
         this.cdr.markForCheck();
@@ -116,11 +115,6 @@ export class FeedbackEvent {
       this.form.markAllAsTouched();
       return;
     }
-    const payload = {
-      rating: form.rating,
-      comment: form.comment?.trim() ? form.comment.trim() : null,
-      shareCommentPublicly: !!form.shareCommentPublicly
-    };
 
     this.submitting = true;
     this.errorMessage = '';
@@ -129,10 +123,13 @@ export class FeedbackEvent {
 
     const formValue = this.form.getRawValue();
 
-    this.eventService.createFeedback(this.eventId, {
+    const payload = {
       rating: Number(formValue.rating ?? 0),
-      comment: formValue.comment?.trim() ? formValue.comment.trim() : null
-    })
+      comment: formValue.comment?.trim() ? formValue.comment.trim() : null,
+      shareCommentPublicly: !!formValue.shareCommentPublicly
+    };
+
+    this.eventService.createFeedback(this.eventId, payload)
       .pipe(finalize(() => {
         this.submitting = false;
         this.cdr.markForCheck();
@@ -141,6 +138,9 @@ export class FeedbackEvent {
         next: (feedback) => {
           this.existingFeedback = feedback;
           this.successMessage = 'Merci, votre feedback a bien été envoyé.';
+          this.form.patchValue({
+            shareCommentPublicly: feedback.shareCommentPublicly
+          });
           this.form.disable();
           this.cdr.markForCheck();
         },

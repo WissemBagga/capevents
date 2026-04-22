@@ -1,5 +1,6 @@
 package com.capevents.backend.feedback;
 
+import com.capevents.backend.common.dto.PageResponse;
 import com.capevents.backend.common.exception.BadRequestException;
 import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.event.Event;
@@ -65,27 +66,15 @@ public class EventFeedbackService {
         feedback.setRating(req.rating());
 
         String normalizedComment = normalizeComment(req.comment());
-
         feedback.setComment(normalizedComment);
         feedback.setShareCommentPublicly(
                 Boolean.TRUE.equals(req.shareCommentPublicly()) && normalizedComment != null
         );
 
-
-
         EventFeedback saved = feedbackRepository.save(feedback);
         pointService.awardFeedbackBonus(user, event);
-        return new EventFeedbackResponse(
-                feedback.getId(),
-                feedback.getEvent().getId(),
-                feedback.getUser().getId(),
-                fullName,
-                feedback.getRating(),
-                feedback.getComment(),
-                feedback.isShareCommentPublicly(),
-                feedback.getCreatedAt(),
-                feedback.getUpdatedAt()
-        );
+
+        return toResponse(saved);
     }
 
     @Transactional(readOnly = true)
@@ -117,21 +106,21 @@ public class EventFeedbackService {
 
 
     @Transactional(readOnly = true)
-    public List<PastEventCardResponse> listPastEvents(
+    public PageResponse<PastEventCardResponse> listPastEvents(
             String category,
             Long departmentId,
             String audience,
             String q,
             org.springframework.data.domain.Pageable pageable
     ) {
-        com.capevents.backend.event.EventAudience audienceEnum = null;
+        EventAudience audienceEnum = null;
 
         if (audience != null && !audience.isBlank()) {
-            audienceEnum = com.capevents.backend.event.EventAudience.valueOf(audience);
+            audienceEnum = EventAudience.valueOf(audience);
         }
 
         var page = eventRepository.findPastVisibleEvents(
-                List.of(com.capevents.backend.event.EventStatus.PUBLISHED, com.capevents.backend.event.EventStatus.ARCHIVED),
+                List.of(EventStatus.PUBLISHED, EventStatus.ARCHIVED),
                 Instant.now(),
                 category,
                 departmentId,
@@ -140,9 +129,19 @@ public class EventFeedbackService {
                 pageable
         );
 
-        return page.getContent().stream()
+        var items = page.getContent().stream()
                 .map(this::toPastEventCardResponse)
                 .toList();
+
+        return new PageResponse<>(
+                items,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -340,8 +339,8 @@ public class EventFeedbackService {
                 fullName,
                 feedback.getRating(),
                 feedback.getComment(),
+                feedback.isShareCommentPublicly(),
                 feedback.getCreatedAt(),
-                feedback.getEvent().
                 feedback.getUpdatedAt()
         );
     }

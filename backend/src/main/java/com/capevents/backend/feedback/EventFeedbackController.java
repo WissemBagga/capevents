@@ -70,17 +70,7 @@ public class EventFeedbackController {
                 org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "startAt")
         );
 
-        var items = feedbackService.listPastEvents(category, departmentId, audience, q, pageable);
-
-        return new PageResponse<>(
-                items,
-                page,
-                size,
-                1,
-                items.size(),
-                false,
-                page > 0
-        );
+        return feedbackService.listPastEvents(category, departmentId, audience, q, pageable);
     }
 
     @GetMapping("/{eventId}/public-feedback")
