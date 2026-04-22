@@ -30,7 +30,6 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    // l'employe peut voir les events publies
     @GetMapping("/published")
     public PageResponse<EventResponse> listPublished(
             Authentication auth,
@@ -47,7 +46,6 @@ public class EventController {
         return eventService.listPublishedForUserDept(auth.getName(), pageable);
     }
 
-    // Hr peut Publier un event
     @PreAuthorize("hasAnyAuthority('ROLE_HR','ROLE_MANAGER')")
     @PostMapping
     public EventResponse createDraft(@Valid @RequestBody CreateEventRequest req, Authentication auth) {
@@ -62,7 +60,6 @@ public class EventController {
     }
 
 
-    // Details d'un event publie : au public, employe
     @GetMapping("/published/{id}")
     public EventResponse getPublished(@PathVariable UUID id, Authentication auth) {
         return eventService.getPublishedForUserDept(id, auth.getName());
@@ -204,6 +201,11 @@ public class EventController {
     ) {
         var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return eventService.listMySubmissions(pageable, auth.getName());
+    }
+
+    @GetMapping("/past/{id}")
+    public EventResponse getPastById(@PathVariable UUID id) {
+        return eventService.getPastVisibleById(id);
     }
 
 }

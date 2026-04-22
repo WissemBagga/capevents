@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe, Location, UpperCasePipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { DatePipe, Location, DecimalPipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
 import { EventService } from '../../../core/services/event.service';
@@ -18,10 +18,12 @@ import { getDefaultEventImage } from '../../../core/constants/event-image-preset
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
+import { PastEventFeedbackDetailsResponse } from '../../../core/models/feedback.model';
+
 @Component({
   selector: 'app-event-details',
   standalone: true,
-  imports: [DatePipe, FormsModule, ScrollToMessageDirective],
+  imports: [DatePipe, FormsModule, ScrollToMessageDirective, DecimalPipe],
   templateUrl: './event-details.html',
   styleUrl: './event-details.css'
 })
@@ -68,6 +70,9 @@ export class EventDetails {
   sentInvitations: AdminEventInvitationResponse[] = [];
   sentInvitationsLoading = false;
 
+  publicFeedback: PastEventFeedbackDetailsResponse | null = null;
+  publicFeedbackLoading = false;
+
   readonly unregisterReasons: string[] = [
     'Conflit d’horaire',
     'Changement de priorité',
@@ -84,6 +89,11 @@ export class EventDetails {
   get isDeadlinePassed(): boolean {
     if (!this.event || !this.event.registrationDeadline) return false;
     return new Date() > new Date(this.event.registrationDeadline);
+  }
+
+  get isPastEvent(): boolean {
+    if (!this.event) return false;
+    return new Date(this.event.startAt).getTime() < Date.now();
   }
 
   ngOnInit(): void {
@@ -104,41 +114,56 @@ export class EventDetails {
     this.successMessage = '';
     this.cdr.markForCheck();
 
-    this.eventService.getPublishedById(id)
-      .pipe(finalize(() => {
-        this.loading = false;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: (event) => {
-          this.event = event;
-          this.heroImageLoadFailed = false;
-          this.cdr.markForCheck();
+    this.eventService.getPublishedById(id).subscribe({
+      next: (event) => {
+        this.event = event;
+        this.heroImageLoadFailed = false;
 
-          if (this.authService.isLoggedIn() && this.canParticipate) {
-            this.loadRegistrationStatus(event.id);
-          }
-        },
-        error: (err) => {
-          const status = err?.status;
-
-          if (status === 404) {
-            this.router.navigate(['/not-found']);
-            return;
-          }
-
-          if (status === 403) {
-            this.router.navigate(['/forbidden']);
-            return;
-          }
-
-          this.errorMessage =
-            err?.error?.message ||
-            err?.error ||
-            'Impossible de charger cet événement.';
-          this.cdr.markForCheck();
+        if (this.isPastEvent) {
+          this.loadPublicFeedback(event.id);
         }
-      });
+
+        if (this.authService.isLoggedIn() && this.canParticipate) {
+          this.loadRegistrationStatus(event.id);
+        }
+
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.eventService.getPastById(id).subscribe({
+          next: (event) => {
+            this.event = event;
+            this.heroImageLoadFailed = false;
+            this.loadPublicFeedback(event.id);
+
+            if (this.authService.isLoggedIn() && this.canParticipate) {
+              this.loadRegistrationStatus(event.id);
+            }
+
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            const status = err?.status;
+
+            if (status === 404) {
+              this.router.navigate(['/not-found']);
+              return;
+            }
+
+            if (status === 403) {
+              this.router.navigate(['/forbidden']);
+              return;
+            }
+
+            this.errorMessage =
+              err?.error?.message ||
+              err?.error ||
+              'Impossible de charger cet événement.';
+            this.cdr.markForCheck();
+          }
+        });
+      }
+    });
   }
 
   private loadInvitableUsers(): void {
@@ -720,6 +745,27 @@ export class EventDetails {
       && this.isRegistered
       && !this.isEventStarted
       && !this.hasPendingSentInvitations;
+  }
+
+  private loadPublicFeedback(eventId: string): void {
+    this.publicFeedbackLoading = true;
+    this.cdr.markForCheck();
+
+    this.eventService.getPublicFeedbackDetails(eventId)
+      .pipe(finalize(() => {
+        this.publicFeedbackLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.publicFeedback = response;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.publicFeedback = null;
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   statusLabel(status: string): string {

@@ -39,6 +39,9 @@ import { NotFound } from './features/errors/not-found/not-found';
 import { AdminDepartments } from './features/admin/admin-departments/admin-departments';
 import { AdminUsers } from './features/admin/admin-users/admin-users';
 
+import { PastEvents } from './features/events/past-events/past-events';
+
+
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -51,6 +54,8 @@ export const routes: Routes = [
 
   { path: 'forbidden', component: Forbidden },
   { path: 'not-found', component: NotFound },
+
+  { path: 'events/past', component: PastEvents },
   
  {
     path: '',

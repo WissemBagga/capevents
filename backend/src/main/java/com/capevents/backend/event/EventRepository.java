@@ -73,16 +73,16 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     );
 
     @Query("""
-    select e from Event e
-    left join e.targetDepartment td
-    where e.status = 'PUBLISHED'
-      and (
-        e.audience = 'GLOBAL'
-        or (e.audience = 'DEPARTMENT' and td.id = :deptId)
-      )
-      and e.startAt >= :from
-      and e.registrationDeadline <= :to
-""")
+        select e from Event e
+        left join e.targetDepartment td
+        where e.status = 'PUBLISHED'
+          and (
+            e.audience = 'GLOBAL'
+            or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+          )
+          and e.startAt >= :from
+          and e.registrationDeadline <= :to
+    """)
     Page<Event> searchPublishedVisibleForDeptPage(
             @Param("deptId") Long deptId,
             @Param("from") Instant from,
@@ -91,17 +91,17 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     );
 
     @Query("""
-    select e from Event e
-    left join e.targetDepartment td
-    where e.status = 'PUBLISHED'
-      and (
-        e.audience = 'GLOBAL'
-        or (e.audience = 'DEPARTMENT' and td.id = :deptId)
-      )
-      and e.startAt >= :from
-      and e.registrationDeadline <= :to
-      and e.category = :category
-""")
+        select e from Event e
+        left join e.targetDepartment td
+        where e.status = 'PUBLISHED'
+          and (
+            e.audience = 'GLOBAL'
+            or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+          )
+          and e.startAt >= :from
+          and e.registrationDeadline <= :to
+          and e.category = :category
+    """)
     Page<Event> searchPublishedVisibleForDeptPageWithCategory(
             @Param("deptId") Long deptId,
             @Param("category") String category,
@@ -111,17 +111,17 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     );
 
     @Query("""
-    select e from Event e
-    left join e.targetDepartment td
-    where e.status = 'PUBLISHED'
-      and (
-        e.audience = 'GLOBAL'
-        or (e.audience = 'DEPARTMENT' and td.id = :deptId)
-      )
-      and e.startAt >= :from
-      and e.registrationDeadline <= :to
-      and lower(e.title) like lower(concat('%', :q, '%'))
-""")
+        select e from Event e
+        left join e.targetDepartment td
+        where e.status = 'PUBLISHED'
+          and (
+            e.audience = 'GLOBAL'
+            or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+          )
+          and e.startAt >= :from
+          and e.registrationDeadline <= :to
+          and lower(e.title) like lower(concat('%', :q, '%'))
+    """)
     Page<Event> searchPublishedVisibleForDeptPageWithTitle(
             @Param("deptId") Long deptId,
             @Param("q") String q,
@@ -131,18 +131,18 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     );
 
     @Query("""
-    select e from Event e
-    left join e.targetDepartment td
-    where e.status = 'PUBLISHED'
-      and (
-        e.audience = 'GLOBAL'
-        or (e.audience = 'DEPARTMENT' and td.id = :deptId)
-      )
-      and e.startAt >= :from
-      and e.registrationDeadline <= :to
-      and e.category = :category
-      and lower(e.title) like lower(concat('%', :q, '%'))
-""")
+        select e from Event e
+        left join e.targetDepartment td
+        where e.status = 'PUBLISHED'
+          and (
+            e.audience = 'GLOBAL'
+            or (e.audience = 'DEPARTMENT' and td.id = :deptId)
+          )
+          and e.startAt >= :from
+          and e.registrationDeadline <= :to
+          and e.category = :category
+          and lower(e.title) like lower(concat('%', :q, '%'))
+    """)
     Page<Event> searchPublishedVisibleForDeptPageWithCategoryAndTitle(
             @Param("deptId") Long deptId,
             @Param("category") String category,
@@ -169,12 +169,12 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     Page<Event> findByStatusOrderByCreatedAtDesc(EventStatus status, Pageable pageable);
 
     @Query("""
-    select e from Event e
-    left join e.targetDepartment td
-    where e.status = 'PENDING'
-      and e.audience = 'DEPARTMENT'
-      and td.id = :departmentId
-    order by e.createdAt desc
+        select e from Event e
+        left join e.targetDepartment td
+        where e.status = 'PENDING'
+          and e.audience = 'DEPARTMENT'
+          and td.id = :departmentId
+        order by e.createdAt desc
     """)
     Page<Event> findPendingForManagerDepartment(
             @Param("departmentId") Long departmentId,
@@ -217,12 +217,12 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     );
 
     @Query("""
-    select e from Event e
-    where e.status = 'PUBLISHED'
-      and e.startAt >= :from
-      and e.registrationDeadline <= :to
-      and e.category = :category
-""")
+        select e from Event e
+        where e.status = 'PUBLISHED'
+          and e.startAt >= :from
+          and e.registrationDeadline <= :to
+          and e.category = :category
+    """)
     Page<Event> searchPublishedPageWithCategory(
             @Param("category") String category,
             @Param("from") Instant from,
@@ -231,12 +231,12 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     );
 
     @Query("""
-    select e from Event e
-    where e.status = 'PUBLISHED'
-      and e.startAt >= :from
-      and e.registrationDeadline <= :to
-      and lower(e.title) like lower(concat('%', :q, '%'))
-""")
+        select e from Event e
+        where e.status = 'PUBLISHED'
+          and e.startAt >= :from
+          and e.registrationDeadline <= :to
+          and lower(e.title) like lower(concat('%', :q, '%'))
+    """)
     Page<Event> searchPublishedPageWithTitle(
             @Param("q") String q,
             @Param("from") Instant from,
@@ -245,13 +245,13 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     );
 
     @Query("""
-    select e from Event e
-    where e.status = 'PUBLISHED'
-      and e.startAt >= :from
-      and e.registrationDeadline <= :to
-      and e.category = :category
-      and lower(e.title) like lower(concat('%', :q, '%'))
-""")
+        select e from Event e
+        where e.status = 'PUBLISHED'
+          and e.startAt >= :from
+          and e.registrationDeadline <= :to
+          and e.category = :category
+          and lower(e.title) like lower(concat('%', :q, '%'))
+    """)
     Page<Event> searchPublishedPageWithCategoryAndTitle(
             @Param("category") String category,
             @Param("q") String q,
@@ -261,14 +261,55 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     );
 
     @Query("""
-    select distinct e from Event e
-    left join fetch e.targetDepartment td
-    left join fetch e.createdBy cb
-    left join fetch cb.department cd
-    where e.audience = com.capevents.backend.event.EventAudience.GLOBAL
-       or td.id = :departmentId
-       or cd.id = :departmentId
-    order by e.createdAt desc
+        select distinct e from Event e
+        left join fetch e.targetDepartment td
+        left join fetch e.createdBy cb
+        left join fetch cb.department cd
+        where e.audience = com.capevents.backend.event.EventAudience.GLOBAL
+           or td.id = :departmentId
+           or cd.id = :departmentId
+        order by e.createdAt desc
     """)
     List<Event> findAllForAnalyticsByManagerScope(@Param("departmentId") Long departmentId);
+
+
+
+    @Query("""
+        select e
+        from Event e
+        left join fetch e.targetDepartment td
+        where e.status in :statuses
+          and e.startAt < :now
+          and (:category is null or lower(e.category) = lower(:category))
+          and (:departmentId is null or td.id = :departmentId)
+          and (:audience is null or e.audience = :audience)
+          and (
+            :q is null
+            or lower(e.title) like lower(concat('%', :q, '%'))
+            or lower(coalesce(e.description, '')) like lower(concat('%', :q, '%'))
+      )
+    """)
+    Page<Event> findPastVisibleEvents(
+            @Param("statuses") List<EventStatus> statuses,
+            @Param("now") Instant now,
+            @Param("category") String category,
+            @Param("departmentId") Long departmentId,
+            @Param("audience") EventAudience audience,
+            @Param("q") String q,
+            Pageable pageable
+    );
+
+    @Query("""
+        select e
+        from Event e
+        left join fetch e.targetDepartment td
+        where e.id = :id
+          and e.status in :statuses
+          and e.startAt < :now
+    """)
+    Optional<Event> findPastVisibleById(
+            @Param("id") UUID id,
+            @Param("statuses") List<EventStatus> statuses,
+            @Param("now") Instant now
+    );
 }

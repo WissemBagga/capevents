@@ -843,6 +843,18 @@ public class EventService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public EventResponse getPastVisibleById(UUID id) {
+        Event e = eventRepository.findPastVisibleById(
+                        id,
+                        List.of(EventStatus.PUBLISHED, EventStatus.ARCHIVED),
+                        Instant.now()
+                )
+                .orElseThrow(() -> new NotFoundException("Événement passé introuvable"));
+
+        return toResponse(e);
+    }
+
     private boolean canEmployeePublishDirectly(CreateEventRequest req) {
         return req.durationMinutes() != null
                 && req.capacity() != null

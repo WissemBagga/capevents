@@ -39,6 +39,9 @@ public class EventFeedback {
     @Column(columnDefinition = "TEXT")
     private String comment;
 
+    @Column(name = "share_comment_publicly", nullable = false)
+    private boolean shareCommentPublicly = false;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
 

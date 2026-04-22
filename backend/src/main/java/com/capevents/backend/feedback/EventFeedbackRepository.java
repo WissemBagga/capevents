@@ -23,4 +23,14 @@ public interface EventFeedbackRepository extends JpaRepository<EventFeedback, Lo
         where f.event.id = :eventId
     """)
     Double findAverageRatingByEventId(@Param("eventId") UUID eventId);
+    @Query("""
+        select f
+        from EventFeedback f
+        where f.event.id = :eventId
+          and f.shareCommentPublicly = true
+          and f.comment is not null
+          and trim(f.comment) <> ''
+        order by f.createdAt desc
+    """)
+    List<EventFeedback> findPublicCommentsByEventIdOrderByCreatedAtDesc(UUID eventId);
 }

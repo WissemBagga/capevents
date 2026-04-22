@@ -1,7 +1,10 @@
 package com.capevents.backend.feedback;
 
+import com.capevents.backend.common.dto.PageResponse;
 import com.capevents.backend.feedback.dto.CreateEventFeedbackRequest;
 import com.capevents.backend.feedback.dto.EventFeedbackResponse;
+import com.capevents.backend.feedback.dto.PastEventCardResponse;
+import com.capevents.backend.feedback.dto.PastEventFeedbackDetailsResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,5 +53,38 @@ public class EventFeedbackController {
             Authentication auth
     ) {
         return feedbackService.listEventFeedbacks(id, auth.getName());
+    }
+
+    @GetMapping("/past")
+    public PageResponse<PastEventCardResponse> listPastEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Long departmentId,
+            @RequestParam(required = false) String audience,
+            @RequestParam(required = false) String q
+    ) {
+        var pageable = org.springframework.data.domain.PageRequest.of(
+                page,
+                size,
+                org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "startAt")
+        );
+
+        var items = feedbackService.listPastEvents(category, departmentId, audience, q, pageable);
+
+        return new PageResponse<>(
+                items,
+                page,
+                size,
+                1,
+                items.size(),
+                false,
+                page > 0
+        );
+    }
+
+    @GetMapping("/{eventId}/public-feedback")
+    public PastEventFeedbackDetailsResponse getPublicFeedbackDetails(@PathVariable UUID eventId) {
+        return feedbackService.getPublicFeedbackDetails(eventId);
     }
 }

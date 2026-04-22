@@ -33,9 +33,12 @@ export class FeedbackEvent {
   errorMessage = '';
   successMessage = '';
 
+  
+
   form = this.fb.group({
     rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
-    comment: ['', [Validators.maxLength(2000)]]
+    comment: ['', [Validators.maxLength(2000)]],
+    shareCommentPublicly: [false]
   });
 
   get currentRating(): number {
@@ -113,6 +116,11 @@ export class FeedbackEvent {
       this.form.markAllAsTouched();
       return;
     }
+    const payload = {
+      rating: form.rating,
+      comment: form.comment?.trim() ? form.comment.trim() : null,
+      shareCommentPublicly: !!form.shareCommentPublicly
+    };
 
     this.submitting = true;
     this.errorMessage = '';

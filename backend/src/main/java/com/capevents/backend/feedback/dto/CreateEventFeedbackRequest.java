@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public record CreateEventFeedbackRequest(
         @Min(1) @Max(5) Integer rating,
-        @Size(max = 2000) String comment
+        @Size(max = 2000) String comment,
+        Boolean shareCommentPublicly
 ) {
 }

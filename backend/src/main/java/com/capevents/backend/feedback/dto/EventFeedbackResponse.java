@@ -10,6 +10,7 @@ public record EventFeedbackResponse(
         String userFullName,
         Integer rating,
         String comment,
+        boolean shareCommentPublicly,
         Instant createdAt,
         Instant updatedAt
 ) {

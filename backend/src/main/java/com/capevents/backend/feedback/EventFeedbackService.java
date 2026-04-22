@@ -6,8 +6,7 @@ import com.capevents.backend.event.Event;
 import com.capevents.backend.event.EventAudience;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
-import com.capevents.backend.feedback.dto.CreateEventFeedbackRequest;
-import com.capevents.backend.feedback.dto.EventFeedbackResponse;
+import com.capevents.backend.feedback.dto.*;
 import com.capevents.backend.points.PointService;
 import com.capevents.backend.registration.AttendanceStatus;
 import com.capevents.backend.registration.EventRegistration;
@@ -64,11 +63,29 @@ public class EventFeedbackService {
         feedback.setEvent(event);
         feedback.setUser(user);
         feedback.setRating(req.rating());
-        feedback.setComment(normalizeComment(req.comment()));
+
+        String normalizedComment = normalizeComment(req.comment());
+
+        feedback.setComment(normalizedComment);
+        feedback.setShareCommentPublicly(
+                Boolean.TRUE.equals(req.shareCommentPublicly()) && normalizedComment != null
+        );
+
+
 
         EventFeedback saved = feedbackRepository.save(feedback);
         pointService.awardFeedbackBonus(user, event);
-        return toResponse(saved);
+        return new EventFeedbackResponse(
+                feedback.getId(),
+                feedback.getEvent().getId(),
+                feedback.getUser().getId(),
+                fullName,
+                feedback.getRating(),
+                feedback.getComment(),
+                feedback.isShareCommentPublicly(),
+                feedback.getCreatedAt(),
+                feedback.getUpdatedAt()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -96,6 +113,172 @@ public class EventFeedbackService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<PastEventCardResponse> listPastEvents(
+            String category,
+            Long departmentId,
+            String audience,
+            String q,
+            org.springframework.data.domain.Pageable pageable
+    ) {
+        com.capevents.backend.event.EventAudience audienceEnum = null;
+
+        if (audience != null && !audience.isBlank()) {
+            audienceEnum = com.capevents.backend.event.EventAudience.valueOf(audience);
+        }
+
+        var page = eventRepository.findPastVisibleEvents(
+                List.of(com.capevents.backend.event.EventStatus.PUBLISHED, com.capevents.backend.event.EventStatus.ARCHIVED),
+                Instant.now(),
+                category,
+                departmentId,
+                audienceEnum,
+                q,
+                pageable
+        );
+
+        return page.getContent().stream()
+                .map(this::toPastEventCardResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PastEventFeedbackDetailsResponse getPublicFeedbackDetails(UUID eventId) {
+        Event event = eventRepository.findPastVisibleById(
+                        eventId,
+                        List.of(com.capevents.backend.event.EventStatus.PUBLISHED, com.capevents.backend.event.EventStatus.ARCHIVED),
+                        Instant.now()
+                )
+                .orElseThrow(() -> new NotFoundException("Événement passé introuvable"));
+
+        long feedbackCount = feedbackRepository.countByEventId(eventId);
+        double averageRating = feedbackRepository.findAverageRatingByEventId(eventId) != null
+                ? round2(feedbackRepository.findAverageRatingByEventId(eventId))
+                : 0.0;
+
+        long presentCount = registrationRepository.countByEventAndAttendanceStatus(
+                event,
+                AttendanceStatus.PRESENT
+        );
+
+        double feedbackResponseRate = presentCount > 0
+                ? round2((feedbackCount * 100.0) / presentCount)
+                : 0.0;
+
+        List<EventFeedback> publicFeedbacks = feedbackRepository.findPublicCommentsByEventIdOrderByCreatedAtDesc(eventId);
+
+        List<PublicFeedbackItemResponse> publicComments = publicFeedbacks.stream()
+                .map(f -> new PublicFeedbackItemResponse(
+                        f.getRating(),
+                        f.getComment()
+                ))
+                .limit(6)
+                .toList();
+
+        List<String> highlights = buildHighlights(averageRating, feedbackCount, presentCount);
+        List<String> improvementPoints = buildImprovementPoints(averageRating, publicFeedbacks);
+
+        return new PastEventFeedbackDetailsResponse(
+                event.getId(),
+                event.getTitle(),
+                event.getCategory(),
+                event.getImageUrl(),
+                event.getTargetDepartment() != null ? event.getTargetDepartment().getName() : "Global",
+                event.getAudience().name(),
+                event.getStartAt(),
+                averageRating,
+                feedbackCount,
+                feedbackResponseRate,
+                presentCount,
+                highlights,
+                improvementPoints,
+                publicComments
+        );
+    }
+
+    private PastEventCardResponse toPastEventCardResponse(Event event) {
+        long feedbackCount = feedbackRepository.countByEventId(event.getId());
+        double averageRating = feedbackRepository.findAverageRatingByEventId(event.getId()) != null
+                ? round2(feedbackRepository.findAverageRatingByEventId(event.getId()))
+                : 0.0;
+
+        long presentCount = registrationRepository.countByEventAndAttendanceStatus(
+                event,
+                AttendanceStatus.PRESENT
+        );
+
+        String teaser = averageRating >= 4.5
+                ? "Très apprécié par les participants"
+                : averageRating >= 4.0
+                ? "Retours très positifs"
+                : feedbackCount > 0
+                ? "Découvrez ce qu’en ont pensé les participants"
+                : "Événement passé";
+
+        return new PastEventCardResponse(
+                event.getId(),
+                event.getTitle(),
+                event.getCategory(),
+                event.getImageUrl(),
+                event.getTargetDepartment() != null ? event.getTargetDepartment().getName() : "Global",
+                event.getAudience().name(),
+                event.getStartAt(),
+                averageRating,
+                feedbackCount,
+                presentCount,
+                teaser
+        );
+    }
+
+    private List<String> buildHighlights(double averageRating, long feedbackCount, long presentCount) {
+        java.util.List<String> items = new java.util.ArrayList<>();
+
+        if (averageRating >= 4.5) {
+            items.add("Très forte satisfaction globale des participants.");
+        } else if (averageRating >= 4.0) {
+            items.add("Satisfaction globale positive.");
+        }
+
+        if (feedbackCount >= 5) {
+            items.add("Nombre d’avis suffisant pour refléter une expérience fiable.");
+        }
+
+        if (presentCount >= 10) {
+            items.add("Bonne mobilisation des participants.");
+        }
+
+        if (items.isEmpty()) {
+            items.add("Retour globalement utile pour découvrir cet événement.");
+        }
+
+        return items.stream().limit(3).toList();
+    }
+
+    private List<String> buildImprovementPoints(double averageRating, List<EventFeedback> publicFeedbacks) {
+        java.util.List<String> items = new java.util.ArrayList<>();
+
+        boolean hasLowRatedComment = publicFeedbacks.stream().anyMatch(f -> f.getRating() <= 3);
+
+        if (averageRating < 4.0) {
+            items.add("Quelques améliorations sont encore possibles sur le format ou l’organisation.");
+        }
+
+        if (hasLowRatedComment) {
+            items.add("Certains participants ont signalé des points perfectibles.");
+        }
+
+        if (items.isEmpty()) {
+            items.add("Aucun point d’amélioration majeur n’a été remonté publiquement.");
+        }
+
+        return items.stream().limit(3).toList();
+    }
+
+    private double round2(double value) {
+        return Math.round(value * 100.0) / 100.0;
     }
 
     private void validateFeedbackCreation(Event event, User user, UUID eventId) {
@@ -158,6 +341,7 @@ public class EventFeedbackService {
                 feedback.getRating(),
                 feedback.getComment(),
                 feedback.getCreatedAt(),
+                feedback.getEvent().
                 feedback.getUpdatedAt()
         );
     }

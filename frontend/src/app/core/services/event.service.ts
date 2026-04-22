@@ -7,19 +7,19 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { CreateEventRequest } from '../models/create-event.model';
 
-import {RegistrationResponse, UnregisterRequest} from '../models/registration.model'
+import {RegistrationResponse, UnregisterRequest} from '../models/registration.model';
 
-import {EventParticipantResponse} from '../models/participant.model'
-
-
-import { SendInvitationRequest, SendInvitationResponse, AdminEventInvitationResponse, MyInvitationResponse, InvitationResponseStatus, EmployeeInviteRequest } from '../models/invitation.model'
+import {EventParticipantResponse} from '../models/participant.model';
 
 
-import {UserSummary} from '../models/user-summary.model'
+import { SendInvitationRequest, SendInvitationResponse, AdminEventInvitationResponse, MyInvitationResponse, InvitationResponseStatus, EmployeeInviteRequest } from '../models/invitation.model';
 
-import {EmployeeEventSubmissionResponse} from '../models/employee-event-submission.model'
 
-import {EventFeedbackResponse, CreateEventFeedbackRequest} from '../models/feedback.model'
+import {UserSummary} from '../models/user-summary.model';
+
+import {EmployeeEventSubmissionResponse} from '../models/employee-event-submission.model';
+
+import {EventFeedbackResponse, CreateEventFeedbackRequest, PastEventCardResponse, PastEventFeedbackDetailsResponse} from '../models/feedback.model';
 
 @Injectable({
   providedIn: 'root'
@@ -205,6 +205,35 @@ export class EventService {
 
   getMyFeedback(eventId: string) {
     return this.http.get<EventFeedbackResponse>(`${this.apiUrl}/${eventId}/feedback/me`);
+  }
+  getPastEvents(
+    page = 0,
+    size = 9,
+    filters?: {
+      category?: string | null;
+      departmentId?: number | null;
+      audience?: string | null;
+      q?: string | null;
+    }
+  ) {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    if (filters?.category) params = params.set('category', filters.category);
+    if (filters?.departmentId) params = params.set('departmentId', filters.departmentId);
+    if (filters?.audience) params = params.set('audience', filters.audience);
+    if (filters?.q?.trim()) params = params.set('q', filters.q.trim());
+
+    return this.http.get<PageResponse<PastEventCardResponse>>(`${this.apiUrl}/past`, { params });
+  }
+
+  getPastById(id: string) {
+    return this.http.get<EventResponse>(`${this.apiUrl}/past/${id}`);
+  }
+
+  getPublicFeedbackDetails(eventId: string) {
+    return this.http.get<PastEventFeedbackDetailsResponse>(`${this.apiUrl}/${eventId}/public-feedback`);
   }
   
 }

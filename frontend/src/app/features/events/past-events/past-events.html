@@ -1,0 +1,120 @@
+<div class="past-events-page">
+  <div class="page-container">
+    <div class="page-header">
+      <div class="header-text">
+        <h1>Événements passés</h1>
+        <p class="header-sub">Découvrez les retours des participants et les événements qui ont marqué la plateforme.</p>
+      </div>
+    </div>
+
+    @if (errorMessage) {
+      <div class="state-message error-msg">
+        <p>{{ errorMessage }}</p>
+      </div>
+    }
+
+    <section class="admin-card filter-card">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select [(ngModel)]="filters.category">
+            <option value="">Toutes les catégories</option>
+            @for (item of categoryOptions; track item.value) {
+              <option [value]="item.value">{{ item.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Département</label>
+          <select [(ngModel)]="filters.departmentId">
+            <option [ngValue]="null">Tous</option>
+            @for (department of departments; track department.id) {
+              <option [ngValue]="department.id">{{ department.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Audience</label>
+          <select [(ngModel)]="filters.audience">
+            <option value="">Toutes</option>
+            <option value="GLOBAL">Globale</option>
+            <option value="DEPARTMENT">Département</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Recherche</label>
+          <input type="text" [(ngModel)]="filters.q" placeholder="Titre ou mot-clé" />
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" class="btn-secondary" (click)="applyFilters()">Appliquer</button>
+        <button type="button" class="btn-secondary" (click)="resetFilters()">Réinitialiser</button>
+      </div>
+    </section>
+
+    @if (loading) {
+      <div class="state-message loading-msg">
+        <div class="spinner"></div>
+        <p>Chargement des événements passés...</p>
+      </div>
+    }
+
+    @if (!loading && events.length === 0) {
+      <div class="state-message info-msg">
+        <p>Aucun événement passé trouvé.</p>
+      </div>
+    }
+
+    @if (!loading && events.length > 0) {
+      <div class="past-events-grid">
+        @for (event of events; track event.eventId) {
+          <article class="past-event-card">
+            <img [src]="event.imageUrl || 'images/events/default-event.jpg'" [alt]="event.title" class="card-image" />
+
+            <div class="card-body">
+              <div class="card-top">
+                <span class="category-badge">{{ event.category || 'Sans catégorie' }}</span>
+                <span class="audience-badge">{{ event.audience }}</span>
+              </div>
+
+              <h2>{{ event.title }}</h2>
+
+              <div class="meta-line">
+                <span>{{ event.startAt | date:'mediumDate' }}</span>
+                <span>•</span>
+                <span>{{ event.departmentName }}</span>
+              </div>
+
+              <div class="rating-row">
+                <strong>{{ event.averageRating | number:'1.1-2' }}/5</strong>
+                <span>{{ event.feedbackCount }} avis</span>
+                <span>•</span>
+                <span>{{ event.presentCount }} présents</span>
+              </div>
+
+              <p class="teaser">{{ event.teaser }}</p>
+
+              <a [routerLink]="['/events', event.eventId]" class="btn-view-feedback">
+                Voir les retours
+              </a>
+            </div>
+          </article>
+        }
+      </div>
+
+      <div class="pagination-bar">
+        <button type="button" class="btn-secondary" (click)="previousPage()" [disabled]="currentPage === 0">
+          Précédent
+        </button>
+        <span>Page {{ currentPage + 1 }} / {{ totalPages }}</span>
+        <button type="button" class="btn-secondary" (click)="nextPage()" [disabled]="currentPage + 1 >= totalPages">
+          Suivant
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -273,6 +273,70 @@
               </div>
             </div>
           </section>
+
+          @if (isPastEvent && publicFeedback) {
+            <section class="section-card public-feedback-section">
+              <div class="section-card-header">
+                <h2>Retour des participants</h2>
+              </div>
+
+              <div class="public-feedback-summary">
+                <div class="summary-box">
+                  <strong>{{ publicFeedback.averageRating | number:'1.1-2' }}/5</strong>
+                  <span>Note moyenne</span>
+                </div>
+                <div class="summary-box">
+                  <strong>{{ publicFeedback.feedbackCount }}</strong>
+                  <span>Avis</span>
+                </div>
+                <div class="summary-box">
+                  <strong>{{ publicFeedback.feedbackResponseRate | number:'1.0-2' }}%</strong>
+                  <span>Taux de retour</span>
+                </div>
+                <div class="summary-box">
+                  <strong>{{ publicFeedback.presentCount }}</strong>
+                  <span>Présents</span>
+                </div>
+              </div>
+
+              <div class="feedback-columns">
+                <div class="feedback-column">
+                  <h3>Ce qu’ils ont aimé</h3>
+                  <ul>
+                    @for (item of publicFeedback.highlights; track $index) {
+                      <li>{{ item }}</li>
+                    }
+                  </ul>
+                </div>
+
+                <div class="feedback-column">
+                  <h3>À améliorer</h3>
+                  <ul>
+                    @for (item of publicFeedback.improvementPoints; track $index) {
+                      <li>{{ item }}</li>
+                    }
+                  </ul>
+                </div>
+              </div>
+
+              @if (publicFeedback.publicComments.length > 0) {
+                <div class="public-comments-grid">
+                  @for (comment of publicFeedback.publicComments; track $index) {
+                    <article class="public-comment-card">
+                      <div class="comment-rating">{{ comment.rating }}/5</div>
+                      <p>{{ comment.comment }}</p>
+                      <span class="comment-author">Participant anonyme</span>
+                    </article>
+                  }
+                </div>
+              }
+
+              <div class="feedback-cta">
+                <a routerLink="/events" class="btn-view-feedback">Voir les prochains événements</a>
+                <a routerLink="/events/past" class="btn-secondary">Explorer d’autres retours</a>
+              </div>
+            </section>
+          }
         </div>
 
         <!-- Right: Sidebar Info -->
