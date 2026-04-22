@@ -19,9 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -115,23 +113,27 @@ public class EventFeedbackService {
             String q,
             org.springframework.data.domain.Pageable pageable
     ) {
+        // Fetch all candidates. Simple basic query to avoid complex SQL issues.
+        List<EventStatus> targetStatuses = List.of(EventStatus.PUBLISHED, EventStatus.ARCHIVED);
+        List<Event> allEvents = eventRepository.findAllPastVisibleEvents(targetStatuses, Instant.now());
 
-        List<Event> allEvents = eventRepository.findAllPastVisibleEvents(Instant.now());
-
+        // Apply filters in Java layer for maximum predictability
         String normalizedQuery = (q != null && !q.isBlank()) ? q.trim().toLowerCase() : null;
 
-        List<Event> filtered = allEvents.stream()
-                .filter(event -> category == null || category.isBlank() ||
+        List<PastEventCardResponse> filtered = allEvents.stream()
+                .filter(event -> category == null || category.isBlank() || 
                         (event.getCategory() != null && event.getCategory().equalsIgnoreCase(category.trim())))
-                .filter(event -> departmentId == null ||
+                .filter(event -> departmentId == null || 
                         (event.getTargetDepartment() != null && departmentId.equals(event.getTargetDepartment().getId())))
-                .filter(event -> audience == null || audience.isBlank() ||
+                .filter(event -> audience == null || audience.isBlank() || 
                         (event.getAudience() != null && event.getAudience().name().equalsIgnoreCase(audience.trim())))
-                .filter(event -> normalizedQuery == null ||
+                .filter(event -> normalizedQuery == null || 
                         (event.getTitle() != null && event.getTitle().toLowerCase().contains(normalizedQuery)) ||
                         (event.getDescription() != null && event.getDescription().toLowerCase().contains(normalizedQuery)))
+                .map(this::toPastEventCardResponse)
                 .toList();
 
+        // Safe manual pagination
         int totalItems = filtered.size();
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
@@ -141,12 +143,7 @@ public class EventFeedbackService {
         int fromIndex = Math.min(currentPage * pageSize, totalItems);
         int toIndex = Math.min(fromIndex + pageSize, totalItems);
 
-        List<Event> pageEvents = filtered.subList(fromIndex, toIndex);
-
-        List<PastEventCardResponse> pageItems = pageEvents.stream()
-                .map(this::toPastEventCardResponse)
-                .filter(Objects::nonNull)
-                .toList();
+        List<PastEventCardResponse> pageItems = filtered.subList(fromIndex, toIndex);
 
         return new PageResponse<>(
                 pageItems,
@@ -163,7 +160,7 @@ public class EventFeedbackService {
     public PastEventFeedbackDetailsResponse getPublicFeedbackDetails(UUID eventId) {
         Event event = eventRepository.findPastVisibleById(
                         eventId,
-                        List.of(EventStatus.PUBLISHED, EventStatus.ARCHIVED),
+                        List.of(com.capevents.backend.event.EventStatus.PUBLISHED, com.capevents.backend.event.EventStatus.ARCHIVED),
                         Instant.now()
                 )
                 .orElseThrow(() -> new NotFoundException("Événement passé introuvable"));
@@ -214,20 +211,15 @@ public class EventFeedbackService {
     }
 
     private PastEventCardResponse toPastEventCardResponse(Event event) {
-        if (event == null) return null;
+        long feedbackCount = feedbackRepository.countByEventId(event.getId());
+        double averageRating = feedbackRepository.findAverageRatingByEventId(event.getId()) != null
+                ? round2(feedbackRepository.findAverageRatingByEventId(event.getId()))
+                : 0.0;
 
-        UUID eventId = event.getId();
-        long feedbackCount = 0;
-        double averageRating = 0.0;
-        long presentCount = 0;
-
-        try {
-            feedbackCount = feedbackRepository.countByEventId(eventId);
-            Double avgRating = feedbackRepository.findAverageRatingByEventId(eventId);
-            averageRating = avgRating != null ? round2(avgRating) : 0.0;
-            presentCount = registrationRepository.countByEventAndAttendanceStatus(event, AttendanceStatus.PRESENT);
-        } catch (Exception e) {
-        }
+        long presentCount = registrationRepository.countByEventAndAttendanceStatus(
+                event,
+                AttendanceStatus.PRESENT
+        );
 
         String teaser = averageRating >= 4.5
                 ? "Très apprécié par les participants"
@@ -238,8 +230,8 @@ public class EventFeedbackService {
                 : "Événement passé";
 
         return new PastEventCardResponse(
-                eventId,
-                event.getTitle() != null ? event.getTitle() : "Sans titre",
+                event.getId(),
+                event.getTitle(),
                 event.getCategory(),
                 event.getImageUrl(),
                 event.getTargetDepartment() != null ? event.getTargetDepartment().getName() : "Global",
@@ -253,7 +245,7 @@ public class EventFeedbackService {
     }
 
     private List<String> buildHighlights(double averageRating, long feedbackCount, long presentCount) {
-        List<String> items = new ArrayList<>();
+        java.util.List<String> items = new java.util.ArrayList<>();
 
         if (averageRating >= 4.5) {
             items.add("Très forte satisfaction globale des participants.");
@@ -277,7 +269,7 @@ public class EventFeedbackService {
     }
 
     private List<String> buildImprovementPoints(double averageRating, List<EventFeedback> publicFeedbacks) {
-        List<String> items = new ArrayList<>();
+        java.util.List<String> items = new java.util.ArrayList<>();
 
         boolean hasLowRatedComment = publicFeedbacks.stream().anyMatch(f -> f.getRating() <= 3);
 

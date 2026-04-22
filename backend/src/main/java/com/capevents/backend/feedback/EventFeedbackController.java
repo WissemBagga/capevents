@@ -11,10 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-
-
 import java.util.List;
 import java.util.UUID;
 
@@ -62,16 +58,16 @@ public class EventFeedbackController {
     @GetMapping("/past")
     public PageResponse<PastEventCardResponse> listPastEvents(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "8") int size,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Long departmentId,
             @RequestParam(required = false) String audience,
             @RequestParam(required = false) String q
     ) {
-        var pageable = PageRequest.of(
+        var pageable = org.springframework.data.domain.PageRequest.of(
                 page,
                 size,
-                Sort.by(Sort.Direction.DESC, "startAt")
+                org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "startAt")
         );
 
         return feedbackService.listPastEvents(category, departmentId, audience, q, pageable);
