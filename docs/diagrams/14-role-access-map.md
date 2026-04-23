@@ -1,4 +1,4 @@
-# Diagramme 14 — Carte d'accès par rôles
+# Diagramme 14 - Carte d'accès par rôles
 
 ```mermaid
 flowchart LR
