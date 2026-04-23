@@ -1,4 +1,4 @@
-# Diagramme 11 — Pipeline analytics
+# Diagramme 11 - Pipeline analytics
 
 ```mermaid
 flowchart TD
