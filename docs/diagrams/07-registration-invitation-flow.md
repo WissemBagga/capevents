@@ -5,7 +5,7 @@ flowchart TD
     A[Employé ouvre EventDetails] --> B{Déjà inscrit ?}
     B -- Non --> C[S'inscrire]
     C --> D[Inscription enregistrée]
-    D --> E[Notification + points]
+    D --> E[Notification et points]
 
     B -- Oui --> F[Inviter des collègues]
     F --> G[Envoi des invitations]
