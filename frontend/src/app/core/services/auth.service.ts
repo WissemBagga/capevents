@@ -84,8 +84,12 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
-  isLoggedIn(): boolean {
+  hasAccessToken(): boolean {
     return !!this.getToken();
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getCurrentUserSnapshot();
   }
 
   getCurrentUserSnapshot(): UserSummary | null {
@@ -110,12 +114,20 @@ export class AuthService {
   async initializeApp(): Promise<void> {
     const token = this.getToken();
 
-    if (!token) {
-      this.currentUserSubject.next(null);
-      return;
+    if (token) {
+      try {
+        const user = await firstValueFrom(this.getMe());
+        this.currentUserSubject.next(user);
+        return;
+      } catch {
+        localStorage.removeItem(this.tokenKey);
+      }
     }
 
     try {
+      const refreshResponse = await firstValueFrom(this.refreshAccessToken());
+      localStorage.setItem(this.tokenKey, refreshResponse.accessToken);
+
       const user = await firstValueFrom(this.getMe());
       this.currentUserSubject.next(user);
     } catch {

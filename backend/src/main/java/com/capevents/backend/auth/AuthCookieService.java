@@ -9,27 +9,34 @@ import java.time.Duration;
 @Service
 public class AuthCookieService {
 
+    public static final String REFRESH_COOKIE_NAME = "capevents_refresh_token";
+
+    @Value("${app.cookies.refresh-name:" + REFRESH_COOKIE_NAME + "}")
+    private String refreshCookieName;
+
     @Value("${app.security.jwt.refresh-expiration-days}")
     private long refreshExpirationDays;
 
-    public static final String REFRESH_COOKIE_NAME = "capevents_refresh_token";
+    public String getRefreshCookieName() {
+        return refreshCookieName;
+    }
 
     public ResponseCookie buildRefreshCookie(String refreshToken) {
-        return ResponseCookie.from(REFRESH_COOKIE_NAME, refreshToken)
+        return ResponseCookie.from(refreshCookieName, refreshToken)
                 .httpOnly(true)
-                .secure(false) // dev local HTTP
-                .path("/api/auth")
+                .secure(false) // localhost en HTTP
                 .sameSite("Lax")
+                .path("/api/auth")
                 .maxAge(Duration.ofDays(refreshExpirationDays))
                 .build();
     }
 
     public ResponseCookie clearRefreshCookie() {
-        return ResponseCookie.from(REFRESH_COOKIE_NAME, "")
+        return ResponseCookie.from(refreshCookieName, "")
                 .httpOnly(true)
-                .secure(false) // dev local HTTP
-                .path("/api/auth")
+                .secure(false)
                 .sameSite("Lax")
+                .path("/api/auth")
                 .maxAge(0)
                 .build();
     }

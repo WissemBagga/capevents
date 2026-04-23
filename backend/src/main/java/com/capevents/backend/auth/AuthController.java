@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.Cookie;
+import org.springframework.web.util.WebUtils;
+
 @Tag(name = "Auth")
 @RestController
 @RequestMapping("/api/auth")
@@ -52,10 +55,9 @@ public class AuthController {
 
 
     @PostMapping("/refresh")
-    public ResponseEntity<RefreshResponse> refresh(
-            @CookieValue(value = AuthCookieService.REFRESH_COOKIE_NAME, required = false) String refreshToken,
-            HttpServletRequest http
-    ) {
+    public ResponseEntity<RefreshResponse> refresh(HttpServletRequest http) {
+        String refreshToken = extractRefreshToken(http);
+
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new BadRequestException("Refresh token manquant");
         }
@@ -72,10 +74,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            @CookieValue(value = AuthCookieService.REFRESH_COOKIE_NAME, required = false) String refreshToken,
-            HttpServletRequest http
-    ) {
+    public ResponseEntity<Void> logout(HttpServletRequest http) {
+        String refreshToken = extractRefreshToken(http);
+
         if (refreshToken != null && !refreshToken.isBlank()) {
             authService.logout(refreshToken, http.getRemoteAddr());
         }
@@ -112,6 +113,11 @@ public class AuthController {
     @SecurityRequirement(name = "bearerAuth")
     public UserSummaryDto me(Authentication auth) {
         return userService.getByEmail(auth.getName());
+    }
+
+    private String extractRefreshToken(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, authCookieService.getRefreshCookieName());
+        return cookie != null ? cookie.getValue() : null;
     }
 
 }
