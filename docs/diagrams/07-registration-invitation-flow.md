@@ -1,4 +1,4 @@
-# Diagramme 07 — Inscription + invitation + RSVP
+# Diagramme 07 - Inscription, invitation et RSVP
 
 ```mermaid
 flowchart TD
