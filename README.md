@@ -41,17 +41,12 @@ Dans l'état actuel du projet, une partie Sprint 3 est déjà avancée sur :
 - gestion fine des rôles
 - optimisations admin
 
-## Recommandation documentation Git
+## Documentation Git
 La structure la plus propre pour ton dépôt est :
 1. un fichier global de projet
 2. un fichier par sprint
 3. un dossier `docs/diagrams` avec les diagrammes Mermaid
 4. plus tard, éventuellement un dossier `docs/api` ou `docs/screens`
-
-## Convention utile
-Quand une fonctionnalité a commencé dans un sprint mais a été finie plus tard, documente-la dans :
-- le sprint où elle a été introduite,
-- puis rappelle dans le sprint suivant les enrichissements importants.
 
 ## Diagrammes inclus
 Voir `docs/diagrams/index.md`.
