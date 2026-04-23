@@ -1,4 +1,4 @@
-# Diagramme 04 — Séquence Refresh token
+# Diagramme 04 - Séquence Refresh token
 
 ```mermaid
 sequenceDiagram
