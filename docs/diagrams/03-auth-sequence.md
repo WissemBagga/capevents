@@ -1,4 +1,4 @@
-# Diagramme 03 — Séquence Login
+# Diagramme 03 - Séquence Login
 
 ```mermaid
 sequenceDiagram
