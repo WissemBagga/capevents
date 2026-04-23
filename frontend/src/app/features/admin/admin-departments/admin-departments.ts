@@ -42,7 +42,7 @@ export class AdminDepartments {
       }))
       .subscribe({
         next: (departments) => {
-          this.departments = departments ?? [];
+          this.departments = this.sortDepartments(departments ?? []);
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -59,11 +59,23 @@ export class AdminDepartments {
       return;
     }
 
+    const name = this.form.get('name')?.value?.trim() || '';
+
+    if (!name) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    if (this.departmentExistsLocally(name)) {
+      this.errorMessage = 'Ce département existe déjà.';
+      this.successMessage = '';
+      this.cdr.markForCheck();
+      return;
+    }
+
     this.saving = true;
     this.errorMessage = '';
     this.successMessage = '';
-
-    const name = this.form.get('name')?.value?.trim() || '';
 
     this.userService.createDepartment(name)
       .pipe(finalize(() => {
@@ -83,5 +95,24 @@ export class AdminDepartments {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  private normalizeDepartmentName(value: string): string {
+    return value
+      .trim()
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
+  }
+
+  private sortDepartments(items: Department[]): Department[] {
+    return [...items].sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
+  }
+
+  private departmentExistsLocally(name: string): boolean {
+    const normalized = this.normalizeDepartmentName(name);
+
+    return this.departments.some(
+      department => this.normalizeDepartmentName(department.name) === normalized
+    );
   }
 }

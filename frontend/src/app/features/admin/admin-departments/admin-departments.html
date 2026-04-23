@@ -33,7 +33,7 @@
             <h2 class="card-title">Ajouter un département</h2>
           </div>
 
-          <form [formGroup]="form" class="department-form">
+          <form [formGroup]="form" class="department-form" (ngSubmit)="submit()">
             <div class="form-group">
               <label for="name">Nom du département</label>
               <div class="input-wrapper">
@@ -43,7 +43,7 @@
             </div>
 
             <div class="form-actions">
-              <button type="button" class="btn-primary w-full" (click)="submit()" [disabled]="saving || !form.valid">
+              <button type="submit" class="btn-primary w-full" [disabled]="saving || !form.valid">
                 @if (saving) {
                   <div class="spinner mini-spinner btn-spinner" appScrollToMessage></div>
                   Ajout en cours...
