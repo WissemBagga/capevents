@@ -1,4 +1,4 @@
-# Diagramme 12 — ERD simplifié
+# Diagramme 12 - ERD simplifié
 
 ```mermaid
 erDiagram
