@@ -114,14 +114,17 @@ export class AuthService {
   async initializeApp(): Promise<void> {
     const token = this.getToken();
 
-    if (token) {
-      try {
-        const user = await firstValueFrom(this.getMe());
-        this.currentUserSubject.next(user);
-        return;
-      } catch {
-        localStorage.removeItem(this.tokenKey);
-      }
+    if (!token) {
+      this.currentUserSubject.next(null);
+      return;
+    }
+
+    try {
+      const user = await firstValueFrom(this.getMe());
+      this.currentUserSubject.next(user);
+      return;
+    } catch {
+      localStorage.removeItem(this.tokenKey);
     }
 
     try {
