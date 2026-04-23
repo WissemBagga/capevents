@@ -1,4 +1,4 @@
-# Diagramme 05 — Use case global
+# Diagramme 05 - Use case global
 
 ```mermaid
 flowchart LR
