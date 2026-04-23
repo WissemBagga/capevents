@@ -463,29 +463,11 @@
 .status-archived  { background: #f1f5f9; color: #475569; }
 
 /* ===== Metrics ===== */
-.item-metrics {
-  display: grid;
-  gap: 12px;
-  align-items: stretch;
-}
+
 
 .item-metrics:not(.three-cols):not(.four-cols):not(.five-cols) {
   grid-template-columns: repeat(2, minmax(90px, 1fr));
 }
-
-.item-metrics.three-cols {
-  grid-template-columns: repeat(3, minmax(90px, 1fr));
-}
-
-.item-metrics.four-cols {
-  grid-template-columns: repeat(4, minmax(90px, 1fr));
-}
-
-.item-metrics.five-cols {
-  grid-template-columns: repeat(5, minmax(90px, 1fr));
-}
-
-/* Removed status colors duplicate */
 
 .metric-cell.highlight {
   background: #eff6ff;
@@ -532,7 +514,7 @@
 .item-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .btn-view {
