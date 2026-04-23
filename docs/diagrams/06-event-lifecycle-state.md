@@ -1,4 +1,4 @@
-# Diagramme 06 — Cycle de vie d'un événement
+# Diagramme 06 - Cycle de vie d'un événement
 
 ```mermaid
 stateDiagram-v2
