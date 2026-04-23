@@ -1,4 +1,4 @@
-# Diagramme 02 — Déploiement local Docker
+# Diagramme 02 - Déploiement local Docker
 
 ```mermaid
 flowchart TB
