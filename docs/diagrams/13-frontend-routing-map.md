@@ -1,4 +1,4 @@
-# Diagramme 13 — Carte des routes frontend
+# Diagramme 13 - Carte des routes frontend
 
 ```mermaid
 flowchart TD
