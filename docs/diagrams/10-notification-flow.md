@@ -2,11 +2,9 @@
 
 ```mermaid
 flowchart LR
-    ACT[Action métier (ex: annulation event)] --> N[NotificationService]
+    ACT[Action métier] --> N[NotificationService]
     N --> DB[(Table notifications)]
-
-    USER[Utilisateur] --> TOP[Topbar / Cloche UI]
-    TOP --> API[/API Notifications Controller/]
-    API --> N
-    N --> DB
+    API[/API Notifications Controller/] --> N
+    API --> TOP[Topbar / Cloche UI]
+    TOP --> USER[Utilisateur]
 ```
