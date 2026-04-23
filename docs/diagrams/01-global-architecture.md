@@ -1,4 +1,4 @@
-# Diagramme 01 — Architecture globale
+# Diagramme 01 - Architecture globale
 
 ```mermaid
 flowchart LR
