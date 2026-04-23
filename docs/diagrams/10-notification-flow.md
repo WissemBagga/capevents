@@ -1,10 +1,12 @@
-# Diagramme 10 — Notifications
+# Diagramme 10 - Notifications
 
 ```mermaid
 flowchart LR
-    ACT[Action métier] --> N[NotificationService]
+    ACT[Action métier (ex: annulation event)] --> N[NotificationService]
     N --> DB[(Table notifications)]
-    DB --> API[/api/notifications]
-    API --> TOP[Topbar / cloche]
-    TOP --> USER[Utilisateur]
+
+    USER[Utilisateur] --> TOP[Topbar / Cloche UI]
+    TOP --> API[/API Notifications Controller/]
+    API --> N
+    N --> DB
 ```
