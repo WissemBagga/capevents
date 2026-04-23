@@ -1,4 +1,4 @@
-# Diagramme 09 — Feedback et points
+# Diagramme 09 - Feedback et points
 
 ```mermaid
 flowchart TD
