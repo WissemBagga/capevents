@@ -311,6 +311,9 @@
 .status-draft     { background: #ffffff; color: #64748b; border: 1px solid #e2e8f0; }
 .status-cancelled { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
 .status-archived  { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.status-pending  { background: #d6e8fa; color: #2a67bc; border: 1px solid #a3b7cf; }
+.status-rejected  { background: #f8e6e6; color: #ff0000; border: 1px solid #e98f8f; }
+
 
 .category-overlay {
   position: absolute;

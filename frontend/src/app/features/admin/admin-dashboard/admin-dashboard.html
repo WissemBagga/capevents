@@ -108,7 +108,11 @@
               [class.status-published]="event.status === 'PUBLISHED'"
               [class.status-draft]="event.status === 'DRAFT'"
               [class.status-cancelled]="event.status === 'CANCELLED'"
-              [class.status-archived]="event.status === 'ARCHIVED'">
+              [class.status-archived]="event.status === 'ARCHIVED'"
+              [class.status-rejected]="event.status === 'REJECTED'"
+              [class.status-pending]="event.status === 'PENDING'"
+              
+              >
               {{ statusLabel(event.status) }}
             </span>
             <span class="category-overlay" [title]="event.category || 'Sans catégorie'">{{ event.category || 'Sans catégorie' }}</span>

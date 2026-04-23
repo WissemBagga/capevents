@@ -110,7 +110,8 @@ export class AdminDashboard {
       'PUBLISHED': 'Publié',
       'CANCELLED': 'Annulé',
       'ARCHIVED': 'Archivé',
-      'PENDING': 'En attente'
+      'PENDING': 'En attente',
+      'REJECTED': 'Refusé'
     };
     return labels[status] || status;
   }

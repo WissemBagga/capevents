@@ -118,9 +118,13 @@ export class EventDetails {
       next: (event) => {
         this.event = event;
         this.loading = false;
-        if (this.isPastEvent) {
+
+        if (this.isPastEvent || event.status === 'ARCHIVED') {
           this.loadPublicFeedback(event.id);
+        } else {
+          this.publicFeedback = null;
         }
+
         this.cdr.markForCheck();
 
         if (this.authService.isLoggedIn() && this.canParticipate) {
@@ -146,6 +150,13 @@ export class EventDetails {
           .subscribe({
             next: (event) => {
               this.event = event;
+
+              if (this.isPastEvent || event.status === 'ARCHIVED') {
+                this.loadPublicFeedback(event.id);
+              } else {
+                this.publicFeedback = null;
+              }
+
               this.cdr.markForCheck();
 
               if (this.authService.isLoggedIn() && this.canParticipate) {
