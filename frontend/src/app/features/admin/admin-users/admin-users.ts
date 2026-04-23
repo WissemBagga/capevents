@@ -34,6 +34,10 @@ export class AdminUsers {
   showHrWarningByUserId: Record<string, boolean> = {};
   confirmHrPromotionByUserId: Record<string, boolean> = {};
 
+  searchTerm = '';
+  selectedRoleFilter = '';
+  selectedDepartmentFilter = '';
+
   ngOnInit(): void {
     this.loadUsers();
   }
@@ -181,10 +185,12 @@ export class AdminUsers {
           this.cdr.markForCheck();
         },
         error: (err) => {
-          this.errorMessage = this.extractErrorMessage(
+          const rawMessage = this.extractErrorMessage(
             err,
             'Impossible de modifier le rôle.'
           );
+
+          this.errorMessage = this.mapRoleErrorMessage(rawMessage);
           this.cdr.markForCheck();
         }
       });
@@ -207,6 +213,101 @@ export class AdminUsers {
     const last = user.lastName?.trim()?.charAt(0) ?? '';
     const initials = `${first}${last}`.toUpperCase();
     return initials || 'U';
+  }
+
+  get departmentOptions(): string[] {
+    return Array.from(
+      new Set(
+        this.users
+          .map(user => user.departmentName?.trim())
+          .filter((value): value is string => !!value)
+      )
+    ).sort((a, b) => a.localeCompare(b));
+  }
+
+  get filteredUsers(): UserSummary[] {
+    const search = this.searchTerm.trim().toLowerCase();
+    const roleFilter = this.selectedRoleFilter;
+    const departmentFilter = this.selectedDepartmentFilter;
+
+    return this.users.filter(user => {
+      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+      const email = user.email.toLowerCase();
+      const department = (user.departmentName || '').toLowerCase();
+      const primaryRole = this.getPrimaryRole(user);
+
+      const matchesSearch =
+        !search ||
+        fullName.includes(search) ||
+        email.includes(search) ||
+        department.includes(search);
+
+      const matchesRole =
+        !roleFilter || primaryRole === roleFilter;
+
+      const matchesDepartment =
+        !departmentFilter || (user.departmentName || '') === departmentFilter;
+
+      return matchesSearch && matchesRole && matchesDepartment;
+    });
+  }
+
+  get hasActiveFilters(): boolean {
+    return !!this.searchTerm.trim() || !!this.selectedRoleFilter || !!this.selectedDepartmentFilter;
+  }
+
+  resetLocalFilters(): void {
+    this.searchTerm = '';
+    this.selectedRoleFilter = '';
+    this.selectedDepartmentFilter = '';
+    this.cdr.markForCheck();
+  }
+
+  displayRoles(user: UserSummary): string[] {
+    const order = ['ROLE_HR', 'ROLE_MANAGER', 'ROLE_EMPLOYEE'];
+    return [...user.roles].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  }
+
+  getRoleBadgeLabel(role: string): string {
+    const labels: Record<string, string> = {
+      ROLE_EMPLOYEE: 'Employé',
+      ROLE_MANAGER: 'Manager',
+      ROLE_HR: 'RH'
+    };
+
+    return labels[role] || role;
+  }
+
+  getRoleBadgeClass(role: string): string {
+    const classes: Record<string, string> = {
+      ROLE_EMPLOYEE: 'role-badge employee',
+      ROLE_MANAGER: 'role-badge manager',
+      ROLE_HR: 'role-badge hr'
+    };
+
+    return classes[role] || 'role-badge';
+  }
+
+  private mapRoleErrorMessage(message: string): string {
+    const lower = message.toLowerCase();
+
+    if (lower.includes('manager') && lower.includes('department')) {
+      return 'Ce département a déjà un manager actif.';
+    }
+
+    if (
+      lower.includes('dernier rh') ||
+      lower.includes('at least one hr') ||
+      lower.includes('au moins un rh')
+    ) {
+      return 'Impossible de retirer le dernier RH de la plateforme.';
+    }
+
+    if (lower.includes('confirmation') && lower.includes('rh')) {
+      return 'Veuillez confirmer explicitement la promotion vers le rôle RH.';
+    }
+
+    return message;
   }
 
 }

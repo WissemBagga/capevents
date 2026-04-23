@@ -89,6 +89,97 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
 }
 
+.users-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.toolbar-search input,
+.toolbar-filters select {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 0px;
+  font: inherit;
+  background: #ffffff;
+  color: #0f172a;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.toolbar-search input:focus,
+.toolbar-filters select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.toolbar-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+}
+
+.btn-reset-filters {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reset-filters:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.btn-reset-filters:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.role-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.role-badge.employee {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.role-badge.manager {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.role-badge.hr {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
 .card-header {
   margin-bottom: 24px;
 }
@@ -386,5 +477,8 @@
 @media (max-width: 768px) {
   .page-container {
     padding: 24px 20px;
+  }
+  .toolbar-filters {
+    grid-template-columns: 1fr;
   }
 }
