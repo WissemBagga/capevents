@@ -1,4 +1,4 @@
-# CapEvents — Documentation projet
+# CapEvents - Documentation projet
 
 ## Objectif
 Ce dossier regroupe une base documentaire simple et exploitable pour le dépôt Git et pour le PFE.
