@@ -1,4 +1,4 @@
-# Diagramme 08 — Proposition d'événement et validation
+# Diagramme 08 - Proposition d'événement et validation
 
 ```mermaid
 flowchart TD
