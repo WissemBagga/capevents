@@ -47,6 +47,8 @@ import { MyRewards } from './features/rewards/my-rewards/my-rewards';
 
 import { AdminRewardRequests } from './features/rewards/admin-reward-requests/admin-reward-requests';
 
+import { EventCalendar } from './features/calendar/event-calendar/event-calendar';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -208,6 +210,12 @@ export const routes: Routes = [
         component: AdminRewardRequests,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_HR'] }
+      },
+      {
+        path: 'calendar',
+        component: EventCalendar,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
       }
 
     ]

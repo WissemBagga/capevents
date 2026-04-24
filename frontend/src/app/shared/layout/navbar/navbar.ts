@@ -325,6 +325,7 @@ export class Navbar {
     if (url.startsWith('/my-rewards')) return 'Mes récompenses';
     if (url.startsWith('/admin/reward-requests')) return 'Demandes de récompenses';
     if (url.startsWith('/my-badges')) return 'Mes badges';
+    if (url.startsWith('/calendar')) return 'Calendrier';
     return 'CapEvents';
   }
 }

@@ -135,7 +135,8 @@ export class Sidebar {
       { label: 'Mes intérêts', route: '/my-interests' },
       { label: 'Événements passés', route: '/events/past' },
       { label: 'Mes badges', route: '/my-badges'},
-      { label: 'Mes récompenses', route: '/my-rewards'}
+      { label: 'Mes récompenses', route: '/my-rewards'},
+      { label: 'Calendrier', route: '/calendar' }
       
     ];
   }

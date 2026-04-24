@@ -57,4 +57,17 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
     """)
     long countPresentParticipationsByUserIdSince(@Param("userId") UUID userId, @Param("since") Instant since);
 
+    @Query("""
+        select r.event.id
+        from EventRegistration r
+        where r.user.id = :userId
+          and r.status = com.capevents.backend.registration.RegistrationStatus.REGISTERED
+          and r.event.startAt >= :from
+          and r.event.startAt < :to
+    """)
+    List<UUID> findRegisteredEventIdsByUserIdBetween(
+            @Param("userId") UUID userId,
+            @Param("from") Instant from,
+            @Param("to") Instant to
+    );
 }

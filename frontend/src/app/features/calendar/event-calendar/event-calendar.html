@@ -1,0 +1,128 @@
+<div class="event-calendar-page">
+  <div class="page-container">
+    <div class="page-header">
+      <div class="header-text">
+        <h1>Calendrier</h1>
+        <p class="header-sub">
+          {{ isAdminView ? 'Vue calendrier de gestion des événements.' : 'Vue calendrier de vos événements et opportunités.' }}
+        </p>
+      </div>
+    </div>
+
+    @if (errorMessage) {
+      <div class="state-message error-msg" appScrollToMessage>
+        <p>{{ errorMessage }}</p>
+      </div>
+    }
+
+    <section class="calendar-toolbar">
+      <button type="button" class="btn-secondary" (click)="previousMonth()">← Mois précédent</button>
+      <h2>{{ monthLabel }}</h2>
+      <button type="button" class="btn-secondary" (click)="nextMonth()">Mois suivant →</button>
+    </section>
+
+    <section class="calendar-legend">
+      <span class="legend-item"><span class="legend-dot visible"></span> Visible</span>
+      <span class="legend-item"><span class="legend-dot registered"></span> Inscrit</span>
+      @if (isAdminView) {
+        <span class="legend-item"><span class="legend-dot admin"></span> Vue admin</span>
+      }
+    </section>
+
+    @if (loading) {
+      <div class="state-message loading-msg">
+        <div class="spinner"></div>
+        <p>Chargement du calendrier...</p>
+      </div>
+    }
+
+    @if (!loading) {
+      <div class="calendar-layout">
+        <section class="calendar-board">
+          <div class="weekdays">
+            <span>Lun</span>
+            <span>Mar</span>
+            <span>Mer</span>
+            <span>Jeu</span>
+            <span>Ven</span>
+            <span>Sam</span>
+            <span>Dim</span>
+          </div>
+
+          <div class="calendar-grid">
+            @for (cell of calendarCells; track cell.date.toISOString()) {
+              <button
+                type="button"
+                class="calendar-cell"
+                [ngClass]="{
+                  'muted': !cell.inCurrentMonth,
+                  'today': cell.isToday,
+                  'selected': (cell.date | date:'yyyy-MM-dd') === selectedDateKey
+                }"
+                (click)="selectDay(cell)"
+              >
+                <div class="cell-top">
+                  <span class="day-number">{{ cell.date | date:'d' }}</span>
+                  @if (cell.events.length > 0) {
+                    <span class="event-count">{{ cell.events.length }}</span>
+                  }
+                </div>
+
+                <div class="cell-events">
+                  @for (event of cell.events.slice(0, 3); track event.eventId) {
+                    <span [class]="eventBadgeClass(event)">
+                      {{ event.title }}
+                    </span>
+                  }
+
+                  @if (cell.events.length > 3) {
+                    <span class="more-events">+{{ cell.events.length - 3 }} autres</span>
+                  }
+                </div>
+              </button>
+            }
+          </div>
+        </section>
+
+        <section class="selected-day-panel">
+          <h3>{{ selectedDateKey | date:'fullDate' }}</h3>
+
+          @if (selectedDayEvents.length === 0) {
+            <div class="state-message info-msg">
+              <p>Aucun événement pour cette date.</p>
+            </div>
+          }
+
+          @if (selectedDayEvents.length > 0) {
+            <div class="selected-events-list">
+              @for (event of selectedDayEvents; track trackByEventId($index, event)) {
+                <article class="selected-event-card" (click)="openEvent(event)">
+                  <div class="event-time">
+                    {{ event.startAt | date:'shortTime' }}
+                  </div>
+
+                  <div class="event-content">
+                    <h4>{{ event.title }}</h4>
+                    <p>{{ event.departmentName }} · {{ event.category || 'Sans catégorie' }}</p>
+
+                    <div class="event-meta">
+                      <span [class]="eventBadgeClass(event)">
+                        @if (event.registered) {
+                          Inscrit
+                        } @else if (event.adminView) {
+                          Gestion
+                        } @else {
+                          Visible
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </section>
+      </div>
+    }
+  </div>
+</div>

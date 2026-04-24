@@ -300,4 +300,58 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             @Param("statuses") List<EventStatus> statuses,
             @Param("now") Instant now
     );
+
+    @Query("""
+        select e from Event e
+        left join fetch e.targetDepartment
+        where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+          and e.startAt >= :from
+          and e.startAt < :to
+        order by e.startAt asc
+    """)
+    List<Event> findPublishedBetween(@Param("from") Instant from, @Param("to") Instant to);
+
+    @Query("""
+        select e from Event e
+        left join fetch e.targetDepartment
+        where e.status = com.capevents.backend.event.EventStatus.PUBLISHED
+          and e.startAt >= :from
+          and e.startAt < :to
+          and (
+                e.audience = com.capevents.backend.event.EventAudience.GLOBAL
+                or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and e.targetDepartment.id = :departmentId)
+              )
+        order by e.startAt asc
+    """)
+    List<Event> findPublishedVisibleForDepartmentBetween(
+            @Param("departmentId") Long departmentId,
+            @Param("from") Instant from,
+            @Param("to") Instant to
+    );
+
+    @Query("""
+        select e from Event e
+        left join fetch e.targetDepartment
+        where e.startAt >= :from
+          and e.startAt < :to
+        order by e.startAt asc
+    """)
+    List<Event> findAllAdminBetween(@Param("from") Instant from, @Param("to") Instant to);
+
+    @Query("""
+        select e from Event e
+        left join fetch e.targetDepartment
+        where e.startAt >= :from
+          and e.startAt < :to
+          and (
+                e.createdBy.department.id = :departmentId
+                or (e.targetDepartment.id = :departmentId)
+              )
+        order by e.startAt asc
+    """)
+    List<Event> findManagerCalendarBetween(
+            @Param("departmentId") Long departmentId,
+            @Param("from") Instant from,
+            @Param("to") Instant to
+    );
 }
