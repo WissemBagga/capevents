@@ -335,6 +335,19 @@ public class NotificationService {
         );
     }
 
+    public void notifyRewardRedemptionRequested(User requester, String rewardTitle) {
+        List<User> hrUsers = userRepository.findActiveHrUsers();
 
+        for (User hr : hrUsers) {
+            createNotification(
+                    hr,
+                    NotificationType.REWARD_REDEMPTION_REQUESTED,
+                    "Nouvelle demande de récompense",
+                    requester.getFirstName() + " " + requester.getLastName()
+                            + " a demandé la récompense \"" + rewardTitle + "\".",
+                    "/my-rewards"
+            );
+        }
+    }
 
 }

@@ -18,5 +18,6 @@ public enum NotificationType {
 
     USER_ROLE_CHANGED,
 
-    BADGE_UNLOCKED
+    BADGE_UNLOCKED,
+    REWARD_REDEMPTION_REQUESTED
 }

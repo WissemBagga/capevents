@@ -1,4 +1,9 @@
 package com.capevents.backend.rewards.dto;
 
-public class RedeemRewardRequest {
+import jakarta.validation.constraints.NotBlank;
+
+public record RedeemRewardRequest(
+        @NotBlank
+        String rewardCode
+) {
 }

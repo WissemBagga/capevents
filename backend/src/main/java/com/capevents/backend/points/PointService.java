@@ -4,11 +4,14 @@ import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.event.Event;
 import com.capevents.backend.points.dto.MyPointsResponse;
 import com.capevents.backend.points.dto.PointTransactionResponse;
+import com.capevents.backend.rewards.RewardRedemptionRepository;
 import com.capevents.backend.user.User;
 import com.capevents.backend.user.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class PointService {
@@ -17,13 +20,15 @@ public class PointService {
 
     private final PointTransactionRepository pointTransactionRepository;
     private final UserRepository userRepository;
+    private final RewardRedemptionRepository rewardRedemptionRepository;
 
     public PointService(
             PointTransactionRepository pointTransactionRepository,
-            UserRepository userRepository
+            UserRepository userRepository, RewardRedemptionRepository rewardRedemptionRepository
     ) {
         this.pointTransactionRepository = pointTransactionRepository;
         this.userRepository = userRepository;
+        this.rewardRedemptionRepository = rewardRedemptionRepository;
     }
 
     @Transactional
@@ -131,7 +136,7 @@ public class PointService {
 
         int safeLimit = Math.min(Math.max(limit, 1), 100);
 
-        long totalPoints = pointTransactionRepository.sumPointsByUserId(user.getId());
+        long totalPoints = getCurrentBalance(user.getId());
 
         var history = pointTransactionRepository
                 .findByUserIdOrderByCreatedAtDesc(user.getId(), PageRequest.of(0, safeLimit))
@@ -165,5 +170,12 @@ public class PointService {
         transaction.setReason(reason);
 
         pointTransactionRepository.save(transaction);
+    }
+
+    @Transactional(readOnly = true)
+    public long getCurrentBalance(UUID userId) {
+        long earnedPoints = pointTransactionRepository.sumPointsByUserId(userId);
+        long spentPoints = rewardRedemptionRepository.sumPointsSpentByUserId(userId);
+        return earnedPoints - spentPoints;
     }
 }
