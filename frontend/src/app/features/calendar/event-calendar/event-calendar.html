@@ -62,43 +62,33 @@
                 (click)="selectDay(cell)"
               >
                 <div class="cell-top">
-                  <span class="day-number">{{ cell.date | date:'d' }}</span>
-                  @if (cell.events.length > 0) {
-                    <span class="event-count">{{ cell.events.length }}</span>
-                  }
+                    <span class="day-number">{{ cell.date | date:'d' }}</span>
+                    <span
+                        class="event-count"
+                        [class.empty]="cell.events.length === 0"
+                    >
+                        {{ cell.events.length }}
+                    </span>
                 </div>
 
                 <div class="cell-body">
-                    @if (cell.events.length > 0) {
-                        <div class="event-count-badge">
-                        {{ cell.events.length }}
-                        @if (cell.events.length === 1) {
-                            événement
-                        } @else {
-                            événements
-                        }
-                        </div>
-
-                        <div class="event-density-dots">
+                    <div class="event-density-dots">
                         @for (event of cell.events.slice(0, 4); track event.eventId) {
-                            <span
+                        <span
                             class="event-dot"
                             [ngClass]="{
-                                'registered': event.registered,
-                                'admin': event.adminView && !event.registered,
-                                'visible': !event.registered && !event.adminView
+                            'registered': event.registered,
+                            'admin': event.adminView && !event.registered,
+                            'visible': !event.registered && !event.adminView
                             }"
-                            ></span>
+                        ></span>
                         }
 
                         @if (cell.events.length > 4) {
-                            <span class="more-dots">+{{ cell.events.length - 4 }}</span>
+                        <span class="more-dots">+{{ cell.events.length - 4 }}</span>
                         }
-                        </div>
-                    } @else {
-                        <div class="empty-day-label">0</div>
-                    }
                     </div>
+                </div>
               </button>
             }
           </div>
