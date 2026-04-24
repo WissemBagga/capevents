@@ -178,6 +178,23 @@ export class EventCalendar {
     return cells;
   }
 
+  get selectedDayLabel(): string {
+    const found = this.calendarCells.find(
+      cell => this.toDateKey(cell.date) === this.selectedDateKey
+    );
+
+    if (!found) {
+      return '';
+    }
+
+    return found.date.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
   private ensureSelectedDate(): void {
     const exists = this.calendarCells.some(cell => this.toDateKey(cell.date) === this.selectedDateKey);
     if (!exists && this.calendarCells.length > 0) {

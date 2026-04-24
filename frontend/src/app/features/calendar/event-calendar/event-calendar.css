@@ -157,16 +157,23 @@
 }
 
 .calendar-cell {
-  min-height: 120px;
+  min-height: 112px;
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 10px;
   text-align: left;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.calendar-cell:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+  transform: translateY(-1px);
 }
 
 .calendar-cell.muted {
@@ -181,6 +188,7 @@
 
 .calendar-cell.selected {
   border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
 }
 
 .cell-top {
@@ -190,13 +198,79 @@
 }
 
 .day-number {
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 15px;
   color: #0f172a;
 }
 
 .event-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
   font-size: 11px;
+  font-weight: 700;
+}
+
+.cell-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.event-count-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.event-density-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.event-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.event-dot.visible {
+  background: #94a3b8;
+}
+
+.event-dot.registered {
+  background: #22c55e;
+}
+
+.event-dot.admin {
+  background: #2563eb;
+}
+
+.more-dots {
+  font-size: 11px;
+  font-weight: 700;
   color: #64748b;
+}
+
+.empty-day-label {
+  font-size: 11px;
+  color: #cbd5e1;
+  font-weight: 600;
 }
 
 .cell-events {
@@ -285,21 +359,22 @@
 }
 
 @media (max-width: 768px) {
-  .page-container {
-    padding: 24px 20px;
-  }
-
   .calendar-grid {
     gap: 6px;
   }
 
   .calendar-cell {
-    min-height: 96px;
+    min-height: 88px;
     padding: 8px;
+    border-radius: 10px;
   }
 
-  .calendar-toolbar {
-    flex-direction: column;
-    align-items: stretch;
+  .event-count-badge {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .day-number {
+    font-size: 14px;
   }
 }

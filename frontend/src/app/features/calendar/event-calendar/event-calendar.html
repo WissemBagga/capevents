@@ -68,24 +68,44 @@
                   }
                 </div>
 
-                <div class="cell-events">
-                  @for (event of cell.events.slice(0, 3); track event.eventId) {
-                    <span [class]="eventBadgeClass(event)">
-                      {{ event.title }}
-                    </span>
-                  }
+                <div class="cell-body">
+                    @if (cell.events.length > 0) {
+                        <div class="event-count-badge">
+                        {{ cell.events.length }}
+                        @if (cell.events.length === 1) {
+                            événement
+                        } @else {
+                            événements
+                        }
+                        </div>
 
-                  @if (cell.events.length > 3) {
-                    <span class="more-events">+{{ cell.events.length - 3 }} autres</span>
-                  }
-                </div>
+                        <div class="event-density-dots">
+                        @for (event of cell.events.slice(0, 4); track event.eventId) {
+                            <span
+                            class="event-dot"
+                            [ngClass]="{
+                                'registered': event.registered,
+                                'admin': event.adminView && !event.registered,
+                                'visible': !event.registered && !event.adminView
+                            }"
+                            ></span>
+                        }
+
+                        @if (cell.events.length > 4) {
+                            <span class="more-dots">+{{ cell.events.length - 4 }}</span>
+                        }
+                        </div>
+                    } @else {
+                        <div class="empty-day-label">0</div>
+                    }
+                    </div>
               </button>
             }
           </div>
         </section>
 
         <section class="selected-day-panel">
-          <h3>{{ selectedDateKey | date:'fullDate' }}</h3>
+          <h3>{{ selectedDayLabel }}</h3>
 
           @if (selectedDayEvents.length === 0) {
             <div class="state-message info-msg">
