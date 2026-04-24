@@ -28,50 +28,41 @@ public class RewardRedemption {
     @Column(name = "status", nullable = false, length = 50)
     private RewardRedemptionStatus status;
 
+    @Column(name = "hr_comment", length = 1000)
+    private String hrComment;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "handled_at")
+    private Instant handledAt;
 
-    public User getUser() {
-        return user;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "handled_by")
+    private User handledBy;
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public Long getId() { return id; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
-    public RewardCode getRewardCode() {
-        return rewardCode;
-    }
+    public RewardCode getRewardCode() { return rewardCode; }
+    public void setRewardCode(RewardCode rewardCode) { this.rewardCode = rewardCode; }
 
-    public void setRewardCode(RewardCode rewardCode) {
-        this.rewardCode = rewardCode;
-    }
+    public Integer getPointsSpent() { return pointsSpent; }
+    public void setPointsSpent(Integer pointsSpent) { this.pointsSpent = pointsSpent; }
 
-    public Integer getPointsSpent() {
-        return pointsSpent;
-    }
+    public RewardRedemptionStatus getStatus() { return status; }
+    public void setStatus(RewardRedemptionStatus status) { this.status = status; }
 
-    public void setPointsSpent(Integer pointsSpent) {
-        this.pointsSpent = pointsSpent;
-    }
+    public String getHrComment() { return hrComment; }
+    public void setHrComment(String hrComment) { this.hrComment = hrComment; }
 
-    public RewardRedemptionStatus getStatus() {
-        return status;
-    }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
-    public void setStatus(RewardRedemptionStatus status) {
-        this.status = status;
-    }
+    public Instant getHandledAt() { return handledAt; }
+    public void setHandledAt(Instant handledAt) { this.handledAt = handledAt; }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
+    public User getHandledBy() { return handledBy; }
+    public void setHandledBy(User handledBy) { this.handledBy = handledBy; }
 }

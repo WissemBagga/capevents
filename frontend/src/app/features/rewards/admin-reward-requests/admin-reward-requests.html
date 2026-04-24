@@ -1,0 +1,119 @@
+<div class="admin-reward-requests-page">
+  <div class="page-container">
+    <div class="page-header">
+      <div class="header-text">
+        <h1>Demandes de récompenses</h1>
+        <p class="header-sub">Traitez les demandes nécessitant une validation RH.</p>
+      </div>
+    </div>
+
+    @if (errorMessage) {
+      <div class="state-message error-msg" appScrollToMessage>
+        <p>{{ errorMessage }}</p>
+      </div>
+    }
+
+    @if (successMessage) {
+      <div class="state-message success-msg" appScrollToMessage>
+        <p>{{ successMessage }}</p>
+      </div>
+    }
+
+    <section class="admin-card filter-card">
+      <div class="filter-row">
+        <select [(ngModel)]="statusFilter">
+          <option value="ALL">Toutes</option>
+          <option value="PENDING_HR_ACTION">En attente RH</option>
+          <option value="COMPLETED">Confirmées</option>
+          <option value="REJECTED">Refusées</option>
+        </select>
+
+        <button type="button" class="btn-secondary" (click)="applyFilter()">
+          Appliquer
+        </button>
+      </div>
+    </section>
+
+    @if (loading) {
+      <div class="state-message loading-msg">
+        <div class="spinner"></div>
+        <p>Chargement des demandes...</p>
+      </div>
+    }
+
+    @if (!loading && requests.length === 0) {
+      <div class="state-message info-msg" appScrollToMessage>
+        <p>Aucune demande trouvée.</p>
+      </div>
+    }
+
+    @if (!loading && requests.length > 0) {
+      <div class="requests-list">
+        @for (item of requests; track trackById($index, item)) {
+          <article class="request-card">
+            <div class="request-main">
+              <h2>{{ item.rewardTitle }}</h2>
+              <p><strong>Employé :</strong> {{ item.employeeFullName }}</p>
+              <p><strong>Email :</strong> {{ item.employeeEmail }}</p>
+              <p><strong>Coût :</strong> {{ item.pointsSpent }} pts</p>
+              <p><strong>Demandée le :</strong> {{ item.createdAt | date:'mediumDate' }}</p>
+
+              @if (item.hrComment) {
+                <p><strong>Commentaire RH :</strong> {{ item.hrComment }}</p>
+              }
+
+              @if (item.handledByFullName) {
+                <p><strong>Traité par :</strong> {{ item.handledByFullName }}</p>
+              }
+            </div>
+
+            <div class="request-side">
+              <span class="status-pill">{{ statusLabel(item.status) }}</span>
+
+              @if (canProcess(item)) {
+                <div class="request-actions">
+                  <button
+                    type="button"
+                    class="btn-primary"
+                    (click)="complete(item)"
+                    [disabled]="processingId === item.id"
+                  >
+                    Confirmer
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-danger"
+                    (click)="toggleRejectBox(item.id)"
+                    [disabled]="processingId === item.id"
+                  >
+                    Refuser
+                  </button>
+                </div>
+              }
+            </div>
+
+            @if (showRejectBoxById[item.id]) {
+              <div class="reject-box">
+                <textarea
+                  [(ngModel)]="rejectReasonById[item.id]"
+                  placeholder="Motif du refus"
+                  rows="3"
+                ></textarea>
+
+                <button
+                  type="button"
+                  class="btn-danger"
+                  (click)="reject(item)"
+                  [disabled]="processingId === item.id"
+                >
+                  Confirmer le refus
+                </button>
+              </div>
+            }
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>

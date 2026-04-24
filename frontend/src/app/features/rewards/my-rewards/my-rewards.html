@@ -1,0 +1,113 @@
+<div class="my-rewards-page">
+  <div class="page-container">
+    <div class="page-header">
+      <div class="header-text">
+        <h1>Mes récompenses</h1>
+        <p class="header-sub">
+          Utilisez vos points pour débloquer des avantages concrets.
+        </p>
+      </div>
+    </div>
+
+    @if (errorMessage) {
+      <div class="state-message error-msg" appScrollToMessage>
+        <p>{{ errorMessage }}</p>
+      </div>
+    }
+
+    @if (successMessage) {
+      <div class="state-message success-msg" appScrollToMessage>
+        <p>{{ successMessage }}</p>
+      </div>
+    }
+
+    @if (loading) {
+      <div class="state-message loading-msg">
+        <div class="spinner"></div>
+        <p>Chargement des récompenses...</p>
+      </div>
+    }
+
+    @if (!loading && data) {
+      <section class="points-summary-card">
+        <span class="summary-label">Solde actuel</span>
+        <strong class="summary-value">{{ data.currentPoints }} pts</strong>
+        <span class="summary-sub">Points disponibles pour échange</span>
+      </section>
+
+      <section class="rewards-section">
+        <h2>Catalogue</h2>
+
+        <div class="rewards-grid">
+          @for (reward of data.catalog; track trackByRewardCode($index, reward)) {
+            <article class="reward-card" [class.locked]="!reward.affordable">
+              <div class="reward-top">
+                <span class="reward-cost">{{ reward.pointsCost }} pts</span>
+
+                @if (reward.requiresHrAction) {
+                  <span class="reward-tag">Validation RH</span>
+                }
+              </div>
+
+              <h3>{{ reward.title }}</h3>
+              <p class="reward-description">{{ reward.description }}</p>
+
+              <button
+                type="button"
+                class="btn-primary"
+                [disabled]="!reward.affordable || isRedeeming(reward.code)"
+                (click)="redeem(reward)"
+              >
+                @if (isRedeeming(reward.code)) {
+                  <div class="spinner mini-spinner"></div>
+                  Échange...
+                } @else {
+                  Échanger
+                }
+              </button>
+
+              @if (!reward.affordable) {
+                <p class="reward-hint">Solde insuffisant</p>
+              }
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="history-section">
+        <h2>Historique des échanges</h2>
+
+        @if (data.history.length === 0) {
+          <div class="state-message info-msg">
+            <p>Aucun échange effectué pour le moment.</p>
+          </div>
+        }
+
+        @if (data.history.length > 0) {
+          <div class="history-list">
+            @for (item of data.history; track trackByHistoryId($index, item)) {
+              <article class="history-card">
+                <div class="history-main">
+                  <h3>{{ item.rewardTitle }}</h3>
+                  <p>{{ item.createdAt | date:'mediumDate' }}</p>
+                </div>
+
+                <div class="history-side">
+                  <strong>-{{ item.pointsSpent }} pts</strong>
+                  <span class="status-pill">{{ statusLabel(item.status) }}</span>
+                  @if (item.hrComment) {
+                    <p class="history-comment">Motif RH : {{ item.hrComment }}</p>
+                  }
+
+                  @if (item.handledByFullName) {
+                    <p class="history-comment">Traité par : {{ item.handledByFullName }}</p>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </section>
+    }
+  </div>
+</div>

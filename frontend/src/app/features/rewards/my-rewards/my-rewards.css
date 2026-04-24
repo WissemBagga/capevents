@@ -1,0 +1,283 @@
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.my-rewards-page {
+  font-family: 'Verdana', sans-serif;
+}
+
+.page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 48px;
+}
+
+.page-header {
+  margin-bottom: 28px;
+}
+
+.header-text h1 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px;
+}
+
+.header-sub {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.state-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+
+.loading-msg {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+}
+
+.error-msg {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  color: #dc2626;
+}
+
+.success-msg {
+  background: #f0fdf4;
+  border-left: 3px solid #22c55e;
+  color: #16a34a;
+}
+
+.info-msg {
+  background: #f8fafc;
+  border-left: 3px solid #cbd5e1;
+  color: #64748b;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.mini-spinner {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+
+.points-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 28px;
+}
+
+.summary-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563eb;
+  text-transform: uppercase;
+}
+
+.summary-value {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 32px;
+  color: #0f172a;
+}
+
+.summary-sub {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.rewards-section,
+.history-section {
+  margin-top: 24px;
+}
+
+.rewards-section h2,
+.history-section h2 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 20px;
+  color: #0f172a;
+  margin: 0 0 16px;
+}
+
+.rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.reward-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.reward-card.locked {
+  opacity: 0.78;
+}
+
+.reward-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.reward-cost {
+  display: inline-flex;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.reward-tag {
+  display: inline-flex;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.reward-card h3 {
+  margin: 0 0 8px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.reward-description {
+  margin: 0 0 16px;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.reward-hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: #2563eb;
+  border: 1px solid #2563eb;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+.history-main h3 {
+  margin: 0 0 4px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.history-main p {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.history-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.history-side strong {
+  color: #0f172a;
+}
+
+.status-pill {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.history-comment {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 24px 20px;
+  }
+
+  .history-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .history-side {
+    align-items: flex-start;
+  }
+}

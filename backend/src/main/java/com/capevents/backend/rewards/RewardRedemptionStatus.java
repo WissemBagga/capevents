@@ -1,6 +1,7 @@
 package com.capevents.backend.rewards;
 
 public enum RewardRedemptionStatus {
+    PENDING_HR_ACTION,
     COMPLETED,
-    PENDING_HR_ACTION
+    REJECTED
 }

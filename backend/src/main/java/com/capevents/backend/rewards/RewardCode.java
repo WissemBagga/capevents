@@ -18,19 +18,11 @@ public enum RewardCode {
         this.requiresHrAction = requiresHrAction;
     }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle() { return title; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getDescription() { return description; }
 
-    public int getPointsCost() {
-        return pointsCost;
-    }
+    public int getPointsCost() { return pointsCost; }
 
-    public boolean isRequiresHrAction() {
-        return requiresHrAction;
-    }
+    public boolean isRequiresHrAction() { return requiresHrAction;}
 }

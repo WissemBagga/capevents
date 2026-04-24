@@ -4,6 +4,7 @@ import com.capevents.backend.common.exception.NotFoundException;
 import com.capevents.backend.event.Event;
 import com.capevents.backend.points.dto.MyPointsResponse;
 import com.capevents.backend.points.dto.PointTransactionResponse;
+import com.capevents.backend.rewards.RewardCode;
 import com.capevents.backend.rewards.RewardRedemptionRepository;
 import com.capevents.backend.user.User;
 import com.capevents.backend.user.UserRepository;
@@ -155,6 +156,34 @@ public class PointService {
         return new MyPointsResponse(totalPoints, history);
     }
 
+
+    @Transactional
+    public void spendPointsForReward(User user, RewardCode rewardCode) {
+        saveTransaction(
+                user,
+                null,
+                PointTransactionType.REWARD_REDEMPTION_SPENT,
+                -rewardCode.getPointsCost(),
+                "Échange de récompense : " + rewardCode.getTitle()
+        );
+    }
+
+    @Transactional
+    public void refundRewardPoints(User user, RewardCode rewardCode) {
+        saveTransaction(
+                user,
+                null,
+                PointTransactionType.REWARD_REDEMPTION_REFUND,
+                rewardCode.getPointsCost(),
+                "Remboursement de récompense refusée : " + rewardCode.getTitle()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public long getCurrentBalance(UUID userId) {
+        return pointTransactionRepository.sumPointsByUserId(userId);
+    }
+
     private void saveTransaction(
             User user,
             Event event,
@@ -172,10 +201,4 @@ public class PointService {
         pointTransactionRepository.save(transaction);
     }
 
-    @Transactional(readOnly = true)
-    public long getCurrentBalance(UUID userId) {
-        long earnedPoints = pointTransactionRepository.sumPointsByUserId(userId);
-        long spentPoints = rewardRedemptionRepository.sumPointsSpentByUserId(userId);
-        return earnedPoints - spentPoints;
-    }
 }

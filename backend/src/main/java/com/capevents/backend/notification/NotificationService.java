@@ -335,6 +335,7 @@ public class NotificationService {
         );
     }
 
+    @Transactional
     public void notifyRewardRedemptionRequested(User requester, String rewardTitle) {
         List<User> hrUsers = userRepository.findActiveHrUsers();
 
@@ -344,10 +345,32 @@ public class NotificationService {
                     NotificationType.REWARD_REDEMPTION_REQUESTED,
                     "Nouvelle demande de récompense",
                     requester.getFirstName() + " " + requester.getLastName()
-                            + " a demandé la récompense \"" + rewardTitle + "\".",
-                    "/my-rewards"
+                            + " a demandé \"" + rewardTitle + "\".",
+                    "/admin/reward-requests"
             );
         }
+    }
+
+    @Transactional
+    public void notifyRewardRedemptionCompleted(User user, String rewardTitle) {
+        createNotification(
+                user,
+                NotificationType.REWARD_REDEMPTION_COMPLETED,
+                "Récompense confirmée",
+                "Votre récompense \"" + rewardTitle + "\" a été confirmée.",
+                "/my-rewards"
+        );
+    }
+
+    @Transactional
+    public void notifyRewardRedemptionRejected(User user, String rewardTitle, String reason) {
+        createNotification(
+                user,
+                NotificationType.REWARD_REDEMPTION_REJECTED,
+                "Récompense refusée",
+                "Votre demande pour \"" + rewardTitle + "\" a été refusée. Motif : " + reason,
+                "/my-rewards"
+        );
     }
 
 }

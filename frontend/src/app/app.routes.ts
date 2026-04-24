@@ -43,6 +43,10 @@ import { PastEvents } from './features/events/past-events/past-events';
 
 import { MyBadges } from './features/gamification/my-badges/my-badges';
 
+import { MyRewards } from './features/rewards/my-rewards/my-rewards';
+
+import { AdminRewardRequests } from './features/rewards/admin-reward-requests/admin-reward-requests';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -187,12 +191,23 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['ROLE_HR'] }
       },
-
       {
         path: 'my-badges',
         component: MyBadges,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
+      },
+      {
+        path: 'my-rewards',
+        component: MyRewards,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
+      },
+      {
+        path: 'admin/reward-requests',
+        component: AdminRewardRequests,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_HR'] }
       }
 
     ]

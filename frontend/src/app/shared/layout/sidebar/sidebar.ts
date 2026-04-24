@@ -89,6 +89,7 @@ export class Sidebar {
         { label: 'Statistiques', route: '/admin/hr/stats' },
         { label: 'Gestion des événements', route: '/admin/hr' },
         { label: 'Événements', route: '/events' },
+        { label: 'Demandes récompenses', route: '/admin/reward-requests' },
         { label: 'Départements', route: '/admin/admin-departments' },
         { label: 'Utilisateurs & rôles', route: '/admin/admin-users' }
       ];
@@ -133,7 +134,8 @@ export class Sidebar {
       { label: 'Mes points', route: '/my-points' },
       { label: 'Mes intérêts', route: '/my-interests' },
       { label: 'Événements passés', route: '/events/past' },
-      { label: 'Mes badges', route: '/my-badges'}
+      { label: 'Mes badges', route: '/my-badges'},
+      { label: 'Mes récompenses', route: '/my-rewards'}
       
     ];
   }
