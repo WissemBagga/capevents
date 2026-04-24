@@ -322,6 +322,7 @@ export class Navbar {
     if (url.startsWith('/employee/submit-event')) return 'Proposer un événement';
     if (url.startsWith('/admin/create-event')) return 'Créer un événement';
     if (url.startsWith('/admin/pending-events')) return 'Demandes en attente';
+    if (url.startsWith('/my-badges')) return 'Mes badges';
 
     return 'CapEvents';
   }

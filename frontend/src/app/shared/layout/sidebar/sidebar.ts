@@ -132,7 +132,9 @@ export class Sidebar {
       { label: 'Mes invitations', route: '/my-invitations' },
       { label: 'Mes points', route: '/my-points' },
       { label: 'Mes intérêts', route: '/my-interests' },
-      { label: 'Événements passés', route: '/events/past' }
+      { label: 'Événements passés', route: '/events/past' },
+      { label: 'Mes badges', route: '/my-badges'}
+      
     ];
   }
 

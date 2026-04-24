@@ -41,6 +41,8 @@ import { AdminUsers } from './features/admin/admin-users/admin-users';
 
 import { PastEvents } from './features/events/past-events/past-events';
 
+import { MyBadges } from './features/gamification/my-badges/my-badges';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -185,6 +187,13 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['ROLE_HR'] }
       },
+
+      {
+        path: 'my-badges',
+        component: MyBadges,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
+      }
 
     ]
   },

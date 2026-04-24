@@ -1,0 +1,80 @@
+<div class="my-badges-page">
+  <div class="page-container">
+    <div class="page-header">
+      <div class="header-text">
+        <h1>Mes badges</h1>
+        <p class="header-sub">
+          Suivez vos accomplissements et votre progression dans CapEvents.
+        </p>
+      </div>
+    </div>
+
+    @if (errorMessage) {
+      <div class="state-message error-msg" appScrollToMessage>
+        <p>{{ errorMessage }}</p>
+      </div>
+    }
+
+    @if (loading) {
+      <div class="state-message loading-msg">
+        <div class="spinner"></div>
+        <p>Chargement des badges...</p>
+      </div>
+    }
+
+    @if (!loading && badges.length === 0) {
+      <div class="state-message info-msg" appScrollToMessage>
+        <p>Aucun badge disponible pour le moment.</p>
+      </div>
+    }
+
+    @if (!loading && badges.length > 0) {
+      <div class="badges-grid">
+        @for (badge of badges; track trackByBadgeCode($index, badge)) {
+          <article class="badge-card" [class.unlocked]="badge.unlocked">
+            <div class="badge-top">
+              <div class="badge-icon">
+                @if (badge.unlocked) {
+                  <span>🏆</span>
+                } @else {
+                  <span>🔒</span>
+                }
+              </div>
+
+              <div class="badge-status">
+                @if (badge.unlocked) {
+                  <span class="status-pill unlocked">Débloqué</span>
+                } @else {
+                  <span class="status-pill locked">En progression</span>
+                }
+              </div>
+            </div>
+
+            <h2>{{ badge.title }}</h2>
+            <p class="badge-description">{{ badge.description }}</p>
+
+            @if (badge.unlocked && badge.unlockedAt) {
+              <p class="badge-date">
+                Débloqué le {{ badge.unlockedAt | date:'mediumDate' }}
+              </p>
+            } @else {
+              <div class="progress-block">
+                <div class="progress-header">
+                  <span>Progression</span>
+                  <span>{{ badge.progress }} / {{ badge.target }}</span>
+                </div>
+
+                <div class="progress-track">
+                  <div
+                    class="progress-fill"
+                    [style.width.%]="progressPercent(badge)"
+                  ></div>
+                </div>
+              </div>
+            }
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>
