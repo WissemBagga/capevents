@@ -3,7 +3,6 @@ package com.capevents.backend.event;
 
 import com.capevents.backend.user.User;
 import jakarta.persistence.*;
-import jdk.jfr.EventType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

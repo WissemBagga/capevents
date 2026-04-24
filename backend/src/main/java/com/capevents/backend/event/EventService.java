@@ -10,6 +10,7 @@ import com.capevents.backend.event.dto.CreateEventRequest;
 import com.capevents.backend.event.dto.EmployeeEventSubmissionResponse;
 import com.capevents.backend.event.dto.EventResponse;
 import com.capevents.backend.event.dto.UpdateEventRequest;
+import com.capevents.backend.gamification.BadgeService;
 import com.capevents.backend.mail.EmailService;
 import com.capevents.backend.notification.NotificationService;
 import com.capevents.backend.points.PointService;
@@ -39,8 +40,9 @@ public class EventService {
     private final NotificationService notificationService;
     private final EmailService emailService;
     private final PointService pointService;
+    private final BadgeService badgeService;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository, AuditService auditService, DepartmentRepository departmentRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService, PointService pointService) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository, AuditService auditService, DepartmentRepository departmentRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService, PointService pointService, BadgeService badgeService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.auditService = auditService;
@@ -49,6 +51,7 @@ public class EventService {
         this.notificationService = notificationService;
         this.emailService = emailService;
         this.pointService = pointService;
+        this.badgeService = badgeService;
     }
 
     @Transactional
@@ -780,6 +783,7 @@ public class EventService {
         notificationService.notifyEventProposalApproved(event.getCreatedBy(), event);
         emailService.sendEventProposalApprovedEmail(event.getCreatedBy().getEmail(), event);
         pointService.awardProposalApprovedBonus(event.getCreatedBy(), event);
+        badgeService.evaluateAfterProposalApproved(event.getCreatedBy());
 
         List<User> visibleUsers = resolveVisibleEmployeeUsers(event);
         notificationService.notifyEventPublished(visibleUsers, event);

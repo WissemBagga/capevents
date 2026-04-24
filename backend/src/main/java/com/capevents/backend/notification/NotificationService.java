@@ -304,6 +304,16 @@ public class NotificationService {
         );
     }
 
+    public void notifyBadgeUnlocked(User user, String badgeTitle) {
+        createNotification(
+                user,
+                NotificationType.BADGE_UNLOCKED,
+                "Nouveau badge débloqué",
+                "Vous avez débloqué le badge \"" + badgeTitle + "\".",
+                "/my-badges"
+        );
+    }
+
     private List<User> dedupeUsers(List<User> users) {
         return users.stream()
                 .filter(user -> user != null && user.getId() != null)

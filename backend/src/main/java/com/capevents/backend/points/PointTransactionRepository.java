@@ -19,4 +19,6 @@ public interface PointTransactionRepository extends JpaRepository<PointTransacti
         where pt.user.id = :userId
     """)
     long sumPointsByUserId(UUID userId);
+
+    long countByUserIdAndType(UUID userId, PointTransactionType type);
 }

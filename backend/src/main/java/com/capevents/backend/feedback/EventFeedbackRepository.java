@@ -15,6 +15,8 @@ public interface EventFeedbackRepository extends JpaRepository<EventFeedback, Lo
     boolean existsByEventIdAndUserId(UUID eventId, UUID userId);
 
     List<EventFeedback> findByEventIdOrderByCreatedAtDesc(UUID eventId);
+
+    long countByUserId(UUID userId);
     long countByEventId(UUID eventId);
 
     @Query("""

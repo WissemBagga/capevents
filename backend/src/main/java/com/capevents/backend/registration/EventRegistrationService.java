@@ -6,6 +6,7 @@ import com.capevents.backend.event.Event;
 import com.capevents.backend.event.EventAudience;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
+import com.capevents.backend.gamification.BadgeService;
 import com.capevents.backend.invitation.EventInvitationRepository;
 import com.capevents.backend.mail.EmailService;
 import com.capevents.backend.notification.NotificationService;
@@ -31,8 +32,9 @@ public class EventRegistrationService {
     private final EmailService emailService;
     private final PointService pointService;
     private final EventInvitationRepository invitationRepository;
+    private final BadgeService badgeService;
 
-    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService, PointService pointService, EventInvitationRepository invitationRepository) {
+    public EventRegistrationService(EventRepository eventRepository, UserRepository userRepository, EventRegistrationRepository registrationRepository, NotificationService notificationService, EmailService emailService, PointService pointService, EventInvitationRepository invitationRepository, BadgeService badgeService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.registrationRepository = registrationRepository;
@@ -40,6 +42,7 @@ public class EventRegistrationService {
         this.emailService = emailService;
         this.pointService = pointService;
         this.invitationRepository = invitationRepository;
+        this.badgeService = badgeService;
     }
 
     @Transactional
@@ -222,6 +225,7 @@ public class EventRegistrationService {
 
         if (attendanceStatus == AttendanceStatus.PRESENT) {
             pointService.awardAttendancePresentBonus(registration.getUser(), registration.getEvent());
+            badgeService.evaluateAfterAttendancePresent(registration.getUser());
         }
 
         if (attendanceStatus == AttendanceStatus.ABSENT) {

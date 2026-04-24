@@ -8,6 +8,7 @@ import com.capevents.backend.event.EventAudience;
 import com.capevents.backend.event.EventRepository;
 import com.capevents.backend.event.EventStatus;
 import com.capevents.backend.feedback.dto.*;
+import com.capevents.backend.gamification.BadgeService;
 import com.capevents.backend.points.PointService;
 import com.capevents.backend.registration.AttendanceStatus;
 import com.capevents.backend.registration.EventRegistration;
@@ -32,18 +33,20 @@ public class EventFeedbackService {
     private final EventRegistrationRepository registrationRepository;
     private final UserRepository userRepository;
     private final PointService pointService;
+    private final BadgeService badgeService;
 
     public EventFeedbackService(
             EventFeedbackRepository feedbackRepository,
             EventRepository eventRepository,
             EventRegistrationRepository registrationRepository,
-            UserRepository userRepository, PointService pointService
+            UserRepository userRepository, PointService pointService, BadgeService badgeService
     ) {
         this.feedbackRepository = feedbackRepository;
         this.eventRepository = eventRepository;
         this.registrationRepository = registrationRepository;
         this.userRepository = userRepository;
         this.pointService = pointService;
+        this.badgeService = badgeService;
     }
 
     @Transactional
@@ -73,6 +76,7 @@ public class EventFeedbackService {
 
         EventFeedback saved = feedbackRepository.save(feedback);
         pointService.awardFeedbackBonus(user, event);
+        badgeService.evaluateAfterFeedback(user);
 
         return toResponse(saved);
     }
