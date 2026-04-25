@@ -1,0 +1,59 @@
+:root {
+  --font-heading: "Ubuntu", sans-serif;
+  --font-body: "Verdana", sans-serif;
+
+  --color-primary: #0058AB;
+  --color-primary-2: #1DB5E2;
+  --color-primary-dark: #121A38;
+
+  --color-bg: #F7F8FA;
+  --color-bg-soft: #F1F4F8;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F8FAFC;
+
+  --color-text: #121A38;
+  --color-text-soft: #46506A;
+  --color-text-muted: #7B879C;
+
+  --color-border: #D9E1EA;
+  --color-border-strong: #C7D2E0;
+
+  --color-success: #00828E;
+  --color-warning: #FEB100;
+  --color-danger: #8F3237;
+  --color-info: #1DB5E2;
+
+  --color-accent-turquoise: #00D5D0;
+  --color-accent-orange: #FF816E;
+  --color-accent-lilac: #D4D3F1;
+  --color-accent-teal: #00828E;
+  --color-accent-terracotta: #BE4D00;
+  --color-accent-purple: #71609E;
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+
+  --shadow-sm: 0 2px 10px rgba(18, 26, 56, 0.05);
+  --shadow-md: 0 10px 30px rgba(18, 26, 56, 0.08);
+  --shadow-lg: 0 18px 48px rgba(18, 26, 56, 0.12);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+
+  --sidebar-width: 296px;
+  --topbar-height: 76px;
+  --content-max: 1440px;
+
+  --transition-fast: 160ms ease;
+  --transition-base: 220ms ease;
+}

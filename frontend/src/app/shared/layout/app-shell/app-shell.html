@@ -1,11 +1,15 @@
 <div class="app-shell">
-  <app-sidebar></app-sidebar>
+  <div class="app-shell__sidebar">
+    <app-sidebar></app-sidebar>
+  </div>
 
-  <div class="app-main">
+  <div class="app-shell__main">
     <app-navbar></app-navbar>
 
-    <main class="app-content">
-      <router-outlet />
+    <main class="app-shell__content">
+      <div class="page-shell">
+        <router-outlet></router-outlet>
+      </div>
     </main>
   </div>
 </div>
