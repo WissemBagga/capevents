@@ -72,6 +72,37 @@
               <p class="badge-description">{{ badge.description }}</p>
             </div>
 
+            <div class="progress-block" [class.completed]="isBadgeUnlocked(badge)">
+              <div class="progress-header">
+                <span>Progression</span>
+                <span>
+                  @if (isBadgeUnlocked(badge)) {
+                    {{ badge.target }} / {{ badge.target }}
+                  } @else {
+                    {{ badge.progress }} / {{ badge.target }}
+                  }
+                </span>
+              </div>
+
+              <div class="progress-track">
+                <div
+                  class="progress-fill"
+                  [style.width.%]="progressPercent(badge)"
+                ></div>
+              </div>
+
+              <div class="progress-foot">
+                <span>{{ progressPercent(badge) | number:'1.0-0' }}% atteint</span>
+                <span>
+                  @if (isBadgeUnlocked(badge)) {
+                    Objectif atteint
+                  } @else {
+                    Encore {{ (badge.target - badge.progress) > 0 ? (badge.target - badge.progress) : 0 }}
+                  }
+                </span>
+              </div>
+            </div>
+
             @if (isBadgeUnlocked(badge)) {
               <div class="badge-footer unlocked-footer">
                 <div class="badge-success-row">
@@ -82,27 +113,6 @@
                     } @else {
                       Badge obtenu avec succès
                     }
-                  </span>
-                </div>
-              </div>
-            } @else {
-              <div class="progress-block">
-                <div class="progress-header">
-                  <span>Progression</span>
-                  <span>{{ badge.progress }} / {{ badge.target }}</span>
-                </div>
-
-                <div class="progress-track">
-                  <div
-                    class="progress-fill"
-                    [style.width.%]="progressPercent(badge)"
-                  ></div>
-                </div>
-
-                <div class="progress-foot">
-                  <span>{{ progressPercent(badge) | number:'1.0-0' }}% atteint</span>
-                  <span>
-                    Encore {{ (badge.target - badge.progress) > 0 ? (badge.target - badge.progress) : 0 }}
                   </span>
                 </div>
               </div>
