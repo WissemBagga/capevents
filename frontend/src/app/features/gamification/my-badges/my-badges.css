@@ -132,7 +132,11 @@
   position: absolute;
   inset: 6px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--badge-soft) 0%, transparent 72%);
+  background: radial-gradient(
+    circle,
+    var(--badge-soft, rgba(212, 160, 23, 0.14)) 0%,
+    transparent 72%
+  );
   filter: blur(0.4px);
 }
 
@@ -243,36 +247,42 @@
   box-shadow: 0 0 0 6px rgba(248, 216, 50, 0.18);
 }
 
-
-.badge-card[data-tone="gold"] .badge-success-dot {
-  background: #d4a017;
-  box-shadow: 0 0 0 6px rgba(212, 160, 23, 0.18);
+.badge-card {
+  --badge-accent: #d4a017;
+  --badge-soft: rgba(212, 160, 23, 0.14);
 }
 
-.badge-card[data-tone="blue"] .badge-success-dot {
-  background: #2563eb;
-  box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.18);
+.badge-card[data-tone="gold"] {
+  --badge-accent: #d4a017;
+  --badge-soft: rgba(212, 160, 23, 0.14);
 }
 
-.badge-card[data-tone="purple"] .badge-success-dot {
-  background: #7c3aed;
-  box-shadow: 0 0 0 6px rgba(124, 58, 237, 0.18);
+.badge-card[data-tone="blue"] {
+  --badge-accent: #2563eb;
+  --badge-soft: rgba(37, 99, 235, 0.14);
 }
 
-.badge-card[data-tone="teal"] .badge-success-dot {
-  background: #0f766e;
-  box-shadow: 0 0 0 6px rgba(15, 118, 110, 0.18);
+.badge-card[data-tone="purple"] {
+  --badge-accent: #7c3aed;
+  --badge-soft: rgba(124, 58, 237, 0.14);
 }
 
-.badge-card[data-tone="orange"] .badge-success-dot {
-  background: #ea580c;
-  box-shadow: 0 0 0 6px rgba(234, 88, 12, 0.18);
+.badge-card[data-tone="teal"] {
+  --badge-accent: #0f766e;
+  --badge-soft: rgba(15, 118, 110, 0.14);
 }
 
-.badge-card[data-tone="red"] .badge-success-dot {
-  background: #dc2626;
-  box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.18);
+.badge-card[data-tone="orange"] {
+  --badge-accent: #ea580c;
+  --badge-soft: rgba(234, 88, 12, 0.14);
 }
+
+.badge-card[data-tone="red"] {
+  --badge-accent: #dc2626;
+  --badge-soft: rgba(220, 38, 38, 0.14);
+}
+
+
 
 /* ===== Progress ===== */
 .progress-block {
@@ -302,9 +312,10 @@
 }
 
 .progress-fill {
+  display: block;
   height: 100%;
   border-radius: 999px;
-  background: var(--badge-accent);
+  background: var(--badge-accent, #d4a017);
   transition: width 0.25s ease;
 }
 
