@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="page-header">
       <a routerLink="/dashboard/employee" class="btn-back">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         Retour
       </a>
       <div class="header-row">
@@ -49,28 +49,60 @@
             <h2 class="card-title">Choisissez vos centres d'intérêt</h2>
             <span class="count-badge">{{ selectedIds.length }} / {{ maxSelection }}</span>
           </div>
-          <p class="card-subtitle">Cliquez sur les catégories qui vous intéressent.</p>
+          <p class="card-subtitle">
+            Sélectionnez les thématiques que vous souhaitez voir remonter en priorité dans vos suggestions.
+          </p>
         </div>
 
-        <div class="interests-grid">
-          @for (interest of availableInterests; track trackByInterestId($index, interest)) {
-            <button
-              type="button"
-              class="interest-chip"
-              [class.selected]="isSelected(interest.id)"
-              (click)="toggleInterest(interest.id)"
-            >
-              <span class="chip-check">
-                @if (isSelected(interest.id)) {
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                } @else {
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
-                }
-              </span>
-              <span class="chip-label">{{ interest.label }}</span>
-            </button>
-          }
+        <div class="selection-helper">
+          <div class="helper-pill">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 16v.01"></path>
+              <path d="M12 8v4"></path>
+            </svg>
+            <span>Minimum 1 sélection, maximum {{ maxSelection }}</span>
+          </div>
         </div>
+
+        @if (availableInterests.length === 0) {
+          <div class="empty-interests-state">
+            <div class="empty-interests-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M8 12h8"></path>
+              </svg>
+            </div>
+            <h3>Aucun centre d'intérêt disponible</h3>
+            <p>Les catégories seront affichées ici dès qu’elles seront configurées.</p>
+          </div>
+        } @else {
+          <div class="interests-grid">
+            @for (interest of availableInterests; track trackByInterestId($index, interest)) {
+              <button
+                type="button"
+                class="interest-chip"
+                [class.selected]="isSelected(interest.id)"
+                [attr.aria-pressed]="isSelected(interest.id)"
+                [attr.aria-label]="'Centre d’intérêt : ' + interest.label"
+                (click)="toggleInterest(interest.id)"
+              >
+                <span class="chip-check">
+                  @if (isSelected(interest.id)) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                    </svg>
+                  }
+                </span>
+                <span class="chip-label">{{ interest.label }}</span>
+              </button>
+            }
+          </div>
+        }
       </section>
 
       <!-- Sticky Action Bar -->
