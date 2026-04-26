@@ -45,7 +45,7 @@ import { MyBadges } from './features/gamification/my-badges/my-badges';
 
 import { MyRewards } from './features/rewards/my-rewards/my-rewards';
 
-import { AdminRewardRequests } from './features/rewards/admin-reward-requests/admin-reward-requests';
+import { AdminRewardRequests } from './features/admin/admin-reward-requests/admin-reward-requests';
 
 import { EventCalendar } from './features/calendar/event-calendar/event-calendar';
 
