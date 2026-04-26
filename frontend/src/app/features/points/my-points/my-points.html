@@ -53,19 +53,41 @@
         <!-- Quick Actions -->
         <section class="actions-section">
           <h2 class="section-title">Actions rapides</h2>
+
           <div class="actions-grid">
-            <div class="action-card">
+            <a class="action-card" routerLink="/events">
               <div class="icon-circle earn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 8v8"/>
+                  <path d="M8 12h8"/>
+                </svg>
               </div>
-              <span>Gagner des points</span>
-            </div>
-            <div class="action-card">
+
+              <div class="action-text">
+                <span class="action-title">Voir les événements</span>
+                <small class="action-subtitle">
+                  Inscrivez-vous, participez et envoyez un feedback pour gagner des points.
+                </small>
+              </div>
+            </a>
+
+            <a class="action-card" routerLink="/my-rewards">
               <div class="icon-circle redeem">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M2 7l10 5 10-5"/><path d="M2 13l10 5 10-5"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                  <path d="M2 7l10 5 10-5"/>
+                  <path d="M2 13l10 5 10-5"/>
+                </svg>
               </div>
-              <span>Boutique de cadeaux</span>
-            </div>
+
+              <div class="action-text">
+                <span class="action-title">Consulter mes récompenses</span>
+                <small class="action-subtitle">
+                  Utilisez vos points pour demander une récompense disponible.
+                </small>
+              </div>
+            </a>
           </div>
         </section>
       </div>

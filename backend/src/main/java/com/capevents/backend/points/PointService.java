@@ -21,7 +21,6 @@ public class PointService {
 
     private final PointTransactionRepository pointTransactionRepository;
     private final UserRepository userRepository;
-    private final RewardRedemptionRepository rewardRedemptionRepository;
 
     public PointService(
             PointTransactionRepository pointTransactionRepository,
@@ -29,7 +28,6 @@ public class PointService {
     ) {
         this.pointTransactionRepository = pointTransactionRepository;
         this.userRepository = userRepository;
-        this.rewardRedemptionRepository = rewardRedemptionRepository;
     }
 
     @Transactional
@@ -142,15 +140,7 @@ public class PointService {
         var history = pointTransactionRepository
                 .findByUserIdOrderByCreatedAtDesc(user.getId(), PageRequest.of(0, safeLimit))
                 .stream()
-                .map(pt -> new PointTransactionResponse(
-                        pt.getId(),
-                        pt.getType().name(),
-                        pt.getPointsDelta(),
-                        pt.getReason(),
-                        pt.getEvent().getId(),
-                        pt.getEvent().getTitle(),
-                        pt.getCreatedAt()
-                ))
+                .map(this::toPointTransactionResponse)
                 .toList();
 
         return new MyPointsResponse(totalPoints, history);
@@ -199,6 +189,20 @@ public class PointService {
         transaction.setReason(reason);
 
         pointTransactionRepository.save(transaction);
+    }
+
+    private PointTransactionResponse toPointTransactionResponse(PointTransaction pt) {
+        Event event = pt.getEvent();
+
+        return new PointTransactionResponse(
+                pt.getId(),
+                pt.getType().name(),
+                pt.getPointsDelta(),
+                pt.getReason(),
+                event != null ? event.getId() : null,
+                event != null ? event.getTitle() : null,
+                pt.getCreatedAt()
+        );
     }
 
 }
