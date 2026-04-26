@@ -1,75 +1,43 @@
 <div class="event-details-page">
-  <a class="back-link" (click)="goBack()" style="cursor: pointer">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <line x1="19" y1="12" x2="5" y2="12" />
-      <polyline points="12 19 5 12 12 5" />
-    </svg>
-    Retour à la liste
-  </a>
+  <div class="page-container">
+    <a class="back-link" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Retour à la liste
+    </a>
 
-  @if (loading) {
-    <div class="state-message loading">
-      <div class="spinner"></div>
-      <p>Chargement des détails de l'événement...</p>
-    </div>
-  }
-
-  @if (errorMessage && !event) {
-    <div class="state-message error" appScrollToMessage>
-      <p>{{ errorMessage }}</p>
-    </div>
-  }
-
-  @if (event && !loading) {
-    <!-- Hero Banner -->
-    <div class="event-hero">
-      <div class="event-hero-image">
-        <img [src]="resolvedEventImageUrl" [alt]="event.title" (error)="onHeroImageError()" />
+    @if (loading) {
+      <div class="state-message loading">
+        <div class="spinner"></div>
+        <p>Chargement des détails de l'événement...</p>
       </div>
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <div class="hero-header">
-          <span class="status-badge" [attr.data-status]="event.status">{{
-            statusLabel(event.status)
-          }}</span>
-          @if (event.category) {
-            <span class="category-tag">{{ event.category }}</span>
-          }
+    }
+
+    @if (errorMessage && !event) {
+      <div class="state-message error" appScrollToMessage>
+        <p>{{ errorMessage }}</p>
+      </div>
+    }
+
+    @if (event && !loading) {
+      <!-- Hero Banner -->
+      <div class="event-hero">
+        <div class="event-hero-image">
+          <img [src]="resolvedEventImageUrl" [alt]="event.title" (error)="onHeroImageError()" />
         </div>
-        <div class="hero-main">
-          <h1>{{ event.title }}</h1>
-          <div class="hero-meta">
-            <span class="date-pill">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-              {{ event.startAt | date: 'fullDate' }}
-            </span>
-            @if (event.locationName || event.address) {
-              <span class="location-pill">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-header">
+            <span class="status-badge" [attr.data-status]="event.status">{{
+              statusLabel(event.status)
+            }}</span>
+            @if (event.category) {
+              <span class="category-tag">{{ event.category }}</span>
+            }
+          </div>
+          <div class="hero-main">
+            <h1>{{ event.title }}</h1>
+            <div class="hero-meta">
+              <span class="date-pill">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="14"
@@ -81,84 +49,19 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                  <circle cx="12" cy="10" r="3" />
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
                 </svg>
-                {{ event.locationName || event.address }}
+                {{ event.startAt | date: 'fullDate' }}
               </span>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <article class="details-content">
-      <div class="content-layout">
-        <!-- Left: Description + Details -->
-        <div class="content-main">
-          <section class="description-section">
-            <h2>Description</h2>
-            <p class="description">{{ event.description || 'Aucune description disponible.' }}</p>
-          </section>
-
-          <section class="details-section">
-            <h2>Informations détaillées</h2>
-            <div class="details-grid">
-              <div class="detail-box">
-                <div class="detail-icon">
+              @if (event.locationName || event.address) {
+                <span class="location-pill">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                </div>
-                <div>
-                  <h3>Date et heure</h3>
-                  <p>{{ event.startAt | date: 'full' }}</p>
-                </div>
-              </div>
-
-              <div class="detail-box">
-                <div class="detail-icon">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                </div>
-                <div>
-                  <h3>Durée</h3>
-                  <p>{{ event.durationMinutes }} minutes</p>
-                </div>
-              </div>
-
-              <div class="detail-box">
-                <div class="detail-icon">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
+                    width="14"
+                    height="14"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -169,73 +72,615 @@
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
                     <circle cx="12" cy="10" r="3" />
                   </svg>
+                  {{ event.locationName || event.address }}
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <article class="details-content">
+        <div class="content-layout">
+          <!-- Left: Description + Details -->
+          <div class="content-main">
+            <section class="description-section">
+              <h2>Description</h2>
+              <p class="description">{{ event.description || 'Aucune description disponible.' }}</p>
+            </section>
+
+            <section class="details-section">
+              <h2>Informations détaillées</h2>
+              <div class="details-grid">
+                <div class="detail-box">
+                  <div class="detail-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>Date et heure</h3>
+                    <p>{{ event.startAt | date: 'full' }}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3>Type de lieu</h3>
-                  <p>{{ event.locationType }}</p>
+
+                <div class="detail-box">
+                  <div class="detail-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>Durée</h3>
+                    <p>{{ event.durationMinutes }} minutes</p>
+                  </div>
+                </div>
+
+                <div class="detail-box">
+                  <div class="detail-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>Type de lieu</h3>
+                    <p>{{ event.locationType }}</p>
+                  </div>
+                </div>
+
+                <div class="detail-box">
+                  <div class="detail-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                      <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>Lieu / plateforme</h3>
+                    <p>{{ event.locationName || event.address || 'Non précisé' }}</p>
+                  </div>
+                </div>
+
+                <div class="detail-box">
+                  <div class="detail-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+                      <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>URL de réunion</h3>
+                    <p>
+                      @if (event.meetingUrl) {
+                        <a [href]="event.meetingUrl" target="_blank" rel="noopener noreferrer"
+                          >Ouvrir le lien</a
+                        >
+                      } @else {
+                        <span>Non applicable</span>
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                <div class="detail-box">
+                  <div class="detail-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <path d="M22 21v-2a4 4 0 00-3-3.87" />
+                      <path d="M16 3.13a4 4 0 010 7.75" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>Capacité</h3>
+                    <div class="capacity-info">
+                      @if (
+                        event.remainingCapacity !== undefined && event.registeredCount !== undefined
+                      ) {
+                        <span class="capacity-text"
+                          >{{ event.registeredCount }} / {{ event.capacity }} inscrits</span
+                        >
+                        <span class="capacity-state" [class.full]="event.remainingCapacity === 0">
+                          @if (event.remainingCapacity === 0) {
+                            Complet
+                          } @else {
+                            Reste {{ event.remainingCapacity }} place(s)
+                          }
+                        </span>
+                      } @else {
+                        <span class="capacity-text">{{ event.capacity }} participants max</span>
+                      }
+                    </div>
+                  </div>
                 </div>
               </div>
+            </section>
 
-              <div class="detail-box">
-                <div class="detail-icon">
+
+          </div>
+
+          <!-- Right: Sidebar Info -->
+          <aside class="content-sidebar">
+            <div class="sidebar-card">
+              <h3>Date limite</h3>
+              <p class="sidebar-value">{{ event.registrationDeadline | date: 'medium' }}</p>
+            </div>
+
+            <div class="sidebar-card">
+              <h3>Créé par</h3>
+              <p class="sidebar-value">
+                {{ event.createdByFullName || event.createdByEmail || 'Non renseigné' }}
+              </p>
+            </div>
+
+            <div class="sidebar-card">
+              <h3>Audience</h3>
+              <p class="sidebar-value">{{ event.audience }}</p>
+            </div>
+
+            @if (event.audience === 'DEPARTMENT') {
+              <div class="sidebar-card">
+                <h3>Département cible</h3>
+                <p class="sidebar-value">{{ event.targetDepartmentName || 'Non renseigné' }}</p>
+              </div>
+            }
+          </aside>
+        </div>
+      </article>
+
+      @if (event && canParticipate) {
+        <div class="registration-section">
+          <div class="registration-card">
+            <div class="registration-text">
+              <h3>Participation à l'événement</h3>
+              @if (isRegistered) {
+                <p class="status-registered">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
+                    width="16"
+                    height="16"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
+                    stroke-width="2.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   >
-                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                    <polyline points="9 22 9 12 15 12 15 22" />
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
                   </svg>
-                </div>
-                <div>
-                  <h3>Lieu / plateforme</h3>
-                  <p>{{ event.locationName || event.address || 'Non précisé' }}</p>
-                </div>
-              </div>
+                  Vous êtes inscrit à cet événement
+                </p>
+              } @else {
+                <p class="status-unregistered">Rejoignez vos collègues et participez !</p>
+              }
+            </div>
 
-              <div class="detail-box">
-                <div class="detail-icon">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
-                    <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
-                  </svg>
+            <div class="registration-actions">
+              @if (canRegisterNow) {
+                <button
+                  class="btn-primary"
+                  type="button"
+                  (click)="register()"
+                  [disabled]="actionLoading"
+                >
+                  @if (actionLoading) {
+                    <span class="spinner-small" appScrollToMessage></span> Inscription...
+                  } @else {
+                    S'inscrire
+                  }
+                </button>
+              }
+
+              @if (isRegistered) {
+                <button
+                  class="btn-danger"
+                  type="button"
+                  (click)="openUnregisterModal()"
+                  [disabled]="actionLoading || !canUnregisterNow"
+                >
+                  @if (actionLoading) {
+                    <span class="spinner-small" appScrollToMessage></span> Traitement...
+                  } @else {
+                    Se désinscrire
+                  }
+                </button>
+              }
+            </div>
+          </div>
+
+          @if (registrationUnavailableMessage && !isRegistered) {
+            <div class="state-message error" appScrollToMessage>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <p>{{ registrationUnavailableMessage }}</p>
+            </div>
+          }
+
+          <!-- Feedback Messages -->
+
+          @if (successMessage && !isDeadlinePassed) {
+            <div class="state-message success" appScrollToMessage>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              <p>{{ successMessage }}</p>
+            </div>
+          }
+
+          @if (errorMessage && !loading && !isDeadlinePassed) {
+            <div class="state-message error" appScrollToMessage>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <p>{{ errorMessage }}</p>
+            </div>
+          }
+        </div>
+      }
+
+      
+
+      @if (deadlineClosedMessage) {
+        <div class="state-message error" appScrollToMessage>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <p>{{ deadlineClosedMessage }}</p>
+        </div>
+      }
+
+      @if (canParticipate && invitationBlockingMessage) {
+        <div class="state-message info" appScrollToMessage>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <p>{{ invitationBlockingMessage }}</p>
+        </div>
+      }
+      
+      @if (canInviteColleagues) {
+        <section class="invitation-section">
+          <!-- Section Header -->
+          <div class="inv-panel-header">
+            <div>
+              <h2 class="inv-panel-title">Inviter des collègues</h2>
+              <p class="inv-panel-sub">Envoyez des invitations à vos collègues pour cet événement</p>
+            </div>
+            <button type="button" class="invite-toggle-btn" (click)="toggleEmployeeInvitePanel()">
+              @if (showEmployeeInvitePanel && !isDeadlinePassed) {
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+                Fermer
+              } @else {
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                  />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                Inviter
+              }
+            </button>
+          </div>
+          @if (showEmployeeInvitePanel && !isDeadlinePassed) {
+            <div class="invitation-panel">
+              <!-- Step 1: Choisissez des employés -->
+              <div class="panel-step">
+                <div class="step-label">
+                  <span class="step-num">1</span>
+                  <span class="step-title">Choisissez des collègues</span>
+                  @if (selectedEmployeeInviteEmails.length > 0) {
+                    <span class="selected-count-pill"
+                      >{{ selectedEmployeeInviteEmails.length }} sélectionné(s)</span
+                    >
+                  }
                 </div>
-                <div>
-                  <h3>URL de réunion</h3>
-                  <p>
-                    @if (event.meetingUrl) {
-                      <a [href]="event.meetingUrl" target="_blank" rel="noopener noreferrer"
-                        >Ouvrir le lien</a
+
+                <div class="form-group search-group">
+                  <div class="input-with-icon">
+                    <svg
+                      class="input-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="11" cy="11" r="8" />
+                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input
+                      id="employeeInviteSearch"
+                      type="text"
+                      [(ngModel)]="employeeInviteSearchTerm"
+                      placeholder="Entrez un nom, prénom ou email..."
+                    />
+                  </div>
+                </div>
+
+                @if (event.audience === 'DEPARTMENT') {
+                  <div class="state-message info">
+                    <p>
+                      Vous pouvez inviter uniquement les collaborateurs du département cible de cet
+                      événement.
+                    </p>
+                  </div>
+                }
+
+                @if (filteredInvitableUsers.length === 0) {
+                  <p class="helper-text">Aucun collaborateur ne correspond à votre recherche.</p>
+                } @else {
+                  <div class="selection-toolbar">
+                    <label class="select-all-option">
+                      <input
+                        type="checkbox"
+                        [checked]="areAllFilteredInvitableUsersSelected"
+                        (change)="toggleSelectAllEmployeeInvitableUsers($any($event.target).checked)"
+                      />
+                      <span>Tout sélectionner les résultats affichés</span>
+                    </label>
+
+                    <span class="selection-summary">
+                      {{ selectedFilteredInvitableCount }} /
+                      {{ filteredInvitableUsers.length }} sélectionné(s)
+                    </span>
+                  </div>
+                  <div class="user-selection-list">
+                    @for (user of filteredInvitableUsers; track user.id) {
+                      <label
+                        class="user-option"
+                        [class.checked]="selectedEmployeeInviteEmails.includes(user.email)"
                       >
-                    } @else {
-                      <span>Non applicable</span>
+                        <div class="user-avatar-small" [class.has-image]="hasSelectableUserAvatar(user)">
+                          @if (hasSelectableUserAvatar(user)) {
+                            <img
+                              [src]="user.avatarUrl!"
+                              [alt]="user.firstName + ' ' + user.lastName"
+                              (error)="onSelectableUserAvatarError(user)"
+                            />
+                          } @else {
+                            <span>{{ getSelectableUserInitials(user) }}</span>
+                          }
+                        </div>
+                        <div class="user-option-text">
+                          <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
+                          @if (user.departmentName) {
+                            <small>{{ user.departmentName }}</small>
+                          }
+                        </div>
+                        <input
+                          type="checkbox"
+                          class="user-checkbox"
+                          [checked]="selectedEmployeeInviteEmails.includes(user.email)"
+                          (change)="
+                            onEmployeeInviteSelectionChange(user.email, $any($event.target).checked)
+                          "
+                        />
+                      </label>
                     }
-                  </p>
+                  </div>
+                }
+              </div>
+
+              <!-- Step 2: Message personnalisé -->
+              <div class="panel-step">
+                <div class="step-label">
+                  <span class="step-num">2</span>
+                  <span class="step-title"
+                    >Message personnalisé <span class="optional-tag">optionnel</span></span
+                  >
+                </div>
+                <div class="form-group">
+                  <textarea
+                    id="employeeInviteMessage"
+                    rows="3"
+                    [(ngModel)]="employeeInviteMessage"
+                    placeholder="Ajoutez un message pour accompagner l'invitation..."
+                  ></textarea>
                 </div>
               </div>
 
-              <div class="detail-box">
-                <div class="detail-icon">
+              @if (employeeInviteErrorMessage) {
+                <div class="inv-feedback error-feedback">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  {{ employeeInviteErrorMessage }}
+                </div>
+              }
+
+              @if (employeeInviteSuccessMessage) {
+                <div class="inv-feedback success-feedback">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  {{ employeeInviteSuccessMessage }}
+                </div>
+              }
+
+              <!-- Summary + Action -->
+              <div class="invitation-footer">
+                <div class="invitation-summary">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15"
+                    height="15"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -248,652 +693,175 @@
                     <path d="M22 21v-2a4 4 0 00-3-3.87" />
                     <path d="M16 3.13a4 4 0 010 7.75" />
                   </svg>
+                  <strong>{{ selectedEmployeeInviteCount }}</strong> collègue(s) ciblé(s)
                 </div>
-                <div>
-                  <h3>Capacité</h3>
-                  <div class="capacity-info">
-                    @if (
-                      event.remainingCapacity !== undefined && event.registeredCount !== undefined
-                    ) {
-                      <span class="capacity-text"
-                        >{{ event.registeredCount }} / {{ event.capacity }} inscrits</span
-                      >
-                      <span class="capacity-state" [class.full]="event.remainingCapacity === 0">
-                        @if (event.remainingCapacity === 0) {
-                          Complet
-                        } @else {
-                          Reste {{ event.remainingCapacity }} place(s)
-                        }
-                      </span>
-                    } @else {
-                      <span class="capacity-text">{{ event.capacity }} participants max</span>
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
 
-
-        </div>
-
-        <!-- Right: Sidebar Info -->
-        <aside class="content-sidebar">
-          <div class="sidebar-card">
-            <h3>Date limite</h3>
-            <p class="sidebar-value">{{ event.registrationDeadline | date: 'medium' }}</p>
-          </div>
-
-          <div class="sidebar-card">
-            <h3>Créé par</h3>
-            <p class="sidebar-value">
-              {{ event.createdByFullName || event.createdByEmail || 'Non renseigné' }}
-            </p>
-          </div>
-
-          <div class="sidebar-card">
-            <h3>Audience</h3>
-            <p class="sidebar-value">{{ event.audience }}</p>
-          </div>
-
-          @if (event.audience === 'DEPARTMENT') {
-            <div class="sidebar-card">
-              <h3>Département cible</h3>
-              <p class="sidebar-value">{{ event.targetDepartmentName || 'Non renseigné' }}</p>
-            </div>
-          }
-        </aside>
-      </div>
-    </article>
-
-    @if (event && canParticipate) {
-      <div class="registration-section">
-        <div class="registration-card">
-          <div class="registration-text">
-            <h3>Participation à l'événement</h3>
-            @if (isRegistered) {
-              <p class="status-registered">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                <button
+                  type="button"
+                  class="btn-send"
+                  (click)="sendEmployeeInvites()"
+                  [disabled]="
+                    employeeInviteLoading ||
+                    selectedEmployeeInviteEmails.length === 0 ||
+                    isDeadlinePassed
+                  "
                 >
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-                Vous êtes inscrit à cet événement
-              </p>
-            } @else {
-              <p class="status-unregistered">Rejoignez vos collègues et participez !</p>
-            }
-          </div>
-
-          <div class="registration-actions">
-            @if (canRegisterNow) {
-              <button
-                class="btn-primary"
-                type="button"
-                (click)="register()"
-                [disabled]="actionLoading"
-              >
-                @if (actionLoading) {
-                  <span class="spinner-small" appScrollToMessage></span> Inscription...
-                } @else {
-                  S'inscrire
-                }
-              </button>
-            }
-
-            @if (isRegistered) {
-              <button
-                class="btn-danger"
-                type="button"
-                (click)="openUnregisterModal()"
-                [disabled]="actionLoading || !canUnregisterNow"
-              >
-                @if (actionLoading) {
-                  <span class="spinner-small" appScrollToMessage></span> Traitement...
-                } @else {
-                  Se désinscrire
-                }
-              </button>
-            }
-          </div>
-        </div>
-
-        @if (registrationUnavailableMessage && !isRegistered) {
-          <div class="state-message error" appScrollToMessage>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <p>{{ registrationUnavailableMessage }}</p>
-          </div>
-        }
-
-        <!-- Feedback Messages -->
-
-        @if (successMessage && !isDeadlinePassed) {
-          <div class="state-message success" appScrollToMessage>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-            <p>{{ successMessage }}</p>
-          </div>
-        }
-
-        @if (errorMessage && !loading && !isDeadlinePassed) {
-          <div class="state-message error" appScrollToMessage>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <p>{{ errorMessage }}</p>
-          </div>
-        }
-      </div>
-    }
-
-    
-
-    @if (deadlineClosedMessage) {
-      <div class="state-message error" appScrollToMessage>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="8" x2="12" y2="12" />
-          <line x1="12" y1="16" x2="12.01" y2="16" />
-        </svg>
-        <p>{{ deadlineClosedMessage }}</p>
-      </div>
-    }
-
-    @if (canParticipate && invitationBlockingMessage) {
-      <div class="state-message info" appScrollToMessage>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="8" x2="12" y2="12" />
-          <line x1="12" y1="16" x2="12.01" y2="16" />
-        </svg>
-        <p>{{ invitationBlockingMessage }}</p>
-      </div>
-    }
-    
-    @if (canInviteColleagues) {
-      <section class="invitation-section">
-        <!-- Section Header -->
-        <div class="inv-panel-header">
-          <div>
-            <h2 class="inv-panel-title">Inviter des collègues</h2>
-            <p class="inv-panel-sub">Envoyez des invitations à vos collègues pour cet événement</p>
-          </div>
-          <button type="button" class="invite-toggle-btn" (click)="toggleEmployeeInvitePanel()">
-            @if (showEmployeeInvitePanel && !isDeadlinePassed) {
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-              Fermer
-            } @else {
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-                />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
-              Inviter
-            }
-          </button>
-        </div>
-        @if (showEmployeeInvitePanel && !isDeadlinePassed) {
-          <div class="invitation-panel">
-            <!-- Step 1: Choisissez des employés -->
-            <div class="panel-step">
-              <div class="step-label">
-                <span class="step-num">1</span>
-                <span class="step-title">Choisissez des collègues</span>
-                @if (selectedEmployeeInviteEmails.length > 0) {
-                  <span class="selected-count-pill"
-                    >{{ selectedEmployeeInviteEmails.length }} sélectionné(s)</span
-                  >
-                }
-              </div>
-
-              <div class="form-group search-group">
-                <div class="input-with-icon">
-                  <svg
-                    class="input-icon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                  </svg>
-                  <input
-                    id="employeeInviteSearch"
-                    type="text"
-                    [(ngModel)]="employeeInviteSearchTerm"
-                    placeholder="Entrez un nom, prénom ou email..."
-                  />
-                </div>
-              </div>
-
-              @if (event.audience === 'DEPARTMENT') {
-                <div class="state-message info">
-                  <p>
-                    Vous pouvez inviter uniquement les collaborateurs du département cible de cet
-                    événement.
-                  </p>
-                </div>
-              }
-
-              @if (filteredInvitableUsers.length === 0) {
-                <p class="helper-text">Aucun collaborateur ne correspond à votre recherche.</p>
-              } @else {
-                <div class="selection-toolbar">
-                  <label class="select-all-option">
-                    <input
-                      type="checkbox"
-                      [checked]="areAllFilteredInvitableUsersSelected"
-                      (change)="toggleSelectAllEmployeeInvitableUsers($any($event.target).checked)"
-                    />
-                    <span>Tout sélectionner les résultats affichés</span>
-                  </label>
-
-                  <span class="selection-summary">
-                    {{ selectedFilteredInvitableCount }} /
-                    {{ filteredInvitableUsers.length }} sélectionné(s)
-                  </span>
-                </div>
-                <div class="user-selection-list">
-                  @for (user of filteredInvitableUsers; track user.id) {
-                    <label
-                      class="user-option"
-                      [class.checked]="selectedEmployeeInviteEmails.includes(user.email)"
+                  @if (employeeInviteLoading) {
+                    <span class="spinner-small"></span>
+                    Envoi...
+                  } @else {
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
                     >
-                      <div class="user-avatar-small" [class.has-image]="hasSelectableUserAvatar(user)">
-                        @if (hasSelectableUserAvatar(user)) {
-                          <img
-                            [src]="user.avatarUrl!"
-                            [alt]="user.firstName + ' ' + user.lastName"
-                            (error)="onSelectableUserAvatarError(user)"
-                          />
-                        } @else {
-                          <span>{{ getSelectableUserInitials(user) }}</span>
-                        }
-                      </div>
-                      <div class="user-option-text">
-                        <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
-                        @if (user.departmentName) {
-                          <small>{{ user.departmentName }}</small>
-                        }
-                      </div>
-                      <input
-                        type="checkbox"
-                        class="user-checkbox"
-                        [checked]="selectedEmployeeInviteEmails.includes(user.email)"
-                        (change)="
-                          onEmployeeInviteSelectionChange(user.email, $any($event.target).checked)
-                        "
-                      />
-                    </label>
+                      <line x1="22" y1="2" x2="11" y2="13" />
+                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                    Envoyer les invitations
                   }
-                </div>
-              }
-            </div>
-
-            <!-- Step 2: Message personnalisé -->
-            <div class="panel-step">
-              <div class="step-label">
-                <span class="step-num">2</span>
-                <span class="step-title"
-                  >Message personnalisé <span class="optional-tag">optionnel</span></span
-                >
-              </div>
-              <div class="form-group">
-                <textarea
-                  id="employeeInviteMessage"
-                  rows="3"
-                  [(ngModel)]="employeeInviteMessage"
-                  placeholder="Ajoutez un message pour accompagner l'invitation..."
-                ></textarea>
-              </div>
-            </div>
-
-            @if (employeeInviteErrorMessage) {
-              <div class="inv-feedback error-feedback">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="15"
-                  height="15"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-                {{ employeeInviteErrorMessage }}
-              </div>
-            }
-
-            @if (employeeInviteSuccessMessage) {
-              <div class="inv-feedback success-feedback">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="15"
-                  height="15"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-                {{ employeeInviteSuccessMessage }}
-              </div>
-            }
-
-            <!-- Summary + Action -->
-            <div class="invitation-footer">
-              <div class="invitation-summary">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="15"
-                  height="15"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M22 21v-2a4 4 0 00-3-3.87" />
-                  <path d="M16 3.13a4 4 0 010 7.75" />
-                </svg>
-                <strong>{{ selectedEmployeeInviteCount }}</strong> collègue(s) ciblé(s)
+                </button>
               </div>
 
-              <button
-                type="button"
-                class="btn-send"
-                (click)="sendEmployeeInvites()"
-                [disabled]="
-                  employeeInviteLoading ||
-                  selectedEmployeeInviteEmails.length === 0 ||
-                  isDeadlinePassed
-                "
-              >
-                @if (employeeInviteLoading) {
-                  <span class="spinner-small"></span>
-                  Envoi...
-                } @else {
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <line x1="22" y1="2" x2="11" y2="13" />
-                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                  </svg>
-                  Envoyer les invitations
-                }
-              </button>
-            </div>
+              @if (employeeInvitedItems.length > 0 || employeeSkippedItems.length > 0) {
+                <div class="invitation-result-panel">
+                  <div class="invitation-result-summary">
+                    <span class="result-badge success-badge">
+                      {{ employeeInvitedItems.length }} invité{{
+                        employeeInvitedItems.length > 1 ? 's' : ''
+                      }}
+                    </span>
 
-            @if (employeeInvitedItems.length > 0 || employeeSkippedItems.length > 0) {
-              <div class="invitation-result-panel">
-                <div class="invitation-result-summary">
-                  <span class="result-badge success-badge">
-                    {{ employeeInvitedItems.length }} invité{{
-                      employeeInvitedItems.length > 1 ? 's' : ''
-                    }}
-                  </span>
-
-                  <span class="result-badge warning-badge">
-                    {{ employeeSkippedItems.length }} ignoré{{
-                      employeeSkippedItems.length > 1 ? 's' : ''
-                    }}
-                  </span>
-                </div>
-
-                @if (employeeInvitedItems.length > 0) {
-                  <div class="result-block">
-                    <h3>Invités</h3>
-                    <div class="result-list">
-                      @for (item of employeeInvitedItems; track item.email) {
-                        <div class="result-row">
-                          <span class="result-name">{{ item.fullName }}</span>
-                          <span class="result-email">{{ item.email }}</span>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                }
-
-                @if (employeeSkippedItems.length > 0) {
-                  <div class="result-block">
-                    <h3>Ignorés</h3>
-                    <div class="result-list">
-                      @for (item of employeeSkippedItems; track item.email + item.reason) {
-                        <div class="result-row skipped-row">
-                          <div>
-                            <span class="result-name">{{ item.fullName }}</span>
-                            <span class="result-email">{{ item.email }}</span>
-                          </div>
-                          <span class="skip-reason">{{ item.reason }}</span>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        }
-      </section>
-
-      @if (isRegistered) {
-        <section class="sent-invitations-section">
-          <div class="section-header">
-            <h2>Invitations déjà envoyées</h2>
-          </div>
-
-          @if (sentInvitationsLoading) {
-            <div class="state-message loading">
-              <div class="spinner"></div>
-              <p>Chargement de l'historique...</p>
-            </div>
-
-          } @else if (!sentInvitationsLoading && sentInvitations.length === 0) {
-            <div class="empty-history-card">
-              <div class="empty-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path
-                    d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"
-                  />
-                </svg>
-              </div>
-              <p>Aucune invitation envoyée pour le moment.</p>
-            </div>
-
-          } @else {
-            <div class="sent-invitations-list">
-              @for (invitation of sentInvitations; track invitation.email + invitation.sentAt) {
-                <article class="inv-history-card">
-                  <div class="inv-card-header">
-                    <div class="inv-user-row">
-                      <div class="inv-avatar" [class.has-image]="hasSentInvitationAvatar(invitation)">
-                        @if (hasSentInvitationAvatar(invitation)) {
-                          <img
-                            [src]="invitation.avatarUrl!"
-                            [alt]="invitation.fullName"
-                            (error)="onSentInvitationAvatarError(invitation)"
-                          />
-                        } @else {
-                          <span>{{ getSentInvitationInitials(invitation.fullName) }}</span>
-                        }
-                      </div>
-                      <div class="user-main-info">
-                        <span class="user-name">{{ invitation.fullName }}</span>
-                        <span class="user-email">{{ invitation.email }}</span>
-                      </div>
-                    </div>
-                    <span class="rsvp-badge" [class]="getRsvpStatusClass(invitation.rsvpResponse)">
-                      {{ invitationResponseLabel(invitation.rsvpResponse) }}
+                    <span class="result-badge warning-badge">
+                      {{ employeeSkippedItems.length }} ignoré{{
+                        employeeSkippedItems.length > 1 ? 's' : ''
+                      }}
                     </span>
                   </div>
 
-                  @if (invitation.message) {
-                    <div class="inv-msg-bubble">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                      </svg>
-                      <p>{{ invitation.message }}</p>
+                  @if (employeeInvitedItems.length > 0) {
+                    <div class="result-block">
+                      <h3>Invités</h3>
+                      <div class="result-list">
+                        @for (item of employeeInvitedItems; track item.email) {
+                          <div class="result-row">
+                            <span class="result-name">{{ item.fullName }}</span>
+                            <span class="result-email">{{ item.email }}</span>
+                          </div>
+                        }
+                      </div>
                     </div>
                   }
 
-                  <div class="inv-card-footer">
-                    <div class="footer-item">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                        <line x1="16" y1="2" x2="16" y2="6" />
-                        <line x1="8" y1="2" x2="8" y2="6" />
-                        <line x1="3" y1="10" x2="21" y2="10" />
-                      </svg>
-                      {{ invitation.sentAt | date: 'mediumDate' }}
+                  @if (employeeSkippedItems.length > 0) {
+                    <div class="result-block">
+                      <h3>Ignorés</h3>
+                      <div class="result-list">
+                        @for (item of employeeSkippedItems; track item.email + item.reason) {
+                          <div class="result-row skipped-row">
+                            <div>
+                              <span class="result-name">{{ item.fullName }}</span>
+                              <span class="result-email">{{ item.email }}</span>
+                            </div>
+                            <span class="skip-reason">{{ item.reason }}</span>
+                          </div>
+                        }
+                      </div>
                     </div>
-                    @if (invitation.departmentName) {
+                  }
+                </div>
+              }
+            </div>
+          }
+        </section>
+
+        @if (isRegistered) {
+          <section class="sent-invitations-section">
+            <div class="section-header">
+              <h2>Invitations déjà envoyées</h2>
+            </div>
+
+            @if (sentInvitationsLoading) {
+              <div class="state-message loading">
+                <div class="spinner"></div>
+                <p>Chargement de l'historique...</p>
+              </div>
+
+            } @else if (!sentInvitationsLoading && sentInvitations.length === 0) {
+              <div class="empty-history-card">
+                <div class="empty-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"
+                    />
+                  </svg>
+                </div>
+                <p>Aucune invitation envoyée pour le moment.</p>
+              </div>
+
+            } @else {
+              <div class="sent-invitations-list">
+                @for (invitation of sentInvitations; track invitation.email + invitation.sentAt) {
+                  <article class="inv-history-card">
+                    <div class="inv-card-header">
+                      <div class="inv-user-row">
+                        <div class="inv-avatar" [class.has-image]="hasSentInvitationAvatar(invitation)">
+                          @if (hasSentInvitationAvatar(invitation)) {
+                            <img
+                              [src]="invitation.avatarUrl!"
+                              [alt]="invitation.fullName"
+                              (error)="onSentInvitationAvatarError(invitation)"
+                            />
+                          } @else {
+                            <span>{{ getSentInvitationInitials(invitation.fullName) }}</span>
+                          }
+                        </div>
+                        <div class="user-main-info">
+                          <span class="user-name">{{ invitation.fullName }}</span>
+                          <span class="user-email">{{ invitation.email }}</span>
+                        </div>
+                      </div>
+                      <span class="rsvp-badge" [class]="getRsvpStatusClass(invitation.rsvpResponse)">
+                        {{ invitationResponseLabel(invitation.rsvpResponse) }}
+                      </span>
+                    </div>
+
+                    @if (invitation.message) {
+                      <div class="inv-msg-bubble">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                        </svg>
+                        <p>{{ invitation.message }}</p>
+                      </div>
+                    }
+
+                    <div class="inv-card-footer">
                       <div class="footer-item">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -906,266 +874,153 @@
                           stroke-linecap="round"
                           stroke-linejoin="round"
                         >
-                          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                          <circle cx="9" cy="7" r="4" />
-                          <path d="M23 21v-2a4 4 0 00-3-3.87" />
-                          <path d="M16 3.13a4 4 0 010 7.75" />
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                          <line x1="16" y1="2" x2="16" y2="6" />
+                          <line x1="8" y1="2" x2="8" y2="6" />
+                          <line x1="3" y1="10" x2="21" y2="10" />
                         </svg>
-                        {{ invitation.departmentName }}
+                        {{ invitation.sentAt | date: 'mediumDate' }}
                       </div>
-                    }
-                  </div>
-                </article>
-              }
-            </div>
-          }
-        </section>
+                      @if (invitation.departmentName) {
+                        <div class="footer-item">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                            <path d="M16 3.13a4 4 0 010 7.75" />
+                          </svg>
+                          {{ invitation.departmentName }}
+                        </div>
+                      }
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+          </section>
+        }
       }
     }
-  }
 
-  @if (event && (isPastEvent || event.status === 'ARCHIVED')) {
-    <section class="public-feedback-outer">
-      <div class="feedback-container">
-        <div class="feedback-header">
-          <h2>Feedback des participants</h2>
-          <p class="feedback-subtitle">Découvrez ce que les participants ont pensé de cet événement.</p>
-        </div>
-
-        @if (publicFeedbackLoading) {
-          <div class="state-message loading">
-            <div class="spinner"></div>
-            <p>Chargement des avis...</p>
+    @if (event && (isPastEvent || event.status === 'ARCHIVED')) {
+      <section class="public-feedback-outer">
+        <div class="feedback-container">
+          <div class="feedback-header">
+            <h2>Feedback des participants</h2>
+            <p class="feedback-subtitle">Découvrez ce que les participants ont pensé de cet événement.</p>
           </div>
-        } @else if (publicFeedback) {
-          <div class="public-feedback-grid">
-            <!-- Stats Summary -->
-            <div class="feedback-summary-cards">
-              <div class="summary-stat-card">
-                <span class="stat-value">{{ publicFeedback.averageRating | number:'1.1-1' }}</span>
-                <span class="stat-label">Note moyenne</span>
-              </div>
-              <div class="summary-stat-card">
-                <span class="stat-value">{{ publicFeedback.feedbackCount }}</span>
-                <span class="stat-label">Avis partagés</span>
-              </div>
-            </div>
 
-            <!-- Highlights & Improvements -->
-            <div class="feedback-highlights-row">
-              <div class="highlight-box positive">
-                <h3>Points forts</h3>
-                <ul>
-                  @for (item of publicFeedback.highlights; track $index) {
-                    <li>{{ item }}</li>
-                  }
-                  @if (publicFeedback.highlights.length === 0) {
-                    <li class="empty-list-item">Aucun point fort spécifique mentionné.</li>
-                  }
-                </ul>
-              </div>
-              <div class="highlight-box neutral">
-                <h3>Points d'attention</h3>
-                <ul>
-                  @for (item of publicFeedback.improvementPoints; track $index) {
-                    <li>{{ item }}</li>
-                  }
-                  @if (publicFeedback.improvementPoints.length === 0) {
-                    <li class="empty-list-item">Aucune suggestion d'amélioration partagée.</li>
-                  }
-                </ul>
-              </div>
+          @if (publicFeedbackLoading) {
+            <div class="state-message loading">
+              <div class="spinner"></div>
+              <p>Chargement des avis...</p>
             </div>
-
-            <!-- Comments -->
-            <div class="public-comments-area">
-              <h3>Commentaires publics</h3>
-              @if (publicFeedback.publicComments.length > 0) {
-                <div class="comments-grid">
-                  @for (item of publicFeedback.publicComments; track $index) {
-                    <article class="comment-card">
-                      <div class="comment-header">
-                        <span class="comment-author">Participant anonyme</span>
-                        <span class="comment-rating">
-                          @for (star of [1, 2, 3, 4, 5]; track star) {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" [attr.fill]="star <= item.rating ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.star-filled]="star <= item.rating"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                          }
-                        </span>
-                      </div>
-                      <p class="comment-text">{{ item.comment }}</p>
-                    </article>
-                  }
+          } @else if (publicFeedback) {
+            <div class="public-feedback-grid">
+              <!-- Stats Summary -->
+              <div class="feedback-summary-cards">
+                <div class="summary-stat-card">
+                  <span class="stat-value">{{ publicFeedback.averageRating | number:'1.1-1' }}</span>
+                  <span class="stat-label">Note moyenne</span>
                 </div>
-              } @else {
-                <div class="empty-feedback-message">
-                  <p>Aucun feedback disponible</p>
+                <div class="summary-stat-card">
+                  <span class="stat-value">{{ publicFeedback.feedbackCount }}</span>
+                  <span class="stat-label">Avis partagés</span>
                 </div>
-              }
+              </div>
+
+              <!-- Highlights & Improvements -->
+              <div class="feedback-highlights-row">
+                <div class="highlight-box positive">
+                  <h3>Points forts</h3>
+                  <ul>
+                    @for (item of publicFeedback.highlights; track $index) {
+                      <li>{{ item }}</li>
+                    }
+                    @if (publicFeedback.highlights.length === 0) {
+                      <li class="empty-list-item">Aucun point fort spécifique mentionné.</li>
+                    }
+                  </ul>
+                </div>
+                <div class="highlight-box neutral">
+                  <h3>Points d'attention</h3>
+                  <ul>
+                    @for (item of publicFeedback.improvementPoints; track $index) {
+                      <li>{{ item }}</li>
+                    }
+                    @if (publicFeedback.improvementPoints.length === 0) {
+                      <li class="empty-list-item">Aucune suggestion d'amélioration partagée.</li>
+                    }
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Comments -->
+              <div class="public-comments-area">
+                <h3>Commentaires publics</h3>
+                @if (publicFeedback.publicComments.length > 0) {
+                  <div class="comments-grid">
+                    @for (item of publicFeedback.publicComments; track $index) {
+                      <article class="comment-card">
+                        <div class="comment-header">
+                          <span class="comment-author">Participant anonyme</span>
+                          <span class="comment-rating">
+                            @for (star of [1, 2, 3, 4, 5]; track star) {
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" [attr.fill]="star <= item.rating ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.star-filled]="star <= item.rating"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            }
+                          </span>
+                        </div>
+                        <p class="comment-text">{{ item.comment }}</p>
+                      </article>
+                    }
+                  </div>
+                } @else {
+                  <div class="empty-feedback-message">
+                    <p>Aucun feedback disponible</p>
+                  </div>
+                }
+              </div>
             </div>
-          </div>
-        } @else {
-          <div class="empty-feedback-message">
-            <p>Aucun feedback disponible</p>
-          </div>
-        }
-      </div>
-    </section>
-  }
-  @if (showUnregisterModal) {
-    <div class="modal-overlay" (click)="closeUnregisterModal()">
-      <div class="modal-card" (click)="$event.stopPropagation()">
-        <!-- Header -->
-        <div class="modal-header">
-          <div class="modal-header-text">
-            <h2>Se désinscrire</h2>
-            <p class="modal-subtitle">
-              Merci d'indiquer la raison de votre désinscription avant de confirmer.
-            </p>
-          </div>
-          <button
-            type="button"
-            class="modal-close"
-            (click)="closeUnregisterModal()"
-            title="Fermer"
-            [disabled]="actionLoading || hasPendingSentInvitations"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-          @if (hasPendingSentInvitations) {
-            <div class="state-message error-msg" appScrollToMessage>
-              <p>{{ unregisterBlockingMessage }}</p>
+          } @else {
+            <div class="empty-feedback-message">
+              <p>Aucun feedback disponible</p>
             </div>
           }
         </div>
-        @if (isLateUnregister) {
-          <div class="state-message error" appScrollToMessage>
-            <p>Attention : vous annulez à moins de 24h du début de l’événement.</p>
-          </div>
-        }
-
-        <!-- Form Body -->
-        <div class="modal-body">
-          <!-- Reason (required) -->
-          <div class="form-group">
-            <label for="unregisterReason">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-              Raison de la désinscription
-              <span class="required-star">*</span>
-            </label>
-            <select
-              id="unregisterReason"
-              [(ngModel)]="unregisterReason"
-              [class.input-invalid]="unregisterErrorMessage && !unregisterReason"
-            >
-              <option value="">-- Sélectionnez une raison --</option>
-              @for (reason of unregisterReasons; track reason) {
-                <option [value]="reason">{{ reason }}</option>
-              }
-            </select>
-          </div>
-
-          <!-- Comment (optional) -->
-          <div class="form-group">
-            <label for="unregisterComment">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-              </svg>
-              Commentaire
-              <span class="optional-label">(optionnel)</span>
-            </label>
-            <textarea
-              id="unregisterComment"
-              rows="3"
-              [(ngModel)]="unregisterComment"
-              placeholder="Précisez si vous le souhaitez..."
-            ></textarea>
-          </div>
-
-          <!-- Validation error -->
-          @if (unregisterErrorMessage) {
-            <div class="modal-validation-msg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-              <span>{{ unregisterErrorMessage }}</span>
+      </section>
+    }
+    @if (showUnregisterModal) {
+      <div class="modal-overlay" (click)="closeUnregisterModal()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+          <!-- Header -->
+          <div class="modal-header">
+            <div class="modal-header-text">
+              <h2>Se désinscrire</h2>
+              <p class="modal-subtitle">
+                Merci d'indiquer la raison de votre désinscription avant de confirmer.
+              </p>
             </div>
-          }
-        </div>
-
-        <!-- Actions -->
-        <div class="modal-actions">
-          <button
-            type="button"
-            class="btn-cancel-modal"
-            (click)="closeUnregisterModal()"
-            [disabled]="unregisterLoading"
-          >
-            Annuler
-          </button>
-
-          <button
-            type="button"
-            class="btn-confirm-danger"
-            (click)="confirmUnregister()"
-            [disabled]="unregisterLoading"
-          >
-            @if (unregisterLoading) {
-              <span class="spinner-small"></span>
-              Traitement...
-            } @else {
+            <button
+              type="button"
+              class="modal-close"
+              (click)="closeUnregisterModal()"
+              title="Fermer"
+              [disabled]="actionLoading || hasPendingSentInvitations"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -1173,13 +1028,147 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <polyline points="20 6 9 17 4 12" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
-              Confirmer la désinscription
+            </button>
+            @if (hasPendingSentInvitations) {
+              <div class="state-message error-msg" appScrollToMessage>
+                <p>{{ unregisterBlockingMessage }}</p>
+              </div>
             }
-          </button>
+          </div>
+          @if (isLateUnregister) {
+            <div class="state-message error" appScrollToMessage>
+              <p>Attention : vous annulez à moins de 24h du début de l’événement.</p>
+            </div>
+          }
+
+          <!-- Form Body -->
+          <div class="modal-body">
+            <!-- Reason (required) -->
+            <div class="form-group">
+              <label for="unregisterReason">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                Raison de la désinscription
+                <span class="required-star">*</span>
+              </label>
+              <select
+                id="unregisterReason"
+                [(ngModel)]="unregisterReason"
+                [class.input-invalid]="unregisterErrorMessage && !unregisterReason"
+              >
+                <option value="">-- Sélectionnez une raison --</option>
+                @for (reason of unregisterReasons; track reason) {
+                  <option [value]="reason">{{ reason }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Comment (optional) -->
+            <div class="form-group">
+              <label for="unregisterComment">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                </svg>
+                Commentaire
+                <span class="optional-label">(optionnel)</span>
+              </label>
+              <textarea
+                id="unregisterComment"
+                rows="3"
+                [(ngModel)]="unregisterComment"
+                placeholder="Précisez si vous le souhaitez..."
+              ></textarea>
+            </div>
+
+            <!-- Validation error -->
+            @if (unregisterErrorMessage) {
+              <div class="modal-validation-msg">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>{{ unregisterErrorMessage }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Actions -->
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-cancel-modal"
+              (click)="closeUnregisterModal()"
+              [disabled]="unregisterLoading"
+            >
+              Annuler
+            </button>
+
+            <button
+              type="button"
+              class="btn-confirm-danger"
+              (click)="confirmUnregister()"
+              [disabled]="unregisterLoading"
+            >
+              @if (unregisterLoading) {
+                <span class="spinner-small"></span>
+                Traitement...
+              } @else {
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Confirmer la désinscription
+              }
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  }
+    }
+  </div>
 </div>
