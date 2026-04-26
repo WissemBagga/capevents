@@ -6,80 +6,102 @@
 .error-page {
   animation: fadeIn 0.3s ease-out both;
   font-family: 'Verdana', sans-serif;
-  padding-bottom: 60px;
+  padding-bottom: 40px;
 }
 
 .page-container {
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 48px 48px;
+  padding: 32px 0;
   display: flex;
   justify-content: center;
 }
 
 .error-card {
   width: 100%;
-  max-width: 480px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px; /* matches profile-form-card */
-  padding: 48px 32px;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+  max-width: 560px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  border: 1px solid #E4EAF1;
+  border-radius: 28px;
+  padding: 42px 32px;
+  box-shadow: 0 10px 28px rgba(18, 26, 56, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 16px;
 }
 
 .error-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 88px;
-  height: 88px;
-  background: #fcfcfd;
-  border: 1px dashed #cbd5e1;
+  width: 96px;
+  height: 96px;
+  background: linear-gradient(180deg, #F8FAFC 0%, #F1F4F8 100%);
+  border: 1px dashed #C7D2E0;
   border-radius: 50%;
-  color: #94a3b8;
-  margin-bottom: 8px;
+  color: #94A3B8;
+  margin-bottom: 18px;
 }
 
 .error-code {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
   font-family: 'Ubuntu', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 4px 12px;
-  border-radius: 5px;
-  background: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+  border: 1px solid transparent;
 }
 
 .error-code.neutral {
-  background: #eff6ff;
-  color: #2563eb;
-  border-color: #bfdbfe;
+  background: rgba(0, 88, 171, 0.08);
+  color: #0058AB;
+  border-color: rgba(0, 88, 171, 0.10);
 }
 
 .error-card h1 {
   font-family: 'Ubuntu', sans-serif;
-  font-size: 26px;
+  font-size: 32px;
   font-weight: 700;
-  color: #0f172a;
-  margin: 0;
-  letter-spacing: -0.3px;
+  color: #121A38;
+  margin: 0 0 10px;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
 }
 
 .error-msg-secondary {
   font-family: 'Verdana', sans-serif;
-  font-size: 13.5px;
-  color: #64748b;
-  margin: 0 0 16px;
-  line-height: 1.6;
+  font-size: 14px;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.65;
+  max-width: 420px;
+}
+
+.error-helper {
+  margin-top: 18px;
+}
+
+.helper-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(0, 88, 171, 0.06);
+  color: #0058AB;
+  border: 1px solid rgba(0, 88, 171, 0.10);
+  font-family: 'Verdana', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .error-actions {
@@ -89,62 +111,79 @@
   gap: 12px;
   width: 100%;
   flex-wrap: wrap;
-  padding-top: 8px;
+  padding-top: 24px;
 }
 
-/* Matching the standard buttons in My Profile / My Submissions */
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  padding: 10px 20px;
-  border-radius: 6px;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 14px;
   font-family: 'Ubuntu', sans-serif;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  transition: all 0.2s ease;
   text-decoration: none;
-  border: none;
+  white-space: nowrap;
 }
 
 .btn-secondary {
-  background: transparent;
-  border: 1px solid #cbd5e1;
-  color: #475569;
+  background: #ffffff;
+  border: 1px solid #D9E1EA;
+  color: #121A38;
 }
 
 .btn-secondary:hover {
-  background: #f8fafc;
-  color: #0f172a;
+  background: #F8FBFF;
+  color: #0058AB;
+  border-color: rgba(0, 88, 171, 0.18);
 }
 
 .btn-primary {
-  background: #3b82f6;
-  border: 1px solid #3b82f6;
+  background: #0058AB;
+  border: 1px solid #0058AB;
   color: #ffffff;
+  box-shadow: 0 10px 20px rgba(0, 88, 171, 0.16);
 }
 
 .btn-primary:hover {
-  background: #2563eb;
-  border-color: #2563eb;
+  background: #004b92;
+  border-color: #004b92;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 20px 0;
+  }
+
+  .error-card {
+    padding: 32px 22px;
+    border-radius: 22px;
+  }
+
+  .error-card h1 {
+    font-size: 28px;
+  }
 }
 
 @media (max-width: 560px) {
-  .page-container {
-    padding: 32px 20px;
-  }
-  .error-card {
-    padding: 36px 24px;
-    border: none;
-    box-shadow: none;
-    background: transparent;
-  }
   .error-actions {
     flex-direction: column;
   }
-  .btn-primary, .btn-secondary {
+
+  .btn-primary,
+  .btn-secondary {
     width: 100%;
+  }
+
+  .error-icon {
+    width: 84px;
+    height: 84px;
   }
 }

@@ -2,11 +2,24 @@
   <div class="page-container">
     <div class="error-card">
       <div class="error-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
       </div>
+
       <span class="error-code neutral">404</span>
       <h1>Page introuvable</h1>
-      <p class="error-msg-secondary">La page demandée n'existe pas ou a été déplacée.</p>
+      <p class="error-msg-secondary">
+        La page demandée n'existe pas, a été déplacée ou le lien est invalide.
+      </p>
+
+      <div class="error-helper">
+        <span class="helper-pill">
+          Essayez de revenir à la page précédente ou de consulter les événements.
+        </span>
+      </div>
 
       <div class="error-actions">
         <a routerLink="/events" class="btn-secondary">Voir les événements</a>
