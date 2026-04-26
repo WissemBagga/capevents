@@ -17,11 +17,22 @@
 
     <section class="calendar-toolbar">
       <button type="button" class="btn-secondary" (click)="previousMonth()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Mois précédent</button>
-      <h2>{{ monthLabel }}</h2>
-      <button type="button" class="btn-secondary" (click)="nextMonth()">Mois suivant 
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Mois précédent
+      </button>
+
+      <div class="calendar-toolbar-center">
+        <span class="toolbar-kicker">Navigation mensuelle</span>
+        <h2>{{ monthLabel }}</h2>
+      </div>
+
+      <button type="button" class="btn-secondary" (click)="nextMonth()">
+        Mois suivant
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
       </button>
     </section>
 
@@ -43,6 +54,11 @@
     @if (!loading) {
       <div class="calendar-layout">
         <section class="calendar-board">
+          <div class="board-header">
+            <h3>Vue mensuelle</h3>
+            <p>Cliquez sur une date pour voir les événements associés.</p>
+          </div>
+
           <div class="weekdays">
             <span>Lun</span>
             <span>Mar</span>
@@ -63,35 +79,34 @@
                   'today': cell.isToday,
                   'selected': (cell.date | date:'yyyy-MM-dd') === selectedDateKey
                 }"
+                [attr.aria-pressed]="(cell.date | date:'yyyy-MM-dd') === selectedDateKey"
+                [attr.aria-label]="(cell.date | date:'fullDate' : '' : 'fr') + ' - ' + cell.events.length + ' événement(s)'"
                 (click)="selectDay(cell)"
               >
                 <div class="cell-top">
-                    <span class="day-number">{{ cell.date | date:'d' }}</span>
-                    <span
-                        class="event-count"
-                        [class.empty]="cell.events.length === 0"
-                    >
-                        {{ cell.events.length }}
-                    </span>
+                  <span class="day-number">{{ cell.date | date:'d' }}</span>
+                  <span class="event-count" [class.empty]="cell.events.length === 0">
+                    {{ cell.events.length }}
+                  </span>
                 </div>
 
                 <div class="cell-body">
-                    <div class="event-density-dots">
-                        @for (event of cell.events.slice(0, 4); track event.eventId) {
-                        <span
-                            class="event-dot"
-                            [ngClass]="{
-                            'registered': event.registered,
-                            'admin': event.adminView && !event.registered,
-                            'visible': !event.registered && !event.adminView
-                            }"
-                        ></span>
-                        }
+                  <div class="event-density-dots">
+                    @for (event of cell.events.slice(0, 4); track event.eventId) {
+                      <span
+                        class="event-dot"
+                        [ngClass]="{
+                          'registered': event.registered,
+                          'admin': event.adminView && !event.registered,
+                          'visible': !event.registered && !event.adminView
+                        }"
+                      ></span>
+                    }
 
-                        @if (cell.events.length > 4) {
-                        <span class="more-dots">+{{ cell.events.length - 4 }}</span>
-                        }
-                    </div>
+                    @if (cell.events.length > 4) {
+                      <span class="more-dots">+{{ cell.events.length - 4 }}</span>
+                    }
+                  </div>
                 </div>
               </button>
             }
@@ -99,11 +114,24 @@
         </section>
 
         <section class="selected-day-panel">
-          <h3>{{ selectedDayLabel }}</h3>
+          <div class="panel-header">
+            <div>
+              <h3>{{ selectedDayLabel }}</h3>
+              <p>{{ selectedDayEvents.length }} événement(s) sur cette date</p>
+            </div>
+            <span class="panel-count-badge">{{ selectedDayEvents.length }}</span>
+          </div>
 
           @if (selectedDayEvents.length === 0) {
-            <div class="state-message info-msg">
-              <p>Aucun événement pour cette date.</p>
+            <div class="empty-day-state">
+              <div class="empty-day-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M8 12h8"></path>
+                </svg>
+              </div>
+              <h4>Aucun événement</h4>
+              <p>Cette journée ne contient aucun événement visible dans le calendrier.</p>
             </div>
           }
 
