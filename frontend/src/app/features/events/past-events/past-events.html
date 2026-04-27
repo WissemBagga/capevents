@@ -2,9 +2,19 @@
   <div class="page-container">
     <div class="page-header">
       <div class="header-text">
+        <span class="page-kicker">Archives & impact</span>
         <h1>Événements passés</h1>
-        <p class="header-sub">Parcourez les événements terminés et découvrez l'impact qu'ils ont eu sur la communauté.</p>
+        <p class="header-sub">
+          Parcourez les événements terminés et découvrez l’impact qu’ils ont eu sur la communauté.
+        </p>
       </div>
+
+      @if (!loading && totalItems > 0) {
+        <div class="header-summary-pill">
+          <strong>{{ totalItems }}</strong>
+          <span>événement(s)</span>
+        </div>
+      }
     </div>
 
     @if (errorMessage) {
@@ -13,17 +23,30 @@
       </div>
     }
 
-    <section class="admin-card filter-card">
+    <section class="filter-card">
       <div class="card-header">
-        <h2 class="card-title">Analyse & Archives</h2>
-        <p class="card-subtitle">Filtrez les événements passés pour consulter les statistiques et feedbacks.</p>
+        <div>
+          <h2 class="card-title">Analyse & archives</h2>
+          <p class="card-subtitle">Filtrez les événements passés pour consulter les statistiques et les feedbacks.</p>
+        </div>
+      </div>
+
+      <div class="helper-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v.01"/>
+          <path d="M12 8v4"/>
+        </svg>
+        <span>Utilisez les filtres pour retrouver rapidement les événements terminés les plus pertinents.</span>
       </div>
 
       <div class="form-grid filters-grid">
         <div class="form-group">
           <label>Catégorie</label>
           <div class="select-wrapper">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
             <select [(ngModel)]="filters.category" class="form-select">
               <option value="">Toutes les catégories</option>
               @for (item of categoryOptions; track item.value) {
@@ -36,7 +59,10 @@
         <div class="form-group">
           <label>Département</label>
           <div class="select-wrapper">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"></circle>
+            </svg>
             <select [(ngModel)]="filters.departmentId" class="form-select">
               <option [ngValue]="null">Tous les départements</option>
               @for (department of departments; track department.id) {
@@ -49,7 +75,11 @@
         <div class="form-group">
           <label>Audience</label>
           <div class="select-wrapper">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
             <select [(ngModel)]="filters.audience" class="form-select">
               <option value="">Toutes les audiences</option>
               <option value="GLOBAL">Globale</option>
@@ -61,18 +91,35 @@
         <div class="form-group full-width">
           <label>Recherche</label>
           <div class="input-wrapper">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" [(ngModel)]="filters.q" (keyup.enter)="applyFilters()" class="form-input" placeholder="Titre ou mot-clé..." />
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="text"
+              [(ngModel)]="filters.q"
+              (keyup.enter)="applyFilters()"
+              class="form-input"
+              placeholder="Titre ou mot-clé..."
+            />
           </div>
         </div>
       </div>
 
       <div class="filters-footer">
-        <div></div>
+        <div class="results-inline">
+          @if (!loading && totalItems > 0) {
+            <span>{{ totalItems }} résultat(s)</span>
+          }
+        </div>
+
         <div class="filter-actions">
           <button type="button" class="btn-secondary" (click)="resetFilters()">Réinitialiser</button>
           <button type="button" class="btn-primary" (click)="applyFilters()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
             Filtrer les résultats
           </button>
         </div>
@@ -87,44 +134,82 @@
     }
 
     @if (!loading && events.length === 0) {
-      <div class="state-message info-msg">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <p>Aucun événement passé n'a été trouvé pour ces critères.</p>
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <h3>Aucun événement trouvé</h3>
+        <p>Aucun événement passé ne correspond aux critères sélectionnés.</p>
       </div>
     }
 
     @if (!loading && events.length > 0) {
       <div class="past-events-grid">
         @for (event of events; track event.eventId) {
-          <article class="event-card past-event-card">
+          <article class="event-card">
             <div class="event-image" [style.background-image]="'url(' + (event.imageUrl || 'assets/images/default-event.jpg') + ')'">
+              <div class="image-overlay"></div>
+
               <div class="badge-overlay">
-                <span class="overlay-badge registered-badge">{{ event.category || 'Événement' }}</span>
+                <span class="overlay-badge category-badge">{{ event.category || 'Événement' }}</span>
+              </div>
+
+              <div class="date-chip">
+                <span class="chip-day">{{ event.startAt | date:'dd' }}</span>
+                <span class="chip-month">{{ event.startAt | date:'MMM' }}</span>
               </div>
             </div>
 
             <div class="event-body">
               <div class="meta-list">
                 <div class="meta-row">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
                   <span>{{ event.startAt | date:'mediumDate' }}</span>
                 </div>
+
                 <div class="meta-row">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                  </svg>
                   <span>{{ event.departmentName }}</span>
                 </div>
               </div>
 
               <h3>{{ event.title }}</h3>
 
-              <div class="rating-summary-row">
-                <span class="rating-avg">{{ (event.averageRating || 0) | number:'1.1-1' }} / 5</span>
-                <span class="rating-count">({{ event.feedbackCount }} avis)</span>
+              <div class="stats-row">
+                <div class="stat-box rating-box">
+                  <span class="stat-label">Note moyenne</span>
+                  <span class="stat-value">{{ (event.averageRating || 0) | number:'1.1-1' }} / 5</span>
+                  <span class="stat-sub">{{ event.feedbackCount }} avis</span>
+                </div>
+
+                <div class="stat-box presence-box">
+                  <span class="stat-label">Présence</span>
+                  <span class="stat-value">{{ event.presentCount }}</span>
+                  <span class="stat-sub">participants présents</span>
+                </div>
               </div>
 
               <div class="card-footer-actions">
-                <span class="presence-stat">{{ event.presentCount }} présents</span>
-                <a [routerLink]="['/events', event.eventId]" class="btn-details">Détails</a>
+                <a [routerLink]="['/events', event.eventId]" class="btn-details">
+                  Voir les détails
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </a>
               </div>
             </div>
           </article>
@@ -134,17 +219,24 @@
       <div class="pagination-bar">
         <div class="pagination-controls">
           <button type="button" class="btn-secondary page-btn" (click)="previousPage()" [disabled]="currentPage === 0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
             Précédent
           </button>
+
           <span class="page-info">Page {{ currentPage + 1 }} / {{ totalPages }}</span>
+
           <button type="button" class="btn-secondary page-btn" (click)="nextPage()" [disabled]="currentPage + 1 >= totalPages">
             Suivant
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
           </button>
         </div>
-        <p class="page-total">Total: {{ totalItems }} événements</p>
+
+        <p class="page-total">Total : {{ totalItems }} événements</p>
       </div>
     }
   </div>
-</div>
+</div>
