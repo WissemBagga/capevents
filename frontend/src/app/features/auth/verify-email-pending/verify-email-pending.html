@@ -1,53 +1,89 @@
 <div class="auth-page-simple">
   <div class="auth-card-simple">
+
     <div class="brand-header">
+      <span class="brand-kicker">Validation</span>
       <h2>CapEvents</h2>
     </div>
 
     <div class="auth-icon-simple">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
     </div>
 
     <h1>Vérifiez votre email</h1>
     <p class="auth-subtitle">
-        Un lien de vérification a été envoyé à :<br>
-        <span class="email-text">{{ email || 'votre adresse email' }}</span>
+      Un lien de vérification a été envoyé à :
+      <br>
+      <span class="email-text">{{ email || 'votre adresse email' }}</span>
     </p>
 
+    <div class="auth-helper-pill">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 16v.01"/>
+        <path d="M12 8v4"/>
+      </svg>
+      <span>Ouvrez votre boîte de réception puis cliquez sur le lien reçu pour activer votre compte.</span>
+    </div>
+
     <div class="instructions-simple">
-        <div class="instruction-item">
-            <span class="dot"></span>
-            <p>Ouvrez votre boîte de réception</p>
-        </div>
-        <div class="instruction-item">
-            <span class="dot"></span>
-            <p>Cliquez sur le lien de vérification</p>
-        </div>
+      <div class="instruction-item">
+        <span class="dot"></span>
+        <p>Ouvrez votre boîte de réception.</p>
+      </div>
+      <div class="instruction-item">
+        <span class="dot"></span>
+        <p>Cliquez sur le lien de vérification reçu.</p>
+      </div>
+      <div class="instruction-item">
+        <span class="dot"></span>
+        <p>Vérifiez aussi le dossier spam si besoin.</p>
+      </div>
     </div>
 
     @if (successMessage) {
-        <div class="message-box success" appScrollToMessage>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <p>{{ successMessage }}</p>
-        </div>
+      <div class="message-box success" appScrollToMessage>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <p>{{ successMessage }}</p>
+      </div>
     }
 
     @if (errorMessage) {
-        <div class="message-box error" appScrollToMessage>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-            <p>{{ errorMessage }}</p>
-        </div>
+      <div class="message-box error" appScrollToMessage>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>{{ errorMessage }}</p>
+      </div>
     }
 
     <button class="btn-primary" type="button" (click)="resendVerification()" [disabled]="loading">
-        {{ loading ? 'Envoi...' : 'Renvoyer l\'email' }}
+      {{ loading ? 'Envoi...' : 'Renvoyer l’email' }}
+      @if (!loading) {
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      }
     </button>
 
     <div class="auth-footer-links">
-        <a class="back-link" routerLink="/login">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            Retour à la connexion
-        </a>
+      <a class="back-link" routerLink="/login">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Retour à la connexion
+      </a>
     </div>
+
   </div>
 </div>
