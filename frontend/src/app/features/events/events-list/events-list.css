@@ -514,7 +514,7 @@
 
 .deadline-badge,
 .full-badge {
-  background: rgba(143, 50, 55, 0.10);
+  background: rgba(255, 255, 255, 0.69);
   color: #8F3237;
   border: 1px solid rgba(143, 50, 55, 0.14);
 }
