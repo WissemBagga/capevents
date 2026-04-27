@@ -9,7 +9,7 @@ import { EventResponse } from '../../../core/models/event.model';
 import { PageResponse } from '../../../core/models/page-response.model';
 import { RegistrationResponse } from '../../../core/models/registration.model';
 
-import { getDefaultEventImage, normalizeEventImageUrl } from '../../../core/constants/event-image-presets';
+import { resolveEventImageUrl  } from '../../../core/constants/event-image-presets';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
@@ -139,6 +139,6 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   }
 
   getEventImageUrl(event: EventResponse): string {
-    return normalizeEventImageUrl(event.imageUrl) || getDefaultEventImage(event.category);
+    return resolveEventImageUrl(event.imageUrl, event.category);
   }
 }

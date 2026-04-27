@@ -11,7 +11,7 @@ import { PageResponse } from '../../../core/models/page-response.model';
 import { RegistrationResponse } from '../../../core/models/registration.model';
 import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
-import { getDefaultEventImage, normalizeEventImageUrl} from '../../../core/constants/event-image-presets';
+import { resolveEventImageUrl } from '../../../core/constants/event-image-presets';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
@@ -195,7 +195,7 @@ export class EventsList {
 
 
 getEventImageUrl(event: EventResponse): string {
-  return normalizeEventImageUrl(event.imageUrl) || getDefaultEventImage(event.category);
+  return resolveEventImageUrl(event.imageUrl, event.category);
 }
 
   private mapSort(): { sortBy: string; sortDir: 'asc' | 'desc' } {

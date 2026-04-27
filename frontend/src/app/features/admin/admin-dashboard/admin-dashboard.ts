@@ -14,7 +14,7 @@ import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-m
 import { UserService } from '../../../core/services/user.service';
 import { Department } from '../../../core/models/department.model';
 
-import { getDefaultEventImage, normalizeEventImageUrl } from '../../../core/constants/event-image-presets';
+import { resolveEventImageUrl } from '../../../core/constants/event-image-presets';
 
 
 
@@ -287,7 +287,7 @@ export class AdminDashboard {
   }
 
   getEventImageUrl(event: EventResponse): string {
-    return normalizeEventImageUrl(event.imageUrl) || getDefaultEventImage(event.category);
+    return resolveEventImageUrl(event.imageUrl, event.category);
   }
 
   get dashboardTitle(): string {

@@ -14,7 +14,7 @@ import {EmployeeInviteRequest, InvitationCreatedItemResponse, InvitationSkippedI
 import { UserSummary } from '../../../core/models/user-summary.model';
 import { Router } from '@angular/router';
 
-import { getDefaultEventImage, normalizeEventImageUrl } from '../../../core/constants/event-image-presets';
+import { getDefaultEventImage, resolveEventImageUrl } from '../../../core/constants/event-image-presets';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
@@ -813,16 +813,15 @@ export class EventDetails {
       return getDefaultEventImage(null);
     }
 
-    const normalized = normalizeEventImageUrl(this.event.imageUrl);
-    if (!this.heroImageLoadFailed && normalized) {
-      return normalized;
+    if (!this.heroImageLoadFailed && this.event.imageUrl?.trim()) {
+      return this.event.imageUrl.trim();
     }
 
     return getDefaultEventImage(this.event.category);
   }
 
   getEventImageUrl(event: EventResponse): string {
-    return normalizeEventImageUrl(event.imageUrl) || getDefaultEventImage(event.category);
+    return resolveEventImageUrl(event.imageUrl, event.category);
   }
 
   onHeroImageError(): void {

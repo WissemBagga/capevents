@@ -11,7 +11,7 @@ import { PastEventCardResponse } from '../../../core/models/feedback.model';
 import { PageResponse } from '../../../core/models/page-response.model';
 import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
-import { getDefaultEventImage, normalizeEventImageUrl} from '../../../core/constants/event-image-presets';
+import { resolveEventImageUrl} from '../../../core/constants/event-image-presets';
 
 
 @Component({
@@ -113,7 +113,7 @@ export class PastEvents {
   }
 
     getEventImageUrl(event: PastEventCardResponse): string {
-      return normalizeEventImageUrl(event.imageUrl) || getDefaultEventImage(event.category);
+      return resolveEventImageUrl(event.imageUrl, event.category);
     }
 
   previousPage(): void {
