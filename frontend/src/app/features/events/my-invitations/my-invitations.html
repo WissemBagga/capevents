@@ -3,10 +3,40 @@
 
     <div class="page-header">
       <div class="header-text">
+        <span class="page-kicker">Participation</span>
         <h1>Mes invitations</h1>
-        <p class="header-sub">Consultez les invitations reçues pour participer à des événements.</p>
+        <p class="header-sub">
+          Consultez les invitations reçues pour participer à des événements.
+        </p>
       </div>
+
+      @if (!loading) {
+        <div class="header-summary-pill">
+          <strong>{{ invitations.length }}</strong>
+          <span>invitation(s)</span>
+        </div>
+      }
     </div>
+
+    <section class="intro-card">
+      <div class="intro-card-header">
+        <div>
+          <h2 class="card-title">Répondre aux invitations</h2>
+          <p class="card-subtitle">
+            Indiquez si vous souhaitez participer, répondre plus tard, ou refuser l’invitation.
+          </p>
+        </div>
+      </div>
+
+      <div class="helper-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v.01"/>
+          <path d="M12 8v4"/>
+        </svg>
+        <span>Votre réponse peut être mise à jour à tout moment tant que l’événement reste accessible.</span>
+      </div>
+    </section>
 
     @if (loading) {
       <div class="state-message loading-msg" appScrollToMessage>
@@ -17,7 +47,11 @@
 
     @if (!loading && errorMessage) {
       <div class="state-message error-msg" appScrollToMessage>
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
         <p>{{ errorMessage }}</p>
       </div>
     }
@@ -25,7 +59,10 @@
     @if (!loading && !errorMessage && invitations.length === 0) {
       <div class="empty-state">
         <div class="empty-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
         </div>
         <h3>Aucune invitation</h3>
         <p>Vous n'avez pas encore reçu d'invitation pour le moment.</p>
@@ -35,32 +72,50 @@
     @if (!loading && invitations.length > 0) {
       <div class="invitation-grid">
         @for (invitation of invitations; track invitation.eventId + invitation.sentAt) {
-          <article class="inv-card">
+          <article
+            class="inv-card"
+            [class.response-yes]="invitation.rsvpResponse === 'YES'"
+            [class.response-maybe]="invitation.rsvpResponse === 'MAYBE'"
+            [class.response-no]="invitation.rsvpResponse === 'NO'"
+          >
 
-            <!-- Card Top: Status -->
             <div class="card-top">
+              <div class="top-left">
+                <span
+                  class="source-pill"
+                  [class.admin]="invitation.invitationSource === 'ADMIN'"
+                  [class.colleague]="invitation.invitationSource !== 'ADMIN'"
+                >
+                  {{ invitationSourceLabel(invitation.invitationSource) }}
+                </span>
+              </div>
+
               <span class="status-overlay pending">
                 {{ statusLabel(invitation.status) }}
               </span>
             </div>
 
-            <!-- Date Block -->
             <div class="event-date-block">
-              <span class="meta-icon date-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              </span>
-              <span class="event-date-value">{{ invitation.eventStartAt | date:'EEEE d MMMM yyyy' : '' : 'fr' }}</span>
-              <span class="event-time-value">{{ invitation.eventStartAt | date:'HH:mm' }}</span>
+              <div class="date-badge">
+                <span class="date-day">{{ invitation.eventStartAt | date:'dd' }}</span>
+                <span class="date-month">{{ invitation.eventStartAt | date:'MMM' }}</span>
+              </div>
+
+              <div class="date-content">
+                <span class="event-date-value">{{ invitation.eventStartAt | date:'EEEE d MMMM yyyy' : '' : 'fr' }}</span>
+                <span class="event-time-value">{{ invitation.eventStartAt | date:'HH:mm' }}</span>
+              </div>
             </div>
 
             <div class="card-body">
               <h3 class="event-title">{{ invitation.eventTitle }}</h3>
 
               <div class="meta-list">
-                <!-- Type & Source -->
                 <div class="meta-row">
                   <span class="meta-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
                   </span>
                   <span class="meta-text">Type : <strong>{{ targetTypeLabel(invitation.targetType) }}</strong></span>
                 </div>
@@ -68,33 +123,64 @@
                 <div class="meta-row">
                   <span class="meta-icon">
                     @if (invitation.invitationSource === 'ADMIN') {
-                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      </svg>
                     } @else {
-                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                      </svg>
                     }
                   </span>
                   <span class="meta-text">Source : <strong>{{ invitationSourceLabel(invitation.invitationSource) }}</strong></span>
                 </div>
 
-                <!-- Inviter details -->
                 <div class="meta-row">
                   <span class="meta-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                      <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
                   </span>
-                  <span class="meta-text">Reçu le <strong>{{ invitation.sentAt | date:'mediumDate' }}</strong> de <strong>{{ invitation.invitedByFullName }}</strong></span>
+                  <span class="meta-text">
+                    Reçu le <strong>{{ invitation.sentAt | date:'mediumDate' }}</strong>
+                    de <strong>{{ invitation.invitedByFullName }}</strong>
+                  </span>
                 </div>
               </div>
 
-              <!-- Message -->
               @if (invitation.message) {
                 <div class="status-message inv-message-box">
-                  <strong>Message :</strong> " {{ invitation.message }} "
+                  <strong>Message :</strong>
+                  <span>“{{ invitation.message }}”</span>
                 </div>
               }
 
-              <!-- RSVP section -->
               <div class="rsvp-section">
-                <span class="rsvp-label">Votre réponse</span>
+                <div class="rsvp-header">
+                  <span class="rsvp-label">Votre réponse</span>
+
+                  @if (invitation.rsvpResponse === 'YES') {
+                    <span class="current-rsvp-pill yes">Oui</span>
+                  } @else if (invitation.rsvpResponse === 'MAYBE') {
+                    <span class="current-rsvp-pill maybe">Peut-être</span>
+                  } @else if (invitation.rsvpResponse === 'NO') {
+                    <span class="current-rsvp-pill no">Non</span>
+                  } @else {
+                    <span class="current-rsvp-pill none">Aucune</span>
+                  }
+                </div>
+
+                @if (responseLoadingById[invitation.invitationId]) {
+                  <div class="rsvp-loading">
+                    <div class="spinner small-spinner"></div>
+                    <span>Mise à jour de votre réponse...</span>
+                  </div>
+                }
+
                 <div class="rsvp-actions">
                   <button
                     type="button"
@@ -102,7 +188,9 @@
                     [class.active]="invitation.rsvpResponse === 'YES'"
                     [disabled]="responseLoadingById[invitation.invitationId]"
                     (click)="respond(invitation.invitationId, 'YES')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
                     Oui
                   </button>
 
@@ -112,7 +200,11 @@
                     [class.active]="invitation.rsvpResponse === 'MAYBE'"
                     [disabled]="responseLoadingById[invitation.invitationId]"
                     (click)="respond(invitation.invitationId, 'MAYBE')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <line x1="12" y1="8" x2="12" y2="12"/>
+                      <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
                     Peut-être
                   </button>
 
@@ -122,18 +214,26 @@
                     [class.active]="invitation.rsvpResponse === 'NO'"
                     [disabled]="responseLoadingById[invitation.invitationId]"
                     (click)="respond(invitation.invitationId, 'NO')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
                     Non
                   </button>
                 </div>
               </div>
             </div>
 
-            <div class="card-footer actions">
-              <a class="btn-details" [routerLink]="['/events', invitation.eventId]">
-                Voir l'événement
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </a>
+            <div class="card-footer">
+              <div class="actions">
+                <a class="btn-details" [routerLink]="['/events', invitation.eventId]">
+                  Voir l'événement
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14"/>
+                    <path d="m12 5 7 7-7 7"/>
+                  </svg>
+                </a>
+              </div>
             </div>
 
           </article>
