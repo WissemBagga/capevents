@@ -3,15 +3,15 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { EventService } from '../../../core/services/event.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { CreateEventRequest } from '../../../core/models/create-event.model';
+import { EventService } from '../../../../core/services/event.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { CreateEventRequest } from '../../../../core/models/create-event.model';
 
-import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
+import { EVENT_CATEGORY_OPTIONS } from '../../../../core/constants/event-categories';
 
-import { EVENT_IMAGE_PRESETS, getDefaultEventImage } from '../../../core/constants/event-image-presets';
+import { EVENT_IMAGE_PRESETS, getDefaultEventImage } from '../../../../core/constants/event-image-presets';
 
-import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
 
 
 @Component({

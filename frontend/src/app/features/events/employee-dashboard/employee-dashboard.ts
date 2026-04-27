@@ -9,7 +9,7 @@ import { EventResponse } from '../../../core/models/event.model';
 import { PageResponse } from '../../../core/models/page-response.model';
 import { RegistrationResponse } from '../../../core/models/registration.model';
 
-import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
+import { getDefaultEventImage, normalizeEventImageUrl } from '../../../core/constants/event-image-presets';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
@@ -43,6 +43,7 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   get departmentName(): string {
     return this.currentUser?.departmentName || 'Non défini';
   }
+  
 
   ngOnInit(): void {
     this.loadUpcomingEvents();
@@ -138,6 +139,6 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   }
 
   getEventImageUrl(event: EventResponse): string {
-    return event.imageUrl || getDefaultEventImage(event.category);
+    return normalizeEventImageUrl(event.imageUrl) || getDefaultEventImage(event.category);
   }
 }

@@ -14,6 +14,9 @@ import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-m
 import { UserService } from '../../../core/services/user.service';
 import { Department } from '../../../core/models/department.model';
 
+import { getDefaultEventImage, normalizeEventImageUrl } from '../../../core/constants/event-image-presets';
+
+
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -281,6 +284,10 @@ export class AdminDashboard {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  getEventImageUrl(event: EventResponse): string {
+    return normalizeEventImageUrl(event.imageUrl) || getDefaultEventImage(event.category);
   }
 
   get dashboardTitle(): string {

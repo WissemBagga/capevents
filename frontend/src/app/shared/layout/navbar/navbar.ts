@@ -304,10 +304,19 @@ export class Navbar {
     const url = this.router.url;
 
     if (url.startsWith('/dashboard/employee')) return 'Tableau de bord';
+
     if (url.startsWith('/admin/hr/stats')) return 'Statistiques RH';
-    if (url.startsWith('/admin/hr')) return 'Dashboard RH';
     if (url.startsWith('/admin/manager/stats')) return 'Statistiques Manager';
+    if (url.startsWith('/admin/hr')) return 'Dashboard RH';
     if (url.startsWith('/admin/manager')) return 'Dashboard Manager';
+
+    if (url.startsWith('/admin/events/')) return 'Détails événement';
+    if (url.startsWith('/admin/create-event')) return 'Créer un événement';
+    if (url.startsWith('/admin/edit-event/')) return 'Modifier un événement';
+    if (url.startsWith('/admin/pending-events')) return 'Demandes en attente';
+    if (url.startsWith('/admin/admin-users')) return 'Utilisateurs & rôles';
+    if (url.startsWith('/admin/admin-departments')) return 'Départements';
+    if (url.startsWith('/admin/reward-requests')) return 'Demandes de récompenses';
 
     if (url.startsWith('/events/past')) return 'Événements passés';
     if (url.includes('/feedback')) return 'Feedback événement';
@@ -320,12 +329,10 @@ export class Navbar {
     if (url.startsWith('/my-profile')) return 'Mon profil';
     if (url.startsWith('/my-submissions')) return 'Mes demandes';
     if (url.startsWith('/employee/submit-event')) return 'Proposer un événement';
-    if (url.startsWith('/admin/create-event')) return 'Créer un événement';
-    if (url.startsWith('/admin/pending-events')) return 'Demandes en attente';
     if (url.startsWith('/my-rewards')) return 'Mes récompenses';
-    if (url.startsWith('/admin/reward-requests')) return 'Demandes de récompenses';
     if (url.startsWith('/my-badges')) return 'Mes badges';
     if (url.startsWith('/calendar')) return 'Calendrier';
+
     return 'CapEvents';
   }
 }

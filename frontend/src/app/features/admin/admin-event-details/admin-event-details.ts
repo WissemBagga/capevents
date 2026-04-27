@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
-import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
+import { getDefaultEventImage, normalizeEventImageUrl } from '../../../core/constants/event-image-presets';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
@@ -272,6 +272,10 @@ export class AdminEventDetails {
     }
 
     return this.event.imageUrl || getDefaultEventImage(this.event.category);
+  }
+
+  getEventImageUrl(event: EventResponse): string {
+    return normalizeEventImageUrl(event.imageUrl) || getDefaultEventImage(event.category);
   }
 
 

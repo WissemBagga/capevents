@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
-import { UserService } from '../../../core/services/user.service';
-import { UserSummary } from '../../../core/models/user-summary.model';
-import { PageResponse } from '../../../core/models/page-response.model';
+import { UserService } from '../../../../core/services/user.service';
+import { UserSummary } from '../../../../core/models/user-summary.model';
+import { PageResponse } from '../../../../core/models/page-response.model';
 import { FormsModule } from '@angular/forms';
-import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
 
 @Component({
   selector: 'app-admin-users',

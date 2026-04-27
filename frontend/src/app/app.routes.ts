@@ -9,7 +9,7 @@ import { EventDetails } from './features/events/events-details/event-details';
 import { roleGuard } from './core/guards/role-guard';
 import { EmployeeDashboard } from './features/events/employee-dashboard/employee-dashboard';
 import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard';
-import {AdminStats} from './features/admin/admin-stats/admin-stats';
+import {AdminStats} from './features/admin/analytics/admin-stats/admin-stats';
 import { CreateEvent } from './features/admin/create-event/create-event';
 import { EditEvent } from './features/admin/edit-event/edit-event';
 import { AppShell } from './shared/layout/app-shell/app-shell';
@@ -18,11 +18,11 @@ import { VerifyEmailPending } from './features/auth/verify-email-pending/verify-
 import { AdminEventDetails } from './features/admin/admin-event-details/admin-event-details';
 import {MyEvents} from './features/events/my-events/my-events'
 
-import { MyInvitations } from './features/events/my-invitations/my-invitations'
-import { SubmitEvent } from './features/events/submit-event/submit-event';
+import { MyInvitations } from './features/invitations/my-invitations/my-invitations'
+import { SubmitEvent } from './features/submissions/new/submit-event/submit-event';
 import { PendingEvents } from './features/admin/pending-events/pending-events';
 
-import { MySubmissions } from './features/events/my-submissions/my-submissions';
+import { MySubmissions } from './features/submissions/my-submissions/my-submissions';
 
 import { FeedbackEvent } from './features/events/feedback-event/feedback-event';
 
@@ -36,8 +36,8 @@ import { Forbidden } from './features/errors/forbidden/forbidden';
 import { NotFound } from './features/errors/not-found/not-found';
 
 
-import { AdminDepartments } from './features/admin/admin-departments/admin-departments';
-import { AdminUsers } from './features/admin/admin-users/admin-users';
+import { AdminDepartments } from './features/admin/departments/admin-departments/admin-departments';
+import { AdminUsers } from './features/admin/users/admin-users/admin-users';
 
 import { PastEvents } from './features/events/past-events/past-events';
 
@@ -63,161 +63,47 @@ export const routes: Routes = [
   { path: 'forbidden', component: Forbidden },
   { path: 'not-found', component: NotFound },
 
-
-
- {
+  {
     path: '',
     component: AppShell,
     canActivate: [authGuard],
     children: [
       { path: 'events', component: EventsList },
       { path: 'events/past', component: PastEvents },
-      {
-        path: 'events/:id/feedback',
-        component: FeedbackEvent,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE'] }
-      },
       { path: 'events/:id', component: EventDetails },
+      { path: 'events/:id/feedback', component: FeedbackEvent },
 
-      { path: 'admin/events/:id',
+      { path: 'dashboard/employee', component: EmployeeDashboard, canActivate: [roleGuard], data: { roles: ['ROLE_EMPLOYEE'] } },
+
+      { path: 'admin/hr', component: AdminDashboard, canActivate: [roleGuard], data: { roles: ['ROLE_HR'] } },
+      { path: 'admin/manager', component: AdminDashboard, canActivate: [roleGuard], data: { roles: ['ROLE_MANAGER'] } },
+      { path: 'admin/hr/stats', component: AdminStats, canActivate: [roleGuard], data: { roles: ['ROLE_HR'] } },
+      { path: 'admin/manager/stats', component: AdminStats, canActivate: [roleGuard], data: { roles: ['ROLE_MANAGER'] } },
+
+      { path: 'admin/create-event', component: CreateEvent, canActivate: [roleGuard], data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] } },
+      { path: 'admin/edit-event/:id', component: EditEvent, canActivate: [roleGuard], data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] } },
+      { path: 'admin/pending-events', component: PendingEvents, canActivate: [roleGuard], data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] } },
+      { path: 'admin/admin-departments', component: AdminDepartments, canActivate: [roleGuard], data: { roles: ['ROLE_HR'] } },
+      { path: 'admin/admin-users', component: AdminUsers, canActivate: [roleGuard], data: { roles: ['ROLE_HR'] } },
+
+      { path: 'my-events', component: MyEvents },
+      { path: 'my-invitations', component: MyInvitations },
+      { path: 'my-submissions', component: MySubmissions },
+      { path: 'employee/submit-event', component: SubmitEvent },
+      { path: 'my-points', component: MyPoints },
+      { path: 'my-interests', component: MyInterests },
+      { path: 'my-profile', component: MyProfile },
+      { 
+        path: 'admin/events/:id',
         component: AdminEventDetails,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] }
       },
-      {
-        path: 'dashboard/employee',
-        component: EmployeeDashboard,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE'] }
-      },
-      {
-        path: 'admin/hr',
-        component: AdminDashboard,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_HR'] }
-      },
-      {
-        path: 'admin/manager',
-        component: AdminDashboard,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_MANAGER'] }
-      },
-      {
-        path: 'admin/hr/stats',
-        component: AdminStats,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_HR'] }
-      },
-      {
-        path: 'admin/manager/stats',
-        component: AdminStats,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_MANAGER'] }
-      },
-      {
-        path: 'admin/create-event',
-        component: CreateEvent,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] }
-      },
-      {
-        path: 'admin/edit-event/:id',
-        component: EditEvent,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] }
-      },
-      {
-        path: 'my-events',
-        component: MyEvents,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE'] }
-      },
-      {
-        path: 'my-invitations',
-        component: MyInvitations,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE'] }
-      },
-      {
-        path: 'employee/submit-event',
-        component: SubmitEvent,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE'] }
-      },
-      {
-        path: 'admin/pending-events',
-        component: PendingEvents,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] }
-      },
-      {
-        path: 'my-submissions',
-        component: MySubmissions,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE'] }
-      },
-      {
-        path: 'events/:id/feedback',
-        component: FeedbackEvent,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE'] }
-      },
-      {
-        path: 'my-points',
-        component: MyPoints,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
-      },
-      {
-        path: 'my-interests',
-        component: MyInterests,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE'] }
-      },
-      {
-        path: 'my-profile',
-        component: MyProfile,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
-      },
-      {
-        path: 'admin/admin-departments',
-        component: AdminDepartments,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_HR'] }
-      },
-      {
-        path: 'admin/admin-users',
-        component: AdminUsers,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_HR'] }
-      },
-      {
-        path: 'my-badges',
-        component: MyBadges,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
-      },
-      {
-        path: 'my-rewards',
-        component: MyRewards,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
-      },
-      {
-        path: 'admin/reward-requests',
-        component: AdminRewardRequests,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_HR'] }
-      },
-      {
-        path: 'calendar',
-        component: EventCalendar,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_HR'] }
-      }
+      { path: 'admin/reward-requests', component: AdminRewardRequests, canActivate: [roleGuard], data: { roles: ['ROLE_HR'] } },
 
+      { path: 'my-badges', component: MyBadges },
+      { path: 'my-rewards', component: MyRewards },
+      { path: 'calendar', component: EventCalendar }
     ]
   },
 

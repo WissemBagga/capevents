@@ -5,13 +5,13 @@ import { finalize } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
 
-import { AuthService } from '../../../core/services/auth.service';
-import { AdminAnalyticsOverviewResponse, EventEngagementResponse } from '../../../core/models/admin-analytics.model';
-import { AdminAnalyticsService } from '../../../core/services/admin-analytics.service';
-import { UserService } from '../../../core/services/user.service';
-import { Department } from '../../../core/models/department.model';
-import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
-import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+import { AuthService } from '../../../../core/services/auth.service';
+import { AdminAnalyticsOverviewResponse, EventEngagementResponse } from '../../../../core/models/admin-analytics.model';
+import { AdminAnalyticsService } from '../../../../core/services/admin-analytics.service';
+import { UserService } from '../../../../core/services/user.service';
+import { Department } from '../../../../core/models/department.model';
+import { EVENT_CATEGORY_OPTIONS } from '../../../../core/constants/event-categories';
+import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
 
 type TrendPointVm = {
   month: string;

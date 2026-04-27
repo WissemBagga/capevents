@@ -26,8 +26,7 @@
           @for (item of mainLinks; track item.route) {
             <a
               [routerLink]="item.route"
-              routerLinkActive="active-link"
-              [routerLinkActiveOptions]="isEventsLink(item.route) ? { exact: false } : { exact: true }"
+              [class.active-link]="isLinkActive(item.route)"
               class="nav-link">
               <span class="nav-icon">
                 @switch (item.route) {
@@ -76,8 +75,7 @@
             @for (item of workLinks; track item.route) {
               <a
                 [routerLink]="item.route"
-                routerLinkActive="active-link"
-                [routerLinkActiveOptions]="{ exact: true }"
+                [class.active-link]="isLinkActive(item.route)"
                 class="nav-link">
                 <span class="nav-icon">
                   @switch (item.route) {
@@ -114,8 +112,7 @@
             @for (item of participationLinks; track item.route) {
               <a
                 [routerLink]="item.route"
-                routerLinkActive="active-link"
-                [routerLinkActiveOptions]="{ exact: true }"
+                [class.active-link]="isLinkActive(item.route)"
                 class="nav-link">
                 <span class="nav-icon">
                   @switch (item.route) {

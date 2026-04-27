@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { UserService } from '../../../core/services/user.service';
-import { Department } from '../../../core/models/department.model';
-import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+import { UserService } from '../../../../core/services/user.service';
+import { Department } from '../../../../core/models/department.model';
+import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
 
 @Component({
   selector: 'app-admin-departments',

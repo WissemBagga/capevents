@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
+import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -11,7 +11,7 @@ interface NavItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css'
 })
@@ -80,7 +80,9 @@ export class Sidebar {
   }
 
   get hasParticipationAccess(): boolean {
-    return this.authService.hasEmployeeRole();
+    return this.authService.hasEmployeeRole()
+      || this.authService.isHr()
+      || this.authService.isManager();
   }
 
   get mainLinks(): NavItem[] {
@@ -99,13 +101,13 @@ export class Sidebar {
       return [
         { label: 'Statistiques', route: '/admin/manager/stats' },
         { label: 'Gestion des événements', route: '/admin/manager' },
-        { label: 'Événements', route: '/events' },
+        { label: 'Événements', route: '/events' }
       ];
     }
 
     return [
       { label: 'Tableau de bord', route: '/dashboard/employee' },
-      { label: 'Événements', route: '/events' },
+      { label: 'Événements', route: '/events' }
     ];
   }
 
@@ -134,10 +136,9 @@ export class Sidebar {
       { label: 'Mes points', route: '/my-points' },
       { label: 'Mes intérêts', route: '/my-interests' },
       { label: 'Événements passés', route: '/events/past' },
-      { label: 'Mes badges', route: '/my-badges'},
-      { label: 'Mes récompenses', route: '/my-rewards'},
+      { label: 'Mes badges', route: '/my-badges' },
+      { label: 'Mes récompenses', route: '/my-rewards' },
       { label: 'Calendrier', route: '/calendar' }
-      
     ];
   }
 
@@ -145,10 +146,6 @@ export class Sidebar {
     if (section === 'main') this.mainOpen = !this.mainOpen;
     if (section === 'work') this.workOpen = !this.workOpen;
     if (section === 'participation') this.participationOpen = !this.participationOpen;
-  }
-
-  isEventsLink(route: string): boolean {
-    return route === '/events';
   }
 
   goToProfile(): void {
@@ -179,16 +176,53 @@ export class Sidebar {
     return items.some(item => this.routeMatches(url, item.route));
   }
 
-  private routeMatches(currentUrl: string, itemRoute: string): boolean {
-    if (itemRoute === '/events') {
-      return currentUrl.startsWith('/events');
-    }
-
-    return currentUrl === itemRoute || currentUrl.startsWith(itemRoute + '/');
-  }
 
   get userSubtitle(): string {
     const jobTitle = this.currentUser?.jobTitle?.trim();
     return jobTitle || this.roleLabel;
+  }
+
+  isLinkActive(route: string): boolean {
+    const url = this.router.url.split('?')[0];
+
+    if (route === '/events') {
+      return (
+        url === '/events' ||
+        (url.startsWith('/events/') &&
+          !url.startsWith('/events/past') &&
+          !url.startsWith('/events/past/'))
+      );
+    }
+
+    if (route === '/admin/hr') {
+      return url === '/admin/hr';
+    }
+
+    if (route === '/admin/manager') {
+      return url === '/admin/manager';
+    }
+
+    return url === route || url.startsWith(route + '/');
+  }
+
+  private routeMatches(currentUrl: string, itemRoute: string): boolean {
+    if (itemRoute === '/events') {
+      return (
+        currentUrl === '/events' ||
+        (currentUrl.startsWith('/events/') &&
+          !currentUrl.startsWith('/events/past') &&
+          !currentUrl.startsWith('/events/past/'))
+      );
+    }
+
+    if (itemRoute === '/admin/hr') {
+      return currentUrl === '/admin/hr';
+    }
+
+    if (itemRoute === '/admin/manager') {
+      return currentUrl === '/admin/manager';
+    }
+
+    return currentUrl === itemRoute || currentUrl.startsWith(itemRoute + '/');
   }
 }

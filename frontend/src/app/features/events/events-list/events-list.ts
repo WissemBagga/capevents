@@ -11,7 +11,7 @@ import { PageResponse } from '../../../core/models/page-response.model';
 import { RegistrationResponse } from '../../../core/models/registration.model';
 import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
-import { getDefaultEventImage } from '../../../core/constants/event-image-presets';
+import { getDefaultEventImage, normalizeEventImageUrl} from '../../../core/constants/event-image-presets';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
@@ -193,9 +193,10 @@ export class EventsList {
     return (event.registeredCount ?? 0) > 0;
   }
 
-  getEventImageUrl(event: EventResponse): string {
-    return event.imageUrl || getDefaultEventImage(event.category);
-  }
+
+getEventImageUrl(event: EventResponse): string {
+  return normalizeEventImageUrl(event.imageUrl) || getDefaultEventImage(event.category);
+}
 
   private mapSort(): { sortBy: string; sortDir: 'asc' | 'desc' } {
     switch (this.sortBy) {
