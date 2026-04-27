@@ -1,102 +1,165 @@
 <div class="my-submissions-page">
   <div class="page-container">
 
-  <!-- Header -->
-  <div class="page-header">
-    <a routerLink="/dashboard/employee" class="back-link">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      Retour
-    </a>
-    <div class="header-top">
-      <div class="header-text">
-        <h1>Mes demandes</h1>
-        <p class="header-sub">Suivez l'état de vos propositions et demandes d'événements.</p>
-      </div>
-      <div class="header-actions">
-        <button type="button" class="btn-refresh" (click)="loadMySubmissions()" [disabled]="loading">
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          Actualiser
-        </button>
-        <a routerLink="/employee/submit-event" class="btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Nouvelle proposition
-        </a>
-      </div>
-    </div>
-  </div>
+    <div class="page-header">
+      <a routerLink="/dashboard/employee" class="back-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Retour
+      </a>
 
-  <!-- Loading -->
-  @if (loading) {
-    <div class="state-message loading-msg" appScrollToMessage>
-      <div class="spinner"></div>
-      <span>Chargement de vos soumissions...</span>
-    </div>
-  }
+      <div class="header-top">
+        <div class="header-text">
+          <span class="page-kicker">Propositions</span>
+          <h1>Mes demandes</h1>
+          <p class="header-sub">Suivez l'état de vos propositions et demandes d'événements.</p>
+        </div>
 
-  <!-- Error -->
-  @else if (errorMessage) {
-    <div class="state-message error-msg" appScrollToMessage>
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span>{{ errorMessage }}</span>
-    </div>
-  }
-
-  <!-- Empty -->
-  @else if (submissions.length === 0) {
-    <div class="empty-state">
-      <div class="empty-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-      </div>
-      <h3>Aucune soumission</h3>
-      <p>Vous n'avez pas encore proposé d'événement.</p>
-      <a routerLink="/employee/submit-event" class="btn-primary empty-action">Proposer un événement</a>
-    </div>
-  }
-
-  <!-- List -->
-  @else {
-    <div class="submissions-list">
-      @for (event of submissions; track trackByEventId($index, event)) {
-        <article class="submission-card">
-
-          <!-- Card Top Row -->
-          <div class="card-header">
-            <div class="card-header-left">
-              <span class="status-badge" [class]="'status-' + event.status.toLowerCase()">
-                {{ statusLabel(event.status) }}
-              </span>
-              <h2 class="event-title">{{ event.title }}</h2>
+        <div class="header-actions">
+          @if (!loading && submissions.length > 0) {
+            <div class="header-summary-pill">
+              <strong>{{ submissions.length }}</strong>
+              <span>soumission(s)</span>
             </div>
-            <time class="event-date">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              {{ event.startAt | date:'dd MMM yyyy · HH:mm' }}
-            </time>
-          </div>
-
-          <!-- Description -->
-          @if (event.description) {
-            <p class="event-description">{{ event.description }}</p>
           }
 
-          <!-- Card Footer -->
-          <div class="card-footer">
-            <div class="card-meta">
-              <span class="meta-label">Catégorie</span>
-              <span class="meta-value">{{ event.category || 'Non spécifiée' }}</span>
+          <button type="button" class="btn-refresh" (click)="loadMySubmissions()" [disabled]="loading">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/>
+              <polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            Actualiser
+          </button>
+
+          <a routerLink="/employee/submit-event" class="btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Nouvelle proposition
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <section class="intro-card">
+      <div class="intro-card-header">
+        <div>
+          <h2 class="card-title">Suivi de vos propositions</h2>
+          <p class="card-subtitle">
+            Retrouvez ici l’état de validation et l’accès aux événements que vous avez proposés.
+          </p>
+        </div>
+      </div>
+
+      <div class="helper-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v.01"/>
+          <path d="M12 8v4"/>
+        </svg>
+        <span>Les demandes publiées peuvent être ouvertes directement depuis cette page.</span>
+      </div>
+    </section>
+
+    @if (loading) {
+      <div class="state-message loading-msg" appScrollToMessage>
+        <div class="spinner"></div>
+        <span>Chargement de vos soumissions...</span>
+      </div>
+    }
+
+    @else if (errorMessage) {
+      <div class="state-message error-msg" appScrollToMessage>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    @else if (submissions.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <line x1="10" y1="9" x2="8" y2="9"/>
+          </svg>
+        </div>
+        <h3>Aucune soumission</h3>
+        <p>Vous n'avez pas encore proposé d'événement.</p>
+        <a routerLink="/employee/submit-event" class="btn-primary empty-action">Proposer un événement</a>
+      </div>
+    }
+
+    @else {
+      <div class="submissions-list">
+        @for (event of submissions; track trackByEventId($index, event)) {
+          <article class="submission-card" [class]="'status-card-' + event.status.toLowerCase()">
+
+            <div class="submission-top">
+              <div class="top-left">
+                <span class="status-badge" [class]="'status-' + event.status.toLowerCase()">
+                  {{ statusLabel(event.status) }}
+                </span>
+              </div>
+
+              <time class="event-date">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                {{ event.startAt | date:'dd MMM yyyy · HH:mm' }}
+              </time>
             </div>
 
-            @if (canOpenEvent(event.status)) {
-              <a [routerLink]="['/events', event.id]" class="btn-view">
-                Voir l'événement
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
-              </a>
-            }
-          </div>
+            <div class="submission-main">
+              <h2 class="event-title">{{ event.title }}</h2>
 
-        </article>
-      }
-    </div>
-  }
+              <div class="submission-meta-row">
+                <span class="category-pill">{{ event.category || 'Non spécifiée' }}</span>
+              </div>
+
+              @if (event.description) {
+                <p class="event-description">{{ event.description }}</p>
+              }
+            </div>
+
+            <div class="card-footer">
+              <div class="card-meta">
+                <span class="meta-label">Catégorie</span>
+                <span class="meta-value">{{ event.category || 'Non spécifiée' }}</span>
+              </div>
+
+              @if (canOpenEvent(event.status)) {
+                <a [routerLink]="['/events', event.id]" class="btn-view">
+                  Voir l'événement
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </a>
+              } @else {
+                <span class="btn-view disabled">
+                  Non disponible
+                </span>
+              }
+            </div>
+
+          </article>
+        }
+      </div>
+    }
 
   </div>
 </div>
