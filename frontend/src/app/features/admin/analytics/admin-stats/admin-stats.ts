@@ -336,4 +336,80 @@ export class AdminStats {
   get departmentChampion() {
     return this.analytics?.departmentRows?.[0] ?? null;
   }
+
+
+  get sortedDepartmentRows() {
+    const rows = this.analytics?.departmentRows ?? [];
+    return [...rows].sort((a, b) => {
+      const ratingA = a.averageRating ?? -1;
+      const ratingB = b.averageRating ?? -1;
+
+      if (b.participationRate !== a.participationRate) {
+        return b.participationRate - a.participationRate;
+      }
+
+      if (ratingB !== ratingA) {
+        return ratingB - ratingA;
+      }
+
+      if (b.activeEmployees !== a.activeEmployees) {
+        return b.activeEmployees - a.activeEmployees;
+      }
+
+      return a.departmentName.localeCompare(b.departmentName, 'fr');
+    });
+  }
+
+  get sortedTopMembers() {
+    const rows = this.analytics?.topMembers ?? [];
+    return [...rows].sort((a, b) => {
+      if (b.presentCount !== a.presentCount) {
+        return b.presentCount - a.presentCount;
+      }
+
+      if (b.attendanceRate !== a.attendanceRate) {
+        return b.attendanceRate - a.attendanceRate;
+      }
+
+      if (b.registeredCount !== a.registeredCount) {
+        return b.registeredCount - a.registeredCount;
+      }
+
+      return a.fullName.localeCompare(b.fullName, 'fr');
+    });
+  }
+
+  get sortedTopRatedEvents() {
+    const rows = this.analytics?.topRatedEvents ?? [];
+    return [...rows].sort((a, b) => {
+      if (b.averageRating !== a.averageRating) {
+        return b.averageRating - a.averageRating;
+      }
+
+      if (b.feedbackCount !== a.feedbackCount) {
+        return b.feedbackCount - a.feedbackCount;
+      }
+
+      return a.title.localeCompare(b.title, 'fr');
+    });
+  }
+
+  get sortedTopEngagingEvents() {
+    const rows = this.analytics?.topEngagingEvents ?? [];
+    return [...rows].sort((a, b) => {
+      if (b.attendanceRate !== a.attendanceRate) {
+        return b.attendanceRate - a.attendanceRate;
+      }
+
+      if (b.presentCount !== a.presentCount) {
+        return b.presentCount - a.presentCount;
+      }
+
+      if (b.registeredCount !== a.registeredCount) {
+        return b.registeredCount - a.registeredCount;
+      }
+
+      return a.title.localeCompare(b.title, 'fr');
+    });
+  }
 }

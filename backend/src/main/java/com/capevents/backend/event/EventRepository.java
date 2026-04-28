@@ -272,6 +272,20 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     """)
     List<Event> findAllForAnalyticsByManagerScope(@Param("departmentId") Long departmentId);
 
+    @Query("""
+    select distinct e
+    from Event e
+    left join e.targetDepartment td
+    where
+        e.status in ('PUBLISHED', 'CANCELLED', 'ARCHIVED')
+        and (
+            e.audience = com.capevents.backend.event.EventAudience.GLOBAL
+            or (e.audience = com.capevents.backend.event.EventAudience.DEPARTMENT and td.id = :departmentId)
+        )
+    """)
+    List<Event> findAllForAnalyticsVisibleToDepartment(@Param("departmentId") Long departmentId);
+
+
 
 
     @Query("""

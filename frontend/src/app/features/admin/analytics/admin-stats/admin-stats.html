@@ -310,7 +310,7 @@
             @if (analytics.departmentRows.length > 0) {
               <div class="department-analytics-layout">
                 <div class="stats-list">
-                  @for (row of analytics.departmentRows; track trackByDepartment($index, row)) {
+                  @for (row of sortedDepartmentRows; track trackByDepartment($index, row)) {
                     <article class="stat-list-item">
                       <div class="item-main">
                         <div class="rank-title-row">
@@ -414,7 +414,7 @@
             </div>
 
             <div class="stats-list">
-              @for (item of analytics.topMembers; track trackByTopMember($index, item)) {
+              @for (item of sortedTopMembers; track trackByTopMember($index, item)) {
                 <article class="stat-list-item">
                   <div class="item-main">
                     <div class="rank-title-row">
@@ -465,7 +465,7 @@
 
           @if (analytics.topRatedEvents.length > 0) {
             <div class="stats-list">
-              @for (item of analytics.topRatedEvents; track trackByRatedEventId($index, item)) {
+              @for (item of sortedTopRatedEvents; track trackByRatedEventId($index, item)) {
                 <article class="stat-list-item">
                   <div class="item-main">
                     <h3 class="event-title">{{ item.title }}</h3>
@@ -513,7 +513,7 @@
 
           @if (analytics.topEngagingEvents.length > 0) {
             <div class="stats-list">
-              @for (item of analytics.topEngagingEvents; track trackByEventId($index, item)) {
+              @for (item of sortedTopEngagingEvents; track trackByEventId($index, item)) {
                 <article class="stat-list-item">
                   <div class="item-main">
                     <h3 class="event-title">{{ item.title }}</h3>
