@@ -23,6 +23,7 @@ public record AdminAnalyticsOverviewResponse(
         List<TopMemberAnalyticsResponse> topMembers,
         List<TopMemberAnalyticsResponse> memberRows,
         List<MonthlyTrendPointResponse> monthlyTrend,
-        List<DepartmentAnalyticsRowResponse> departmentRows
+        List<DepartmentAnalyticsRowResponse> departmentRows,
+        List<DepartmentTopParticipantResponse> topParticipantPerDepartment
 ) {
 }

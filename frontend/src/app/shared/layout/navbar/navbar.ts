@@ -19,7 +19,7 @@ interface NotificationGroup{
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, AsyncPipe, DatePipe],
+  imports: [RouterLink, AsyncPipe, DatePipe],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })

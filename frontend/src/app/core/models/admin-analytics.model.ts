@@ -39,6 +39,8 @@ export interface AdminAnalyticsOverviewResponse {
   memberRows: TopMemberAnalyticsResponse[];
   monthlyTrend: MonthlyTrendPointResponse[];
   departmentRows: DepartmentAnalyticsRowResponse[];
+
+  topParticipantPerDepartment: DepartmentTopParticipantResponse[];
 }
 
 export interface DepartmentAnalyticsRowResponse {
@@ -62,4 +64,15 @@ export interface TopMemberAnalyticsResponse {
 export interface MonthlyTrendPointResponse {
   month: string;
   registrations: number;
+}
+
+
+export interface DepartmentTopParticipantResponse {
+  departmentId: number;
+  departmentName: string;
+  fullName: string;
+  email: string;
+  registeredCount: number;
+  presentCount: number;
+  attendanceRate: number;
 }

@@ -334,7 +334,7 @@ export class AdminStats {
   }
 
   get departmentChampion() {
-    return this.analytics?.departmentRows?.[0] ?? null;
+    return this.sortedDepartmentRows[0] ?? null;
   }
 
 
@@ -363,12 +363,12 @@ export class AdminStats {
   get sortedTopMembers() {
     const rows = this.analytics?.topMembers ?? [];
     return [...rows].sort((a, b) => {
-      if (b.presentCount !== a.presentCount) {
-        return b.presentCount - a.presentCount;
-      }
-
       if (b.attendanceRate !== a.attendanceRate) {
         return b.attendanceRate - a.attendanceRate;
+      }
+
+      if (b.presentCount !== a.presentCount) {
+        return b.presentCount - a.presentCount;
       }
 
       if (b.registeredCount !== a.registeredCount) {
@@ -401,6 +401,11 @@ export class AdminStats {
         return b.attendanceRate - a.attendanceRate;
       }
 
+      const fillDiff = this.fillRate(b) - this.fillRate(a);
+      if (fillDiff !== 0) {
+        return fillDiff;
+      }
+
       if (b.presentCount !== a.presentCount) {
         return b.presentCount - a.presentCount;
       }
@@ -410,6 +415,31 @@ export class AdminStats {
       }
 
       return a.title.localeCompare(b.title, 'fr');
+    });
+  }
+
+  fillRate(item: EventEngagementResponse): number {
+    if (!item.capacity || item.capacity <= 0) return 0;
+    return (item.registeredCount / item.capacity) * 100;
+  }
+
+
+  get sortedTopParticipantPerDepartment() {
+    const rows = this.analytics?.topParticipantPerDepartment ?? [];
+    return [...rows].sort((a, b) => {
+      if (b.attendanceRate !== a.attendanceRate) {
+        return b.attendanceRate - a.attendanceRate;
+      }
+
+      if (b.presentCount !== a.presentCount) {
+        return b.presentCount - a.presentCount;
+      }
+
+      if (b.registeredCount !== a.registeredCount) {
+        return b.registeredCount - a.registeredCount;
+      }
+
+      return a.departmentName.localeCompare(b.departmentName, 'fr');
     });
   }
 }

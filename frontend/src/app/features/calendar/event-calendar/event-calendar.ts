@@ -18,7 +18,7 @@ type CalendarCell = {
 @Component({
   selector: 'app-event-calendar',
   standalone: true,
-  imports: [DatePipe, RouterLink, NgClass, ScrollToMessageDirective],
+  imports: [DatePipe, NgClass, ScrollToMessageDirective],
   templateUrl: './event-calendar.html',
   styleUrl: './event-calendar.css'
 })

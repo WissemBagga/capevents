@@ -151,7 +151,7 @@
           @if (user.avatarUrl) {
             <img [src]="user.avatarUrl" [alt]="user.firstName" />
           } @else {
-            <span>{{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}</span>
+            <span>{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</span>
           }
         </div>
       </a>

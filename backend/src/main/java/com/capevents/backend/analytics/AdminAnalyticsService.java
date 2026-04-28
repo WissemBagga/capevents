@@ -123,11 +123,7 @@
                                 attendanceRate
                         );
                     })
-                    .sorted(
-                            Comparator.comparing(EventEngagementResponse::attendanceRate).reversed()
-                                    .thenComparing(EventEngagementResponse::presentCount).reversed()
-                                    .thenComparing(EventEngagementResponse::registeredCount).reversed()
-                    )
+                    .sorted(topEngagingComparator())
                     .limit(5)
                     .toList();
 
@@ -173,6 +169,9 @@
                     : 0.0;
 
 
+            List<DepartmentTopParticipantResponse> topParticipantPerDepartment = isHr(actor)
+                    ? buildTopParticipantPerDepartment(eligibleEvents)
+                    : List.of();
 
             List<TopMemberAnalyticsResponse> allTopMembers = buildTopMembers(actor, eligibleEvents);
 
@@ -218,7 +217,8 @@
                     topMembers,
                     memberRows,
                     monthlyTrend,
-                    departmentRows
+                    departmentRows,
+                    topParticipantPerDepartment
 
             );
         }
@@ -334,12 +334,7 @@
                             acc.presentCount,
                             acc.attendanceRate()
                     ))
-                    .sorted(
-                            Comparator.comparing(TopMemberAnalyticsResponse::presentCount).reversed()
-                                    .thenComparing(TopMemberAnalyticsResponse::registeredCount).reversed()
-                                    .thenComparing(TopMemberAnalyticsResponse::attendanceRate).reversed()
-                                    .thenComparing(TopMemberAnalyticsResponse::fullName)
-                    )
+                    .sorted(topMemberComparator())
                     .toList();
         }
 
@@ -390,12 +385,7 @@
                             acc.presentCount,
                             acc.attendanceRate()
                     ))
-                    .sorted(
-                            Comparator.comparing(TopMemberAnalyticsResponse::presentCount).reversed()
-                                    .thenComparing(TopMemberAnalyticsResponse::registeredCount).reversed()
-                                    .thenComparing(TopMemberAnalyticsResponse::attendanceRate).reversed()
-                                    .thenComparing(TopMemberAnalyticsResponse::fullName)
-                    )
+                    .sorted(topMemberComparator())
                     .toList();
         }
 
@@ -548,10 +538,69 @@
                         );
                     })
                     .filter(row -> departmentFilterId == null || departmentFilterId.equals(row.departmentId()))
+                    .sorted(departmentRowComparator())
+                    .toList();
+        }
+
+        private List<DepartmentTopParticipantResponse> buildTopParticipantPerDepartment(List<Event> eligibleEvents) {
+            Map<Long, Map<UUID, MemberAccumulator>> departmentMemberMap = new HashMap<>();
+            Map<Long, String> departmentNames = new HashMap<>();
+
+            for (Event event : eligibleEvents) {
+                List<EventRegistration> regs =
+                        registrationRepository.findByEventAndStatusOrderByRegisteredAtAsc(event, RegistrationStatus.REGISTERED);
+
+                for (EventRegistration reg : regs) {
+                    User user = reg.getUser();
+                    if (user == null || user.getDepartment() == null) {
+                        continue;
+                    }
+
+                    Long deptId = user.getDepartment().getId();
+                    departmentNames.put(deptId, user.getDepartment().getName());
+
+                    Map<UUID, MemberAccumulator> members =
+                            departmentMemberMap.computeIfAbsent(deptId, id -> new HashMap<>());
+
+                    MemberAccumulator acc = members.computeIfAbsent(
+                            user.getId(),
+                            id -> new MemberAccumulator(
+                                    buildFullName(user.getFirstName(), user.getLastName()),
+                                    user.getEmail(),
+                                    user.getDepartment().getName()
+                            )
+                    );
+
+                    acc.registeredCount++;
+                    if (reg.getAttendanceStatus() == AttendanceStatus.PRESENT) {
+                        acc.presentCount++;
+                    }
+                }
+            }
+
+            return departmentMemberMap.entrySet().stream()
+                    .map(entry -> {
+                        Long deptId = entry.getKey();
+
+                        return entry.getValue().values().stream()
+                                .map(acc -> new DepartmentTopParticipantResponse(
+                                        deptId,
+                                        departmentNames.getOrDefault(deptId, "Département"),
+                                        acc.fullName,
+                                        acc.email,
+                                        acc.registeredCount,
+                                        acc.presentCount,
+                                        acc.attendanceRate()
+                                ))
+                                .sorted(departmentTopParticipantComparator())
+                                .findFirst()
+                                .orElse(null);
+                    })
+                    .filter(Objects::nonNull)
                     .sorted(
-                            Comparator.comparing(DepartmentAnalyticsRowResponse::participationRate).reversed()
-                                    .thenComparing(DepartmentAnalyticsRowResponse::activeEmployees).reversed()
-                                    .thenComparing(DepartmentAnalyticsRowResponse::departmentName)
+                            Comparator.comparing(DepartmentTopParticipantResponse::attendanceRate, Comparator.reverseOrder())
+                                    .thenComparing(DepartmentTopParticipantResponse::presentCount, Comparator.reverseOrder())
+                                    .thenComparing(DepartmentTopParticipantResponse::departmentName)
                     )
                     .toList();
         }
@@ -560,5 +609,50 @@
             String safeFirstName = firstName != null ? firstName.trim() : "";
             String safeLastName = lastName != null ? lastName.trim() : "";
             return (safeFirstName + " " + safeLastName).trim();
+        }
+
+
+        private Comparator<TopMemberAnalyticsResponse> topMemberComparator() {
+            return Comparator
+                    .comparing(TopMemberAnalyticsResponse::attendanceRate, Comparator.reverseOrder())
+                    .thenComparing(TopMemberAnalyticsResponse::presentCount, Comparator.reverseOrder())
+                    .thenComparing(TopMemberAnalyticsResponse::registeredCount, Comparator.reverseOrder())
+                    .thenComparing(TopMemberAnalyticsResponse::fullName);
+        }
+
+        private Comparator<EventEngagementResponse> topEngagingComparator() {
+            return Comparator
+                    .comparing(EventEngagementResponse::attendanceRate, Comparator.reverseOrder())
+                    .thenComparing(event -> computeFillRate(event), Comparator.reverseOrder())
+                    .thenComparing(EventEngagementResponse::presentCount, Comparator.reverseOrder())
+                    .thenComparing(EventEngagementResponse::registeredCount, Comparator.reverseOrder())
+                    .thenComparing(EventEngagementResponse::title);
+        }
+
+        private Comparator<DepartmentAnalyticsRowResponse> departmentRowComparator() {
+            return Comparator
+                    .comparing(DepartmentAnalyticsRowResponse::participationRate, Comparator.reverseOrder())
+                    .thenComparing(
+                            row -> row.averageRating() != null ? row.averageRating() : -1.0,
+                            Comparator.reverseOrder()
+                    )
+                    .thenComparing(DepartmentAnalyticsRowResponse::activeEmployees, Comparator.reverseOrder())
+                    .thenComparing(DepartmentAnalyticsRowResponse::departmentName);
+        }
+
+        private Comparator<DepartmentTopParticipantResponse> departmentTopParticipantComparator() {
+            return Comparator
+                    .comparing(DepartmentTopParticipantResponse::attendanceRate, Comparator.reverseOrder())
+                    .thenComparing(DepartmentTopParticipantResponse::presentCount, Comparator.reverseOrder())
+                    .thenComparing(DepartmentTopParticipantResponse::registeredCount, Comparator.reverseOrder())
+                    .thenComparing(DepartmentTopParticipantResponse::fullName);
+        }
+
+        private double computeFillRate(EventEngagementResponse event) {
+            if (event.capacity() == null || event.capacity() <= 0) {
+                return 0.0;
+            }
+
+            return round2((event.registeredCount() * 100.0) / event.capacity());
         }
     }
