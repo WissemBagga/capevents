@@ -1,6 +1,7 @@
 package com.capevents.backend.event;
 
 import com.capevents.backend.TestAuthHelper;
+import com.capevents.backend.service.EventService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -303,35 +303,35 @@ export class Navbar {
   get pageTitle(): string {
     const url = this.router.url;
 
-    if (url.startsWith('/dashboard/employee')) return 'Tableau de bord';
+    if (url.startsWith('/dashboard/employee')) return 'Espace employé';
 
-    if (url.startsWith('/admin/hr/stats')) return 'Statistiques RH';
-    if (url.startsWith('/admin/manager/stats')) return 'Statistiques Manager';
-    if (url.startsWith('/admin/hr')) return 'Dashboard RH';
-    if (url.startsWith('/admin/manager')) return 'Dashboard Manager';
+    if (url.startsWith('/admin/hr/stats')) return 'Administration RH';
+    if (url.startsWith('/admin/manager/stats')) return 'Espace Manager';
+    if (url.startsWith('/admin/hr')) return 'Administration RH';
+    if (url.startsWith('/admin/manager')) return 'Espace Manager';
 
-    if (url.startsWith('/admin/events/')) return 'Détails événement';
-    if (url.startsWith('/admin/create-event')) return 'Créer un événement';
-    if (url.startsWith('/admin/edit-event/')) return 'Modifier un événement';
-    if (url.startsWith('/admin/pending-events')) return 'Demandes en attente';
-    if (url.startsWith('/admin/admin-users')) return 'Utilisateurs & rôles';
-    if (url.startsWith('/admin/admin-departments')) return 'Départements';
-    if (url.startsWith('/admin/reward-requests')) return 'Demandes de récompenses';
+    if (url.startsWith('/admin/events/')) return 'Gestion des événements';
+    if (url.startsWith('/admin/create-event')) return 'Gestion des événements';
+    if (url.startsWith('/admin/edit-event/')) return 'Gestion des événements';
+    if (url.startsWith('/admin/pending-events')) return 'Gestion des événements';
+    if (url.startsWith('/admin/admin-users')) return 'Administration RH';
+    if (url.startsWith('/admin/admin-departments')) return 'Administration RH';
+    if (url.startsWith('/admin/reward-requests')) return 'Administration RH';
 
-    if (url.startsWith('/events/past')) return 'Événements passés';
-    if (url.includes('/feedback')) return 'Feedback événement';
+    if (url.startsWith('/events/past')) return 'Archives';
+    if (url.includes('/feedback')) return 'Événements';
     if (url.startsWith('/events')) return 'Événements';
 
-    if (url.startsWith('/my-events')) return 'Mes événements';
-    if (url.startsWith('/my-invitations')) return 'Mes invitations';
-    if (url.startsWith('/my-points')) return 'Mes points';
-    if (url.startsWith('/my-interests')) return 'Mes intérêts';
-    if (url.startsWith('/my-profile')) return 'Mon profil';
-    if (url.startsWith('/my-submissions')) return 'Mes demandes';
-    if (url.startsWith('/employee/submit-event')) return 'Proposer un événement';
-    if (url.startsWith('/my-rewards')) return 'Mes récompenses';
-    if (url.startsWith('/my-badges')) return 'Mes badges';
-    if (url.startsWith('/calendar')) return 'Calendrier';
+    if (url.startsWith('/my-events')) return 'Participation';
+    if (url.startsWith('/my-invitations')) return 'Participation';
+    if (url.startsWith('/my-points')) return 'Engagement';
+    if (url.startsWith('/my-interests')) return 'Personnalisation';
+    if (url.startsWith('/my-profile')) return 'Compte';
+    if (url.startsWith('/my-submissions')) return 'Propositions';
+    if (url.startsWith('/employee/submit-event')) return 'Propositions';
+    if (url.startsWith('/my-rewards')) return 'Engagement';
+    if (url.startsWith('/my-badges')) return 'Engagement';
+    if (url.startsWith('/calendar')) return 'Planification';
 
     return 'CapEvents';
   }

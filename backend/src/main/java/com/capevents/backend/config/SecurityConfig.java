@@ -1,6 +1,6 @@
 package com.capevents.backend.config;
 
-import com.capevents.backend.auth.JwtAuthFilter;
+import com.capevents.backend.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
