@@ -49,9 +49,12 @@ import { AdminRewardRequests } from './features/admin/admin-reward-requests/admi
 
 import { EventCalendar } from './features/calendar/event-calendar/event-calendar';
 
+import { LandingPage } from './features/landing/landing-page/landing-page';
+
+
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', component: LandingPage},
 
   { path: 'login', component: Login },
   { path: 'register', component: Register },
