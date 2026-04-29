@@ -19,7 +19,6 @@
     <!-- HERO -->
     <section class="hero-section">
       <div class="hero-copy">
-        <span class="hero-badge">Nouveau · Version 1.0 disponible</span>
         <h1>Renforcez la <span>cohésion</span> et <span>l'engagement</span> de vos équipes</h1>
         <p>Une plateforme moderne conçue pour simplifier l'organisation d'événements internes, booster la participation et mesurer l'impact de vos initiatives sociales.</p>
         <div class="hero-actions">
@@ -38,39 +37,79 @@
 
       <div class="hero-visual">
         <article class="mini-dashboard-card">
+          <!-- Dashboard header -->
           <div class="mini-dashboard-top">
-            <div class="mini-avatar">RH</div>
-            <div class="mini-lines"><span></span><small></small></div>
-            <div class="mini-icons"><b></b><b></b><b></b></div>
+            <div class="mini-avatar">
+              <img src="/images/avatars/woman-blue.png" alt="Avatar RH">
+            </div>
+            <div class="mini-dashboard-info">
+              <strong>Tableau de bord</strong>
+              <span>Vue d'ensemble · Temps réel</span>
+            </div>
+            <div class="mini-status-dot"></div>
           </div>
+
+          <!-- KPI row -->
           <div class="mini-kpis">
             <div class="mini-kpi">
-              <small>Participation</small>
-              <strong>{{ safePercent(analytics?.registrationRate) }}</strong>
-              <em>{{ safeNumber(analytics?.totalRegistrations) }} inscriptions</em>
+              <small>Taux d'inscription</small>
+              <strong>{{ formatPercent(stats.registrationRate) }}</strong>
+              <em>{{ formatNumber(stats.totalRegistrations) }} inscriptions</em>
             </div>
             <div class="mini-kpi">
-              <small>Satisfaction</small>
-              <strong>{{ safeRating(analytics?.averageRating) }}</strong>
-              <em>{{ safeNumber(analytics?.totalFeedbacks) }} feedbacks</em>
+              <small>Note moyenne</small>
+              <strong>{{ formatRating(stats.averageRating) }}</strong>
+              <em>{{ formatNumber(stats.totalFeedbacks) }} feedbacks</em>
             </div>
           </div>
+
+          <!-- Mini bar chart -->
+          <div class="mini-chart">
+            <div class="mini-chart-header">
+              <small>Inscriptions mensuelles</small>
+              <span class="mini-chart-trend">+12%</span>
+            </div>
+            <div class="mini-chart-bars">
+              <div class="mini-bar" style="height: 40%"><span>Jan</span></div>
+              <div class="mini-bar" style="height: 55%"><span>Fév</span></div>
+              <div class="mini-bar" style="height: 45%"><span>Mar</span></div>
+              <div class="mini-bar" style="height: 70%"><span>Avr</span></div>
+              <div class="mini-bar" style="height: 60%"><span>Mai</span></div>
+              <div class="mini-bar active" style="height: 85%"><span>Juin</span></div>
+            </div>
+          </div>
+
+          <!-- Event list -->
           <div class="mini-event-list">
             <div class="mini-event-row">
-              <div class="mini-event-icon blue"></div>
+              <div class="mini-event-icon blue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
               <div>
-                <strong>{{ heroPrimaryEventTitle }}</strong>
-                <span>{{ safeNumber(heroPrimaryRegistrations) }} inscriptions</span>
+                <strong>{{ heroEvents[0].title }}</strong>
+                <span>{{ heroEvents[0].registrations }} inscriptions</span>
               </div>
               <label>Publié</label>
             </div>
             <div class="mini-event-row">
-              <div class="mini-event-icon violet"></div>
+              <div class="mini-event-icon violet">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
               <div>
-                <strong>{{ heroSecondaryEventTitle }}</strong>
-                <span>{{ safeNumber(analytics?.totalPresent) }} présences confirmées</span>
+                <strong>{{ heroEvents[1].title }}</strong>
+                <span>{{ heroEvents[1].registrations }} présences confirmées</span>
               </div>
               <label class="warning">Suivi</label>
+            </div>
+            <div class="mini-event-row">
+              <div class="mini-event-icon teal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <div>
+                <strong>Feedback collecté</strong>
+                <span>{{ formatRating(stats.averageRating) }} note moyenne</span>
+              </div>
+              <label class="success">Terminé</label>
             </div>
           </div>
         </article>
@@ -188,37 +227,26 @@
         <p>Les chiffres ci-dessous reflètent l'activité réelle de la plateforme.</p>
       </div>
 
-      @if (loadingStats) {
-        <div class="stats-loading">
-          <div class="spinner"></div>
-          <span>Chargement des statistiques...</span>
-        </div>
-      }
-
-      @if (statsError) {
-        <div class="stats-warning">{{ statsError }}</div>
-      }
-
       <div class="analytics-kpi-grid">
         <article class="analytics-kpi-card">
           <span>Événements</span>
-          <strong>{{ safeNumber(analytics?.totalEvents) }}</strong>
-          <small>{{ safeNumber(analytics?.publishedEvents) }} publiés</small>
+          <strong>{{ formatNumber(stats.totalEvents) }}</strong>
+          <small>{{ formatNumber(stats.publishedEvents) }} publiés</small>
         </article>
         <article class="analytics-kpi-card">
           <span>Inscriptions</span>
-          <strong>{{ safeNumber(analytics?.totalRegistrations) }}</strong>
-          <small>{{ safeNumber(analytics?.totalCapacity) }} places</small>
+          <strong>{{ formatNumber(stats.totalRegistrations) }}</strong>
+          <small>{{ formatNumber(stats.totalCapacity) }} places</small>
         </article>
         <article class="analytics-kpi-card">
           <span>Présence</span>
-          <strong>{{ safePercent(analytics?.attendanceRate) }}</strong>
-          <small>{{ safeNumber(analytics?.totalPresent) }} présents</small>
+          <strong>{{ formatPercent(stats.attendanceRate) }}</strong>
+          <small>{{ formatNumber(stats.totalPresent) }} présents</small>
         </article>
         <article class="analytics-kpi-card">
           <span>Satisfaction</span>
-          <strong>{{ safeRating(analytics?.averageRating) }}</strong>
-          <small>{{ safeNumber(analytics?.totalFeedbacks) }} feedbacks</small>
+          <strong>{{ formatRating(stats.averageRating) }}</strong>
+          <small>{{ formatNumber(stats.totalFeedbacks) }} feedbacks</small>
         </article>
       </div>
     </section>
@@ -226,19 +254,19 @@
     <!-- BLUE STATS BAR -->
     <section id="statistiques" class="blue-stats-bar">
       <article>
-        <strong>{{ safeNumber(analytics?.totalEvents) }}</strong>
+        <strong>{{ formatNumber(stats.totalEvents) }}</strong>
         <span>Événements</span>
       </article>
       <article>
-        <strong>{{ safeNumber(analytics?.totalRegistrations) }}</strong>
+        <strong>{{ formatNumber(stats.totalRegistrations) }}</strong>
         <span>Inscriptions</span>
       </article>
       <article>
-        <strong>{{ safePercent(analytics?.attendanceRate) }}</strong>
+        <strong>{{ formatPercent(stats.attendanceRate) }}</strong>
         <span>Présence</span>
       </article>
       <article>
-        <strong>{{ safeRating(analytics?.averageRating) }}</strong>
+        <strong>{{ formatRating(stats.averageRating) }}</strong>
         <span>Satisfaction</span>
       </article>
     </section>
@@ -344,11 +372,11 @@
         </div>
         <div class="recommendation-box">
           <div class="recommendation-title-row">
-            <h3>{{ recommendedEventTitle }}</h3>
+            <h3>{{ heroEvents[0].title }}</h3>
             <span>{{ suggestionMatch }}% Match</span>
           </div>
           <div class="recommendation-meta">
-            <p>Participation estimée : <strong>{{ safePercent(analytics?.registrationRate) }}</strong></p>
+            <p>Participation estimée : <strong>{{ formatPercent(stats.registrationRate) }}</strong></p>
             <p>Meilleur jour : <strong>Jeudi · 17h</strong></p>
             <p>Cible : <strong>IT + Marketing</strong></p>
             <p>Risque : <strong>Faible</strong></p>
