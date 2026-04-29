@@ -1,19 +1,14 @@
-
 <div class="landing-page">
-  <!-- ================= NAVBAR ================= -->
+  <!-- NAVBAR -->
   <header class="landing-navbar">
-    <a routerLink="/" class="landing-logo" aria-label="Accueil CapEvents">
-      CapEvents
-    </a>
-
+    <a routerLink="/" class="landing-logo" aria-label="Accueil CapEvents">CapEvents</a>
     <nav class="landing-nav" aria-label="Navigation principale">
       <a href="#fonctionnalites">Fonctionnalités</a>
       <a href="#roles">Comment ça marche</a>
       <a href="#analytics">Statistiques</a>
-      <a href="#ia">IA</a>
+      <a href="#badges">Gamification</a>
       <a href="#faq">FAQ</a>
     </nav>
-
     <div class="navbar-actions">
       <a routerLink="/login" class="login-link">Se connecter</a>
       <a routerLink="/register" class="nav-register-btn">S'inscrire</a>
@@ -21,22 +16,12 @@
   </header>
 
   <main>
-    <!-- ================= HERO ================= -->
+    <!-- HERO -->
     <section class="hero-section">
       <div class="hero-copy">
         <span class="hero-badge">Nouveau · Version 1.0 disponible</span>
-
-        <h1>
-          Renforcez la <span>cohésion</span> et
-          <span>l'engagement</span> de vos équipes
-        </h1>
-
-        <p>
-          Une plateforme moderne conçue pour simplifier l’organisation
-          d’événements internes, booster la participation et mesurer l’impact
-          de vos initiatives sociales.
-        </p>
-
+        <h1>Renforcez la <span>cohésion</span> et <span>l'engagement</span> de vos équipes</h1>
+        <p>Une plateforme moderne conçue pour simplifier l'organisation d'événements internes, booster la participation et mesurer l'impact de vos initiatives sociales.</p>
         <div class="hero-actions">
           <a routerLink="/register" class="primary-action">Commencer maintenant</a>
           <a href="#fonctionnalites" class="secondary-action">
@@ -44,7 +29,6 @@
             Voir la plateforme
           </a>
         </div>
-
         <div class="hero-micro-stats">
           <span><i class="dot dot-green"></i> Sécurisé par rôles</span>
           <span><i class="dot dot-blue"></i> Analytics RH</span>
@@ -56,15 +40,9 @@
         <article class="mini-dashboard-card">
           <div class="mini-dashboard-top">
             <div class="mini-avatar">RH</div>
-            <div class="mini-lines">
-              <span></span>
-              <small></small>
-            </div>
-            <div class="mini-icons">
-              <b></b><b></b><b></b>
-            </div>
+            <div class="mini-lines"><span></span><small></small></div>
+            <div class="mini-icons"><b></b><b></b><b></b></div>
           </div>
-
           <div class="mini-kpis">
             <div class="mini-kpi">
               <small>Participation</small>
@@ -77,7 +55,6 @@
               <em>{{ safeNumber(analytics?.totalFeedbacks) }} feedbacks</em>
             </div>
           </div>
-
           <div class="mini-event-list">
             <div class="mini-event-row">
               <div class="mini-event-icon blue"></div>
@@ -87,7 +64,6 @@
               </div>
               <label>Publié</label>
             </div>
-
             <div class="mini-event-row">
               <div class="mini-event-icon violet"></div>
               <div>
@@ -101,17 +77,13 @@
       </div>
     </section>
 
-    <!-- ================= FONCTIONNALITÉS ================= -->
+    <!-- FONCTIONNALITÉS -->
     <section id="fonctionnalites" class="features-section">
       <div class="section-title centered">
         <span class="section-eyebrow">Fonctionnalités principales</span>
-        <h2>Tout ce qu’il faut pour gérer vos événements internes</h2>
-        <p>
-          CapEvents couvre le cycle complet : création, participation, présence,
-          feedback, gamification, analytics et administration.
-        </p>
+        <h2>Tout ce qu'il faut pour gérer vos événements internes</h2>
+        <p>CapEvents couvre le cycle complet : création, participation, présence, feedback, gamification, analytics et administration.</p>
       </div>
-
       <div class="features-grid">
         <article class="feature-card">
           <div class="feature-icon icon-blue">
@@ -120,7 +92,6 @@
           <h3>Gestion des événements</h3>
           <p>Créer, publier, modifier, annuler et archiver les événements internes.</p>
         </article>
-
         <article class="feature-card">
           <div class="feature-icon icon-cyan">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -128,15 +99,13 @@
           <h3>Participation & invitations</h3>
           <p>Inscription, désinscription, RSVP, invitations et suivi des participants.</p>
         </article>
-
         <article class="feature-card">
           <div class="feature-icon icon-teal">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           </div>
           <h3>Feedback & satisfaction</h3>
-          <p>Collecter les notes, commentaires publics et retours d’expérience.</p>
+          <p>Collecter les notes, commentaires publics et retours d'expérience.</p>
         </article>
-
         <article class="feature-card">
           <div class="feature-icon icon-purple">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
@@ -144,7 +113,6 @@
           <h3>Points, badges & récompenses</h3>
           <p>Valoriser la participation avec une couche complète de gamification.</p>
         </article>
-
         <article class="feature-card">
           <div class="feature-icon icon-orange">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
@@ -152,7 +120,6 @@
           <h3>Analytics RH & Manager</h3>
           <p>Suivre les KPIs, tendances, top participants et performances par département.</p>
         </article>
-
         <article class="feature-card">
           <div class="feature-icon icon-red">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -163,17 +130,13 @@
       </div>
     </section>
 
-    <!-- ================= ROLES ================= -->
+    <!-- ROLES -->
     <section id="roles" class="roles-section">
       <div class="section-title centered">
         <span class="section-eyebrow">Comment ça marche</span>
         <h2>Une solution pour <span>tous les rôles</span></h2>
-        <p>
-          Chaque profil a son propre parcours pour garder l’application simple,
-          claire et adaptée aux responsabilités de chacun.
-        </p>
+        <p>Chaque profil a son propre parcours pour garder l'application simple, claire et adaptée aux responsabilités de chacun.</p>
       </div>
-
       <div class="roles-grid">
         <article class="role-card">
           <div class="role-icon">
@@ -186,9 +149,8 @@
             <li>Gérer utilisateurs, départements et récompenses</li>
             <li>Analyser les performances globales</li>
           </ul>
-          <a routerLink="/login">Accéder à l’espace RH →</a>
+          <a routerLink="/login">Accéder à l'espace RH →</a>
         </article>
-
         <article class="role-card">
           <div class="role-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -196,13 +158,12 @@
           <h3>Pour les Managers</h3>
           <ul>
             <li>Créer des événements pour leur périmètre</li>
-            <li>Suivre la présence de l’équipe</li>
+            <li>Suivre la présence de l'équipe</li>
             <li>Lire les statistiques départementales</li>
             <li>Identifier les collaborateurs engagés</li>
           </ul>
-          <a routerLink="/login">Accéder à l’espace manager →</a>
+          <a routerLink="/login">Accéder à l'espace manager →</a>
         </article>
-
         <article class="role-card">
           <div class="role-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -210,24 +171,21 @@
           <h3>Pour les Employés</h3>
           <ul>
             <li>Découvrir les événements disponibles</li>
-            <li>S’inscrire, répondre aux invitations</li>
+            <li>S'inscrire, répondre aux invitations</li>
             <li>Donner un feedback après participation</li>
             <li>Consulter points, badges et récompenses</li>
           </ul>
-          <a routerLink="/login">Accéder à l’espace employé →</a>
+          <a routerLink="/login">Accéder à l'espace employé →</a>
         </article>
       </div>
     </section>
 
-    <!-- ================= ANALYTICS DETAIL ================= -->
+    <!-- ANALYTICS -->
     <section id="analytics" class="analytics-section">
       <div class="section-title centered white-title">
         <span class="section-eyebrow light">Statistiques de la plateforme</span>
-        <h2>Des indicateurs concrets pour piloter l’engagement</h2>
-        <p>
-          Les chiffres ci-dessous viennent des données analytics déjà utilisées
-          par la page Statistiques RH / Manager.
-        </p>
+        <h2>Des indicateurs concrets pour piloter l'engagement</h2>
+        <p>Les chiffres ci-dessous reflètent l'activité réelle de la plateforme.</p>
       </div>
 
       @if (loadingStats) {
@@ -238,9 +196,7 @@
       }
 
       @if (statsError) {
-        <div class="stats-warning">
-          {{ statsError }} Les blocs restent visibles avec des valeurs à zéro.
-        </div>
+        <div class="stats-warning">{{ statsError }}</div>
       }
 
       <div class="analytics-kpi-grid">
@@ -249,148 +205,25 @@
           <strong>{{ safeNumber(analytics?.totalEvents) }}</strong>
           <small>{{ safeNumber(analytics?.publishedEvents) }} publiés</small>
         </article>
-
         <article class="analytics-kpi-card">
           <span>Inscriptions</span>
           <strong>{{ safeNumber(analytics?.totalRegistrations) }}</strong>
-          <small>{{ safeNumber(analytics?.totalCapacity) }} places proposées</small>
+          <small>{{ safeNumber(analytics?.totalCapacity) }} places</small>
         </article>
-
         <article class="analytics-kpi-card">
           <span>Présence</span>
           <strong>{{ safePercent(analytics?.attendanceRate) }}</strong>
           <small>{{ safeNumber(analytics?.totalPresent) }} présents</small>
         </article>
-
         <article class="analytics-kpi-card">
           <span>Satisfaction</span>
           <strong>{{ safeRating(analytics?.averageRating) }}</strong>
           <small>{{ safeNumber(analytics?.totalFeedbacks) }} feedbacks</small>
         </article>
       </div>
-
-      <div class="analytics-detail-grid">
-        <article class="analytics-panel">
-          <div class="panel-head">
-            <h3>Événements les plus engageants</h3>
-            <span>Top {{ topEngagingEvents.length }}</span>
-          </div>
-
-          @if (topEngagingEvents.length === 0) {
-            <p class="panel-empty">Aucune donnée d’engagement disponible.</p>
-          }
-
-          @for (item of topEngagingEvents; track item.eventId) {
-            <div class="mini-ranking-row">
-              <div>
-                <strong>{{ item.title }}</strong>
-                <span>{{ item.registeredCount }} inscrits · {{ item.presentCount }} présents</span>
-              </div>
-              <em>{{ formatPercent(item.attendanceRate) }}</em>
-            </div>
-          }
-        </article>
-
-        <article class="analytics-panel">
-          <div class="panel-head">
-            <h3>Top participants</h3>
-            <span>Top {{ topMembers.length }}</span>
-          </div>
-
-          @if (topMembers.length === 0) {
-            <p class="panel-empty">Aucun participant classé pour le moment.</p>
-          }
-
-          @for (member of topMembers; track member.email) {
-            <div class="mini-ranking-row">
-              <div>
-                <strong>{{ member.fullName }}</strong>
-                <span>{{ member.departmentName || 'Sans département' }} · {{ member.presentCount }} présences</span>
-              </div>
-              <em>{{ formatPercent(member.attendanceRate) }}</em>
-            </div>
-          }
-        </article>
-      </div>
     </section>
 
-    <!-- ================= IA ================= -->
-    <section id="ia" class="ai-section">
-      <article class="recommendation-card">
-        <div class="recommendation-head">
-          <strong>Recommandation du mois</strong>
-          <span>IA Ready</span>
-        </div>
-
-        <div class="recommendation-box">
-          <div class="recommendation-title-row">
-            <h3>{{ recommendedEventTitle }}</h3>
-            <span>{{ suggestionMatch }}% Match</span>
-          </div>
-
-          <div class="recommendation-meta">
-            <p>Participation estimée : <strong>{{ safePercent(analytics?.registrationRate) }}</strong></p>
-            <p>Meilleur jour : <strong>Jeudi · 17h</strong></p>
-            <p>Cible : <strong>IT + Marketing</strong></p>
-            <p>Risque : <strong>Faible</strong></p>
-          </div>
-
-          <div class="recommendation-progress">
-            <span [style.width]="progressWidth(suggestionMatch)"></span>
-          </div>
-
-          <button type="button">Créer cet événement</button>
-        </div>
-
-        <div class="fake-lines">
-          <span></span>
-          <span></span>
-        </div>
-      </article>
-
-      <div class="ai-copy">
-        <span class="section-eyebrow">Future couche IA</span>
-        <h2>L'Intelligence Artificielle au service de <span>l'engagement</span></h2>
-        <p>
-          Ne devinez plus ce qui plaît à vos équipes. La future couche IA analysera
-          les tendances, les feedbacks et les historiques pour proposer des actions utiles.
-        </p>
-
-        <div class="ai-points">
-          <div class="ai-point">
-            <div class="ai-point-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-            </div>
-            <div>
-              <strong>Analyse prédictive</strong>
-              <span>Identifier les créneaux horaires optimaux.</span>
-            </div>
-          </div>
-
-          <div class="ai-point">
-            <div class="ai-point-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            </div>
-            <div>
-              <strong>Insights feedback</strong>
-              <span>Transformer les commentaires en points forts et axes d’amélioration.</span>
-            </div>
-          </div>
-
-          <div class="ai-point">
-            <div class="ai-point-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
-            </div>
-            <div>
-              <strong>Cohésion ciblée</strong>
-              <span>Suggérer des formats qui rapprochent les départements.</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= BLUE STATS BAR ================= -->
+    <!-- BLUE STATS BAR -->
     <section id="statistiques" class="blue-stats-bar">
       <article>
         <strong>{{ safeNumber(analytics?.totalEvents) }}</strong>
@@ -410,94 +243,213 @@
       </article>
     </section>
 
-    <!-- ================= PROCESS ================= -->
-    <section class="process-section">
+    <!-- BADGES & GAMIFICATION -->
+    <section id="badges" class="gamification-section">
       <div class="section-title centered">
-        <span class="section-eyebrow">Parcours simple</span>
-        <h2>De l’idée à l’impact mesurable</h2>
-        <p>Un flux clair pour créer, engager, mesurer et améliorer les événements internes.</p>
+        <span class="section-eyebrow">Gamification</span>
+        <h2>Engagez vos équipes avec des <span>récompenses</span></h2>
+        <p>Badges, points et niveaux pour motiver la participation et valoriser l'engagement.</p>
       </div>
 
-      <div class="process-grid">
-        <article>
-          <strong>01</strong>
-          <h3>Créer</h3>
-          <p>RH ou manager prépare l’événement, définit la cible, la capacité et la date.</p>
-        </article>
-        <article>
-          <strong>02</strong>
-          <h3>Participer</h3>
-          <p>Les employés découvrent, s’inscrivent, répondent aux invitations et participent.</p>
-        </article>
-        <article>
-          <strong>03</strong>
-          <h3>Mesurer</h3>
-          <p>La plateforme suit les inscriptions, la présence, les feedbacks et la satisfaction.</p>
-        </article>
-        <article>
-          <strong>04</strong>
-          <h3>Améliorer</h3>
-          <p>Les analytics et la future IA aident à proposer de meilleurs événements.</p>
-        </article>
+      <div class="gamification-layout">
+        <!-- Left: Badges -->
+        <div class="gamification-panel">
+          <div class="panel-head">
+            <h3>Badges à débloquer</h3>
+            <span class="panel-tag">6 badges</span>
+          </div>
+          <div class="badges-showcase-grid">
+            @for (badge of showcaseBadges; track badge.name) {
+              <div class="badge-showcase-card" [attr.data-tone]="badge.tone">
+                <div class="badge-showcase-icon">{{ badge.icon }}</div>
+                <strong>{{ badge.name }}</strong>
+                <span>{{ badge.description }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Right: Gamification insights -->
+        <div class="gamification-panel">
+          <div class="panel-head">
+            <h3>Progression & Activité</h3>
+            <span class="panel-tag">Aperçu</span>
+          </div>
+
+          <div class="gamification-stats">
+            <div class="gam-stat-card">
+              <div class="gam-stat-icon icon-blue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <div>
+                <strong>Points cumulés</strong>
+                <span>Gagnez des points à chaque événement</span>
+              </div>
+              <em class="gam-value">+250</em>
+            </div>
+
+            <div class="gam-stat-card">
+              <div class="gam-stat-icon icon-purple">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+              </div>
+              <div>
+                <strong>Niveau actuel</strong>
+                <span>Progressez à travers les niveaux</span>
+              </div>
+              <em class="gam-value">Niv. 5</em>
+            </div>
+
+            <div class="gam-stat-card">
+              <div class="gam-stat-icon icon-teal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div>
+                <strong>Événements complétés</strong>
+                <span>Présence confirmée et feedback donné</span>
+              </div>
+              <em class="gam-value">12</em>
+            </div>
+
+            <div class="gam-stat-card">
+              <div class="gam-stat-icon icon-orange">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div>
+                <strong>Série en cours</strong>
+                <span>Participations consécutives</span>
+              </div>
+              <em class="gam-value">3 🔥</em>
+            </div>
+          </div>
+
+          <div class="gam-progress-block">
+            <div class="gam-progress-header">
+              <span>Progression vers le prochain niveau</span>
+              <strong>68%</strong>
+            </div>
+            <div class="gam-progress-track">
+              <div class="gam-progress-fill" style="width: 68%"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- ================= CTA ================= -->
+    <!-- IA -->
+    <section id="ia" class="ai-section">
+      <article class="recommendation-card">
+        <div class="recommendation-head">
+          <strong>Recommandation du mois</strong>
+          <span>IA Ready</span>
+        </div>
+        <div class="recommendation-box">
+          <div class="recommendation-title-row">
+            <h3>{{ recommendedEventTitle }}</h3>
+            <span>{{ suggestionMatch }}% Match</span>
+          </div>
+          <div class="recommendation-meta">
+            <p>Participation estimée : <strong>{{ safePercent(analytics?.registrationRate) }}</strong></p>
+            <p>Meilleur jour : <strong>Jeudi · 17h</strong></p>
+            <p>Cible : <strong>IT + Marketing</strong></p>
+            <p>Risque : <strong>Faible</strong></p>
+          </div>
+          <div class="recommendation-progress">
+            <span [style.width]="progressWidth(suggestionMatch)"></span>
+          </div>
+          <button type="button">Créer cet événement</button>
+        </div>
+        <div class="fake-lines"><span></span><span></span></div>
+      </article>
+
+      <div class="ai-copy">
+        <span class="section-eyebrow">Future couche IA</span>
+        <h2>L'Intelligence Artificielle au service de <span>l'engagement</span></h2>
+        <p>Ne devinez plus ce qui plaît à vos équipes. La future couche IA analysera les tendances, les feedbacks et les historiques pour proposer des actions utiles.</p>
+        <div class="ai-points">
+          <div class="ai-point">
+            <div class="ai-point-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            </div>
+            <div>
+              <strong>Analyse prédictive</strong>
+              <span>Identifier les créneaux horaires optimaux.</span>
+            </div>
+          </div>
+          <div class="ai-point">
+            <div class="ai-point-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div>
+              <strong>Insights feedback</strong>
+              <span>Transformer les commentaires en axes d'amélioration.</span>
+            </div>
+          </div>
+          <div class="ai-point">
+            <div class="ai-point-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+            </div>
+            <div>
+              <strong>Cohésion ciblée</strong>
+              <span>Suggérer des formats qui rapprochent les départements.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section class="process-section">
+      <div class="section-title centered">
+        <span class="section-eyebrow">Parcours simple</span>
+        <h2>De l'idée à l'impact mesurable</h2>
+        <p>Un flux clair pour créer, engager, mesurer et améliorer les événements internes.</p>
+      </div>
+      <div class="process-grid">
+        <article><strong>01</strong><h3>Créer</h3><p>RH ou manager prépare l'événement, définit la cible, la capacité et la date.</p></article>
+        <article><strong>02</strong><h3>Participer</h3><p>Les employés découvrent, s'inscrivent, répondent aux invitations et participent.</p></article>
+        <article><strong>03</strong><h3>Mesurer</h3><p>La plateforme suit les inscriptions, la présence, les feedbacks et la satisfaction.</p></article>
+        <article><strong>04</strong><h3>Améliorer</h3><p>Les analytics et la future IA aident à proposer de meilleurs événements.</p></article>
+      </div>
+    </section>
+
+    <!-- CTA -->
     <section class="cta-section">
       <h2>Prêt à transformer votre culture d'entreprise ?</h2>
-      <p>
-        Rejoignez les équipes qui font de l’engagement collaborateur une priorité stratégique.
-      </p>
-
+      <p>Rejoignez les équipes qui font de l'engagement collaborateur une priorité stratégique.</p>
       <div class="cta-actions">
         <a routerLink="/register" class="primary-action">Créer un compte entreprise</a>
         <a routerLink="/login" class="outline-action">Se connecter</a>
       </div>
     </section>
 
-    <!-- ================= FAQ ================= -->
+    <!-- FAQ -->
     <section id="faq" class="faq-section">
       <div class="section-title centered">
         <span class="section-eyebrow">FAQ</span>
         <h2>Questions fréquentes</h2>
         <p>Quelques réponses rapides avant de commencer avec CapEvents.</p>
       </div>
-
       <div class="faq-grid">
-        <article>
-          <h3>Qui peut utiliser CapEvents ?</h3>
-          <p>Les employés, managers et RH, chacun avec des accès adaptés à son rôle.</p>
-        </article>
-        <article>
-          <h3>Les statistiques sont-elles réelles ?</h3>
-          <p>Oui, elles utilisent les données retournées par le service analytics de l’application.</p>
-        </article>
-        <article>
-          <h3>L’IA est-elle déjà obligatoire ?</h3>
-          <p>Non. La landing page peut être terminée avant les modules IA, qui seront ajoutés progressivement.</p>
-        </article>
+        <article><h3>Qui peut utiliser CapEvents ?</h3><p>Les employés, managers et RH, chacun avec des accès adaptés à son rôle.</p></article>
+        <article><h3>Les statistiques sont-elles réelles ?</h3><p>Oui, elles utilisent les données retournées par le service analytics de l'application.</p></article>
+        <article><h3>L'IA est-elle déjà obligatoire ?</h3><p>Non. Les modules IA seront ajoutés progressivement.</p></article>
       </div>
     </section>
   </main>
 
-  <!-- ================= FOOTER ================= -->
+  <!-- FOOTER -->
   <footer class="landing-footer">
     <div class="footer-about">
       <h3>CapEvents</h3>
-      <p>
-        Plateforme interne de gestion d'événements et de team building.
-        Renforcez les liens, créez des souvenirs et mesurez l’impact RH.
-      </p>
+      <p>Plateforme interne de gestion d'événements et de team building. Renforcez les liens, créez des souvenirs et mesurez l'impact RH.</p>
     </div>
-
     <div class="footer-column">
       <h4>Plateforme</h4>
       <a href="#fonctionnalites">Fonctionnalités</a>
       <a href="#analytics">Statistiques</a>
-      <a href="#ia">Intelligence IA</a>
+      <a href="#badges">Gamification</a>
       <a href="#roles">Roadmap</a>
     </div>
-
     <div class="footer-column">
       <h4>Support</h4>
       <a href="#faq">Centre d'aide</a>
@@ -505,14 +457,12 @@
       <a routerLink="/login">Contact RH</a>
       <a href="#statistiques">État du service</a>
     </div>
-
     <div class="footer-column">
       <h4>Légal</h4>
       <a href="#">Confidentialité</a>
       <a href="#">CGU</a>
       <a href="#">Cookies</a>
     </div>
-
     <div class="footer-bottom">
       <span>© 2025 CapEvents. Tous droits réservés.</span>
       <div>

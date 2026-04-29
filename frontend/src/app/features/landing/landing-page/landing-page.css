@@ -4,7 +4,7 @@
 
 .landing-page {
   min-height: 100vh;
-  background: #f7f8fa;
+  background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
 }
@@ -27,13 +27,13 @@
 /* ================= NAVBAR ================= */
 .landing-navbar {
   min-height: 64px;
-  padding: 0 24px;
-  background: #ffffff;
-  border-bottom: 1px solid #e9eef4;
+  padding: 0 var(--space-6);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: var(--space-6);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -231,11 +231,11 @@
 
 .mini-dashboard-card {
   width: min(100%, 500px);
-  background: #ffffff;
-  border: 1px solid #e4eaf1;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 24px 56px rgba(18, 26, 56, 0.16);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-lg);
 }
 
 .mini-dashboard-top {
@@ -295,8 +295,8 @@
 }
 
 .mini-kpi {
-  border: 1px solid #eef2f7;
-  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   padding: 15px;
 }
 
@@ -379,12 +379,12 @@
 .process-section,
 .faq-section {
   padding: 78px 34px 84px;
-  background: #ffffff;
+  background: var(--color-surface);
 }
 
 .roles-section,
 .faq-section {
-  border-top: 1px solid #edf2f7;
+  border-top: 1px solid var(--color-border);
 }
 
 .section-title {
@@ -426,10 +426,10 @@
 }
 
 .feature-card {
-  background: #fbfcfe;
-  border: 1px solid #edf2f7;
-  border-radius: 18px;
-  padding: 24px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
   transition: all var(--transition-base);
 }
 
@@ -445,10 +445,10 @@
 .feature-icon {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   display: grid;
   place-items: center;
-  margin-bottom: 18px;
+  margin-bottom: var(--space-5);
 }
 
 .icon-blue { background: rgba(0, 88, 171, 0.10); color: var(--color-primary); }
@@ -485,9 +485,9 @@
 }
 
 .role-card {
-  background: #fbfcfe;
-  border: 1px solid #edf2f7;
-  border-radius: 18px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 28px;
   transition: all var(--transition-base);
 }
@@ -548,7 +548,7 @@
 .analytics-section {
   padding: 82px 34px 86px;
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-surface);
 }
 
 .white-title h2,
@@ -595,7 +595,7 @@
   gap: 1px;
   background: rgba(255, 255, 255, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   margin-bottom: 28px;
 }
@@ -638,11 +638,11 @@
 }
 
 .analytics-panel {
-  background: #ffffff;
+  background: var(--color-surface);
   color: var(--color-text);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 16px 38px rgba(18, 26, 56, 0.16);
+  border-radius: var(--radius-md);
+  padding: var(--card-padding);
+  box-shadow: var(--shadow-lg);
 }
 
 .panel-head {
@@ -679,7 +679,7 @@
   justify-content: space-between;
   gap: 14px;
   padding: 13px 0;
-  border-top: 1px solid #eef2f7;
+  border-top: 1px solid var(--color-border);
 }
 
 .mini-ranking-row strong,
@@ -713,16 +713,16 @@
   grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
   gap: 70px;
   align-items: center;
-  background: #f7f8fa;
+  background: var(--color-bg);
 }
 
 .recommendation-card {
-  background: #ffffff;
-  border: 1px solid #e4eaf1;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-left: 5px solid rgba(29, 181, 226, 0.32);
   border-radius: 22px;
   padding: 26px;
-  box-shadow: 0 18px 45px rgba(18, 26, 56, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
 .recommendation-head,
@@ -926,7 +926,7 @@
 
 /* ================= PROCESS ================= */
 .process-section {
-  background: #ffffff;
+  background: var(--color-surface);
 }
 
 .process-grid {
@@ -936,10 +936,10 @@
 }
 
 .process-grid article {
-  padding: 24px;
-  border-radius: 18px;
-  border: 1px solid #edf2f7;
-  background: #fbfcfe;
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
   transition: all var(--transition-base);
 }
 
@@ -998,10 +998,10 @@
 }
 
 .faq-grid article {
-  background: #fbfcfe;
-  border: 1px solid #edf2f7;
-  border-radius: 18px;
-  padding: 22px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--card-padding);
   transition: all var(--transition-base);
 }
 
@@ -1019,8 +1019,8 @@
 /* ================= FOOTER ================= */
 .landing-footer {
   padding: 56px 34px 30px;
-  background: #ffffff;
-  border-top: 1px solid #edf2f7;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
   display: grid;
   grid-template-columns: 1.4fr repeat(3, 1fr);
   gap: 44px;
@@ -1061,9 +1061,9 @@
 
 .footer-bottom {
   grid-column: 1 / -1;
-  padding-top: 24px;
+  padding-top: var(--space-6);
   margin-top: 10px;
-  border-top: 1px solid #edf2f7;
+  border-top: 1px solid var(--color-border);
   color: var(--color-text-muted);
   font-size: 11px;
 }
@@ -1082,6 +1082,196 @@
   font-weight: 800;
 }
 
+/* ================= BADGES & GAMIFICATION ================= */
+.gamification-section {
+  padding: 78px 34px 84px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.gamification-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.gamification-panel {
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.panel-head h3 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  color: var(--color-text);
+}
+
+.panel-tag {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(0, 88, 171, 0.08);
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 800;
+  font-family: var(--font-heading);
+}
+
+.badges-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.badge-showcase-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 18px 14px;
+  text-align: center;
+  background: var(--color-surface);
+  transition: all var(--transition-base);
+}
+
+.badge-showcase-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(0, 88, 171, 0.16);
+}
+
+.badge-showcase-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.badge-showcase-card strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.badge-showcase-card span {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.badge-showcase-card[data-tone="gold"] { border-left: 3px solid #f59e0b; }
+.badge-showcase-card[data-tone="blue"] { border-left: 3px solid var(--color-primary-2); }
+.badge-showcase-card[data-tone="red"] { border-left: 3px solid #ef4444; }
+.badge-showcase-card[data-tone="purple"] { border-left: 3px solid var(--color-accent-purple); }
+.badge-showcase-card[data-tone="teal"] { border-left: 3px solid var(--color-success); }
+.badge-showcase-card[data-tone="orange"] { border-left: 3px solid var(--color-accent-terracotta); }
+
+.gamification-stats {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.gam-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  transition: all var(--transition-base);
+}
+
+.gam-stat-card:hover {
+  border-color: rgba(0, 88, 171, 0.16);
+  box-shadow: var(--shadow-sm);
+}
+
+.gam-stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.gam-stat-card strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.gam-stat-card span {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.gam-value {
+  margin-left: auto;
+  font-style: normal;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.gam-progress-block {
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.gam-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.gam-progress-header span {
+  font-size: 12px;
+  color: var(--color-text-soft);
+}
+
+.gam-progress-header strong {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  color: var(--color-primary);
+}
+
+.gam-progress-track {
+  height: 10px;
+  border-radius: 999px;
+  background: #e9eef4;
+  overflow: hidden;
+}
+
+.gam-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-primary-2), var(--color-primary));
+  transition: width 0.6s ease;
+}
+
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1100px) {
   .landing-nav {
@@ -1095,10 +1285,13 @@
 
   .features-grid,
   .roles-grid,
-  .analytics-detail-grid,
   .process-grid,
   .faq-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gamification-layout {
+    grid-template-columns: 1fr;
   }
 
   .landing-footer {
@@ -1120,6 +1313,7 @@
   .roles-section,
   .analytics-section,
   .ai-section,
+  .gamification-section,
   .process-section,
   .cta-section,
   .faq-section,
@@ -1149,11 +1343,14 @@
   .features-grid,
   .roles-grid,
   .analytics-kpi-grid,
-  .analytics-detail-grid,
   .blue-stats-bar,
   .process-grid,
   .faq-grid,
   .landing-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .badges-showcase-grid {
     grid-template-columns: 1fr;
   }
 

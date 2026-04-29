@@ -22,6 +22,16 @@ export class LandingPage {
   loadingStats = false;
   statsError = '';
 
+  // Static badges for the landing page showcase
+  showcaseBadges = [
+    { icon: '🏅', name: 'Top Participant', description: 'Participer à plus de 10 événements', tone: 'gold' },
+    { icon: '🎯', name: 'Premier Pas', description: 'S\'inscrire à son premier événement', tone: 'blue' },
+    { icon: '🔥', name: 'On Fire', description: '5 événements en un mois', tone: 'red' },
+    { icon: '💡', name: 'Innovateur', description: 'Proposer un événement approuvé', tone: 'purple' },
+    { icon: '⭐', name: 'Critique Constructif', description: 'Laisser 20 feedbacks détaillés', tone: 'teal' },
+    { icon: '🎁', name: 'Chasseur de Récompenses', description: 'Échanger ses points contre une récompense', tone: 'orange' }
+  ];
+
   ngOnInit(): void {
     this.loadStats();
   }
