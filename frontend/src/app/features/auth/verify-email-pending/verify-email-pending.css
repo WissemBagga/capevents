@@ -68,6 +68,16 @@
   color: #0058AB;
   margin: 0;
   letter-spacing: -0.02em;
+  transition: all 0.2s ease;
+}
+
+.brand-link-simple {
+  text-decoration: none;
+}
+
+.brand-link-simple:hover h2 {
+  color: #004a91;
+  transform: translateY(-1px);
 }
 
 .auth-icon-simple {

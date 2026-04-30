@@ -24,8 +24,10 @@
         <div class="hero-actions">
           <a routerLink="/register" class="primary-action">Commencer maintenant</a>
           <a href="#fonctionnalites" class="secondary-action">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
             Voir la plateforme
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
           </a>
         </div>
         <div class="hero-micro-stats">
@@ -188,7 +190,11 @@
             <li>Gérer utilisateurs, départements et récompenses</li>
             <li>Analyser les performances globales</li>
           </ul>
-          <a routerLink="/login">Accéder à l'espace RH →</a>
+          <a routerLink="/login">Accéder à l'espace RH
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
         </article>
         <article class="role-card">
           <div class="role-icon">
@@ -201,7 +207,11 @@
             <li>Lire les statistiques départementales</li>
             <li>Identifier les collaborateurs engagés</li>
           </ul>
-          <a routerLink="/login">Accéder à l'espace manager →</a>
+          <a routerLink="/login">Accéder à l'espace manager
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
         </article>
         <article class="role-card">
           <div class="role-icon">
@@ -214,7 +224,11 @@
             <li>Donner un feedback après participation</li>
             <li>Consulter points, badges et récompenses</li>
           </ul>
-          <a routerLink="/login">Accéder à l'espace employé →</a>
+          <a routerLink="/login">Accéder à l'espace employé
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
         </article>
       </div>
     </section>
@@ -227,70 +241,25 @@
         <p>Les chiffres ci-dessous reflètent l'activité réelle de la plateforme.</p>
       </div>
 
-      @if (loadingStats) {
-        <div class="stats-loading">
-          <div class="spinner"></div>
-          <span>Chargement des statistiques...</span>
-        </div>
-      }
-
-      @if (statsError) {
-        <div class="stats-warning">{{ statsError }}</div>
-      }
-
-      @if (!loadingStats && !statsError) {
-        <div class="analytics-kpi-grid">
-          <article class="analytics-kpi-card">
-            <span>Événements Créés</span>
-            <strong>{{ formatNumber(publicStats?.totalEvents) }}</strong>
-          </article>
-          <article class="analytics-kpi-card">
-            <span>Événements Publiés</span>
-            <strong>{{ formatNumber(publicStats?.publishedEvents) }}</strong>
-          </article>
-          <article class="analytics-kpi-card">
-            <span>Utilisateurs</span>
-            <strong>{{ formatNumber(publicStats?.totalUsers) }}</strong>
-          </article>
-          <article class="analytics-kpi-card">
-            <span>Participants</span>
-            <strong>{{ formatNumber(publicStats?.totalParticipants) }}</strong>
-          </article>
-        </div>
-      }
-    </section>
-
-    <!-- BLUE STATS BAR -->
-    <section id="statistiques" class="blue-stats-bar">
-      @if (!loadingStats && !statsError) {
-        <article>
-          <strong>{{ formatNumber(publicStats?.totalEvents) }}</strong>
-          <span>Événements</span>
+      <div class="analytics-kpi-grid">
+        <article class="analytics-kpi-card">
+          <span>Événements Créés</span>
+          <strong>{{ formatNumber(publicStats.totalEvents) }}</strong>
         </article>
-        <article>
-          <strong>{{ formatNumber(publicStats?.publishedEvents) }}</strong>
-          <span>Publiés</span>
+        <article class="analytics-kpi-card">
+          <span>Événements Publiés</span>
+          <strong>{{ formatNumber(publicStats.publishedEvents) }}</strong>
         </article>
-        <article>
-          <strong>{{ formatNumber(publicStats?.totalUsers) }}</strong>
+        <article class="analytics-kpi-card">
           <span>Utilisateurs</span>
+          <strong>{{ formatNumber(publicStats.totalUsers) }}</strong>
         </article>
-        <article>
-          <strong>{{ formatNumber(publicStats?.totalParticipants) }}</strong>
+        <article class="analytics-kpi-card">
           <span>Participants</span>
+          <strong>{{ formatNumber(publicStats.totalParticipants) }}</strong>
         </article>
-      } @else {
-        <article class="full-width" style="grid-column: 1 / -1; min-height: 142px;">
-          @if (loadingStats) {
-            <span>Chargement...</span>
-          }
-          @if (statsError) {
-            <span>Données indisponibles</span>
-          }
-        </article>
-      }
+      </div>
     </section>
-
     <!-- BADGES & GAMIFICATION -->
     <section id="badges" class="gamification-section">
       <div class="section-title centered">
@@ -312,7 +281,7 @@
                 <span>Ingénieur Logiciel</span>
               </div>
             </div>
-            <span class="panel-tag user-level-tag">Profil Badges</span>
+            <span class="panel-tag user-level-tag">Mes Badges</span>
           </div>
 
           <div class="badges-grid-compact">
@@ -388,7 +357,7 @@
                 <span>Développeur Fullstack</span>
               </div>
             </div>
-            <span class="panel-tag user-level-tag">Profil Récompenses</span>
+            <span class="panel-tag user-level-tag">Mes Récompenses</span>
           </div>
 
           <section class="points-summary-card">
@@ -445,9 +414,11 @@
       </article>
 
       <div class="ai-copy">
-        <span class="section-eyebrow">Future couche IA</span>
-        <h2>L'Intelligence Artificielle au service de <span>l'engagement</span></h2>
-        <p>Ne devinez plus ce qui plaît à vos équipes. La future couche IA analysera les tendances, les feedbacks et les historiques pour proposer des actions utiles.</p>
+        <div class="section-title centered">
+          <span class="section-eyebrow">Intelligence Artificielle</span>
+          <h2>L'Intelligence Artificielle au service de <span>l'engagement</span></h2>
+          <p>Ne devinez plus ce qui plaît à vos équipes. La future couche IA analysera les tendances, les feedbacks et les historiques pour proposer des actions utiles.</p>
+        </div>
         <div class="ai-points">
           <div class="ai-point">
             <div class="ai-point-icon">
@@ -483,7 +454,7 @@
     <!-- PROCESS -->
     <section class="process-section">
       <div class="section-title centered">
-        <span class="section-eyebrow">Parcours simple</span>
+        <span class="section-eyebrow">Parcours</span>
         <h2>De l'idée à l'impact mesurable</h2>
         <p>Un flux clair pour créer, engager, mesurer et améliorer les événements internes.</p>
       </div>
@@ -500,7 +471,7 @@
       <h2>Prêt à transformer votre culture d'entreprise ?</h2>
       <p>Rejoignez les équipes qui font de l'engagement collaborateur une priorité stratégique.</p>
       <div class="cta-actions">
-        <a routerLink="/register" class="primary-action">Créer un compte entreprise</a>
+        <a routerLink="/register" class="primary-action">Créer un compte</a>
         <a routerLink="/login" class="outline-action">Se connecter</a>
       </div>
     </section>
@@ -547,10 +518,10 @@
       <a href="#">Cookies</a>
     </div>
     <div class="footer-bottom">
-      <span>© 2025 CapEvents. Tous droits réservés.</span>
+      <span>© 2026 CapEvents. Tous droits réservés.</span>
       <div>
         <span class="version-badge">Version 1.0</span>
-        <span>Design inspiré par Capgemini</span>
+        <span>Design inspiré par Wissem Bagga</span>
       </div>
     </div>
   </footer>

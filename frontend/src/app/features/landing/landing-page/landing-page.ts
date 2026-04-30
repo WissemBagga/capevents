@@ -1,8 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { finalize } from 'rxjs';
-import { PublicAnalyticsService, PublicStatsResponse } from '../../../core/services/public-analytics.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -12,38 +10,15 @@ import { PublicAnalyticsService, PublicStatsResponse } from '../../../core/servi
   styleUrl: './landing-page.css'
 })
 export class LandingPage implements OnInit {
-  private publicAnalyticsService = inject(PublicAnalyticsService);
-
-  publicStats: PublicStatsResponse | null = null;
-  loadingStats = false;
-  statsError = '';
+  publicStats = {
+    totalEvents: 42,
+    publishedEvents: 38,
+    totalUsers: 256,
+    totalParticipants: 856
+  };
 
   ngOnInit(): void {
-    this.loadStats();
-  }
-
-  private loadStats(): void {
-    this.loadingStats = true;
-    this.statsError = '';
-
-    this.publicAnalyticsService.getPublicStats()
-      .subscribe({
-        next: (response) => {
-          this.publicStats = response;
-          this.loadingStats = false;
-        },
-        error: () => {
-          // Fallback to mock data so the UI doesn't look broken while the backend endpoint is missing
-          this.publicStats = {
-            totalEvents: 42,
-            publishedEvents: 38,
-            totalUsers: 256,
-            totalParticipants: 856
-          };
-          this.loadingStats = false;
-          // this.statsError = 'Impossible de charger les statistiques.';
-        }
-      });
+    // No backend call needed, statistics are static for the landing page
   }
 
   ahmedBadges = [
@@ -55,15 +30,15 @@ export class LandingPage implements OnInit {
     { title: 'Chasseur de Récompenses', description: 'Échanger ses points', tone: 'orange', image: '/images/badges/badge-gift.svg', unlocked: false, target: 1, progress: 0 }
   ];
 
-  wissemPoints = 1250;
+  wissemPoints = 120;
   wissemRewards = [
-    { title: 'Carte Cadeau 50€', description: 'Valable dans plus de 200 enseignes', pointsCost: 1000, affordable: true, requiresHrAction: true },
+    { title: 'Parking', description: 'Avantage parking / accès parking', pointsCost: 300, affordable: true, requiresHrAction: true },
     { title: 'Journée Télétravail', description: 'Un jour de télétravail supplémentaire', pointsCost: 500, affordable: true, requiresHrAction: true },
-    { title: 'Casque Sans Fil', description: 'Casque à réduction de bruit premium', pointsCost: 2500, affordable: false, requiresHrAction: true },
-    { title: 'Goodies CapEvents', description: 'Pack de goodies (Gourde, Carnet, Stylo)', pointsCost: 300, affordable: true, requiresHrAction: false }
+    { title: 'Café', description: 'Bon café ou boisson', pointsCost: 100, affordable: false, requiresHrAction: true },
+    { title: 'Bon cadeau', description: 'Bon cadeau entreprise', pointsCost: 400, affordable: true, requiresHrAction: false }
   ];
 
-  // Static event showcase
+
   heroEvents = [
     { title: 'Tournoi Gaming Inter-Départements', registrations: 48, status: 'Publié', type: 'blue' as const },
     { title: 'Hackathon Innovation 2026', registrations: 36, status: 'Suivi', type: 'violet' as const },

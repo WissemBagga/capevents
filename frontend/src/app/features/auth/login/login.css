@@ -70,6 +70,11 @@
   margin-bottom: 34px;
 }
 
+.brand-link {
+  text-decoration: none;
+  display: inline-flex;
+}
+
 .brand-badge {
   display: inline-flex;
   align-items: center;
@@ -84,6 +89,14 @@
   background: rgba(255, 255, 255, 0.16);
   border: 1px solid rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(8px);
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.brand-link:hover .brand-badge {
+  background: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .brand-kicker {
