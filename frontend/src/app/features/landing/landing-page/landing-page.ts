@@ -1,12 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { finalize } from 'rxjs';
 import { PublicAnalyticsService, PublicStatsResponse } from '../../../core/services/public-analytics.service';
 
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe, DecimalPipe],
   templateUrl: './landing-page.html',
   styleUrl: './landing-page.css'
 })
@@ -45,14 +46,14 @@ export class LandingPage implements OnInit {
       });
   }
 
-  // Static badges for the landing page showcase
-  showcaseBadges = [
-    { icon: '🏅', name: 'Top Participant', description: 'Participer à plus de 10 événements', tone: 'gold' },
-    { icon: '🎯', name: 'Premier Pas', description: 'S\'inscrire à son premier événement', tone: 'blue' },
-    { icon: '🔥', name: 'On Fire', description: '5 événements en un mois', tone: 'red' },
-    { icon: '💡', name: 'Innovateur', description: 'Proposer un événement approuvé', tone: 'purple' },
-    { icon: '⭐', name: 'Critique Constructif', description: 'Laisser 20 feedbacks détaillés', tone: 'teal' },
-    { icon: '🎁', name: 'Chasseur de Récompenses', description: 'Échanger ses points contre une récompense', tone: 'orange' }
+  ahmedBadges = [
+    { title: 'Top Participant', description: 'Participer à plus de 10 événements', tone: 'gold', image: '/images/badges/badge-gold.svg', unlocked: true, target: 10, progress: 10, unlockedAt: '2025-11-23T14:00:00Z' },
+    { title: 'Critique Constructif', description: 'Laisser 20 feedbacks détaillés', tone: 'teal', image: '/images/badges/badge-feedback.svg', unlocked: false, target: 20, progress: 14 }
+  ];
+
+  wissemPoints = 1250;
+  wissemRewards = [
+    { title: 'Carte Cadeau 50€', description: 'Valable dans plus de 200 enseignes', pointsCost: 1000, affordable: true, requiresHrAction: true }
   ];
 
   // Static event showcase
@@ -87,5 +88,10 @@ export class LandingPage implements OnInit {
 
   get suggestionMatch(): number {
     return 81; // Using a static fallback since we no longer fetch attendance rate
+  }
+
+  progressPercent(badge: any): number {
+    if (badge.target === 0) return 0;
+    return Math.min(100, Math.round((badge.progress / badge.target) * 100));
   }
 }

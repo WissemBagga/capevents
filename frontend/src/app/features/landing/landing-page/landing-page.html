@@ -301,83 +301,118 @@
 
       <div class="gamification-layout">
         <!-- Left: Badges -->
-        <div class="gamification-panel">
-          <div class="panel-head">
-            <h3>Badges à débloquer</h3>
-            <span class="panel-tag">6 badges</span>
-          </div>
-          <div class="badges-showcase-grid">
-            @for (badge of showcaseBadges; track badge.name) {
-              <div class="badge-showcase-card" [attr.data-tone]="badge.tone">
-                <div class="badge-showcase-icon">{{ badge.icon }}</div>
-                <strong>{{ badge.name }}</strong>
-                <span>{{ badge.description }}</span>
+        <div class="gamification-panel user-gam-profile">
+          <div class="panel-head gam-profile-head">
+            <div class="gam-profile-user">
+              <div class="gam-avatar">
+                <img src="/images/avatars/man-blue.png" alt="Avatar">
               </div>
+              <div class="gam-profile-info">
+                <h3>Ahmed</h3>
+                <span>Ingénieur Logiciel</span>
+              </div>
+            </div>
+            <span class="panel-tag user-level-tag">Profil Badges</span>
+          </div>
+
+          <div class="badges-grid-compact">
+            @for (badge of ahmedBadges; track badge.title) {
+              <article class="badge-card" [class.unlocked]="badge.unlocked" [attr.data-tone]="badge.tone">
+                <div class="badge-card-header">
+                  <div class="badge-visual">
+                    <div class="badge-visual-bg"></div>
+                    <img [src]="badge.image" [alt]="badge.title" class="badge-illustration" />
+                    @if (!badge.unlocked) {
+                      <div class="badge-lock-overlay">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                          <path d="M7 11V8a5 5 0 0 1 10 0v3"></path>
+                        </svg>
+                      </div>
+                    }
+                  </div>
+                  <div class="badge-status-col">
+                    @if (badge.unlocked) {
+                      <span class="status-pill unlocked">Débloqué</span>
+                      @if (badge.unlockedAt) {
+                        <span class="badge-date-inline">{{ badge.unlockedAt | date:'mediumDate' }}</span>
+                      }
+                    } @else {
+                      <span class="status-pill locked">En progression</span>
+                    }
+                  </div>
+                </div>
+                <div class="badge-content">
+                  <h2>{{ badge.title }}</h2>
+                  <p class="badge-description">{{ badge.description }}</p>
+                </div>
+                <div class="progress-block" [class.completed]="badge.unlocked">
+                  <div class="progress-header">
+                    <span>Progression</span>
+                    <span>
+                      @if (badge.unlocked) {
+                        {{ badge.target }} / {{ badge.target }}
+                      } @else {
+                        {{ badge.progress }} / {{ badge.target }}
+                      }
+                    </span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill" [style.width.%]="progressPercent(badge)"></div>
+                  </div>
+                  <div class="progress-foot">
+                    <span>{{ progressPercent(badge) | number:'1.0-0' }}% atteint</span>
+                    <span>
+                      @if (badge.unlocked) {
+                        Objectif atteint
+                      } @else {
+                        Encore {{ (badge.target - badge.progress) }}
+                      }
+                    </span>
+                  </div>
+                </div>
+              </article>
             }
           </div>
         </div>
 
         <!-- Right: Gamification insights -->
-        <div class="gamification-panel">
-          <div class="panel-head">
-            <h3>Progression & Activité</h3>
-            <span class="panel-tag">Aperçu</span>
+        <div class="gamification-panel user-gam-profile">
+          <div class="panel-head gam-profile-head">
+            <div class="gam-profile-user">
+              <div class="gam-avatar">
+                <img src="/images/avatars/man-blue.png" alt="Avatar">
+              </div>
+              <div class="gam-profile-info">
+                <h3>Wissem</h3>
+                <span>Développeur Fullstack</span>
+              </div>
+            </div>
+            <span class="panel-tag user-level-tag">Profil Récompenses</span>
           </div>
 
-          <div class="gamification-stats">
-            <div class="gam-stat-card">
-              <div class="gam-stat-icon icon-blue">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              </div>
-              <div>
-                <strong>Points cumulés</strong>
-                <span>Gagnez des points à chaque événement</span>
-              </div>
-              <em class="gam-value">+250</em>
-            </div>
+          <section class="points-summary-card">
+            <span class="summary-label">Solde actuel</span>
+            <strong class="summary-value">{{ wissemPoints }} pts</strong>
+            <span class="summary-sub">Points disponibles pour échange</span>
+          </section>
 
-            <div class="gam-stat-card">
-              <div class="gam-stat-icon icon-purple">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-              </div>
-              <div>
-                <strong>Niveau actuel</strong>
-                <span>Progressez à travers les niveaux</span>
-              </div>
-              <em class="gam-value">Niv. 5</em>
-            </div>
-
-            <div class="gam-stat-card">
-              <div class="gam-stat-icon icon-teal">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              </div>
-              <div>
-                <strong>Événements complétés</strong>
-                <span>Présence confirmée et feedback donné</span>
-              </div>
-              <em class="gam-value">12</em>
-            </div>
-
-            <div class="gam-stat-card">
-              <div class="gam-stat-icon icon-orange">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-              <div>
-                <strong>Série en cours</strong>
-                <span>Participations consécutives</span>
-              </div>
-              <em class="gam-value">3 🔥</em>
-            </div>
-          </div>
-
-          <div class="gam-progress-block">
-            <div class="gam-progress-header">
-              <span>Progression vers le prochain niveau</span>
-              <strong>68%</strong>
-            </div>
-            <div class="gam-progress-track">
-              <div class="gam-progress-fill" style="width: 68%"></div>
-            </div>
+          <div class="rewards-grid-compact">
+            @for (reward of wissemRewards; track reward.title) {
+              <article class="reward-card" [class.locked]="!reward.affordable">
+                <div class="reward-top">
+                  <span class="reward-cost">{{ reward.pointsCost }} pts</span>
+                  @if (reward.requiresHrAction) {
+                    <span class="reward-tag">Validation RH</span>
+                  }
+                </div>
+                <h3>{{ reward.title }}</h3>
+                <p class="reward-description">{{ reward.description }}</p>
+                <button type="button" class="btn-primary" [disabled]="!reward.affordable">
+                  Échanger
+                </button>
+              </article>
+            }
           </div>
         </div>
       </div>
