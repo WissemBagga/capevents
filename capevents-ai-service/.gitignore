@@ -1,9 +1,15 @@
 .venv/
 __pycache__/
 .env
+
 models_artifacts/
 logs/
+
 datasets/raw/
 datasets/processed/
 datasets/splits/
+
 mlruns/
+
+*.pyc
+.ipynb_checkpoints/

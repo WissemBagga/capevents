@@ -1,0 +1,22 @@
+{
+  "input_file": "datasets/external/kaggle/event_attendance.csv",
+  "output_file": "datasets/processed/external_events_standardized.csv",
+  "data_source": "KAGGLE_EVENT_ATTENDANCE",
+  "columns": {
+    "title": "Event Type",
+    "location_name": "Location",
+    "previous_attendance": "Previous Attendance",
+    "day_of_week": "Day of Week",
+    "duration_minutes": "Duration",
+    "topic": "Topic",
+
+    "event_type": "Event Type"
+  },
+  "defaults": {
+    "location_type": "ONSITE",
+    "status": "PUBLISHED",
+    "audience": "GLOBAL",
+    "capacity": 50,
+    "duration_minutes": 120
+  }
+}
