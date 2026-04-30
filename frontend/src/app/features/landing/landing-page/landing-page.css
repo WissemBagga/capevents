@@ -1931,12 +1931,82 @@
 /* ===== Compact Grids ===== */
 .badges-grid-compact {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
 
 .rewards-grid-compact {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.gamification-panel .badge-card,
+.gamification-panel .reward-card {
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.gamification-panel .badge-card-header {
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.gamification-panel .badge-visual {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+}
+
+.gamification-panel .badge-illustration {
+  width: 32px;
+  height: 32px;
+}
+
+.gamification-panel .badge-content h2,
+.gamification-panel .reward-card h3 {
+  font-size: 12.5px;
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+
+.gamification-panel .badge-description,
+.gamification-panel .reward-description {
+  font-size: 10.5px;
+  min-height: 30px;
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+
+.gamification-panel .status-pill,
+.gamification-panel .reward-cost,
+.gamification-panel .reward-tag {
+  padding: 3px 6px;
+  font-size: 8.5px;
+  min-height: 20px;
+}
+
+.gamification-panel .progress-header,
+.gamification-panel .progress-foot {
+  font-size: 9.5px;
+}
+
+.gamification-panel .progress-block {
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.gamification-panel .btn-primary {
+  min-height: 36px;
+  font-size: 12px;
+}
+
+.gamification-panel .points-summary-card {
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+}
+
+.gamification-panel .summary-value {
+  font-size: 28px;
 }

@@ -48,12 +48,19 @@ export class LandingPage implements OnInit {
 
   ahmedBadges = [
     { title: 'Top Participant', description: 'Participer à plus de 10 événements', tone: 'gold', image: '/images/badges/badge-gold.svg', unlocked: true, target: 10, progress: 10, unlockedAt: '2025-11-23T14:00:00Z' },
-    { title: 'Critique Constructif', description: 'Laisser 20 feedbacks détaillés', tone: 'teal', image: '/images/badges/badge-feedback.svg', unlocked: false, target: 20, progress: 14 }
+    { title: 'Premier Pas', description: 'S\'inscrire à son premier événement', tone: 'blue', image: '/images/badges/badge-blue.svg', unlocked: true, target: 1, progress: 1, unlockedAt: '2025-06-15T09:30:00Z' },
+    { title: 'On Fire', description: '5 événements en un mois', tone: 'red', image: '/images/badges/badge-fire.svg', unlocked: true, target: 5, progress: 5, unlockedAt: '2025-08-10T11:00:00Z' },
+    { title: 'Innovateur', description: 'Proposer un événement approuvé', tone: 'purple', image: '/images/badges/badge-idea.svg', unlocked: false, target: 1, progress: 0 },
+    { title: 'Critique Constructif', description: 'Laisser 20 feedbacks détaillés', tone: 'teal', image: '/images/badges/badge-feedback.svg', unlocked: false, target: 20, progress: 14 },
+    { title: 'Chasseur de Récompenses', description: 'Échanger ses points', tone: 'orange', image: '/images/badges/badge-gift.svg', unlocked: false, target: 1, progress: 0 }
   ];
 
   wissemPoints = 1250;
   wissemRewards = [
-    { title: 'Carte Cadeau 50€', description: 'Valable dans plus de 200 enseignes', pointsCost: 1000, affordable: true, requiresHrAction: true }
+    { title: 'Carte Cadeau 50€', description: 'Valable dans plus de 200 enseignes', pointsCost: 1000, affordable: true, requiresHrAction: true },
+    { title: 'Journée Télétravail', description: 'Un jour de télétravail supplémentaire', pointsCost: 500, affordable: true, requiresHrAction: true },
+    { title: 'Casque Sans Fil', description: 'Casque à réduction de bruit premium', pointsCost: 2500, affordable: false, requiresHrAction: true },
+    { title: 'Goodies CapEvents', description: 'Pack de goodies (Gourde, Carnet, Stylo)', pointsCost: 300, affordable: true, requiresHrAction: false }
   ];
 
   // Static event showcase
