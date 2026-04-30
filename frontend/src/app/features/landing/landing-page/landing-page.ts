@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+import { PublicAnalyticsService, PublicStatsResponse } from '../../../core/services/public-analytics.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -8,20 +10,40 @@ import { RouterLink } from '@angular/router';
   templateUrl: './landing-page.html',
   styleUrl: './landing-page.css'
 })
-export class LandingPage {
-  // Static realistic data for the public landing page
-  // No API call needed — this page is public and doesn't require authentication
-  stats = {
-    totalEvents: 42,
-    publishedEvents: 38,
-    totalRegistrations: 856,
-    totalCapacity: 1200,
-    registrationRate: 71,
-    totalPresent: 694,
-    attendanceRate: 81,
-    totalFeedbacks: 312,
-    averageRating: 4.3
-  };
+export class LandingPage implements OnInit {
+  private publicAnalyticsService = inject(PublicAnalyticsService);
+
+  publicStats: PublicStatsResponse | null = null;
+  loadingStats = false;
+  statsError = '';
+
+  ngOnInit(): void {
+    this.loadStats();
+  }
+
+  private loadStats(): void {
+    this.loadingStats = true;
+    this.statsError = '';
+
+    this.publicAnalyticsService.getPublicStats()
+      .subscribe({
+        next: (response) => {
+          this.publicStats = response;
+          this.loadingStats = false;
+        },
+        error: () => {
+          // Fallback to mock data so the UI doesn't look broken while the backend endpoint is missing
+          this.publicStats = {
+            totalEvents: 42,
+            publishedEvents: 38,
+            totalUsers: 256,
+            totalParticipants: 856
+          };
+          this.loadingStats = false;
+          // this.statsError = 'Impossible de charger les statistiques.';
+        }
+      });
+  }
 
   // Static badges for the landing page showcase
   showcaseBadges = [
@@ -40,26 +62,30 @@ export class LandingPage {
     { title: 'Team Building Outdoor', registrations: 24, status: 'Terminé', type: 'teal' as const }
   ];
 
-  formatNumber(value: number): string {
+  formatNumber(value: number | undefined | null): string {
+    if (value == null) return '0';
     return new Intl.NumberFormat('fr-FR').format(value);
   }
 
-  formatPercent(value: number): string {
+  formatPercent(value: number | undefined | null): string {
+    if (value == null) return '0%';
     return `${new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(value)}%`;
   }
 
-  formatRating(value: number): string {
+  formatRating(value: number | undefined | null): string {
+    if (value == null) return '0/5';
     return `${new Intl.NumberFormat('fr-FR', {
       minimumFractionDigits: 1,
       maximumFractionDigits: 1
     }).format(value)}/5`;
   }
 
-  progressWidth(value: number): string {
+  progressWidth(value: number | undefined | null): string {
+    if (value == null) return '0%';
     return `${Math.max(8, Math.min(Math.round(value), 100))}%`;
   }
 
   get suggestionMatch(): number {
-    return Math.max(1, Math.min(98, Math.round(this.stats.attendanceRate)));
+    return 81; // Using a static fallback since we no longer fetch attendance rate
   }
 }

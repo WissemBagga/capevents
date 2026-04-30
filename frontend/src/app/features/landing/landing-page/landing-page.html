@@ -53,13 +53,13 @@
           <div class="mini-kpis">
             <div class="mini-kpi">
               <small>Taux d'inscription</small>
-              <strong>{{ formatPercent(stats.registrationRate) }}</strong>
-              <em>{{ formatNumber(stats.totalRegistrations) }} inscriptions</em>
+              <strong>{{ formatPercent(71) }}</strong>
+              <em>{{ formatNumber(856) }} inscriptions</em>
             </div>
             <div class="mini-kpi">
               <small>Note moyenne</small>
-              <strong>{{ formatRating(stats.averageRating) }}</strong>
-              <em>{{ formatNumber(stats.totalFeedbacks) }} feedbacks</em>
+              <strong>{{ formatRating(4.3) }}</strong>
+              <em>{{ formatNumber(312) }} feedbacks</em>
             </div>
           </div>
 
@@ -107,7 +107,7 @@
               </div>
               <div>
                 <strong>Feedback collecté</strong>
-                <span>{{ formatRating(stats.averageRating) }} note moyenne</span>
+                <span>{{ formatRating(4.3) }} note moyenne</span>
               </div>
               <label class="success">Terminé</label>
             </div>
@@ -227,48 +227,68 @@
         <p>Les chiffres ci-dessous reflètent l'activité réelle de la plateforme.</p>
       </div>
 
-      <div class="analytics-kpi-grid">
-        <article class="analytics-kpi-card">
-          <span>Événements</span>
-          <strong>{{ formatNumber(stats.totalEvents) }}</strong>
-          <small>{{ formatNumber(stats.publishedEvents) }} publiés</small>
-        </article>
-        <article class="analytics-kpi-card">
-          <span>Inscriptions</span>
-          <strong>{{ formatNumber(stats.totalRegistrations) }}</strong>
-          <small>{{ formatNumber(stats.totalCapacity) }} places</small>
-        </article>
-        <article class="analytics-kpi-card">
-          <span>Présence</span>
-          <strong>{{ formatPercent(stats.attendanceRate) }}</strong>
-          <small>{{ formatNumber(stats.totalPresent) }} présents</small>
-        </article>
-        <article class="analytics-kpi-card">
-          <span>Satisfaction</span>
-          <strong>{{ formatRating(stats.averageRating) }}</strong>
-          <small>{{ formatNumber(stats.totalFeedbacks) }} feedbacks</small>
-        </article>
-      </div>
+      @if (loadingStats) {
+        <div class="stats-loading">
+          <div class="spinner"></div>
+          <span>Chargement des statistiques...</span>
+        </div>
+      }
+
+      @if (statsError) {
+        <div class="stats-warning">{{ statsError }}</div>
+      }
+
+      @if (!loadingStats && !statsError) {
+        <div class="analytics-kpi-grid">
+          <article class="analytics-kpi-card">
+            <span>Événements Créés</span>
+            <strong>{{ formatNumber(publicStats?.totalEvents) }}</strong>
+          </article>
+          <article class="analytics-kpi-card">
+            <span>Événements Publiés</span>
+            <strong>{{ formatNumber(publicStats?.publishedEvents) }}</strong>
+          </article>
+          <article class="analytics-kpi-card">
+            <span>Utilisateurs</span>
+            <strong>{{ formatNumber(publicStats?.totalUsers) }}</strong>
+          </article>
+          <article class="analytics-kpi-card">
+            <span>Participants</span>
+            <strong>{{ formatNumber(publicStats?.totalParticipants) }}</strong>
+          </article>
+        </div>
+      }
     </section>
 
     <!-- BLUE STATS BAR -->
     <section id="statistiques" class="blue-stats-bar">
-      <article>
-        <strong>{{ formatNumber(stats.totalEvents) }}</strong>
-        <span>Événements</span>
-      </article>
-      <article>
-        <strong>{{ formatNumber(stats.totalRegistrations) }}</strong>
-        <span>Inscriptions</span>
-      </article>
-      <article>
-        <strong>{{ formatPercent(stats.attendanceRate) }}</strong>
-        <span>Présence</span>
-      </article>
-      <article>
-        <strong>{{ formatRating(stats.averageRating) }}</strong>
-        <span>Satisfaction</span>
-      </article>
+      @if (!loadingStats && !statsError) {
+        <article>
+          <strong>{{ formatNumber(publicStats?.totalEvents) }}</strong>
+          <span>Événements</span>
+        </article>
+        <article>
+          <strong>{{ formatNumber(publicStats?.publishedEvents) }}</strong>
+          <span>Publiés</span>
+        </article>
+        <article>
+          <strong>{{ formatNumber(publicStats?.totalUsers) }}</strong>
+          <span>Utilisateurs</span>
+        </article>
+        <article>
+          <strong>{{ formatNumber(publicStats?.totalParticipants) }}</strong>
+          <span>Participants</span>
+        </article>
+      } @else {
+        <article class="full-width" style="grid-column: 1 / -1; min-height: 142px;">
+          @if (loadingStats) {
+            <span>Chargement...</span>
+          }
+          @if (statsError) {
+            <span>Données indisponibles</span>
+          }
+        </article>
+      }
     </section>
 
     <!-- BADGES & GAMIFICATION -->
@@ -376,7 +396,7 @@
             <span>{{ suggestionMatch }}% Match</span>
           </div>
           <div class="recommendation-meta">
-            <p>Participation estimée : <strong>{{ formatPercent(stats.registrationRate) }}</strong></p>
+            <p>Participation estimée : <strong>{{ formatPercent(suggestionMatch) }}</strong></p>
             <p>Meilleur jour : <strong>Jeudi · 17h</strong></p>
             <p>Cible : <strong>IT + Marketing</strong></p>
             <p>Risque : <strong>Faible</strong></p>

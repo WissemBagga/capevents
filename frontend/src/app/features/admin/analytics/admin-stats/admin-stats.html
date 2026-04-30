@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="page-header">
       <div class="header-text">
-        
+
         <h1>{{ dashboardTitle }}</h1>
         <p class="header-sub">{{ dashboardSubtitle }}</p>
       </div>
@@ -114,7 +114,6 @@
             <div class="kpi-content">
               <span class="kpi-label">Taux de présence</span>
               <strong class="kpi-value">{{ analytics.attendanceRate | number:'1.0-2' }}%</strong>
-              <span class="kpi-sub">{{ analytics.totalPresent }} présents</span>
               <span class="kpi-sub">
                 {{ analytics.totalPresent }} présents · {{ analytics.totalAbsent }} absents
               </span>
