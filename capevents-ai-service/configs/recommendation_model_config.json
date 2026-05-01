@@ -1,0 +1,40 @@
+{
+  "input_file": "datasets/processed/recommendation_train.csv",
+  "artifact_dir": "models_artifacts/recommendation",
+  "report_dir": "reports/recommendation",
+
+  "random_state": 42,
+  "validation_user_ratio": 0.2,
+
+  "target_column": "target_score",
+  "group_column": "user_id",
+
+  "drop_columns": [
+    "user_id",
+    "event_id",
+    "data_source",
+    "sample_weight",
+    "registered",
+    "attended",
+    "feedback_rating",
+    "has_feedback",
+    "target_score"
+  ],
+
+  "categorical_features": [
+    "event_category",
+    "event_audience",
+    "event_location_type",
+    "event_status"
+  ],
+
+  "model_params": {
+    "iterations": 800,
+    "learning_rate": 0.05,
+    "depth": 6,
+    "loss_function": "YetiRank",
+    "eval_metric": "NDCG:top=10",
+    "random_seed": 42,
+    "verbose": 100
+  }
+}
