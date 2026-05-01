@@ -1,0 +1,75 @@
+{
+  "input_file": "datasets/processed/external_events_standardized.csv",
+  "output_file": "datasets/processed/external_events_curated.csv",
+  "max_rows": 3000,
+  "random_state": 42,
+
+  "allowed_topics": [
+    "Business",
+    "Education",
+    "Technology",
+    "Art",
+    "Music",
+    "Fun",
+    "Health",
+    "Sports",
+    "Innovation",
+    "Environment",
+    "Community"
+  ],
+
+  "blocked_topics": [
+    "Politics",
+    "Religion"
+  ],
+
+  "blocked_event_types": [
+    "Naming_Ceremony",
+    "Valedictory",
+    "Birthday",
+    "Wedding",
+    "Burial",
+    "Funeral"
+  ],
+
+  "allowed_categories": [
+    "Webinaire",
+    "Atelier",
+    "Formation",
+    "Conférence",
+    "Team building",
+    "Culture d’entreprise",
+    "Afterwork",
+    "Networking",
+    "Bien-être",
+    "RSE",
+    "Innovation",
+    "Sport",
+    "Autre"
+  ],
+
+  "capacity": {
+    "min": 10,
+    "max": 450,
+    "default": 60
+  },
+
+  "duration_minutes": {
+    "min": 30,
+    "max": 240,
+    "default": 90
+  },
+
+  "location_names": [
+    "Salle Réunion A",
+    "Salle Réunion B",
+    "Espace collaboratif",
+    "Salle RH",
+    "Campus interne",
+    "Espace détente",
+    "Centre de formation interne"
+  ],
+
+  "start_date": "2026-06-01",
+  "end_date": "2026-12-31"
+}
