@@ -20,9 +20,15 @@ from app.data.runtime_loader import (
     load_runtime_badges
 )
 
+from uuid import uuid4
+from app.services.prediction_logger import PredictionLogger
+
 MODEL_PATH = Path("models_artifacts/recommendation/catboost_recommender.cbm")
 FEATURES_PATH = Path("models_artifacts/recommendation/features.json")
 RAW_DIR = Path("datasets/raw/capevents")
+
+MODEL_NAME = "catboost_recommender"
+MODEL_VERSION = "recommendation-v1.0.0"
 
 
 CATEGORY_TO_INTEREST_CODES = {
@@ -94,6 +100,8 @@ class RecommendationService:
 
         self.model = CatBoostRanker()
         self.model.load_model(str(MODEL_PATH))
+
+        self.prediction_logger = PredictionLogger()
 
         with FEATURES_PATH.open("r", encoding="utf-8") as file:
             metadata = json.load(file)
@@ -167,26 +175,52 @@ class RecommendationService:
             self.badges["user_id"] = self.badges["user_id"].apply(normalize_id)
 
     def recommend_for_user(self, user_id: str, limit: int = 5) -> RecommendationResponse:
-        self.reload_data()
+        request_id = str(uuid4())
         user_id = normalize_id(user_id)
 
         user = self._find_user(user_id)
         if user is None:
+            self.prediction_logger.log_recommendation(
+                request_id=request_id,
+                user_id=user_id,
+                model_name=MODEL_NAME,
+                model_version=MODEL_VERSION,
+                total_candidates=0,
+                recommendations=[],
+                status="USER_NOT_FOUND",
+                message="Utilisateur introuvable dans users.csv."
+            )
+
             return RecommendationResponse(
                 user_id=user_id,
                 total_candidates=0,
                 items=[],
-                message="Utilisateur introuvable dans users.csv."
+                message="Utilisateur introuvable dans users.csv.",
+                request_id=request_id,
+                model_version=MODEL_VERSION
             )
 
         candidates = self._build_candidate_rows(user_id=user_id, user=user)
 
         if candidates.empty:
+            self.prediction_logger.log_recommendation(
+                request_id=request_id,
+                user_id=user_id,
+                model_name=MODEL_NAME,
+                model_version=MODEL_VERSION,
+                total_candidates=0,
+                recommendations=[],
+                status="NO_CANDIDATES",
+                message="Aucun événement candidat disponible pour cet utilisateur."
+            )
+
             return RecommendationResponse(
                 user_id=user_id,
                 total_candidates=0,
                 items=[],
-                message="Aucun événement candidat disponible pour cet utilisateur."
+                message="Aucun événement candidat disponible pour cet utilisateur.",
+                request_id=request_id,
+                model_version=MODEL_VERSION
             )
 
         prediction_input = self._prepare_prediction_input(candidates)
@@ -197,25 +231,50 @@ class RecommendationService:
         ranked = candidates.sort_values("score", ascending=False).head(limit)
 
         items: list[RecommendationItem] = []
+        log_items: list[dict] = []
 
         for rank, (_, row) in enumerate(ranked.iterrows(), start=1):
-            items.append(
-                RecommendationItem(
-                    event_id=str(row["event_id"]),
-                    title=str(row.get("event_title", "")),
-                    category=str(row.get("event_category", "")),
-                    start_at=str(row.get("event_start_at", "")),
-                    rank=rank,
-                    score=float(row["score"]),
-                    reasons=self._build_reasons(row)
-                )
+            reasons = self._build_reasons(row)
+
+            item = RecommendationItem(
+                event_id=str(row["event_id"]),
+                title=str(row.get("event_title", "")),
+                category=str(row.get("event_category", "")),
+                start_at=str(row.get("event_start_at", "")),
+                rank=rank,
+                score=float(row["score"]),
+                reasons=reasons
             )
+
+            items.append(item)
+
+            log_items.append({
+                "event_id": item.event_id,
+                "title": item.title,
+                "category": item.category,
+                "rank": item.rank,
+                "score": item.score,
+                "reasons": item.reasons
+            })
+
+        self.prediction_logger.log_recommendation(
+            request_id=request_id,
+            user_id=user_id,
+            model_name=MODEL_NAME,
+            model_version=MODEL_VERSION,
+            total_candidates=int(len(candidates)),
+            recommendations=log_items,
+            status="SUCCESS",
+            message="Recommendations generated successfully."
+        )
 
         return RecommendationResponse(
             user_id=user_id,
             total_candidates=int(len(candidates)),
             items=items,
-            message="Recommendations generated successfully."
+            message="Recommendations generated successfully.",
+            request_id=request_id,
+            model_version=MODEL_VERSION
         )
 
     def _find_user(self, user_id: str) -> pd.Series | None:

@@ -18,3 +18,5 @@ class RecommendationResponse(BaseModel):
     total_candidates: int
     items: list[RecommendationItem]
     message: Optional[str] = None
+    request_id: Optional[str] = None
+    model_version: Optional[str] = None
