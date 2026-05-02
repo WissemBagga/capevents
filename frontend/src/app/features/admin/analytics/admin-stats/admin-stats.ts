@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,10 @@ import { Department } from '../../../../core/models/department.model';
 import { EVENT_CATEGORY_OPTIONS } from '../../../../core/constants/event-categories';
 import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
 
+import { AiMonitoringService } from '../../../../core/services/ai-monitoring.service';
+import { AiRecommendationMonitoringSummary, AiRecentPrediction, AiTopRecommendedEvent } from '../../../../core/models/ai-monitoring.model';
+
+
 type TrendPointVm = {
   month: string;
   registrations: number;
@@ -23,7 +27,7 @@ type TrendPointVm = {
 @Component({
   selector: 'app-admin-stats',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, FormsModule, ScrollToMessageDirective],
+  imports: [RouterLink, DecimalPipe, FormsModule, ScrollToMessageDirective, DatePipe],
   templateUrl: './admin-stats.html',
   styleUrl: './admin-stats.css',
 })
@@ -32,6 +36,7 @@ export class AdminStats {
   private authService = inject(AuthService);
   private adminAnalyticsService = inject(AdminAnalyticsService);
   private userService = inject(UserService);
+  private aiMonitoringService = inject(AiMonitoringService);
 
 
   readonly trendChartWidth = 640;
@@ -40,15 +45,18 @@ export class AdminStats {
   readonly trendChartPaddingRight = 20;
   readonly trendChartPaddingTop = 20;
   readonly trendChartPaddingBottom = 42;
+  readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
 
   analytics: AdminAnalyticsOverviewResponse | null = null;
 
   loading = false;
   loadingDepartments = false;
   errorMessage = '';
-
   departments: Department[] = [];
-  readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
+
+  aiMonitoring: AiRecommendationMonitoringSummary | null = null;
+  aiMonitoringLoading = false;
+  aiMonitoringErrorMessage = '';
 
   filters = {
     from: '',
@@ -60,6 +68,7 @@ export class AdminStats {
   ngOnInit(): void {
     if (this.isHr) {
       this.loadDepartments();
+      this.loadAiMonitoring();
     }
     this.loadAnalytics();
   }
@@ -442,4 +451,71 @@ export class AdminStats {
       return a.departmentName.localeCompare(b.departmentName, 'fr');
     });
   }
+
+  loadAiMonitoring(): void {
+    if (!this.isHr) return;
+
+    this.aiMonitoringLoading = true;
+    this.aiMonitoringErrorMessage = '';
+    this.cdr.markForCheck();
+
+    this.aiMonitoringService.getRecommendationSummary(5, 5)
+      .pipe(finalize(() => {
+        this.aiMonitoringLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.aiMonitoring = response;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.aiMonitoring = null;
+          this.aiMonitoringErrorMessage = 'Impossible de charger le monitoring IA.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  get aiSuccessRate(): number {
+    if (!this.aiMonitoring?.totalCalls) return 0;
+    return (this.aiMonitoring.successfulCalls / this.aiMonitoring.totalCalls) * 100;
+  }
+
+  get aiFailureRate(): number {
+    if (!this.aiMonitoring?.totalCalls) return 0;
+    return (this.aiMonitoring.failedCalls / this.aiMonitoring.totalCalls) * 100;
+  }
+
+  trackByAiEventId(_: number, item: AiTopRecommendedEvent): string {
+    return item.eventId;
+  }
+
+  trackByAiRequestId(_: number, item: AiRecentPrediction): string {
+    return item.requestId;
+  }
+
+  aiStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      SUCCESS: 'Succès',
+      USER_NOT_FOUND: 'Utilisateur introuvable',
+      NO_CANDIDATES: 'Aucun candidat',
+      ERROR: 'Erreur'
+    };
+
+    return labels[status] || status;
+  }
+
+  aiStatusClass(status: string): string {
+    switch (status) {
+      case 'SUCCESS':
+        return 'ai-status-success';
+      case 'USER_NOT_FOUND':
+      case 'NO_CANDIDATES':
+        return 'ai-status-warning';
+      default:
+        return 'ai-status-error';
+    }
+  }
+
 }

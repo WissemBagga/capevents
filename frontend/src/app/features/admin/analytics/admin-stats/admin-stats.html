@@ -159,6 +159,142 @@
           </article>
         </div>
 
+        @if (isHr) {
+          <section class="admin-card stats-section ai-monitoring-section">
+            <div class="card-header ai-monitoring-header">
+              <div class="header-text-group">
+                <span class="ai-section-kicker">AI Engineering</span>
+                <h2 class="card-title">Monitoring IA</h2>
+                <p class="card-subtitle">
+                  Suivi des appels du moteur de recommandation, de la version du modèle et des événements les plus recommandés.
+                </p>
+              </div>
+
+              <button type="button" class="btn-secondary" (click)="loadAiMonitoring()">
+                Actualiser IA
+              </button>
+            </div>
+
+            @if (aiMonitoringLoading && !aiMonitoring) {
+              <div class="state-message loading-msg">
+                <div class="spinner"></div>
+                <p>Chargement du monitoring IA...</p>
+              </div>
+            }
+
+            @if (aiMonitoringErrorMessage) {
+              <div class="state-message error-msg" appScrollToMessage>
+                <p>{{ aiMonitoringErrorMessage }}</p>
+              </div>
+            }
+
+            @if (!aiMonitoringLoading && aiMonitoring) {
+              <div class="ai-kpi-grid">
+                <article class="kpi-card ai-kpi-card">
+                  <span class="kpi-label">Appels IA</span>
+                  <strong class="kpi-value">{{ aiMonitoring.totalCalls }}</strong>
+                  <span class="kpi-sub">Demandes de recommandations</span>
+                </article>
+
+                <article class="kpi-card ai-kpi-card success-ai-card">
+                  <span class="kpi-label">Succès</span>
+                  <strong class="kpi-value">{{ aiSuccessRate | number:'1.0-2' }}%</strong>
+                  <span class="kpi-sub">{{ aiMonitoring.successfulCalls }} appel(s) réussis</span>
+                </article>
+
+                <article class="kpi-card ai-kpi-card warning-ai-card">
+                  <span class="kpi-label">Erreurs</span>
+                  <strong class="kpi-value">{{ aiMonitoring.failedCalls }}</strong>
+                  <span class="kpi-sub">{{ aiFailureRate | number:'1.0-2' }}% des appels</span>
+                </article>
+
+                <article class="kpi-card ai-kpi-card model-ai-card">
+                  <span class="kpi-label">Modèle actif</span>
+                  <strong class="kpi-value ai-model-value">
+                    {{ aiMonitoring.lastModelVersion || 'N/D' }}
+                  </strong>
+                  <span class="kpi-sub">{{ aiMonitoring.lastModelName || 'Modèle non détecté' }}</span>
+                </article>
+              </div>
+
+              <div class="ai-monitoring-grid">
+                <div class="ai-monitoring-panel">
+                  <div class="ai-panel-header">
+                    <h3 class="subsection-title">Top événements recommandés</h3>
+                    <p class="chart-subtitle">Événements qui apparaissent le plus souvent dans les recommandations IA.</p>
+                  </div>
+
+                  @if (aiMonitoring.topRecommendedEvents.length === 0) {
+                    <div class="state-message info-msg">
+                      <p>Aucune recommandation enregistrée pour le moment.</p>
+                    </div>
+                  }
+
+                  @if (aiMonitoring.topRecommendedEvents.length > 0) {
+                    <div class="ai-top-events-list">
+                      @for (item of aiMonitoring.topRecommendedEvents; track trackByAiEventId($index, item)) {
+                        <article class="ai-top-event-row">
+                          <div class="rank-title-row">
+                            <span class="rank-badge">#{{ $index + 1 }}</span>
+                            <div class="ai-event-text">
+                              <h3 class="event-title">{{ item.title || 'Événement recommandé' }}</h3>
+                              <span class="muted-text">{{ item.category || 'Sans catégorie' }}</span>
+                            </div>
+                          </div>
+
+                          <div class="ai-count-pill">
+                            {{ item.count }} fois
+                          </div>
+                        </article>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="ai-monitoring-panel">
+                  <div class="ai-panel-header">
+                    <h3 class="subsection-title">Dernières prédictions</h3>
+                    <p class="chart-subtitle">Historique récent des appels au moteur IA.</p>
+                  </div>
+
+                  @if (aiMonitoring.recentPredictions.length === 0) {
+                    <div class="state-message info-msg">
+                      <p>Aucune prédiction IA récente.</p>
+                    </div>
+                  }
+
+                  @if (aiMonitoring.recentPredictions.length > 0) {
+                    <div class="ai-prediction-list">
+                      @for (prediction of aiMonitoring.recentPredictions; track trackByAiRequestId($index, prediction)) {
+                        <article class="ai-prediction-row">
+                          <div class="ai-prediction-main">
+                            <span class="status-badge" [class]="aiStatusClass(prediction.status)">
+                              {{ aiStatusLabel(prediction.status) }}
+                            </span>
+
+                            <strong class="ai-request-id">
+                              {{ prediction.requestId.slice(0, 8) }}
+                            </strong>
+
+                            <span class="muted-text">
+                              {{ prediction.createdAt | date:'dd MMM yyyy · HH:mm' }}
+                            </span>
+                          </div>
+
+                          <div class="ai-prediction-metrics">
+                            <span>{{ prediction.totalCandidates }} candidats</span>
+                            <span>{{ prediction.recommendationsCount }} recommandations</span>
+                          </div>
+                        </article>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </section>
+        }        
+
         @if (isManager && analytics) {
           <section class="admin-card stats-section">
             <div class="card-header">
