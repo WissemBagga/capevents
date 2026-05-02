@@ -251,10 +251,9 @@ class RecommendationService:
 
         events = self.events.copy()
 
-        # Recommandation côté employé : on recommande d'abord les événements publiés.
+        # On recommande en priorité les événements publiés.
         published_events = events[events["status"] == "PUBLISHED"].copy()
 
-        # Si aucun événement publié n'existe dans les données de test, on prend aussi PENDING/ARCHIVED pour éviter un endpoint vide.
         if published_events.empty:
             return pd.DataFrame()
 
@@ -272,6 +271,8 @@ class RecommendationService:
 
         rows: list[dict] = []
 
+        now = pd.Timestamp.now(tz="UTC")
+
         for _, event in candidates.iterrows():
             event_id = normalize_id(event["id"])
             category = str(event.get("category", "Autre"))
@@ -281,6 +282,8 @@ class RecommendationService:
             invitation_stats = self._get_invitation_features(user_id, event_id)
 
             start_at = parse_datetime_value(event.get("start_at"))
+            registration_deadline = parse_datetime_value(event.get("registration_deadline"))
+
             if pd.isna(start_at):
                 event_day_of_week = -1
                 event_hour = -1
@@ -289,12 +292,26 @@ class RecommendationService:
             else:
                 event_day_of_week = int(start_at.dayofweek)
                 event_hour = int(start_at.hour)
-                now = pd.Timestamp.now(tz="UTC")
                 days_until_event = int((start_at - now).days)
                 start_at_str = start_at.isoformat()
 
+            if pd.isna(registration_deadline):
+                days_until_deadline = 999
+                is_deadline_passed = 0
+            else:
+                days_until_deadline = int((registration_deadline - now).days)
+                is_deadline_passed = int(registration_deadline < now)
+
             event_capacity = safe_int(event.get("capacity"), default=0)
             event_registered_count = event_stats["event_registered_count"]
+
+            event_remaining_capacity = (
+                max(event_capacity - event_registered_count, 0)
+                if event_capacity > 0
+                else 0
+            )
+
+            is_full = int(event_capacity > 0 and event_remaining_capacity == 0)
 
             event_fill_rate = (
                 event_registered_count / event_capacity
@@ -320,6 +337,7 @@ class RecommendationService:
 
                 "event_title": str(event.get("title", "")),
                 "event_start_at": start_at_str,
+                "event_registration_deadline": str(event.get("registration_deadline", "")),
 
                 "event_category": category,
                 "event_audience": str(event.get("audience", "UNKNOWN")),
@@ -330,6 +348,11 @@ class RecommendationService:
                 "event_day_of_week": event_day_of_week,
                 "event_hour": event_hour,
                 "days_until_event": days_until_event,
+
+                "days_until_deadline": days_until_deadline,
+                "is_deadline_passed": is_deadline_passed,
+                "is_full": is_full,
+                "event_remaining_capacity": event_remaining_capacity,
 
                 "event_registered_count": event_registered_count,
                 "event_present_count": event_stats["event_present_count"],
@@ -362,7 +385,24 @@ class RecommendationService:
 
             rows.append(row)
 
-        return pd.DataFrame(rows)
+        candidate_df = pd.DataFrame(rows)
+
+        if candidate_df.empty:
+            return candidate_df
+
+        # On évite les recommandations inutiles : complet ou deadline dépassée.
+        available_df = candidate_df[
+            (candidate_df["is_deadline_passed"] == 0)
+            &
+            (candidate_df["is_full"] == 0)
+        ].copy()
+
+        # Fallback : si les données de test ne contiennent aucun événement disponible,
+        # on retourne quand même les candidats pour éviter une réponse vide.
+        if available_df.empty:
+            return candidate_df
+
+        return available_df
 
     def _prepare_prediction_input(self, candidates: pd.DataFrame) -> pd.DataFrame:
         df = candidates.copy()
@@ -582,25 +622,49 @@ class RecommendationService:
     def _build_reasons(self, row: pd.Series) -> list[str]:
         reasons: list[str] = []
 
+        category = str(row.get("event_category", "cet événement"))
+
         if int(row.get("interest_match", 0)) == 1:
-            reasons.append("Correspond à vos centres d’intérêt.")
+            reasons.append(f"Correspond à vos centres d’intérêt liés à {category}.")
 
         if int(row.get("same_department", 0)) == 1:
             reasons.append("Adapté à votre département.")
 
-        if float(row.get("user_category_attendance_rate", 0)) >= 0.5:
-            reasons.append("Catégorie souvent suivie par vous.")
+        if int(row.get("is_global_event", 0)) == 1:
+            reasons.append("Ouvert à tous les collaborateurs.")
 
-        if int(row.get("was_invited", 0)) == 1:
+        if int(row.get("rsvp_yes", 0)) == 1:
+            reasons.append("Vous avez déjà répondu positivement à cette invitation.")
+
+        elif int(row.get("rsvp_maybe", 0)) == 1:
+            reasons.append("Vous avez montré un intérêt possible pour cet événement.")
+
+        elif int(row.get("was_invited", 0)) == 1:
             reasons.append("Vous avez été invité à cet événement.")
 
-        if float(row.get("event_avg_rating", 0)) >= 4:
-            reasons.append("Événement similaire bien noté.")
+        if float(row.get("user_category_attendance_rate", 0)) >= 0.6:
+            reasons.append(f"Vous participez souvent aux événements de type {category}.")
 
-        if float(row.get("event_fill_rate", 0)) < 0.8:
-            reasons.append("Des places sont encore disponibles.")
+        if float(row.get("event_avg_rating", 0)) >= 4:
+            reasons.append("Événement similaire bien noté par les participants.")
+
+        fill_rate = float(row.get("event_fill_rate", 0))
+        if 0.2 <= fill_rate < 0.85:
+            reasons.append("Événement déjà attractif avec des places encore disponibles.")
+
+        remaining_capacity = int(row.get("event_remaining_capacity", 0))
+        if remaining_capacity > 0:
+            reasons.append(f"{remaining_capacity} place(s) encore disponible(s).")
+
+        days_until_event = int(row.get("days_until_event", 0))
+        if 0 <= days_until_event <= 14:
+            reasons.append("Événement prévu prochainement.")
+
+        if float(row.get("points_total", 0)) >= 300:
+            reasons.append("Votre activité sur la plateforme indique un profil engagé.")
 
         if not reasons:
-            reasons.append("Profil compatible avec cet événement.")
+            reasons.append("Profil compatible avec cet événement selon le modèle IA.")
 
-        return reasons
+        # On limite à 3 raisons pour garder une carte lisible côté Angular.
+        return reasons[:3]
