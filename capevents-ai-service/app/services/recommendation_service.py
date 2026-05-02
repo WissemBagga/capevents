@@ -8,6 +8,17 @@ from catboost import CatBoostRanker
 
 from app.schemas.recommendation import RecommendationItem, RecommendationResponse
 
+from app.data.runtime_loader import (
+    load_runtime_users,
+    load_runtime_events,
+    load_runtime_registrations,
+    load_runtime_feedbacks,
+    load_runtime_invitations,
+    load_runtime_interests,
+    load_runtime_user_interests,
+    load_runtime_points,
+    load_runtime_badges
+)
 
 MODEL_PATH = Path("models_artifacts/recommendation/catboost_recommender.cbm")
 FEATURES_PATH = Path("models_artifacts/recommendation/features.json")
@@ -93,15 +104,15 @@ class RecommendationService:
         self.reload_data()
 
     def reload_data(self) -> None:
-        self.users = read_csv(RAW_DIR / "users.csv")
-        self.events = read_csv(RAW_DIR / "events.csv")
-        self.registrations = read_csv(RAW_DIR / "event_registrations.csv")
-        self.feedbacks = read_csv(RAW_DIR / "event_feedbacks.csv")
-        self.invitations = read_csv(RAW_DIR / "event_invitations.csv")
-        self.interests = read_csv(RAW_DIR / "interests.csv")
-        self.user_interests = read_csv(RAW_DIR / "user_interests.csv")
-        self.points = read_csv(RAW_DIR / "points_transactions.csv")
-        self.badges = read_csv(RAW_DIR / "user_badges.csv")
+        self.users = load_runtime_users()
+        self.events = load_runtime_events()
+        self.registrations = load_runtime_registrations()
+        self.feedbacks = load_runtime_feedbacks()
+        self.invitations = load_runtime_invitations()
+        self.interests = load_runtime_interests()
+        self.user_interests = load_runtime_user_interests()
+        self.points = load_runtime_points()
+        self.badges = load_runtime_badges()
 
         self._prepare_dataframes()
 
@@ -156,6 +167,7 @@ class RecommendationService:
             self.badges["user_id"] = self.badges["user_id"].apply(normalize_id)
 
     def recommend_for_user(self, user_id: str, limit: int = 5) -> RecommendationResponse:
+        self.reload_data()
         user_id = normalize_id(user_id)
 
         user = self._find_user(user_id)
@@ -244,7 +256,7 @@ class RecommendationService:
 
         # Si aucun événement publié n'existe dans les données de test, on prend aussi PENDING/ARCHIVED pour éviter un endpoint vide.
         if published_events.empty:
-            published_events = events[events["status"].isin(["PUBLISHED", "PENDING", "ARCHIVED"])].copy()
+            return pd.DataFrame()
 
         candidates = published_events[
             ~published_events["id"].astype(str).isin(registered_event_ids)
