@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
 import { AiRecommendationResponse } from '../models/ai-recommendation.model';
 
 @Injectable({
@@ -10,7 +11,7 @@ import { AiRecommendationResponse } from '../models/ai-recommendation.model';
 export class AiRecommendationService {
   private readonly http = inject(HttpClient);
 
-  private readonly baseUrl = '/api/ai/recommendations';
+  private readonly apiUrl = `${environment.apiBaseUrl}/api/ai/recommendations`;
 
   getRecommendationsForUser(
     userId: string,
@@ -22,11 +23,9 @@ export class AiRecommendationService {
       .set('limit', safeLimit);
 
     return this.http
-      .get<AiRecommendationResponse>(
-        `${this.baseUrl}/users/${userId}`,
-        { params }
-      )
+      .get<any>(`${this.apiUrl}/users/${userId}`, { params })
       .pipe(
+        map((response) => this.normalizeResponse(response, userId)),
         catchError(() =>
           of({
             userId,
@@ -36,5 +35,24 @@ export class AiRecommendationService {
           })
         )
       );
+  }
+
+  private normalizeResponse(response: any, fallbackUserId: string): AiRecommendationResponse {
+    const items = Array.isArray(response?.items) ? response.items : [];
+
+    return {
+      userId: response?.userId ?? response?.user_id ?? fallbackUserId,
+      totalCandidates: response?.totalCandidates ?? response?.total_candidates ?? 0,
+      message: response?.message ?? null,
+      items: items.map((item: any) => ({
+        eventId: item?.eventId ?? item?.event_id ?? '',
+        title: item?.title ?? null,
+        category: item?.category ?? null,
+        startAt: item?.startAt ?? item?.start_at ?? null,
+        rank: item?.rank ?? 0,
+        score: item?.score ?? 0,
+        reasons: Array.isArray(item?.reasons) ? item.reasons : []
+      }))
+    };
   }
 }

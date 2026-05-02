@@ -13,6 +13,10 @@ import { resolveEventImageUrl  } from '../../../core/constants/event-image-prese
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
+import { AiRecommendationService } from '../../../core/services/ai-recommendation.service';
+import { AiRecommendationItem } from '../../../core/models/ai-recommendation.model';
+
+
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
@@ -24,6 +28,7 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
+  private aiRecommendationService = inject(AiRecommendationService);
 
   currentUser = this.authService.getCurrentUserSnapshot();
 
@@ -36,6 +41,10 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   currentDateTime = new Date();
   private clockInterval: ReturnType<typeof setInterval> | null = null;
 
+  aiLoading = false;
+  aiErrorMessage = '';
+  aiRecommendations: AiRecommendationItem[] = [];
+
   get firstName(): string {
     return this.currentUser?.firstName || 'Utilisateur';
   }
@@ -47,6 +56,7 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadUpcomingEvents();
+    this.loadAiRecommendations();
     if (this.authService.hasEmployeeRole()) {
       this.loadRegisteredEvents();
     }
@@ -140,5 +150,54 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
 
   getEventImageUrl(event: EventResponse): string {
     return resolveEventImageUrl(event.imageUrl, event.category);
+  }
+
+  private loadAiRecommendations(): void {
+    const userId = this.currentUser?.id;
+
+    if (!userId) {
+      this.aiRecommendations = [];
+      this.aiErrorMessage = 'Utilisateur connecté introuvable.';
+      return;
+    }
+
+    this.aiLoading = true;
+    this.aiErrorMessage = '';
+    this.cdr.markForCheck();
+
+    this.aiRecommendationService.getRecommendationsForUser(userId, 6)
+      .pipe(finalize(() => {
+        this.aiLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.aiRecommendations = response.items ?? [];
+
+          if (!this.aiRecommendations.length && response.message) {
+            this.aiErrorMessage = response.message;
+          }
+
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.aiRecommendations = [];
+          this.aiErrorMessage = 'Impossible de charger les recommandations IA.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  getRecommendationImageUrl(item: AiRecommendationItem): string {
+    return resolveEventImageUrl(null, item.category || undefined);
+  }
+
+  getAiScorePercent(score: number): number {
+    const normalized = 1 / (1 + Math.exp(-score));
+    return Math.round(normalized * 100);
+  }
+
+  getRecommendationDateLabel(item: AiRecommendationItem): string {
+    return item.startAt || '';
   }
 }

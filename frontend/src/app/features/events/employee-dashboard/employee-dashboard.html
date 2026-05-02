@@ -77,6 +77,89 @@
       </div>
     </a>
 
+    <section class="ai-recommendations-section">
+      <div class="section-header">
+        <div class="section-heading">
+          <span class="ai-section-kicker">IA personnalisée</span>
+          <h2>Recommandé pour vous</h2>
+          <p>Des événements sélectionnés selon vos intérêts, votre historique et votre profil.</p>
+        </div>
+
+        <a routerLink="/events" class="link-view-all">Explorer tout</a>
+      </div>
+
+      @if (aiLoading) {
+        <div class="state-message loading-msg" appScrollToMessage>
+          <div class="spinner"></div>
+          <span>Chargement des recommandations IA...</span>
+        </div>
+      }
+
+      @if (!aiLoading && aiErrorMessage && aiRecommendations.length === 0) {
+        <div class="state-message info-msg" appScrollToMessage>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+            <line x1="12" y1="12" x2="12" y2="16"/>
+          </svg>
+          <p>{{ aiErrorMessage }}</p>
+        </div>
+      }
+
+      @if (!aiLoading && aiRecommendations.length > 0) {
+        <div class="ai-recommendations-grid">
+          @for (item of aiRecommendations; track item.eventId) {
+            <article class="ai-recommendation-card">
+              <div class="ai-rec-image" [style.background-image]="'url(' + getRecommendationImageUrl(item) + ')'">
+                <span class="ai-rec-badge">IA</span>
+                <span class="ai-rec-rank">#{{ item.rank }}</span>
+              </div>
+
+              <div class="ai-rec-body">
+                <div class="ai-rec-topline">
+                  <span class="category-tag">{{ item.category || 'Sans catégorie' }}</span>
+                  <span class="ai-score">{{ getAiScorePercent(item.score) }}%</span>
+                </div>
+
+                <h3 class="ai-rec-title">{{ item.title || 'Événement recommandé' }}</h3>
+
+                <div class="meta-list">
+                  <div class="meta-row">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+
+                    @if (item.startAt) {
+                      <span>{{ item.startAt | date:'EEEE d MMMM · HH:mm' : '' : 'fr' }}</span>
+                    } @else {
+                      <span>Date à confirmer</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="ai-reasons">
+                  @for (reason of item.reasons.slice(0, 2); track reason) {
+                    <span>{{ reason }}</span>
+                  }
+                </div>
+
+                <div class="card-footer-actions">
+                  <span class="ai-confidence-label">Pertinence IA</span>
+
+                  <a [routerLink]="['/events', item.eventId]" class="btn-details">
+                    Consulter
+                  </a>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
     <section class="upcoming-section">
       <div class="section-header">
         <div class="section-heading">
