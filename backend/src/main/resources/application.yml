@@ -32,3 +32,9 @@ app:
   mail:
     from: noreply@capevents.local
     frontend-base-url: http://localhost:4200
+
+
+ai:
+  base-url: http://127.0.0.1:8001
+  service-key: change-me-secret-key
+  timeout-seconds: 8
