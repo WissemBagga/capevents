@@ -4,25 +4,10 @@
     <!-- 1. Header Section -->
     <section class="greeting-bar">
       <div class="greeting-text">
-        <span class="greeting-kicker">Tableau de bord employé</span>
-        <h1 class="greeting-title">Bonjour, {{ firstName }}
-          <!-- Beautiful wave hand SVG -->
-          <svg class="hand-wave-svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFD02C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v5" />
-            <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6" />
-            <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v4.5" />
-            <path d="M6 10.5V8a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v9a7 7 0 0 0 7 7h1a7 7 0 0 0 7-7v-3" />
-          </svg>
-        </h1>
+        <h1 class="greeting-title">Bonjour, {{ firstName }} </h1>
       </div>
 
       <div class="current-date-display">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-          <line x1="16" y1="2" x2="16" y2="6"/>
-          <line x1="8" y1="2" x2="8" y2="6"/>
-          <line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
         <span>{{ currentDateTime | date:'EEEE d MMMM yyyy' : '' : 'fr' }}</span>
       </div>
     </section>
@@ -70,9 +55,11 @@
       <div class="quick-actions-grid">
         <a routerLink="/my-invitations" class="action-card">
           <div class="action-icon purple-bg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-              <polyline points="22,6 12,13 2,6"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <line x1="20" y1="8" x2="20" y2="14"/>
+              <line x1="23" y1="11" x2="17" y2="11"/>
             </svg>
           </div>
           <div class="action-info">
@@ -86,8 +73,10 @@
 
         <a routerLink="/events/submit" class="action-card">
           <div class="action-icon blue-bg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 5v14M5 12h14"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
             </svg>
           </div>
           <div class="action-info">
@@ -98,11 +87,9 @@
 
         <a routerLink="/events" class="action-card">
           <div class="action-icon green-bg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
             </svg>
           </div>
           <div class="action-info">
@@ -113,8 +100,9 @@
 
         <a routerLink="/my-rewards" class="action-card">
           <div class="action-icon gold-bg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="6"/>
+              <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
             </svg>
           </div>
           <div class="action-info">
@@ -135,8 +123,7 @@
         <section class="ai-recommendations-section">
           <div class="section-header">
             <div class="section-heading">
-              <span class="ai-section-kicker">IA personnalisée</span>
-              <h2>Recommandé pour vous</h2>
+              <h2>Recommandé pour vous ({{ aiRecommendations.length }})</h2>
               <p>Des événements sélectionnés selon vos intérêts, votre historique et votre profil.</p>
             </div>
 
@@ -163,17 +150,16 @@
 
           @if (!aiLoading && aiRecommendations.length > 0) {
             <div class="ai-recommendations-grid">
-              @for (item of aiRecommendations.slice(0, 3); track item.eventId) {
+              @for (item of aiRecommendations.slice(0, 4); track item.eventId) {
                 <article class="ai-recommendation-card">
                   <div class="ai-rec-image" [style.background-image]="'url(' + getRecommendationImageUrl(item) + ')'">
-                    <span class="ai-rec-badge">IA</span>
+                    <span class="ai-rec-badge">{{ getAiScorePercent(item.score) }}%</span>
                     <span class="ai-rec-rank">#{{ item.rank }}</span>
                   </div>
 
                   <div class="ai-rec-body">
                     <div class="ai-rec-topline">
                       <span class="category-tag">{{ item.category || 'Sans catégorie' }}</span>
-                      <span class="ai-score">{{ getAiScorePercent(item.score) }}%</span>
                     </div>
 
                     <h3 class="ai-rec-title">{{ item.title || 'Événement recommandé' }}</h3>
@@ -202,8 +188,6 @@
                     </div>
 
                     <div class="card-footer-actions">
-                      <span class="ai-confidence-label">Pertinence IA</span>
-
                       <a [routerLink]="['/events', item.eventId]" class="btn-details">
                         Consulter
                       </a>
@@ -256,7 +240,7 @@
           }
 
           <div class="events-grid">
-            @for (event of events; track event.id) {
+            @for (event of events.slice(0, 4); track event.id) {
               <article class="event-card">
                 <div class="event-image" [style.background-image]="'url(' + getEventImageUrl(event) + ')'">
                   <div class="event-date-chip">

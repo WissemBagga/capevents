@@ -294,7 +294,7 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
     this.errorMessage = '';
     this.cdr.markForCheck();
 
-    this.eventService.getPublished(0, 3, 'startAt', 'asc')
+    this.eventService.getPublished(0, 4, 'startAt', 'asc')
       .pipe(finalize(() => {
         this.loading = false;
         this.cdr.markForCheck();
@@ -387,7 +387,7 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
     this.aiErrorMessage = '';
     this.cdr.markForCheck();
 
-    this.aiRecommendationService.getRecommendationsForUser(userId, 6)
+    this.aiRecommendationService.getRecommendationsForUser(userId, 4)
       .pipe(finalize(() => {
         this.aiLoading = false;
         this.cdr.markForCheck();
