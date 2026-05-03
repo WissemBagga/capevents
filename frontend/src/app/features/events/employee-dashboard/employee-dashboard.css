@@ -929,7 +929,7 @@
 }
 
 .registered-badge {
-  background: rgba(0, 130, 142, 0.10);
+  background: rgba(255, 255, 255, 0.69);
   color: #00828E;
   border: 1px solid rgba(0, 130, 142, 0.14);
 }

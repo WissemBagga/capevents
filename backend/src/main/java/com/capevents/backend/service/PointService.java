@@ -1,5 +1,7 @@
 package com.capevents.backend.service;
 
+import com.capevents.backend.dto.LeaderboardParticipantResponse;
+import com.capevents.backend.dto.LeaderboardResponse;
 import com.capevents.backend.exception.NotFoundException;
 import com.capevents.backend.entity.Event;
 import com.capevents.backend.entity.PointTransaction;
@@ -147,6 +149,69 @@ public class PointService {
                 .toList();
 
         return new MyPointsResponse(totalPoints, history);
+    }
+
+    @Transactional(readOnly = true)
+    public LeaderboardResponse getLeaderboard(String userEmail) {
+        User currentUser = userRepository.findByEmailWithRolesAndDepartment(userEmail.toLowerCase())
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_MESSAGE));
+
+        java.util.List<User> employees = userRepository.findActiveVerifiedEmployeeUsers();
+
+        if (employees.stream().noneMatch(u -> u.getId().equals(currentUser.getId()))) {
+            employees = new java.util.ArrayList<>(employees);
+            employees.add(currentUser);
+        }
+
+        java.util.List<LeaderboardParticipantResponse> allParticipants = new java.util.ArrayList<>();
+
+        for (User employee : employees) {
+            long pts = getCurrentBalance(employee.getId());
+            boolean isCurrentUser = employee.getId().equals(currentUser.getId());
+            String displayName = isCurrentUser ? "Moi (" + employee.getFirstName() + ")" : employee.getFirstName() + " " + employee.getLastName();
+
+            allParticipants.add(new LeaderboardParticipantResponse(
+                    employee.getId(),
+                    0,
+                    employee.getFirstName(),
+                    employee.getLastName(),
+                    displayName,
+                    employee.getAvatarUrl(),
+                    pts,
+                    isCurrentUser
+            ));
+        }
+
+        allParticipants.sort((a, b) -> Long.compare(b.points(), a.points()));
+
+        int currentRank = 1;
+        LeaderboardParticipantResponse currentUserRank = null;
+        java.util.List<LeaderboardParticipantResponse> rankedParticipants = new java.util.ArrayList<>();
+
+        for (int i = 0; i < allParticipants.size(); i++) {
+            if (i > 0 && allParticipants.get(i).points() < allParticipants.get(i - 1).points()) {
+                currentRank = i + 1;
+            }
+            LeaderboardParticipantResponse original = allParticipants.get(i);
+            LeaderboardParticipantResponse withRank = new LeaderboardParticipantResponse(
+                    original.userId(),
+                    currentRank,
+                    original.firstName(),
+                    original.lastName(),
+                    original.displayName(),
+                    original.avatarUrl(),
+                    original.points(),
+                    original.isCurrentUser()
+            );
+            rankedParticipants.add(withRank);
+            if (original.isCurrentUser()) {
+                currentUserRank = withRank;
+            }
+        }
+
+        java.util.List<LeaderboardParticipantResponse> topParticipants = rankedParticipants.stream().limit(3).toList();
+
+        return new LeaderboardResponse(topParticipants, currentUserRank, rankedParticipants.size());
     }
 
 

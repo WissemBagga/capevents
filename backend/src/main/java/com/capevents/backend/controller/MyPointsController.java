@@ -26,4 +26,11 @@ public class MyPointsController {
     ) {
         return pointService.getMyPoints(auth.getName(), limit);
     }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/leaderboard")
+    public com.capevents.backend.dto.LeaderboardResponse getLeaderboard(Authentication auth) {
+        return pointService.getLeaderboard(auth.getName());
+    }
 }

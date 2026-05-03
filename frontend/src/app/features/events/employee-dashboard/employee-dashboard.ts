@@ -18,6 +18,8 @@ import { AiRecommendationItem } from '../../../core/models/ai-recommendation.mod
 import { MyInvitationResponse, InvitationResponseStatus } from '../../../core/models/invitation.model';
 
 
+import { PointService } from '../../../core/services/point.service';
+
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
@@ -30,6 +32,7 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
   private aiRecommendationService = inject(AiRecommendationService);
+  private pointService = inject(PointService);
 
   currentUser = this.authService.getCurrentUserSnapshot();
 
@@ -67,17 +70,65 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
     if (this.authService.hasEmployeeRole()) {
       this.loadRegisteredEvents();
     }
-    this.topParticipants = [
-      { id: 1, name: 'Ahmed Belhadj', points: 1250, rank: 1, avatar: 'assets/images/avatars/avatar-1.png' },
-      { id: 2, name: 'Fatima Zahra', points: 1100, rank: 2, avatar: 'assets/images/avatars/avatar-2.png' },
-      { id: 3, name: 'Moi (' + this.firstName + ')', points: 950, rank: 3, avatar: this.currentUser?.avatarUrl || 'assets/images/avatars/avatar-3.png', isMe: true },
-      { id: 4, name: 'Sami Mansour', points: 800, rank: 4, avatar: 'assets/images/avatars/avatar-4.png' }
-    ];
-    // Update clock every minute
+    this.pointService.getLeaderboard()
+      .subscribe({
+        next: (response) => {
+          if (!response || !response.topParticipants) {
+            this.topParticipants = [];
+            this.cdr.markForCheck();
+            return;
+          }
+
+          const top3 = response.topParticipants.map((p: any) => ({
+            id: p.userId,
+            name: p.isCurrentUser ? p.displayName : `${p.firstName} ${p.lastName}`,
+            points: p.points,
+            rank: p.rank,
+            avatar: p.avatarUrl,
+            isMe: p.isCurrentUser
+          }));
+
+          const isMeInTop3 = top3.some((p: any) => p.isMe);
+
+          if (isMeInTop3) {
+            this.topParticipants = top3;
+          } else if (response.currentUserRank) {
+            const cur = response.currentUserRank;
+            const myRow = {
+              id: cur.userId,
+              name: cur.displayName,
+              points: cur.points,
+              rank: cur.rank,
+              avatar: cur.avatarUrl,
+              isMe: true
+            };
+            this.topParticipants = [...top3, myRow];
+          } else {
+            this.topParticipants = top3;
+          }
+
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.topParticipants = [
+            { id: 1, name: 'Marc Dubois', points: 2460, rank: 1, avatar: 'assets/images/avatars/avatar-1.png' },
+            { id: 2, name: 'Julie Lambert', points: 2185, rank: 2, avatar: 'assets/images/avatars/avatar-2.png' },
+            { id: 3, name: 'Sami Ben Ali', points: 1980, rank: 3, avatar: 'assets/images/avatars/avatar-3.png' },
+            { id: 4, name: 'Moi (' + this.firstName + ')', points: 0, rank: 4, avatar: this.currentUser?.avatarUrl || '', isMe: true }
+          ];
+          this.cdr.markForCheck();
+        }
+      });
+
     this.clockInterval = setInterval(() => {
       this.currentDateTime = new Date();
       this.cdr.markForCheck();
     }, 60000);
+  }
+
+  formatPoints(pts: number | undefined | null): string {
+    if (pts == null) return '0 pts';
+    return `${pts.toLocaleString('en-US')} pts`;
   }
 
   getInitials(name: string | undefined | null): string {

@@ -417,9 +417,15 @@
         </div>
 
         <!-- B. Top Participants card -->
+        <!-- B. Top Participants card -->
         <div class="sidebar-card">
           <div class="sidebar-card-header">
-            <h3>Top Participants</h3>
+            <div class="sidebar-header-left">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+              <h3>Top Participants</h3>
+            </div>
           </div>
           <div class="sidebar-card-body">
             <div class="sidebar-ranking-list">
@@ -428,11 +434,17 @@
                   <span class="rank-number">#{{ user.rank }}</span>
                   <div class="ranking-user-info">
                     <div class="rank-avatar">
-                      <img [src]="user.avatar" alt="Avatar"/>
+                      @if (user.avatar) {
+                        <img [src]="user.avatar" class="avatar-img" alt="Avatar"/>
+                      } @else if (user.name) {
+                        <div class="avatar-fallback rank-fallback">{{ getInitials(user.name) }}</div>
+                      } @else {
+                        <div class="avatar-fallback rank-fallback">U</div>
+                      }
                     </div>
-                    <span class="rank-name">{{ user.name }}</span>
+                    <span class="rank-name" [title]="user.name">{{ user.name }}</span>
                   </div>
-                  <span class="rank-points">{{ user.points }} pts</span>
+                  <span class="rank-points">{{ formatPoints(user.points) }}</span>
                 </div>
               }
             </div>

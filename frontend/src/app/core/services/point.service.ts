@@ -15,4 +15,8 @@ export class PointService {
     const params = new HttpParams().set('limit', limit);
     return this.http.get<MyPointsResponse>(this.apiUrl, { params });
   }
+
+  getLeaderboard() {
+    return this.http.get<any>(`${this.apiUrl}/leaderboard`);
+  }
 }
