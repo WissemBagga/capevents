@@ -453,27 +453,36 @@
 
         <!-- C. Ma Semaine card -->
         <div class="sidebar-card">
-          <div class="sidebar-card-header">
+          <div class="sidebar-card-header schedule-header">
             <h3>Ma Semaine</h3>
+            <span class="schedule-month">{{ currentMonthYear }}</span>
           </div>
           <div class="sidebar-card-body">
-            <div class="sidebar-week-schedule">
-              <div class="schedule-item today">
-                <span class="schedule-label">Aujourd'hui</span>
-                <p class="schedule-date">{{ currentDateTime | date:'EEEE d MMMM' : '' : 'fr' }}</p>
-              </div>
-
-              <div class="schedule-item next">
-                <span class="schedule-label">Prochain événement</span>
-                @if (events && events.length > 0) {
-                  <p class="schedule-event-title">{{ events[0].title }}</p>
-                  <p class="schedule-event-time">
-                    {{ events[0].startAt | date:'EEEE d MMMM · HH:mm' : '' : 'fr' }}
-                  </p>
-                } @else {
-                  <p class="schedule-event-none">Aucun événement prévu</p>
+            <div class="mini-calendar">
+              <div class="calendar-days">
+                @for (wd of weekDays; track wd.dayOfMonth) {
+                  <div class="calendar-day-col">
+                    <span class="day-label">{{ wd.label }}</span>
+                    <span class="day-num" [class.is-today]="wd.isToday">{{ wd.dayOfMonth }}</span>
+                    <span class="day-dot" [class.has-event]="wd.hasEvent"></span>
+                  </div>
                 }
               </div>
+            </div>
+
+            <div class="weekly-events-list">
+              @for (ev of weeklyEvents; track ev.title) {
+                <div class="weekly-event-item">
+                  <span class="event-dot" [style.background-color]="ev.dotColor"></span>
+                  <span class="event-text">
+                    <span class="event-day">{{ ev.dayLabel }}</span> · {{ ev.title }} à {{ ev.time }}
+                  </span>
+                </div>
+              } @empty {
+                <div class="weekly-events-empty">
+                  <span class="event-text">Aucun événement prévu cette semaine</span>
+                </div>
+              }
             </div>
           </div>
         </div>

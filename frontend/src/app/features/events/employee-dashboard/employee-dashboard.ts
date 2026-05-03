@@ -53,6 +53,10 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   invitationsLoading = false;
   responseLoadingById: Record<number, boolean> = {};
   topParticipants: any[] = [];
+  weekDays: any[] = [];
+  currentMonthYear = '';
+  weeklyEvents: any[] = [];
+  weeklyRegisteredEvents: any[] = [];
 
   get firstName(): string {
     return this.currentUser?.firstName || 'Utilisateur';
@@ -120,10 +124,82 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
         }
       });
 
+    this.generateWeekCalendar();
+
     this.clockInterval = setInterval(() => {
       this.currentDateTime = new Date();
       this.cdr.markForCheck();
     }, 60000);
+  }
+
+  generateWeekCalendar(): void {
+    const today = new Date();
+    const currentDay = today.getDay();
+    const distanceToMonday = (currentDay === 0 ? -6 : 1 - currentDay);
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + distanceToMonday);
+
+    const formatter = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
+    let monthYear = formatter.format(today);
+    this.currentMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+
+    const labels = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    this.weekDays = [];
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const isToday = d.getDate() === today.getDate() &&
+                      d.getMonth() === today.getMonth() &&
+                      d.getFullYear() === today.getFullYear();
+
+      this.weekDays.push({
+        date: d,
+        label: labels[i],
+        dayOfMonth: d.getDate(),
+        isToday,
+        hasEvent: false
+      });
+    }
+
+    this.weeklyEvents = [];
+    if (this.weeklyRegisteredEvents && this.weeklyRegisteredEvents.length > 0) {
+      this.weeklyRegisteredEvents.sort((a, b) => new Date(a.eventStartAt).getTime() - new Date(b.eventStartAt).getTime());
+
+      const maxReminders = 2;
+      let count = 0;
+      for (const ev of this.weeklyRegisteredEvents) {
+        if (count >= maxReminders) break;
+        const evDate = new Date(ev.eventStartAt);
+        const diffDays = Math.floor((evDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
+        
+        let dayLabel = '';
+        if (diffDays === 0) dayLabel = "Aujourd'hui";
+        else if (diffDays === 1) dayLabel = 'Demain';
+        else {
+          const weekdayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long' });
+          dayLabel = weekdayFormatter.format(evDate);
+          dayLabel = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
+        }
+        
+        const timeFormatter = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit' });
+        const time = timeFormatter.format(evDate);
+        
+        this.weeklyEvents.push({
+          dayLabel,
+          title: ev.eventTitle,
+          time,
+          dotColor: count === 0 ? '#10B981' : '#EF4444'
+        });
+        count++;
+
+        const dayMatch = this.weekDays.find(wd => wd.date.getDate() === evDate.getDate() &&
+                                                  wd.date.getMonth() === evDate.getMonth());
+        if (dayMatch) {
+          dayMatch.hasEvent = true;
+        }
+      }
+    }
   }
 
   formatPoints(pts: number | undefined | null): string {
@@ -243,10 +319,33 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
     this.eventService.getMyRegistrations().subscribe({
       next: (items: RegistrationResponse[]) => {
         this.registeredEventIds = new Set(items.map(item => item.eventId));
+
+        const today = new Date();
+        const currentDay = today.getDay();
+        const distanceToMonday = (currentDay === 0 ? -6 : 1 - currentDay);
+        const monday = new Date(today);
+        monday.setHours(0, 0, 0, 0);
+        monday.setDate(today.getDate() + distanceToMonday);
+
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        sunday.setHours(23, 59, 59, 999);
+
+        this.weeklyRegisteredEvents = items.filter(item => {
+          if (!item.eventStartAt || item.status === 'CANCELLED' || item.eventStatus === 'CANCELLED') {
+            return false;
+          }
+          const evDate = new Date(item.eventStartAt);
+          return evDate >= monday && evDate <= sunday;
+        });
+
+        this.generateWeekCalendar();
         this.cdr.markForCheck();
       },
       error: () => {
         this.registeredEventIds = new Set();
+        this.weeklyRegisteredEvents = [];
+        this.generateWeekCalendar();
         this.cdr.markForCheck();
       }
     });
