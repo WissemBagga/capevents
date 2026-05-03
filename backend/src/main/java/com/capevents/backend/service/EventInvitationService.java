@@ -405,7 +405,8 @@ public class EventInvitationService {
                 invitation.getInvitedBy().getFirstName(),
                 invitation.getInvitedBy().getLastName()
                 ),
-                resolveInvitationSource(invitedBy)
+                resolveInvitationSource(invitedBy),
+                invitation.getUser().getAvatarUrl()
         );
     }
 

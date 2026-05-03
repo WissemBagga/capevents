@@ -18,7 +18,8 @@ public record MyInvitationResponse(
         String message,
         Instant sentAt,
         String invitedByFullName,
-        String invitationSource
+        String invitationSource,
+        String avatarUrl
 ) {
 
 }

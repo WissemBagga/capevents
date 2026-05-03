@@ -42,6 +42,8 @@ export interface MyInvitationResponse {
   sentAt: string;
   invitedByFullName: string;
   invitationSource: 'ADMIN' | 'COLLEAGUE';
+  invitedByAvatarUrl?: string;
+  avatarUrl?: string;
 }
 
 

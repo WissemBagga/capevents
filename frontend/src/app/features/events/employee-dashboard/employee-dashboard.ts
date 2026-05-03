@@ -15,6 +15,7 @@ import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-m
 
 import { AiRecommendationService } from '../../../core/services/ai-recommendation.service';
 import { AiRecommendationItem } from '../../../core/models/ai-recommendation.model';
+import { MyInvitationResponse, InvitationResponseStatus } from '../../../core/models/invitation.model';
 
 
 @Component({
@@ -45,6 +46,11 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   aiErrorMessage = '';
   aiRecommendations: AiRecommendationItem[] = [];
 
+  invitations: MyInvitationResponse[] = [];
+  invitationsLoading = false;
+  responseLoadingById: Record<number, boolean> = {};
+  topParticipants: any[] = [];
+
   get firstName(): string {
     return this.currentUser?.firstName || 'Utilisateur';
   }
@@ -52,19 +58,85 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   get departmentName(): string {
     return this.currentUser?.departmentName || 'Non défini';
   }
-  
+
 
   ngOnInit(): void {
     this.loadUpcomingEvents();
     this.loadAiRecommendations();
+    this.loadInvitations();
     if (this.authService.hasEmployeeRole()) {
       this.loadRegisteredEvents();
     }
+    this.topParticipants = [
+      { id: 1, name: 'Ahmed Belhadj', points: 1250, rank: 1, avatar: 'assets/images/avatars/avatar-1.png' },
+      { id: 2, name: 'Fatima Zahra', points: 1100, rank: 2, avatar: 'assets/images/avatars/avatar-2.png' },
+      { id: 3, name: 'Moi (' + this.firstName + ')', points: 950, rank: 3, avatar: this.currentUser?.avatarUrl || 'assets/images/avatars/avatar-3.png', isMe: true },
+      { id: 4, name: 'Sami Mansour', points: 800, rank: 4, avatar: 'assets/images/avatars/avatar-4.png' }
+    ];
     // Update clock every minute
     this.clockInterval = setInterval(() => {
       this.currentDateTime = new Date();
       this.cdr.markForCheck();
     }, 60000);
+  }
+
+  getInitials(name: string | undefined | null): string {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    }
+    return name.charAt(0).toUpperCase();
+  }
+
+  loadInvitations(): void {
+    this.invitationsLoading = true;
+    this.cdr.markForCheck();
+
+    this.eventService.getMyInvitations()
+      .pipe(finalize(() => {
+        this.invitationsLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (invitations) => {
+          this.invitations = invitations ?? [];
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.invitations = [];
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  respond(invitationId: number, response: InvitationResponseStatus): void {
+    this.responseLoadingById[invitationId] = true;
+    this.cdr.markForCheck();
+
+    this.eventService.respondToInvitation(invitationId, response)
+      .pipe(finalize(() => {
+        this.responseLoadingById[invitationId] = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: () => {
+          this.invitations = this.invitations.map(invitation =>
+            invitation.invitationId === invitationId
+              ? { ...invitation, rsvpResponse: response }
+              : invitation
+          );
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  get pendingInvitations(): MyInvitationResponse[] {
+    return this.invitations.filter(i => !i.rsvpResponse || i.rsvpResponse as any === 'PENDING');
+  }
+
+  get pendingInvitationsCount(): number {
+    return this.pendingInvitations.length;
   }
 
   ngOnDestroy(): void {
