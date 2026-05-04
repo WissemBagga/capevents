@@ -7,6 +7,8 @@ from app.core.config import settings
 from app.api.recommendations import router as recommendations_router
 from app.api.monitoring import router as monitoring_router
 
+from app.api.feedback_insights import router as feedback_insights_router
+
 app = FastAPI(
     title=settings.app_name,
     version="1.0.0",
@@ -27,6 +29,7 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(recommendations_router)
 app.include_router(monitoring_router)
+app.include_router(feedback_insights_router)
 
 @app.get("/")
 def root():
