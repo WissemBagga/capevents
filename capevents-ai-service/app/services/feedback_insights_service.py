@@ -425,28 +425,51 @@ class FeedbackInsightsService:
             "Tu es un assistant RH pour CapEvents. "
             "Tu rédiges des résumés courts, professionnels et en français. "
             "Tu n'inventes aucune donnée. "
-            "Tu utilises seulement les informations fournies. "
+            "Tu dois respecter exactement les chiffres fournis. "
+            "Ne dis jamais que tous les feedbacks sont positifs si la distribution contient des feedbacks négatifs ou neutres. "
             "Tu réponds directement, sans raisonnement détaillé."
         )
 
+        positive_count = distribution.get("positive", 0)
+        neutral_count = distribution.get("neutral", 0)
+        negative_count = distribution.get("negative", 0)
+
+        topics_text = [
+            {
+                "label": topic.label,
+                "count": topic.count,
+                "keywords": topic.keywords[:3]
+            }
+            for topic in topics[:5]
+        ]
+
         user_message = f"""
-    Analyse les résultats NLP suivants et rédige un résumé en 3 phrases maximum.
+        Rédige un résumé RH en 3 phrases maximum.
 
-    Événement: {event_title or "Non précisé"}
-    Nombre de feedbacks: {feedback_count}
-    Note moyenne: {average_rating:.2f}/5
-    Sentiment global: {global_sentiment}
-    Distribution sentiment: {distribution}
+        Données exactes à respecter :
+        - Événement : {event_title or "Non précisé"}
+        - Nombre total de feedbacks analysés : {feedback_count}
+        - Note moyenne : {average_rating:.2f}/5
+        - Sentiment global calculé : {global_sentiment}
+        - Feedbacks positifs : {positive_count}
+        - Feedbacks neutres : {neutral_count}
+        - Feedbacks négatifs : {negative_count}
 
-    Thèmes détectés:
-    {[topic.model_dump() for topic in topics]}
+        Thèmes détectés :
+        {topics_text}
 
-    Points forts:
-    {strengths}
+        Points forts :
+        {strengths}
 
-    Points à améliorer:
-    {improvements}
-    """
+        Points à améliorer :
+        {improvements}
+
+        Contraintes :
+        - Ne dis pas "{feedback_count} feedbacks positifs".
+        - Dis plutôt : "{positive_count} positifs, {neutral_count} neutres et {negative_count} négatifs".
+        - Ne mentionne que les thèmes, points forts et axes d'amélioration fournis.
+        - Réponds en français, style professionnel RH.
+        """
 
         try:
             response = requests.post(
@@ -481,6 +504,12 @@ class FeedbackInsightsService:
 
             message = data.get("message", {})
             text = str(message.get("content", "")).strip()
+
+            if f"{feedback_count} feedbacks positifs" in text.lower():
+                return fallback_summary, False, "fallback_template_qwen_summary_validation_failed"
+
+            if f"{feedback_count} retours positifs" in text.lower():
+                return fallback_summary, False, "fallback_template_qwen_summary_validation_failed"
 
             if not text:
                 return fallback_summary, False, "fallback_template_empty_qwen_chat_content"
