@@ -34,12 +34,12 @@ class HrCopilotService:
             if qwen_used:
                 source = draft_source
 
-            final_suggestions.append(
-                HrCopilotSuggestion(
-                    **suggestion,
-                    draft=draft
-                )
-            )
+            suggestion_payload = {
+                **suggestion,
+                "draft": draft
+            }
+
+            final_suggestions.append(suggestion_payload)
 
         return HrCopilotResponse(
             suggestions=final_suggestions,
