@@ -6,6 +6,8 @@ from sqlalchemy import text
 from app.data.db import engine
 from app.schemas.hr_copilot import HrCopilotResponse, HrCopilotSuggestion
 
+from datetime import datetime, timedelta, timezone
+
 
 OLLAMA_CHAT_URL = "http://127.0.0.1:11434/api/chat"
 OLLAMA_MODEL = "qwen3:0.6b"
@@ -54,38 +56,93 @@ class HrCopilotService:
         return [dict(row) for row in rows]
 
     def _detect_pending_invitations(self) -> list[dict]:
+        cooldown_after = datetime.now(timezone.utc) - timedelta(hours=24)
+
         rows = self._read_rows("""
             SELECT
                 e.id::text AS event_id,
                 e.title AS event_title,
-                COUNT(i.id) AS pending_count
+
+                COUNT(i.id) AS pending_count,
+
+                SUM(
+                    CASE
+                        WHEN NOT EXISTS (
+                            SELECT 1
+                            FROM event_invitation_reminders r
+                            WHERE r.invitation_id = i.id
+                            AND r.status = 'SENT'
+                            AND r.sent_at >= :cooldown_after
+                        )
+                        THEN 1 ELSE 0
+                    END
+                ) AS eligible_reminder_count,
+
+                SUM(
+                    CASE
+                        WHEN EXISTS (
+                            SELECT 1
+                            FROM event_invitation_reminders r
+                            WHERE r.invitation_id = i.id
+                            AND r.status = 'SENT'
+                            AND r.sent_at >= :cooldown_after
+                        )
+                        THEN 1 ELSE 0
+                    END
+                ) AS recently_reminded_count
+
             FROM event_invitations i
             JOIN events e ON e.id = i.event_id
             WHERE e.status = 'PUBLISHED'
-              AND e.start_at > NOW()
-              AND i.status = 'PENDING'
+            AND e.start_at > NOW()
+            AND i.status = 'PENDING'
+            AND i.rsvp_response IS NULL
             GROUP BY e.id, e.title
-            HAVING COUNT(i.id) >= 3
-            ORDER BY pending_count DESC
+            HAVING
+                SUM(
+                    CASE
+                        WHEN NOT EXISTS (
+                            SELECT 1
+                            FROM event_invitation_reminders r
+                            WHERE r.invitation_id = i.id
+                            AND r.status = 'SENT'
+                            AND r.sent_at >= :cooldown_after
+                        )
+                        THEN 1 ELSE 0
+                    END
+                ) > 0
+            ORDER BY eligible_reminder_count DESC, pending_count DESC
             LIMIT 3
-        """)
+        """, {"cooldown_after": cooldown_after})
 
         suggestions = []
 
         for row in rows:
-            pending_count = int(row["pending_count"])
+            pending_count = int(row["pending_count"] or 0)
+            eligible_count = int(row["eligible_reminder_count"] or 0)
+            recently_reminded_count = int(row["recently_reminded_count"] or 0)
 
             suggestions.append({
                 "type": "PENDING_INVITATIONS",
-                "priority": "HIGH" if pending_count >= 10 else "MEDIUM",
-                "title": "Relancer les invitations en attente",
-                "insight": f"{pending_count} invitation(s) sont encore en attente pour cet événement.",
-                "recommended_action": "Envoyer une relance courte et ciblée aux collaborateurs déjà invités.",
+                "priority": "HIGH" if eligible_count >= 10 else "MEDIUM",
+                "title": "Relancer les invités sans réponse",
+                "insight": (
+                    f"{pending_count} invitation(s) sont encore en attente pour cet événement, "
+                    f"dont {eligible_count} relançable(s) maintenant. "
+                    f"{recently_reminded_count} invitation(s) ont déjà été relancées récemment."
+                ),
+                "recommended_action": (
+                    "Envoyer une relance uniquement aux collaborateurs déjà invités, "
+                    "sans créer de nouvelle invitation."
+                ),
                 "action_type": "REMIND_PENDING_INVITATIONS",
                 "related_event_id": row["event_id"],
                 "related_event_title": row["event_title"],
                 "metadata": {
-                    "pending_count": pending_count
+                    "pending_count": pending_count,
+                    "eligible_reminder_count": eligible_count,
+                    "recently_reminded_count": recently_reminded_count,
+                    "cooldown_hours": 24
                 }
             })
 
