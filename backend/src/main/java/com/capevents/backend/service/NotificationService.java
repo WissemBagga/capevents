@@ -9,6 +9,7 @@ import com.capevents.backend.dto.UnreadNotificationCountResponse;
 import com.capevents.backend.entity.User;
 import com.capevents.backend.repository.NotificationRepository;
 import com.capevents.backend.repository.UserRepository;
+import com.capevents.backend.service.mail.EmailService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
 
-    public NotificationService(NotificationRepository notificationRepository, UserRepository userRepository) {
+    public NotificationService(NotificationRepository notificationRepository, UserRepository userRepository, EmailService invitationReminderMailService) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
     }
@@ -373,6 +374,20 @@ public class NotificationService {
                 "Récompense refusée",
                 "Votre demande pour \"" + rewardTitle + "\" a été refusée. Motif : " + reason,
                 "/my-rewards"
+        );
+    }
+
+
+    @Transactional
+    public void notifyInvitationReminder(User target, Event event) {
+        if (target == null || event == null) return;
+
+        createNotification(
+                target,
+                NotificationType.EVENT_INVITATION_REMINDER,
+                "Rappel d’invitation",
+                "Vous avez une invitation en attente pour l’événement \"" + event.getTitle() + "\".",
+                "/my-invitations"
         );
     }
 

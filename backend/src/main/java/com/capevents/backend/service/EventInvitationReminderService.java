@@ -32,19 +32,21 @@ public class EventInvitationReminderService {
     private final EventInvitationReminderRepository reminderRepository;
     private final UserRepository userRepository;
     private final EmailService invitationReminderMailService;
+    private final NotificationService notificationService;
 
     public EventInvitationReminderService(
             EventRepository eventRepository,
             EventInvitationRepository eventInvitationRepository,
             EventInvitationReminderRepository reminderRepository,
             UserRepository userRepository,
-            EmailService invitationReminderMailService
+            EmailService invitationReminderMailService, NotificationService notificationService
     ) {
         this.eventRepository = eventRepository;
         this.eventInvitationRepository = eventInvitationRepository;
         this.reminderRepository = reminderRepository;
         this.userRepository = userRepository;
         this.invitationReminderMailService = invitationReminderMailService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -89,16 +91,36 @@ public class EventInvitationReminderService {
             reminder.setSentAt(OffsetDateTime.now());
 
             try {
-                invitationReminderMailService.sendInvitationReminder(
+                // 1. Notification interne CapEvents, toujours envoyée.
+                notificationService.notifyInvitationReminder(
                         invitation.getUser(),
-                        event,
-                        message
+                        event
                 );
 
-                reminder.setStatus(ReminderStatus.SENT);
+                // 2. Email de relance, selon le profil actif : dev = console, mailtrap = email réel.
+                try {
+                    invitationReminderMailService.sendInvitationReminder(
+                            invitation.getUser(),
+                            event,
+                            message
+                    );
+
+                    reminder.setChannel(ReminderChannel.EMAIL);
+                    reminder.setStatus(ReminderStatus.SENT);
+
+                } catch (Exception emailException) {
+                    // La notification interne est déjà envoyée.
+                    // On garde une trace que l’email a échoué, mais on bloque le spam grâce au statut SENT.
+                    reminder.setChannel(ReminderChannel.SYSTEM);
+                    reminder.setStatus(ReminderStatus.SENT);
+                    reminder.setErrorMessage("Email failed: " + emailException.getMessage());
+                    failed++;
+                }
+
                 sent++;
 
             } catch (Exception exception) {
+                reminder.setChannel(ReminderChannel.SYSTEM);
                 reminder.setStatus(ReminderStatus.FAILED);
                 reminder.setErrorMessage(exception.getMessage());
                 failed++;
@@ -112,7 +134,8 @@ public class EventInvitationReminderService {
         if (invitations.isEmpty()) {
             responseMessage = "Aucune invitation éligible à relancer. Les collaborateurs ont peut-être déjà répondu ou ont été relancés récemment.";
         } else {
-            responseMessage = sent + " relance(s) envoyée(s), " + failed + " échec(s).";
+            responseMessage = sent + " relance(s) envoyée(s) dans CapEvents, "
+                    + failed + " email(s) en échec.";
         }
 
         return new InvitationReminderResponse(
