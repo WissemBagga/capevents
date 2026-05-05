@@ -320,6 +320,7 @@ class HrCopilotService:
                 "rédige un brouillon",
                 "le brouillon final",
                 "brouillon final du message",
+                "améliorer le taux d’inscription pour",
                 "type :",
                 "priorité :",
                 "constat :",
