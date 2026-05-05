@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 import pandas as pd
 from catboost import CatBoostRanker
 
@@ -25,7 +24,6 @@ from app.services.prediction_logger import PredictionLogger
 
 MODEL_PATH = Path("models_artifacts/recommendation/catboost_recommender.cbm")
 FEATURES_PATH = Path("models_artifacts/recommendation/features.json")
-RAW_DIR = Path("datasets/raw/capevents")
 
 MODEL_NAME = "catboost_recommender"
 MODEL_VERSION = "recommendation-v1.0.0"
@@ -61,10 +59,6 @@ CANCELLED_REGISTRATION_VALUES = {
 }
 
 
-def read_csv(path: Path) -> pd.DataFrame:
-    if not path.exists():
-        return pd.DataFrame()
-    return pd.read_csv(path)
 
 
 def normalize_id(value: Any) -> str:
@@ -177,6 +171,7 @@ class RecommendationService:
     def recommend_for_user(self, user_id: str, limit: int = 5) -> RecommendationResponse:
         request_id = str(uuid4())
         user_id = normalize_id(user_id)
+        self.reload_data()
 
         user = self._find_user(user_id)
         if user is None:
@@ -188,14 +183,14 @@ class RecommendationService:
                 total_candidates=0,
                 recommendations=[],
                 status="USER_NOT_FOUND",
-                message="Utilisateur introuvable dans users.csv."
+                message="Utilisateur introuvable dans les données runtime."
             )
 
             return RecommendationResponse(
                 user_id=user_id,
                 total_candidates=0,
                 items=[],
-                message="Utilisateur introuvable dans users.csv.",
+                message="Utilisateur introuvable dans les données runtime.",
                 request_id=request_id,
                 model_version=MODEL_VERSION
             )
@@ -312,6 +307,18 @@ class RecommendationService:
 
         # On recommande en priorité les événements publiés.
         published_events = events[events["status"] == "PUBLISHED"].copy()
+
+        published_events["start_at_parsed"] = pd.to_datetime(
+            published_events["start_at"],
+            errors="coerce",
+            utc=True
+        )
+
+        published_events = published_events[
+            published_events["start_at_parsed"].notna()
+            &
+            (published_events["start_at_parsed"] >= pd.Timestamp.now(tz="UTC"))
+        ].copy()
 
         if published_events.empty:
             return pd.DataFrame()
@@ -459,7 +466,13 @@ class RecommendationService:
         # Fallback : si les données de test ne contiennent aucun événement disponible,
         # on retourne quand même les candidats pour éviter une réponse vide.
         if available_df.empty:
-            return candidate_df
+            available_df = candidate_df[
+                (candidate_df["is_deadline_passed"] == 0)
+                &
+                (candidate_df["is_full"] == 0)
+            ].copy()
+
+            return available_df
 
         return available_df
 
