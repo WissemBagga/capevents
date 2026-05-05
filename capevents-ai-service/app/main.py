@@ -11,6 +11,8 @@ from app.api.feedback_insights import router as feedback_insights_router
 
 from app.api.diagnostics import router as diagnostics_router
 
+from app.api.hr_copilot import router as hr_copilot_router
+
 app = FastAPI(
     title=settings.app_name,
     version="1.0.0",
@@ -33,6 +35,7 @@ app.include_router(recommendations_router)
 app.include_router(monitoring_router)
 app.include_router(feedback_insights_router)
 app.include_router(diagnostics_router)
+app.include_router(hr_copilot_router)
 
 @app.get("/")
 def root():
