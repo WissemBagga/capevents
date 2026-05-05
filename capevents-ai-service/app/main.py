@@ -9,6 +9,8 @@ from app.api.monitoring import router as monitoring_router
 
 from app.api.feedback_insights import router as feedback_insights_router
 
+from app.api.diagnostics import router as diagnostics_router
+
 app = FastAPI(
     title=settings.app_name,
     version="1.0.0",
@@ -30,6 +32,7 @@ app.include_router(health_router)
 app.include_router(recommendations_router)
 app.include_router(monitoring_router)
 app.include_router(feedback_insights_router)
+app.include_router(diagnostics_router)
 
 @app.get("/")
 def root():
