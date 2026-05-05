@@ -12,7 +12,7 @@ def read_sql_dataframe(query: str) -> pd.DataFrame:
 def load_runtime_users() -> pd.DataFrame:
     return read_sql_dataframe("""
         SELECT
-            id,
+            user_id::text AS user_id
             first_name,
             last_name,
             email,
@@ -26,7 +26,7 @@ def load_runtime_users() -> pd.DataFrame:
 def load_runtime_events() -> pd.DataFrame:
     return read_sql_dataframe("""
         SELECT
-            id,
+            id::text AS id,
             title,
             category,
             description,
@@ -41,7 +41,7 @@ def load_runtime_events() -> pd.DataFrame:
             status,
             audience,
             target_department_id,
-            created_by,
+            created_by::text AS created_by,
             created_at,
             updated_at
         FROM events
@@ -53,8 +53,8 @@ def load_runtime_registrations() -> pd.DataFrame:
     return read_sql_dataframe("""
         SELECT
             id,
-            event_id,
-            user_id,
+            event_id::text AS event_id,
+            user_id::text AS user_id,
             status,
             registered_at,
             cancelled_at,
@@ -68,8 +68,8 @@ def load_runtime_feedbacks() -> pd.DataFrame:
     return read_sql_dataframe("""
         SELECT
             id,
-            event_id,
-            user_id,
+            event_id::text AS event_id,
+            user_id::text AS user_id,
             rating,
             comment,
             share_comment_publicly,
@@ -83,8 +83,8 @@ def load_runtime_invitations() -> pd.DataFrame:
     return read_sql_dataframe("""
         SELECT
             id,
-            event_id,
-            user_id,
+            event_id::text AS event_id,
+            user_id::text AS user_id,
             invited_by,
             target_type,
             status,
@@ -111,7 +111,7 @@ def load_runtime_interests() -> pd.DataFrame:
 def load_runtime_user_interests() -> pd.DataFrame:
     return read_sql_dataframe("""
         SELECT
-            user_id,
+            user_id::text AS user_id,
             interest_id
         FROM user_interests;
     """)
@@ -121,8 +121,8 @@ def load_runtime_points() -> pd.DataFrame:
     return read_sql_dataframe("""
         SELECT
             id,
-            user_id,
-            event_id,
+            user_id::text AS user_id,
+            event_id::text AS event_id,
             type,
             points_delta,
             reason,
@@ -135,7 +135,7 @@ def load_runtime_badges() -> pd.DataFrame:
     return read_sql_dataframe("""
         SELECT
             id,
-            user_id,
+            user_id::text AS user_id,
             badge_code,
             unlocked_at
         FROM user_badges;
