@@ -21,6 +21,9 @@ import { resolveEventImageUrl, getDefaultEventImage  } from '../../../core/const
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
+import { AiFeedbackInsightService } from '../../../core/services/ai-feedback-insight.service';
+import { AiFeedbackInsightResponse, AiFeedbackTopic } from '../../../core/models/ai-feedback-insight.model';
+
 
 @Component({
   selector: 'app-admin-event-details',
@@ -38,6 +41,8 @@ export class AdminEventDetails {
   private userService = inject(UserService)
   private authService = inject(AuthService)
   private router = inject(Router);
+
+  private aiFeedbackInsightService = inject(AiFeedbackInsightService);
 
   event: EventResponse | null = null;
   loading = false;
@@ -83,6 +88,13 @@ export class AdminEventDetails {
   rescheduleStartAt = '';
   rescheduleRegistrationDeadline = '';
   successMessage = '';
+
+
+  aiFeedbackInsight: AiFeedbackInsightResponse | null = null;
+  aiFeedbackLoading = false;
+  aiFeedbackErrorMessage = '';
+
+  readonly minFeedbacksForFullAiAnalysis = 5;
 
   get isHr(): boolean{
     return this.authService.isHr();
@@ -294,6 +306,14 @@ export class AdminEventDetails {
           this.event = event;
           this.loadParticipants(event.id);
           this.loadInvitations(event.id);
+
+          if (this.canRequestFeedbackInsightsFor(event)) {
+            this.loadAiFeedbackInsights(event.id);
+          } else {
+            this.aiFeedbackInsight = null;
+            this.aiFeedbackErrorMessage = '';
+          }
+
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -929,6 +949,134 @@ export class AdminEventDetails {
       default:
         return status;
     }
+  }
+
+
+  private loadAiFeedbackInsights(eventId: string): void {
+    this.aiFeedbackLoading = true;
+    this.aiFeedbackErrorMessage = '';
+    this.aiFeedbackInsight = null;
+    this.cdr.markForCheck();
+
+    this.aiFeedbackInsightService.getEventFeedbackInsights(eventId)
+      .pipe(finalize(() => {
+        this.aiFeedbackLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.aiFeedbackInsight = response;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.aiFeedbackInsight = null;
+          this.aiFeedbackErrorMessage = 'Impossible de charger l’analyse IA des feedbacks.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  private canRequestFeedbackInsightsFor(event: EventResponse): boolean {
+    if (event.status === 'CANCELLED') {
+      return false;
+    }
+
+    if (event.status === 'ARCHIVED') {
+      return true;
+    }
+
+    return this.isEventFinished(event);
+  }
+
+  private isEventFinished(event: EventResponse): boolean {
+    const startAt = new Date(event.startAt).getTime();
+    const durationMs = (event.durationMinutes ?? 0) * 60 * 1000;
+
+    return startAt + durationMs <= Date.now();
+  }
+
+  get canRequestAiFeedbackInsights(): boolean {
+    return !!this.event && this.canRequestFeedbackInsightsFor(this.event);
+  }
+
+  get hasAiFeedbackInsight(): boolean {
+    return !!this.aiFeedbackInsight;
+  }
+
+  get hasEnoughFeedbacksForFullAiAnalysis(): boolean {
+    return (this.aiFeedbackInsight?.feedbackCount ?? 0) >= this.minFeedbacksForFullAiAnalysis;
+  }
+
+  get hasSmallFeedbackSample(): boolean {
+    const count = this.aiFeedbackInsight?.feedbackCount ?? 0;
+    return count > 0 && count < this.minFeedbacksForFullAiAnalysis;
+  }
+
+  get hasNoFeedbackForAi(): boolean {
+    return (this.aiFeedbackInsight?.feedbackCount ?? 0) === 0;
+  }
+
+  get aiPositivePercent(): number {
+    return this.getSentimentPercent('positive');
+  }
+
+  get aiNeutralPercent(): number {
+    return this.getSentimentPercent('neutral');
+  }
+
+  get aiNegativePercent(): number {
+    return this.getSentimentPercent('negative');
+  }
+
+  private getSentimentPercent(type: 'positive' | 'neutral' | 'negative'): number {
+    if (!this.aiFeedbackInsight?.feedbackCount) {
+      return 0;
+    }
+
+    const value = this.aiFeedbackInsight.sentimentDistribution[type] ?? 0;
+    return Math.round((value / this.aiFeedbackInsight.feedbackCount) * 100);
+  }
+
+  formatRating(value: number | null | undefined): string {
+    if (value === null || value === undefined) {
+      return '0.0';
+    }
+
+    return Number(value).toFixed(1);
+  }
+
+  sentimentLabel(value: string): string {
+    switch (value) {
+      case 'POSITIVE':
+        return 'Positif';
+      case 'NEGATIVE':
+        return 'Négatif';
+      case 'NEUTRAL':
+        return 'Neutre';
+      default:
+        return value || 'Neutre';
+    }
+  }
+
+  sentimentClass(value: string): string {
+    switch (value) {
+      case 'POSITIVE':
+        return 'ai-positive';
+      case 'NEGATIVE':
+        return 'ai-negative';
+      case 'NEUTRAL':
+        return 'ai-neutral';
+      default:
+        return 'ai-neutral';
+    }
+  }
+
+  trackByAiTopic(_: number, topic: AiFeedbackTopic): number {
+    return topic.topicId;
+  }
+
+  trackByText(_: number, item: string): string {
+    return item;
   }
 
 }

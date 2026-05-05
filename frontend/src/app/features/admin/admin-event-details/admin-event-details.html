@@ -263,6 +263,220 @@
                     </div>
                 </section>
 
+
+                <!-- ============================================ -->
+                <!-- AI FEEDBACK INTELLIGENCE SECTION -->
+                <!-- ============================================ -->
+                <section class="section-card ai-feedback-section">
+                    <div class="section-card-header ai-feedback-header">
+                        <div class="ai-feedback-title-group">
+                            <h2>Analyse IA des feedbacks</h2>
+                            <p class="section-card-sub">
+                                Analyse réservée aux RH et managers : sentiment, thèmes récurrents et synthèse intelligente.
+                            </p>
+                        </div>
+
+                        @if (aiFeedbackInsight && hasEnoughFeedbacksForFullAiAnalysis) {
+                            <span class="ai-analysis-chip complete">
+                                Analyse complète
+                            </span>
+                        }
+
+                        @if (aiFeedbackInsight && hasSmallFeedbackSample) {
+                            <span class="ai-analysis-chip limited">
+                                Moyenne uniquement
+                            </span>
+                        }
+
+                        @if (aiFeedbackInsight && hasNoFeedbackForAi) {
+                            <span class="ai-analysis-chip empty">
+                                Aucun retour
+                            </span>
+                        }
+                    </div>
+
+                    @if (!canRequestAiFeedbackInsights) {
+                        <div class="state-message info-msg compact">
+                        <p>L’analyse des feedbacks sera disponible après la fin de l’événement.</p>
+                        </div>
+                    }
+
+                    @if (canRequestAiFeedbackInsights && aiFeedbackLoading) {
+                        <div class="state-message loading-msg compact">
+                        <div class="spinner"></div>
+                        <p>Analyse IA des feedbacks en cours...</p>
+                        </div>
+                    }
+
+                    @if (canRequestAiFeedbackInsights && aiFeedbackErrorMessage) {
+                        <div class="state-message error-msg compact" appScrollToMessage>
+                        <p>{{ aiFeedbackErrorMessage }}</p>
+                        </div>
+                    }
+
+                    @if (canRequestAiFeedbackInsights && !aiFeedbackLoading && aiFeedbackInsight) {
+                        <div class="ai-feedback-kpis">
+                        <article class="ai-feedback-kpi">
+                            <span class="ai-feedback-kpi-value">{{ aiFeedbackInsight.feedbackCount }}</span>
+                            <span class="ai-feedback-kpi-label">Feedbacks</span>
+                        </article>
+
+                        <article class="ai-feedback-kpi rating">
+                            <span class="ai-feedback-kpi-value">{{ formatRating(aiFeedbackInsight.averageRating) }}/5</span>
+                            <span class="ai-feedback-kpi-label">Moyenne</span>
+                        </article>
+
+                        @if (hasEnoughFeedbacksForFullAiAnalysis) {
+                            <article class="ai-feedback-kpi" [class]="sentimentClass(aiFeedbackInsight.globalSentiment)">
+                            <span class="ai-feedback-kpi-value">{{ sentimentLabel(aiFeedbackInsight.globalSentiment) }}</span>
+                            <span class="ai-feedback-kpi-label">Sentiment global</span>
+                            </article>
+
+                            <article class="ai-feedback-kpi">
+                            <span class="ai-feedback-kpi-value">{{ aiFeedbackInsight.topics.length }}</span>
+                            <span class="ai-feedback-kpi-label">Thèmes détectés</span>
+                            </article>
+                        }
+                        </div>
+
+                        @if (hasNoFeedbackForAi) {
+                        <div class="empty-state ai-feedback-empty">
+                            <div class="empty-state-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+                            </svg>
+                            </div>
+                            <p class="empty-state-title">Aucun feedback disponible</p>
+                            <p class="empty-state-sub">
+                            Les statistiques IA apparaîtront après la réception des feedbacks participants.
+                            </p>
+                        </div>
+                        }
+
+                        @if (hasSmallFeedbackSample) {
+                        <div class="state-message info-msg compact">
+                            <p>
+                            Données insuffisantes pour une analyse IA complète.
+                            Moyenne actuelle : <strong>{{ formatRating(aiFeedbackInsight.averageRating) }}/5</strong>
+                            sur <strong>{{ aiFeedbackInsight.feedbackCount }}</strong> feedback(s).
+                            L’analyse complète sera affichée à partir de {{ minFeedbacksForFullAiAnalysis }} feedbacks.
+                            </p>
+                        </div>
+                        }
+
+                        @if (hasEnoughFeedbacksForFullAiAnalysis) {
+                        <div class="ai-summary-card">
+                            <div class="ai-summary-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v4"/>
+                                <path d="M12 18v4"/>
+                                <path d="M4.93 4.93l2.83 2.83"/>
+                                <path d="M16.24 16.24l2.83 2.83"/>
+                                <path d="M2 12h4"/>
+                                <path d="M18 12h4"/>
+                                <path d="M4.93 19.07l2.83-2.83"/>
+                                <path d="M16.24 7.76l2.83-2.83"/>
+                            </svg>
+                            </div>
+                            <div>
+                            <h3>Résumé IA</h3>
+                            <p>{{ aiFeedbackInsight.summary }}</p>
+                            </div>
+                        </div>
+
+                        <div class="ai-sentiment-grid">
+                            <div class="ai-sentiment-card positive">
+                            <span class="sentiment-number">{{ aiFeedbackInsight.sentimentDistribution.positive }}</span>
+                            <span class="sentiment-label">Positifs</span>
+                            <div class="sentiment-bar">
+                                <span [style.width.%]="aiPositivePercent"></span>
+                            </div>
+                            </div>
+
+                            <div class="ai-sentiment-card neutral">
+                            <span class="sentiment-number">{{ aiFeedbackInsight.sentimentDistribution.neutral }}</span>
+                            <span class="sentiment-label">Neutres</span>
+                            <div class="sentiment-bar">
+                                <span [style.width.%]="aiNeutralPercent"></span>
+                            </div>
+                            </div>
+
+                            <div class="ai-sentiment-card negative">
+                            <span class="sentiment-number">{{ aiFeedbackInsight.sentimentDistribution.negative }}</span>
+                            <span class="sentiment-label">Négatifs</span>
+                            <div class="sentiment-bar">
+                                <span [style.width.%]="aiNegativePercent"></span>
+                            </div>
+                            </div>
+                        </div>
+
+                        @if (aiFeedbackInsight.topics.length > 0) {
+                            <div class="ai-topics-block">
+                            <h3 class="ai-subtitle">Thèmes récurrents</h3>
+
+                            <div class="ai-topics-grid">
+                                @for (topic of aiFeedbackInsight.topics; track trackByAiTopic($index, topic)) {
+                                <article class="ai-topic-card">
+                                    <div class="ai-topic-header">
+                                    <strong>{{ topic.label }}</strong>
+                                    <span>{{ topic.count }} feedback(s)</span>
+                                    </div>
+
+                                    <div class="ai-keyword-list">
+                                    @for (keyword of topic.keywords.slice(0, 5); track keyword) {
+                                        <span>{{ keyword }}</span>
+                                    }
+                                    </div>
+                                </article>
+                                }
+                            </div>
+                            </div>
+                        }
+
+                        <div class="ai-feedback-columns">
+                            <div class="ai-feedback-panel strengths">
+                            <h3>Points forts</h3>
+
+                            @if (aiFeedbackInsight.strengths.length === 0) {
+                                <p class="muted-ai-text">Aucun point fort détecté automatiquement.</p>
+                            }
+
+                            @for (item of aiFeedbackInsight.strengths; track trackByText($index, item)) {
+                                <div class="ai-feedback-point">
+                                <span class="point-dot"></span>
+                                <p>{{ item }}</p>
+                                </div>
+                            }
+                            </div>
+
+                            <div class="ai-feedback-panel improvements">
+                            <h3>Axes d’amélioration</h3>
+
+                            @if (aiFeedbackInsight.improvements.length === 0) {
+                                <p class="muted-ai-text">Aucun axe d’amélioration critique détecté.</p>
+                            }
+
+                            @for (item of aiFeedbackInsight.improvements; track trackByText($index, item)) {
+                                <div class="ai-feedback-point">
+                                <span class="point-dot"></span>
+                                <p>{{ item }}</p>
+                                </div>
+                            }
+                            </div>
+                        </div>
+
+                        <div class="ai-model-info">
+                            <span>Sentiment multilingue</span>
+                            <span>Thèmes récurrents</span>
+                            <span>
+                                Synthèse :
+                                {{ aiFeedbackInsight.qwenUsed ? 'générée par IA locale' : 'générée automatiquement' }}
+                            </span>
+                        </div>
+                        }
+                    }
+                </section>
+
                 <!-- ============================================ -->
                 <!-- PARTICIPANTS SECTION -->
                 <!-- ============================================ -->
