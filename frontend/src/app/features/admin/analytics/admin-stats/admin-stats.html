@@ -310,6 +310,18 @@
               </button>
             </div>
 
+            @if (copilotActionMessage) {
+              <div class="state-message info-msg">
+                <p>{{ copilotActionMessage }}</p>
+              </div>
+            }
+
+            @if (copilotActionError) {
+              <div class="state-message error-msg" appScrollToMessage>
+                <p>{{ copilotActionError }}</p>
+              </div>
+            }
+
             @if (aiCopilotLoading && !aiCopilot) {
               <div class="state-message loading-msg">
                 <div class="spinner"></div>
@@ -375,6 +387,18 @@
                             Voir l’événement
                           </a>
                         }
+                        
+                        @if (canSendInvitationReminder(s)) {
+                          <button
+                            type="button"
+                            class="btn-secondary copilot-action-btn"
+                            [disabled]="isReminderLoadingFor(s)"
+                            (click)="sendInvitationReminderFromCopilot(s)"
+                          >
+                            {{ isReminderLoadingFor(s) ? 'Relance en cours...' : 'Relancer les invités' }}
+                          </button>
+                        }
+                        
 
                         @if (s.draft) {
                           <button

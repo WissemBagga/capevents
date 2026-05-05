@@ -80,7 +80,8 @@ class HrCopilotService:
                 "priority": "HIGH" if pending_count >= 10 else "MEDIUM",
                 "title": "Relancer les invitations en attente",
                 "insight": f"{pending_count} invitation(s) sont encore en attente pour cet événement.",
-                "recommended_action": "Envoyer une relance courte et ciblée aux collaborateurs invités.",
+                "recommended_action": "Envoyer une relance courte et ciblée aux collaborateurs déjà invités.",
+                "action_type": "REMIND_PENDING_INVITATIONS",
                 "related_event_id": row["event_id"],
                 "related_event_title": row["event_title"],
                 "metadata": {

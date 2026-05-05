@@ -42,6 +42,7 @@ export class AiHrCopilotService {
         title: item?.title ?? '',
         insight: item?.insight ?? '',
         recommendedAction: item?.recommendedAction ?? item?.recommended_action ?? '',
+        actionType: item?.actionType ?? item?.action_type ?? null,
         draft: item?.draft ?? null,
         relatedEventId: item?.relatedEventId ?? item?.related_event_id ?? null,
         relatedEventTitle: item?.relatedEventTitle ?? item?.related_event_title ?? null,

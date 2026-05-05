@@ -13,6 +13,9 @@ public record AiHrCopilotSuggestionDto(
         @JsonProperty("recommended_action")
         String recommendedAction,
 
+        @JsonProperty("action_type")
+        String actionType,
+
         String draft,
 
         @JsonProperty("related_event_id")

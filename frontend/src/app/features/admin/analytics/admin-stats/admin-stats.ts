@@ -21,6 +21,8 @@ import { AiHrCopilotResponse } from '../../../../core/models/ai-hr-copilot.model
 
 import { AiHrCopilotSuggestion } from '../../../../core/models/ai-hr-copilot.model';
 
+import { InvitationReminderService } from '../../../../core/services/invitation-reminder.service';
+
 type TrendPointVm = {
   month: string;
   registrations: number;
@@ -42,6 +44,7 @@ export class AdminStats {
   private userService = inject(UserService);
   private aiMonitoringService = inject(AiMonitoringService);
   private aiHrCopilotService = inject(AiHrCopilotService);
+  private invitationReminderService = inject(InvitationReminderService);
 
 
   readonly trendChartWidth = 640;
@@ -74,6 +77,11 @@ export class AdminStats {
   aiCopilotLoading = false;
   aiCopilotError = '';
   copiedCopilotSuggestionIndex: number | null = null;
+
+
+  remindingEventId: string | null = null;
+  copilotActionMessage = '';
+  copilotActionError = '';
 
   ngOnInit(): void {
     if (this.isHr) {
@@ -607,6 +615,52 @@ export class AdminStats {
         this.cdr.markForCheck();
       }
     }, 1800);
+  }
+
+
+  canSendInvitationReminder(suggestion: AiHrCopilotSuggestion): boolean {
+    return (
+      suggestion.actionType === 'REMIND_PENDING_INVITATIONS' &&
+      !!suggestion.relatedEventId
+    );
+  }
+
+  sendInvitationReminderFromCopilot(suggestion: AiHrCopilotSuggestion): void {
+    if (!suggestion.relatedEventId) return;
+
+    this.remindingEventId = suggestion.relatedEventId;
+    this.copilotActionMessage = '';
+    this.copilotActionError = '';
+    this.cdr.markForCheck();
+
+    this.invitationReminderService
+      .sendPendingInvitationReminders(suggestion.relatedEventId)
+      .pipe(finalize(() => {
+        this.remindingEventId = null;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.copilotActionMessage = response.message;
+
+          // Recharge le copilote, car la suggestion peut disparaître
+          // si les invitations ne sont plus éligibles à une relance.
+          this.loadAiCopilot();
+
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.copilotActionError =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible d’envoyer les relances.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  isReminderLoadingFor(suggestion: AiHrCopilotSuggestion): boolean {
+    return !!suggestion.relatedEventId && this.remindingEventId === suggestion.relatedEventId;
   }
 
 }
