@@ -19,6 +19,8 @@ import { AiRecommendationMonitoringSummary, AiRecentPrediction, AiTopRecommended
 import { AiHrCopilotService } from '../../../../core/services/ai-hr-copilot.service';
 import { AiHrCopilotResponse } from '../../../../core/models/ai-hr-copilot.model';
 
+import { AiHrCopilotSuggestion } from '../../../../core/models/ai-hr-copilot.model';
+
 type TrendPointVm = {
   month: string;
   registrations: number;
@@ -71,6 +73,7 @@ export class AdminStats {
   aiCopilot: AiHrCopilotResponse | null = null;
   aiCopilotLoading = false;
   aiCopilotError = '';
+  copiedCopilotSuggestionIndex: number | null = null;
 
   ngOnInit(): void {
     if (this.isHr) {
@@ -549,6 +552,61 @@ export class AdminStats {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  trackByCopilotSuggestion(index: number, item: AiHrCopilotSuggestion): string {
+    return `${item.type}-${item.relatedEventId || index}`;
+  }
+
+  hasCopilotRelatedEvent(item: AiHrCopilotSuggestion): boolean {
+    return !!item.relatedEventId;
+  }
+
+  copyCopilotDraft(draft: string | null, index: number): void {
+    if (!draft?.trim()) return;
+
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(draft).then(() => {
+        this.markCopilotDraftCopied(index);
+      }).catch(() => {
+        this.copyTextFallback(draft, index);
+      });
+
+      return;
+    }
+
+    this.copyTextFallback(draft, index);
+  }
+
+  private copyTextFallback(text: string, index: number): void {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    textarea.style.top = '0';
+
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    try {
+      document.execCommand('copy');
+      this.markCopilotDraftCopied(index);
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  }
+
+  private markCopilotDraftCopied(index: number): void {
+    this.copiedCopilotSuggestionIndex = index;
+    this.cdr.markForCheck();
+
+    setTimeout(() => {
+      if (this.copiedCopilotSuggestionIndex === index) {
+        this.copiedCopilotSuggestionIndex = null;
+        this.cdr.markForCheck();
+      }
+    }, 1800);
   }
 
 }

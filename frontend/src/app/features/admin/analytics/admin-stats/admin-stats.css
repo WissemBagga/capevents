@@ -1151,3 +1151,24 @@
   background: #F8FAFC;
   border-radius: 10px;
 }
+
+
+.copilot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.copilot-action-btn {
+  min-height: 38px;
+  font-size: 12px;
+}
+
+.ai-copilot-card {
+  position: relative;
+}
+
+.copilot-draft p {
+  margin-bottom: 0;
+}

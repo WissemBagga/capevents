@@ -334,7 +334,7 @@
               @if (aiCopilot.suggestions.length > 0) {
                 <div class="ai-copilot-list">
 
-                  @for (s of aiCopilot.suggestions; track $index) {
+                  @for (s of aiCopilot.suggestions; track trackByCopilotSuggestion($index, s)) {
                     <article class="ai-copilot-card">
 
                       <div class="copilot-header">
@@ -365,6 +365,27 @@
                           <p>{{ s.draft }}</p>
                         </div>
                       }
+
+                      <div class="copilot-actions">
+                        @if (hasCopilotRelatedEvent(s)) {
+                          <a
+                            class="btn-view copilot-action-btn"
+                            [routerLink]="['/admin/events', s.relatedEventId]"
+                          >
+                            Voir l’événement
+                          </a>
+                        }
+
+                        @if (s.draft) {
+                          <button
+                            type="button"
+                            class="btn-secondary copilot-action-btn"
+                            (click)="copyCopilotDraft(s.draft, $index)"
+                          >
+                            {{ copiedCopilotSuggestionIndex === $index ? 'Brouillon copié' : 'Copier le brouillon' }}
+                          </button>
+                        }
+                      </div>
 
                     </article>
                   }
