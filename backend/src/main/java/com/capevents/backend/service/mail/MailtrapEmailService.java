@@ -244,4 +244,16 @@ public class MailtrapEmailService implements EmailService {
         mailSender.send(message);
     }
 
+
+    @Override
+    public void sendInvitationReminder(User recipient, Event event, String message) {
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setFrom(mailProperties.getFrom());
+        mail.setTo(recipient.getEmail());
+        mail.setSubject("Rappel d’invitation - " + event.getTitle());
+        mail.setText(message);
+
+        mailSender.send(mail);
+    }
+
 }

@@ -12,6 +12,8 @@ public class DevEmailService implements EmailService {
 
     private final AppMailProperties mailProperties;
 
+
+
     public DevEmailService(AppMailProperties mailProperties) {
         this.mailProperties = mailProperties;
     }
@@ -100,5 +102,12 @@ public class DevEmailService implements EmailService {
                 + " | user=" + fullName
                 + " | newRole=" + roleLabel
                 + " | message=Votre rôle a été mis à jour. Il sera pris en compte à la prochaine connexion.");
+    }
+
+    @Override
+    public void sendInvitationReminder(User recipient, Event event, String message) {
+        System.out.println("[DEV EMAIL] Invitation reminder for " + recipient.getEmail()
+                + " | event=" + event.getTitle()
+                + " | message=" + message);
     }
 }

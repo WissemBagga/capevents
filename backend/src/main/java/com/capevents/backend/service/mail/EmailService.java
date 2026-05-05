@@ -20,4 +20,6 @@ public interface EmailService {
     void sendEventProposalRejectedEmail(String to, Event event, String reason);
 
     void sendRoleChangedEmail(String to, String fullName, String roleLabel);
+
+    void sendInvitationReminder(User recipient, Event event, String message);
 }
