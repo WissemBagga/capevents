@@ -19,6 +19,7 @@ class HrCopilotService:
         rule_suggestions.extend(self._detect_pending_invitations())
         rule_suggestions.extend(self._detect_low_registration_events())
         rule_suggestions.extend(self._detect_low_feedback_events())
+        rule_suggestions.extend(self._detect_low_engagement_departments())
 
         ranked = self._rank_suggestions(rule_suggestions)[:3]
 
@@ -170,6 +171,60 @@ class HrCopilotService:
             })
 
         return suggestions
+    
+    def _detect_low_engagement_departments(self) -> list[dict]:
+        rows = self._read_rows("""
+            SELECT
+                d.id AS department_id,
+                d.name AS department_name,
+                COUNT(DISTINCT u.id) AS active_employees,
+                COUNT(DISTINCT r.user_id) AS participating_users
+            FROM departments d
+            JOIN users u ON u.department_id = d.id AND u.is_active = true
+            LEFT JOIN event_registrations r
+                ON r.user_id = u.id
+                AND r.status NOT IN ('CANCELLED', 'UNREGISTERED')
+            GROUP BY d.id, d.name
+            HAVING COUNT(DISTINCT u.id) >= 3
+            AND (
+                    COUNT(DISTINCT r.user_id)::float
+                    / NULLIF(COUNT(DISTINCT u.id), 0)
+            ) < 0.30
+            ORDER BY (
+                COUNT(DISTINCT r.user_id)::float
+                / NULLIF(COUNT(DISTINCT u.id), 0)
+            ) ASC
+            LIMIT 2
+        """)
+
+        suggestions = []
+
+        for row in rows:
+            active_employees = int(row["active_employees"] or 0)
+            participating_users = int(row["participating_users"] or 0)
+            rate = participating_users / active_employees if active_employees > 0 else 0
+
+            suggestions.append({
+                "type": "LOW_DEPARTMENT_ENGAGEMENT",
+                "priority": "HIGH" if rate < 0.15 else "MEDIUM",
+                "title": "Renforcer l’engagement d’un département",
+                "insight": (
+                    f"Le département {row['department_name']} présente un taux de participation "
+                    f"faible : {participating_users}/{active_employees} collaborateur(s), soit {round(rate * 100)}%."
+                ),
+                "recommended_action": "Proposer une action ciblée adaptée aux centres d’intérêt du département.",
+                "related_event_id": None,
+                "related_event_title": None,
+                "metadata": {
+                    "department_id": row["department_id"],
+                    "department_name": row["department_name"],
+                    "active_employees": active_employees,
+                    "participating_users": participating_users,
+                    "participation_rate": rate
+                }
+            })
+
+        return suggestions
 
     def _rank_suggestions(self, suggestions: list[dict]) -> list[dict]:
         priority_score = {
@@ -178,11 +233,39 @@ class HrCopilotService:
             "LOW": 1
         }
 
-        return sorted(
+        sorted_items = sorted(
             suggestions,
-            key=lambda item: priority_score.get(item["priority"], 0),
+            key=lambda item: (
+                priority_score.get(item["priority"], 0),
+                item.get("metadata", {}).get("pending_count", 0),
+                item.get("metadata", {}).get("feedback_count", 0)
+            ),
             reverse=True
         )
+
+        selected = []
+        used_types = set()
+
+        for item in sorted_items:
+            if item["type"] in used_types:
+                continue
+
+            selected.append(item)
+            used_types.add(item["type"])
+
+            if len(selected) >= 3:
+                break
+
+        if len(selected) < 3:
+            for item in sorted_items:
+                if item in selected:
+                    continue
+                selected.append(item)
+
+                if len(selected) >= 3:
+                    break
+
+        return selected
 
     def _build_qwen_draft(self, suggestion: dict) -> tuple[str, bool, str]:
         fallback = self._build_fallback_draft(suggestion)
@@ -195,20 +278,24 @@ class HrCopilotService:
         )
 
         user_message = f"""
-Rédige un brouillon RH court pour l'action suivante.
+        Écris uniquement le brouillon final du message RH.
 
-Type: {suggestion["type"]}
-Priorité: {suggestion["priority"]}
-Titre: {suggestion["title"]}
-Constat: {suggestion["insight"]}
-Action recommandée: {suggestion["recommended_action"]}
-Événement concerné: {suggestion.get("related_event_title") or "Non précisé"}
+        Contexte :
+        - Type : {suggestion["type"]}
+        - Priorité : {suggestion["priority"]}
+        - Titre : {suggestion["title"]}
+        - Constat : {suggestion["insight"]}
+        - Action recommandée : {suggestion["recommended_action"]}
+        - Événement concerné : {suggestion.get("related_event_title") or "Non précisé"}
 
-Contraintes:
-- 4 phrases maximum.
-- Ton professionnel.
-- Ne pas inventer de date, lieu ou chiffres.
-"""
+        Règles :
+        - Ne répète pas le prompt.
+        - N’utilise pas de markdown.
+        - N’écris pas "Type", "Priorité", "Constat" ou "Contraintes".
+        - 3 phrases maximum.
+        - Ton professionnel RH.
+        - Ne pas inventer de date, lieu ou chiffres.
+        """
 
         try:
             response = requests.post(
@@ -235,6 +322,19 @@ Contraintes:
 
             data = response.json()
             text_response = str(data.get("message", {}).get("content", "")).strip()
+            bad_patterns = [
+                "rédige un brouillon",
+                "le brouillon final",
+                "brouillon final du message",
+                "type :",
+                "priorité :",
+                "constat :",
+                "contraintes",
+                "**"
+            ]
+
+            if any(pattern in text_response.lower() for pattern in bad_patterns):
+                return fallback, False, "fallback_qwen_prompt_echo"
 
             if not text_response:
                 return fallback, False, "fallback_empty_qwen_response"
@@ -249,9 +349,9 @@ Contraintes:
 
         if suggestion["type"] == "PENDING_INVITATIONS":
             return (
-                f"Bonjour, nous vous rappelons que l’événement "
-                f"« {event_title} » est toujours ouvert aux réponses. "
-                f"Votre confirmation nous aide à mieux organiser la participation. "
+                f"Bonjour, nous vous invitons à confirmer votre participation à l’événement "
+                f"« {event_title} » afin de faciliter l’organisation. "
+                f"Votre réponse permettra d’ajuster la logistique et de mieux anticiper la participation. "
                 f"Merci de répondre dès que possible."
             )
 
@@ -266,6 +366,15 @@ Contraintes:
             return (
                 f"Les retours de l’événement « {event_title} » indiquent des axes d’amélioration. "
                 f"Nous recommandons d’analyser les commentaires et d’ajuster l’organisation des prochains événements similaires."
+            )
+        
+        if suggestion["type"] == "LOW_DEPARTMENT_ENGAGEMENT":
+            department_name = suggestion.get("metadata", {}).get("department_name", "le département concerné")
+            return (
+                f"Bonjour, nous souhaitons renforcer la participation du département {department_name} "
+                f"aux événements internes. Une action ciblée pourrait être proposée afin de mieux répondre "
+                f"aux attentes des collaborateurs concernés. Nous recommandons d’identifier un format court "
+                f"et adapté à leurs disponibilités."
             )
 
         return suggestion["recommended_action"]

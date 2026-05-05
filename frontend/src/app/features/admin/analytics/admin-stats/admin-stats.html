@@ -163,7 +163,6 @@
           <section class="admin-card stats-section ai-monitoring-section">
             <div class="card-header ai-monitoring-header">
               <div class="header-text-group">
-                <span class="ai-section-kicker">AI Engineering</span>
                 <h2 class="card-title">Monitoring IA</h2>
                 <p class="card-subtitle">
                   Suivi des appels du moteur de recommandation, de la version du modèle et des événements les plus recommandés.
@@ -293,7 +292,89 @@
               </div>
             }
           </section>
-        }        
+        }
+        
+        @if (isHr) {
+          <section class="admin-card stats-section ai-copilot-section">
+
+            <div class="card-header">
+              <div class="header-text-group">
+                <h2 class="card-title">Copilote RH</h2>
+                <p class="card-subtitle">
+                  Suggestions intelligentes pour améliorer la participation et la qualité des événements.
+                </p>
+              </div>
+
+              <button type="button" class="btn-secondary" (click)="loadAiCopilot()">
+                Actualiser
+              </button>
+            </div>
+
+            @if (aiCopilotLoading && !aiCopilot) {
+              <div class="state-message loading-msg">
+                <div class="spinner"></div>
+                <p>Analyse IA en cours...</p>
+              </div>
+            }
+
+            @if (aiCopilotError) {
+              <div class="state-message error-msg">
+                <p>{{ aiCopilotError }}</p>
+              </div>
+            }
+
+            @if (!aiCopilotLoading && aiCopilot) {
+
+              @if (aiCopilot.suggestions.length === 0) {
+                <div class="state-message info-msg">
+                  <p>Aucune recommandation IA disponible pour le moment.</p>
+                </div>
+              }
+
+              @if (aiCopilot.suggestions.length > 0) {
+                <div class="ai-copilot-list">
+
+                  @for (s of aiCopilot.suggestions; track $index) {
+                    <article class="ai-copilot-card">
+
+                      <div class="copilot-header">
+                        <div>
+                          <h3>{{ s.title }}</h3>
+                          @if (s.relatedEventTitle) {
+                            <span class="copilot-event">{{ s.relatedEventTitle }}</span>
+                          }
+                        </div>
+
+                        <span class="priority-badge" [class]="s.priority.toLowerCase()">
+                          {{ s.priority }}
+                        </span>
+                      </div>
+
+                      <p class="copilot-insight">
+                        {{ s.insight }}
+                      </p>
+
+                      <div class="copilot-action">
+                        <strong>Action recommandée :</strong>
+                        <p>{{ s.recommendedAction }}</p>
+                      </div>
+
+                      @if (s.draft) {
+                        <div class="copilot-draft">
+                          <strong>Brouillon :</strong>
+                          <p>{{ s.draft }}</p>
+                        </div>
+                      }
+
+                    </article>
+                  }
+
+                </div>
+              }
+
+            }
+          </section>
+        }
 
         @if (isManager && analytics) {
           <section class="admin-card stats-section">

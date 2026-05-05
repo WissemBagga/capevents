@@ -16,6 +16,8 @@ import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-t
 import { AiMonitoringService } from '../../../../core/services/ai-monitoring.service';
 import { AiRecommendationMonitoringSummary, AiRecentPrediction, AiTopRecommendedEvent } from '../../../../core/models/ai-monitoring.model';
 
+import { AiHrCopilotService } from '../../../../core/services/ai-hr-copilot.service';
+import { AiHrCopilotResponse } from '../../../../core/models/ai-hr-copilot.model';
 
 type TrendPointVm = {
   month: string;
@@ -37,6 +39,7 @@ export class AdminStats {
   private adminAnalyticsService = inject(AdminAnalyticsService);
   private userService = inject(UserService);
   private aiMonitoringService = inject(AiMonitoringService);
+  private aiHrCopilotService = inject(AiHrCopilotService);
 
 
   readonly trendChartWidth = 640;
@@ -65,10 +68,15 @@ export class AdminStats {
     category: ''
   };
 
+  aiCopilot: AiHrCopilotResponse | null = null;
+  aiCopilotLoading = false;
+  aiCopilotError = '';
+
   ngOnInit(): void {
     if (this.isHr) {
       this.loadDepartments();
       this.loadAiMonitoring();
+      this.loadAiCopilot();
     }
     this.loadAnalytics();
   }
@@ -516,6 +524,31 @@ export class AdminStats {
       default:
         return 'ai-status-error';
     }
+  }
+
+  loadAiCopilot(): void {
+    if (!this.isHr) return;
+
+    this.aiCopilotLoading = true;
+    this.aiCopilotError = '';
+    this.cdr.markForCheck();
+
+    this.aiHrCopilotService.getSuggestions()
+      .pipe(finalize(() => {
+        this.aiCopilotLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (res) => {
+          this.aiCopilot = res;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.aiCopilot = null;
+          this.aiCopilotError = 'Impossible de charger le copilote IA.';
+          this.cdr.markForCheck();
+        }
+      });
   }
 
 }
