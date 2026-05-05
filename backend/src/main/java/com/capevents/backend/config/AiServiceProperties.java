@@ -7,7 +7,7 @@ public class AiServiceProperties {
 
     private String baseUrl;
     private String serviceKey;
-    private int timeoutSeconds = 8;
+    private int timeoutSeconds = 120;
 
     public String getBaseUrl() {
         return baseUrl;

@@ -12,7 +12,7 @@ def read_sql_dataframe(query: str) -> pd.DataFrame:
 def load_runtime_users() -> pd.DataFrame:
     return read_sql_dataframe("""
         SELECT
-            user_id::text AS user_id
+            id::text AS id,
             first_name,
             last_name,
             email,
@@ -85,7 +85,7 @@ def load_runtime_invitations() -> pd.DataFrame:
             id,
             event_id::text AS event_id,
             user_id::text AS user_id,
-            invited_by,
+            invited_by::text AS invited_by,
             target_type,
             status,
             message,

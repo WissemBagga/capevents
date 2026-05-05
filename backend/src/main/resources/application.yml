@@ -37,4 +37,4 @@ app:
 ai:
   base-url: http://127.0.0.1:8001
   service-key: change-me-secret-key
-  timeout-seconds: 8
+  timeout-seconds: 120
