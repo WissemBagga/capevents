@@ -663,4 +663,97 @@ export class AdminStats {
     return !!suggestion.relatedEventId && this.remindingEventId === suggestion.relatedEventId;
   }
 
+
+
+  getCopilotMetadataNumber(
+    suggestion: AiHrCopilotSuggestion,
+    key: string
+  ): number | null {
+    const value = suggestion.metadata?.[key];
+
+    if (typeof value === 'number') {
+      return value;
+    }
+
+    if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) {
+      return Number(value);
+    }
+
+    return null;
+  }
+
+  getCopilotMetricChips(suggestion: AiHrCopilotSuggestion): { label: string; value: string; type: string }[] {
+    const chips: { label: string; value: string; type: string }[] = [];
+
+    if (suggestion.type === 'PENDING_INVITATIONS') {
+      const pending = this.getCopilotMetadataNumber(suggestion, 'pending_count');
+      const eligible = this.getCopilotMetadataNumber(suggestion, 'eligible_reminder_count');
+      const recently = this.getCopilotMetadataNumber(suggestion, 'recently_reminded_count');
+      const cooldown = this.getCopilotMetadataNumber(suggestion, 'cooldown_hours');
+
+      if (pending !== null) {
+        chips.push({ label: 'En attente', value: String(pending), type: 'neutral' });
+      }
+
+      if (eligible !== null) {
+        chips.push({ label: 'Relançables', value: String(eligible), type: 'success' });
+      }
+
+      if (recently !== null) {
+        chips.push({ label: 'Déjà relancées', value: String(recently), type: 'warning' });
+      }
+
+      if (cooldown !== null) {
+        chips.push({ label: 'Cooldown', value: `${cooldown}h`, type: 'info' });
+      }
+    }
+
+    if (suggestion.type === 'LOW_REGISTRATION') {
+      const capacity = this.getCopilotMetadataNumber(suggestion, 'capacity');
+      const registered = this.getCopilotMetadataNumber(suggestion, 'registered_count');
+      const rate = this.getCopilotMetadataNumber(suggestion, 'registration_rate');
+
+      if (registered !== null && capacity !== null) {
+        chips.push({ label: 'Inscrits', value: `${registered}/${capacity}`, type: 'warning' });
+      }
+
+      if (rate !== null) {
+        chips.push({ label: 'Taux', value: `${Math.round(rate * 100)}%`, type: 'warning' });
+      }
+    }
+
+    if (suggestion.type === 'LOW_FEEDBACK_SCORE') {
+      const averageRating = this.getCopilotMetadataNumber(suggestion, 'average_rating');
+      const feedbackCount = this.getCopilotMetadataNumber(suggestion, 'feedback_count');
+
+      if (averageRating !== null) {
+        chips.push({ label: 'Note', value: `${averageRating.toFixed(1)}/5`, type: 'warning' });
+      }
+
+      if (feedbackCount !== null) {
+        chips.push({ label: 'Feedbacks', value: String(feedbackCount), type: 'neutral' });
+      }
+    }
+
+    if (suggestion.type === 'LOW_DEPARTMENT_ENGAGEMENT') {
+      const activeEmployees = this.getCopilotMetadataNumber(suggestion, 'active_employees');
+      const participatingUsers = this.getCopilotMetadataNumber(suggestion, 'participating_users');
+      const rate = this.getCopilotMetadataNumber(suggestion, 'participation_rate');
+
+      if (participatingUsers !== null && activeEmployees !== null) {
+        chips.push({ label: 'Participants', value: `${participatingUsers}/${activeEmployees}`, type: 'warning' });
+      }
+
+      if (rate !== null) {
+        chips.push({ label: 'Participation', value: `${Math.round(rate * 100)}%`, type: 'warning' });
+      }
+    }
+
+    return chips;
+  }
+
+  trackByCopilotChip(_: number, item: { label: string; value: string; type: string }): string {
+    return `${item.label}-${item.value}`;
+  }
+
 }

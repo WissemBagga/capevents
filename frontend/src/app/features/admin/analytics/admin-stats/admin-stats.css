@@ -1178,3 +1178,56 @@
 .copilot-draft p {
   margin-bottom: 0;
 }
+
+
+.copilot-metric-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.copilot-metric-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #F1F4F8;
+  border: 1px solid #E4EAF1;
+  color: #46506A;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.copilot-metric-chip strong {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  color: #121A38;
+}
+
+.copilot-metric-chip.chip-success {
+  background: rgba(0, 130, 142, 0.09);
+  border-color: rgba(0, 130, 142, 0.16);
+  color: #006E78;
+}
+
+.copilot-metric-chip.chip-warning {
+  background: rgba(254, 177, 0, 0.13);
+  border-color: rgba(254, 177, 0, 0.20);
+  color: #936300;
+}
+
+.copilot-metric-chip.chip-info {
+  background: rgba(29, 181, 226, 0.10);
+  border-color: rgba(29, 181, 226, 0.18);
+  color: #0058AB;
+}
+
+.copilot-metric-chip.chip-neutral {
+  background: #F8FAFC;
+  border-color: #E4EAF1;
+  color: #46506A;
+}

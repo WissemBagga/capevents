@@ -366,6 +366,17 @@
                         {{ s.insight }}
                       </p>
 
+                      @if (getCopilotMetricChips(s).length > 0) {
+                        <div class="copilot-metric-chips">
+                          @for (chip of getCopilotMetricChips(s); track trackByCopilotChip($index, chip)) {
+                            <span class="copilot-metric-chip" [class]="'chip-' + chip.type">
+                              <strong>{{ chip.value }}</strong>
+                              {{ chip.label }}
+                            </span>
+                          }
+                        </div>
+                      }
+
                       <div class="copilot-action">
                         <strong>Action recommandée :</strong>
                         <p>{{ s.recommendedAction }}</p>
@@ -387,7 +398,7 @@
                             Voir l’événement
                           </a>
                         }
-                        
+
                         @if (canSendInvitationReminder(s)) {
                           <button
                             type="button"
