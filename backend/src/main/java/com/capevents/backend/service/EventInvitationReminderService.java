@@ -50,7 +50,8 @@ public class EventInvitationReminderService {
     @Transactional
     public InvitationReminderResponse sendPendingInvitationReminders(
             UUID eventId,
-            String currentUserEmail
+            String currentUserEmail,
+            String customMessage
     ) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -77,7 +78,7 @@ public class EventInvitationReminderService {
 
         for (EventInvitation invitation : invitations) {
             String subject = "Rappel d’invitation - " + event.getTitle();
-            String message = buildReminderMessage(invitation, event);
+            String message = buildReminderMessage(invitation, event, customMessage);
 
             EventInvitationReminder reminder = new EventInvitationReminder();
             reminder.setInvitation(invitation);
@@ -124,20 +125,37 @@ public class EventInvitationReminderService {
         );
     }
 
-    private String buildReminderMessage(EventInvitation invitation, Event event) {
+    private String buildReminderMessage(
+            EventInvitation invitation,
+            Event event,
+            String customMessage
+    ) {
         String firstName = invitation.getUser().getFirstName();
 
-        return """
+        if (customMessage != null && !customMessage.isBlank()) {
+            return """
                 Bonjour %s,
 
-                Nous vous rappelons que vous avez une invitation en attente pour l’événement « %s ».
-
-                Votre réponse nous aide à mieux organiser la participation et la logistique de l’événement.
+                %s
 
                 Merci de confirmer votre réponse dès que possible depuis la plateforme CapEvents.
 
                 Cordialement,
                 L’équipe CapEvents
-                """.formatted(firstName, event.getTitle());
+                """.formatted(firstName, customMessage.trim());
+        }
+
+        return """
+            Bonjour %s,
+
+            Nous vous rappelons que vous avez une invitation en attente pour l’événement « %s ».
+
+            Votre réponse nous aide à mieux organiser la participation et la logistique de l’événement.
+
+            Merci de confirmer votre réponse dès que possible depuis la plateforme CapEvents.
+
+            Cordialement,
+            L’équipe CapEvents
+            """.formatted(firstName, event.getTitle());
     }
 }

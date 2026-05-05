@@ -1231,3 +1231,137 @@
   border-color: #E4EAF1;
   color: #46506A;
 }
+
+
+.copilot-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 26, 56, 0.48);
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.copilot-modal {
+  width: min(720px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #E4EAF1;
+  box-shadow: 0 24px 70px rgba(18, 26, 56, 0.28);
+  padding: 24px;
+}
+
+.copilot-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.copilot-modal-header h2 {
+  margin: 0 0 6px;
+  color: #121A38;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.copilot-modal-header p {
+  margin: 0;
+  color: #46506A;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.modal-close-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #D9E1EA;
+  background: #ffffff;
+  border-radius: 12px;
+  color: #121A38;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.copilot-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-info-card {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #F8FAFC;
+  border: 1px solid #E4EAF1;
+}
+
+.modal-info-card strong {
+  display: block;
+  color: #121A38;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.modal-info-card p {
+  margin: 0;
+  color: #46506A;
+  font-size: 13px;
+}
+
+.reminder-message-group textarea {
+  width: 100%;
+  border: 1px solid #D9E1EA;
+  border-radius: 16px;
+  padding: 14px;
+  resize: vertical;
+  font: inherit;
+  color: #121A38;
+  background: #ffffff;
+}
+
+.reminder-message-group textarea:focus {
+  outline: none;
+  border-color: rgba(0, 88, 171, 0.28);
+  box-shadow: 0 0 0 4px rgba(0, 88, 171, 0.08);
+}
+
+.modal-help-text {
+  color: #7B879C;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.copilot-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-primary-reminder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: none;
+  border-radius: 14px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #0058AB, #1DB5E2);
+  color: #ffffff;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-primary-reminder:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

@@ -404,7 +404,7 @@
                             type="button"
                             class="btn-secondary copilot-action-btn"
                             [disabled]="isReminderLoadingFor(s)"
-                            (click)="sendInvitationReminderFromCopilot(s)"
+                            (click)="openReminderConfirmation(s)"
                           >
                             {{ isReminderLoadingFor(s) ? 'Relance en cours...' : 'Relancer les invités' }}
                           </button>
@@ -897,5 +897,71 @@
         </section>
       </div>
     }
+
+    @if (selectedReminderSuggestion) {
+      <div class="copilot-modal-backdrop">
+        <div class="copilot-modal">
+          <div class="copilot-modal-header">
+            <div>
+              <span class="ai-section-kicker">Confirmation</span>
+              <h2>Relancer les invités</h2>
+              <p>
+                Vérifiez le message avant d’envoyer une relance aux collaborateurs déjà invités et sans réponse.
+              </p>
+            </div>
+
+            <button type="button" class="modal-close-btn" (click)="closeReminderConfirmation()">
+              ×
+            </button>
+          </div>
+
+          <div class="copilot-modal-body">
+            <div class="modal-info-card">
+              <strong>Événement concerné</strong>
+              <p>{{ selectedReminderSuggestion.relatedEventTitle || 'Événement non précisé' }}</p>
+            </div>
+
+            @if (getCopilotMetricChips(selectedReminderSuggestion).length > 0) {
+              <div class="copilot-metric-chips">
+                @for (chip of getCopilotMetricChips(selectedReminderSuggestion); track trackByCopilotChip($index, chip)) {
+                  <span class="copilot-metric-chip" [class]="'chip-' + chip.type">
+                    <strong>{{ chip.value }}</strong>
+                    {{ chip.label }}
+                  </span>
+                }
+              </div>
+            }
+
+            <div class="form-group reminder-message-group">
+              <label for="reminderMessage">Message de relance</label>
+              <textarea
+                id="reminderMessage"
+                rows="7"
+                [(ngModel)]="reminderMessageDraft"
+              ></textarea>
+              <span class="modal-help-text">
+                Le prénom du collaborateur, la salutation et la signature seront ajoutés par le backend.
+              </span>
+            </div>
+          </div>
+
+          <div class="copilot-modal-actions">
+            <button type="button" class="btn-secondary" (click)="closeReminderConfirmation()">
+              Annuler
+            </button>
+
+            <button
+              type="button"
+              class="btn-primary-reminder"
+              [disabled]="isReminderLoadingFor(selectedReminderSuggestion)"
+              (click)="confirmSendInvitationReminder()"
+            >
+              {{ isReminderLoadingFor(selectedReminderSuggestion) ? 'Envoi en cours...' : 'Confirmer l’envoi' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
   </div>
 </div>

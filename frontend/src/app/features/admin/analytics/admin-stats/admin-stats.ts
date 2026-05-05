@@ -83,6 +83,9 @@ export class AdminStats {
   copilotActionMessage = '';
   copilotActionError = '';
 
+  selectedReminderSuggestion: AiHrCopilotSuggestion | null = null;
+  reminderMessageDraft = '';
+
   ngOnInit(): void {
     if (this.isHr) {
       this.loadDepartments();
@@ -754,6 +757,66 @@ export class AdminStats {
 
   trackByCopilotChip(_: number, item: { label: string; value: string; type: string }): string {
     return `${item.label}-${item.value}`;
+  }
+
+
+
+  openReminderConfirmation(suggestion: AiHrCopilotSuggestion): void {
+    this.selectedReminderSuggestion = suggestion;
+    this.reminderMessageDraft = suggestion.draft || this.buildDefaultReminderDraft(suggestion);
+    this.copilotActionMessage = '';
+    this.copilotActionError = '';
+    this.cdr.markForCheck();
+  }
+
+  closeReminderConfirmation(): void {
+    this.selectedReminderSuggestion = null;
+    this.reminderMessageDraft = '';
+    this.cdr.markForCheck();
+  }
+
+  confirmSendInvitationReminder(): void {
+    const suggestion = this.selectedReminderSuggestion;
+
+    if (!suggestion?.relatedEventId) return;
+
+    this.remindingEventId = suggestion.relatedEventId;
+    this.copilotActionMessage = '';
+    this.copilotActionError = '';
+    this.cdr.markForCheck();
+
+    this.invitationReminderService
+      .sendPendingInvitationReminders(
+        suggestion.relatedEventId,
+        this.reminderMessageDraft
+      )
+      .pipe(finalize(() => {
+        this.remindingEventId = null;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.copilotActionMessage = response.message;
+          this.closeReminderConfirmation();
+          this.loadAiCopilot();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.copilotActionError =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible d’envoyer les relances.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  private buildDefaultReminderDraft(suggestion: AiHrCopilotSuggestion): string {
+    if (suggestion.relatedEventTitle) {
+      return `Nous vous rappelons que vous avez une invitation en attente pour l’événement « ${suggestion.relatedEventTitle} ». Votre réponse nous aide à mieux organiser la participation et la logistique de l’événement.`;
+    }
+
+    return 'Nous vous rappelons que vous avez une invitation en attente sur CapEvents. Votre réponse nous aide à mieux organiser la participation.';
   }
 
 }

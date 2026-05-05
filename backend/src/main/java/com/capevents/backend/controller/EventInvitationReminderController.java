@@ -1,6 +1,7 @@
 package com.capevents.backend.controller;
 
 
+import com.capevents.backend.dto.InvitationReminderRequest;
 import com.capevents.backend.dto.InvitationReminderResponse;
 import com.capevents.backend.service.EventInvitationReminderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -23,15 +24,16 @@ public class EventInvitationReminderController {
         this.eventInvitationReminderService = eventInvitationReminderService;
     }
 
-    @PreAuthorize("hasAuthority('ROLE_HR')")
     @PostMapping
     public InvitationReminderResponse sendPendingInvitationReminders(
             @PathVariable UUID eventId,
+            @RequestBody(required = false) InvitationReminderRequest request,
             Authentication authentication
     ) {
         return eventInvitationReminderService.sendPendingInvitationReminders(
                 eventId,
-                authentication.getName()
+                authentication.getName(),
+                request != null ? request.message() : null
         );
     }
 }

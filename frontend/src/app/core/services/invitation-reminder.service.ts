@@ -12,10 +12,15 @@ export class InvitationReminderService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/api/admin/events`;
 
-  sendPendingInvitationReminders(eventId: string): Observable<InvitationReminderResponse> {
+  sendPendingInvitationReminders(
+    eventId: string,
+    message?: string | null
+    ): Observable<InvitationReminderResponse> {
     return this.http.post<InvitationReminderResponse>(
-      `${this.apiUrl}/${eventId}/invitations/reminders`,
-      {}
+        `${this.apiUrl}/${eventId}/invitations/reminders`,
+        {
+        message: message?.trim() || null
+        }
     );
   }
 }
