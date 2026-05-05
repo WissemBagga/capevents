@@ -238,6 +238,7 @@ class HrCopilotService:
             key=lambda item: (
                 priority_score.get(item["priority"], 0),
                 item.get("metadata", {}).get("pending_count", 0),
+                item.get("metadata", {}).get("registered_count", 0),
                 item.get("metadata", {}).get("feedback_count", 0)
             ),
             reverse=True
@@ -247,23 +248,16 @@ class HrCopilotService:
         used_types = set()
 
         for item in sorted_items:
-            if item["type"] in used_types:
+            suggestion_type = item.get("type")
+
+            if suggestion_type in used_types:
                 continue
 
             selected.append(item)
-            used_types.add(item["type"])
+            used_types.add(suggestion_type)
 
             if len(selected) >= 3:
                 break
-
-        if len(selected) < 3:
-            for item in sorted_items:
-                if item in selected:
-                    continue
-                selected.append(item)
-
-                if len(selected) >= 3:
-                    break
 
         return selected
 
@@ -357,9 +351,10 @@ class HrCopilotService:
 
         if suggestion["type"] == "LOW_REGISTRATION":
             return (
-                f"L’événement « {event_title} » présente un taux d’inscription faible. "
-                f"Nous recommandons de renforcer sa visibilité auprès des collaborateurs concernés. "
-                f"Une relance ciblée peut aider à améliorer la participation."
+                f"Bonjour, l’événement « {event_title} » présente actuellement un niveau "
+                f"d’inscription inférieur aux attentes. Nous recommandons de renforcer sa visibilité "
+                f"auprès des collaborateurs concernés et de rappeler clairement les bénéfices de la participation. "
+                f"Une relance ciblée peut aider à améliorer l’engagement avant la date de l’événement."
             )
 
         if suggestion["type"] == "LOW_FEEDBACK_SCORE":
