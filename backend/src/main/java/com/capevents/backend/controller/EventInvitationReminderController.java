@@ -1,6 +1,7 @@
 package com.capevents.backend.controller;
 
 
+import com.capevents.backend.dto.InvitationReminderHistoryResponse;
 import com.capevents.backend.dto.InvitationReminderRequest;
 import com.capevents.backend.dto.InvitationReminderResponse;
 import com.capevents.backend.service.EventInvitationReminderService;
@@ -9,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @SecurityRequirement(name = "bearerAuth")
@@ -35,5 +37,13 @@ public class EventInvitationReminderController {
                 authentication.getName(),
                 request != null ? request.message() : null
         );
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_HR')")
+    @GetMapping
+    public List<InvitationReminderHistoryResponse> getReminderHistory(
+            @PathVariable UUID eventId
+    ) {
+        return eventInvitationReminderService.getReminderHistory(eventId);
     }
 }

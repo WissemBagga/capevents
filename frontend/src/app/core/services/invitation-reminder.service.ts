@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { InvitationReminderResponse } from '../models/invitation-reminder.model';
+import { InvitationReminderHistoryResponse } from '../models/invitation-reminder-history.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,4 +24,10 @@ export class InvitationReminderService {
         }
     );
   }
+
+  getReminderHistory(eventId: string) {
+    return this.http.get<InvitationReminderHistoryResponse[]>(
+        `${this.apiUrl}/${eventId}/invitations/reminders`
+    );
+    }
 }

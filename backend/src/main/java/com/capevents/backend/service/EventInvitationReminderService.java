@@ -1,6 +1,7 @@
 package com.capevents.backend.service;
 
 
+import com.capevents.backend.dto.InvitationReminderHistoryResponse;
 import com.capevents.backend.dto.InvitationReminderResponse;
 import com.capevents.backend.entity.Event;
 import com.capevents.backend.entity.EventInvitation;
@@ -146,6 +147,49 @@ public class EventInvitationReminderService {
                 failed,
                 responseMessage
         );
+    }
+
+    @Transactional
+    public List<InvitationReminderHistoryResponse> getReminderHistory(UUID eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Événement introuvable."
+                ));
+
+        return reminderRepository.findByInvitationEventOrderBySentAtDesc(event)
+                .stream()
+                .map(this::toHistoryResponse)
+                .toList();
+    }
+
+    private InvitationReminderHistoryResponse toHistoryResponse(EventInvitationReminder reminder) {
+        User recipient = reminder.getInvitation().getUser();
+        User sentBy = reminder.getSentBy();
+
+        return new InvitationReminderHistoryResponse(
+                reminder.getId(),
+                reminder.getInvitation().getId(),
+
+                buildFullName(recipient.getFirstName(), recipient.getLastName()),
+                recipient.getEmail(),
+
+                buildFullName(sentBy.getFirstName(), sentBy.getLastName()),
+                sentBy.getEmail(),
+
+                reminder.getChannel().name(),
+                reminder.getSubject(),
+                reminder.getMessage(),
+                reminder.getStatus().name(),
+                reminder.getErrorMessage(),
+                reminder.getSentAt()
+        );
+    }
+
+    private String buildFullName(String firstName, String lastName) {
+        String safeFirstName = firstName != null ? firstName.trim() : "";
+        String safeLastName = lastName != null ? lastName.trim() : "";
+        return (safeFirstName + " " + safeLastName).trim();
     }
 
     private String buildReminderMessage(
