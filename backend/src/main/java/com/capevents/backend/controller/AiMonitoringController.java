@@ -23,7 +23,7 @@ public class AiMonitoringController {
         this.aiMonitoringClientService = aiMonitoringClientService;
     }
 
-    @PreAuthorize("hasRole('HR')")
+    @PreAuthorize("hasAuthority('ROLE_HR')")
     @GetMapping("/recommendations/summary")
     public AiRecommendationMonitoringSummaryDto getRecommendationMonitoringSummary(
             @RequestParam(defaultValue = "10") int maxRecent,

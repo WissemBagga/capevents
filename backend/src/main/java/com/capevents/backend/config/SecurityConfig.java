@@ -50,6 +50,12 @@
                             .requestMatchers("/api/ai/recommendations/**")
                             .hasAnyAuthority("ROLE_EMPLOYEE", "ROLE_HR", "ROLE_MANAGER")
 
+                            .requestMatchers("/api/ai/feedback/**")
+                            .hasAnyAuthority("ROLE_HR", "ROLE_MANAGER")
+
+                            .requestMatchers("/api/ai/monitoring/**")
+                            .hasAuthority("ROLE_HR")
+
                             .requestMatchers(HttpMethod.GET, "/api/departments").permitAll()
                             .requestMatchers("/api/auth/me").authenticated()
                             .anyRequest().authenticated()

@@ -1,6 +1,5 @@
 import re
 from collections import Counter
-from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -17,8 +16,11 @@ from app.schemas.feedback_insights import (
 
 from sklearn.feature_extraction.text import CountVectorizer
 
+from sqlalchemy import text
 
-RAW_DIR = Path("datasets/raw/capevents")
+from app.data.db import engine
+
+
 
 SENTIMENT_MODEL_NAME = "cardiffnlp/twitter-xlm-roberta-base-sentiment-multilingual"
 EMBEDDING_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
@@ -44,32 +46,49 @@ FRENCH_STOPWORDS = {
 
 class FeedbackInsightsService:
     def __init__(self) -> None:
-        self.feedbacks = self._read_csv(RAW_DIR / "event_feedbacks.csv")
-        self.events = self._read_csv(RAW_DIR / "events.csv")
-
         self.sentiment_pipeline = None
         self.embedding_model = None
 
-        self._prepare_dataframes()
+    def _get_event_from_database(self, event_id: str) -> dict | None:
+        query = text("""
+            SELECT
+                id::text AS id,
+                title
+            FROM events
+            WHERE id::text = :event_id
+            LIMIT 1
+        """)
 
-    def _read_csv(self, path: Path) -> pd.DataFrame:
-        if not path.exists():
-            return pd.DataFrame()
-        return pd.read_csv(path)
+        with engine.connect() as connection:
+            row = connection.execute(
+                query,
+                {"event_id": event_id}
+            ).mappings().first()
 
-    def _prepare_dataframes(self) -> None:
-        if not self.feedbacks.empty:
-            self.feedbacks["event_id"] = self.feedbacks["event_id"].fillna("").astype(str)
-            self.feedbacks["comment"] = self.feedbacks["comment"].fillna("").astype(str)
-            self.feedbacks["rating"] = pd.to_numeric(
-                self.feedbacks["rating"],
-                errors="coerce"
-            ).fillna(0)
+        return dict(row) if row else None
 
-        if not self.events.empty:
-            self.events["id"] = self.events["id"].fillna("").astype(str)
-            self.events["title"] = self.events["title"].fillna("").astype(str)
 
+    def _get_feedbacks_from_database(self, event_id: str) -> pd.DataFrame:
+        query = text("""
+            SELECT
+                id,
+                event_id::text AS event_id,
+                user_id::text AS user_id,
+                rating,
+                comment,
+                created_at
+            FROM event_feedbacks
+            WHERE event_id::text = :event_id
+            AND comment IS NOT NULL
+            AND btrim(comment) <> ''
+            ORDER BY created_at ASC
+        """)
+
+        return pd.read_sql_query(
+            query,
+            engine,
+            params={"event_id": event_id}
+        )
     def _get_sentiment_pipeline(self):
         if self.sentiment_pipeline is None:
             self.sentiment_pipeline = pipeline(
@@ -86,25 +105,31 @@ class FeedbackInsightsService:
 
     def get_event_feedback_insights(self, event_id: str) -> FeedbackInsightResponse:
         event_id = str(event_id).strip()
-        event_title = self._get_event_title(event_id)
 
-        if self.feedbacks.empty:
-            return self._empty_response(event_id, event_title, "Aucun fichier feedback disponible.")
+        event = self._get_event_from_database(event_id)
+        event_title = event["title"] if event else None
 
-        event_feedbacks = self.feedbacks[
-            self.feedbacks["event_id"].astype(str) == event_id
-        ].copy()
+        if event is None:
+            return self._empty_response(
+                event_id,
+                None,
+                "Événement introuvable dans la base CapEvents."
+            )
 
-        event_feedbacks = event_feedbacks[
-            event_feedbacks["comment"].astype(str).str.strip() != ""
-        ].copy()
+        event_feedbacks = self._get_feedbacks_from_database(event_id)
 
         if event_feedbacks.empty:
             return self._empty_response(
                 event_id,
                 event_title,
-                "Aucun feedback textuel disponible pour cet événement."
+                "Aucun feedback textuel disponible pour cet événement dans la base CapEvents."
             )
+
+        event_feedbacks["comment"] = event_feedbacks["comment"].fillna("").astype(str)
+        event_feedbacks["rating"] = pd.to_numeric(
+            event_feedbacks["rating"],
+            errors="coerce"
+        ).fillna(0)
 
         comments = event_feedbacks["comment"].astype(str).tolist()
         ratings = event_feedbacks["rating"].tolist()
@@ -465,8 +490,9 @@ class FeedbackInsightsService:
         {improvements}
 
         Contraintes :
-        - Ne dis pas "{feedback_count} feedbacks positifs".
-        - Dis plutôt : "{positive_count} positifs, {neutral_count} neutres et {negative_count} négatifs".
+        - Si tous les feedbacks sont positifs, tu peux dire que les {feedback_count} feedbacks sont positifs.
+        - Sinon, ne dis jamais que les {feedback_count} feedbacks sont tous positifs.
+        - Utilise la formulation exacte : "{positive_count} positifs, {neutral_count} neutres et {negative_count} négatifs".
         - Ne mentionne que les thèmes, points forts et axes d'amélioration fournis.
         - Réponds en français, style professionnel RH.
         """
@@ -505,11 +531,28 @@ class FeedbackInsightsService:
             message = data.get("message", {})
             text = str(message.get("content", "")).strip()
 
-            if f"{feedback_count} feedbacks positifs" in text.lower():
-                return fallback_summary, False, "fallback_template_qwen_summary_validation_failed"
+            positive_count = distribution.get("positive", 0)
+            neutral_count = distribution.get("neutral", 0)
+            negative_count = distribution.get("negative", 0)
 
-            if f"{feedback_count} retours positifs" in text.lower():
-                return fallback_summary, False, "fallback_template_qwen_summary_validation_failed"
+            all_feedbacks_are_positive = (
+                positive_count == feedback_count
+                and neutral_count == 0
+                and negative_count == 0
+            )
+
+            text_lower = text.lower()
+
+            if not all_feedbacks_are_positive:
+                forbidden_patterns = [
+                    f"{feedback_count} feedbacks positifs",
+                    f"{feedback_count} retours positifs",
+                    f"{feedback_count} commentaires positifs"
+                ]
+
+                for pattern in forbidden_patterns:
+                    if pattern in text_lower:
+                        return fallback_summary, False, "fallback_template_qwen_summary_validation_failed"
 
             if not text:
                 return fallback_summary, False, "fallback_template_empty_qwen_chat_content"
@@ -519,16 +562,6 @@ class FeedbackInsightsService:
         except Exception as exc:
             return fallback_summary, False, f"fallback_template_ollama_error_{type(exc).__name__}"
     
-
-    def _get_event_title(self, event_id: str) -> str | None:
-        if self.events.empty:
-            return None
-
-        rows = self.events[self.events["id"].astype(str) == event_id]
-        if rows.empty:
-            return None
-
-        return str(rows.iloc[0]["title"])
 
     def _empty_response(
         self,
