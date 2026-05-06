@@ -818,15 +818,6 @@ export class AdminStats {
 
     return 'Nous vous rappelons que vous avez une invitation en attente sur CapEvents. Votre réponse nous aide à mieux organiser la participation.';
   }
-
-  isReminderConfirmationOpen(suggestion: AiHrCopilotSuggestion): boolean {
-    return (
-      !!this.selectedReminderSuggestion &&
-      this.selectedReminderSuggestion.type === suggestion.type &&
-      this.selectedReminderSuggestion.relatedEventId === suggestion.relatedEventId
-    );
-  }
-
-  
+ 
 
 }

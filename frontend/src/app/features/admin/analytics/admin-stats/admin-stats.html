@@ -422,70 +422,7 @@
                         }
                       </div>
 
-                      @if (isReminderConfirmationOpen(s)) {
-                        <div class="copilot-inline-confirmation">
-                          <div class="inline-confirmation-header">
-                            <div>
-                              <span class="ai-section-kicker">Confirmation</span>
-                              <h4>Relancer les invités</h4>
-                              <p>
-                                Vérifiez le message avant d’envoyer une relance aux collaborateurs déjà invités et sans réponse.
-                              </p>
-                            </div>
-
-                            <button type="button" class="inline-close-btn" (click)="closeReminderConfirmation()">
-                              ×
-                            </button>
-                          </div>
-
-                          <div class="modal-info-card">
-                            <strong>Événement concerné</strong>
-                            <p>{{ s.relatedEventTitle || 'Événement non précisé' }}</p>
-                          </div>
-
-                          @if (getCopilotMetricChips(s).length > 0) {
-                            <div class="copilot-metric-chips">
-                              @for (chip of getCopilotMetricChips(s); track trackByCopilotChip($index, chip)) {
-                                <span class="copilot-metric-chip" [class]="'chip-' + chip.type">
-                                  <strong>{{ chip.value }}</strong>
-                                  {{ chip.label }}
-                                </span>
-                              }
-                            </div>
-                          }
-
-                          <div class="form-group reminder-message-group">
-                            <label [attr.for]="'reminderMessage-' + s.relatedEventId">
-                              Message de relance
-                            </label>
-
-                            <textarea
-                              [id]="'reminderMessage-' + s.relatedEventId"
-                              rows="6"
-                              [(ngModel)]="reminderMessageDraft"
-                            ></textarea>
-
-                            <span class="modal-help-text">
-                              Le prénom du collaborateur, la salutation et la signature seront ajoutés par le backend.
-                            </span>
-                          </div>
-
-                          <div class="copilot-inline-actions">
-                            <button type="button" class="btn-secondary" (click)="closeReminderConfirmation()">
-                              Annuler
-                            </button>
-
-                            <button
-                              type="button"
-                              class="btn-primary-reminder"
-                              [disabled]="isReminderLoadingFor(s)"
-                              (click)="confirmSendInvitationReminder()"
-                            >
-                              {{ isReminderLoadingFor(s) ? 'Envoi en cours...' : 'Confirmer l’envoi' }}
-                            </button>
-                          </div>
-                        </div>
-                      }
+                      
 
                     </article>
                   }
@@ -960,6 +897,85 @@
             </div>
           }
         </section>
+      </div>
+    }
+
+
+    @if (selectedReminderSuggestion; as selected) {
+      <div class="copilot-modal-backdrop" (click)="closeReminderConfirmation()">
+        <div class="copilot-modal" (click)="$event.stopPropagation()">
+
+          <div class="copilot-modal-header">
+            <div>
+              <span class="ai-section-kicker">Confirmation</span>
+              <h2>Relancer les invités</h2>
+              <p>
+                Vérifiez le message avant d’envoyer une relance aux collaborateurs déjà invités et sans réponse.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="modal-close-btn"
+              aria-label="Fermer"
+              (click)="closeReminderConfirmation()"
+            >
+              ×
+            </button>
+          </div>
+
+          <div class="copilot-modal-body">
+            <div class="modal-info-card">
+              <strong>Événement concerné</strong>
+              <p>{{ selected.relatedEventTitle || 'Événement non précisé' }}</p>
+            </div>
+
+            @if (getCopilotMetricChips(selected).length > 0) {
+              <div class="copilot-metric-chips">
+                @for (chip of getCopilotMetricChips(selected); track trackByCopilotChip($index, chip)) {
+                  <span class="copilot-metric-chip" [class]="'chip-' + chip.type">
+                    <strong>{{ chip.value }}</strong>
+                    {{ chip.label }}
+                  </span>
+                }
+              </div>
+            }
+
+            <div class="form-group reminder-message-group">
+              <label for="reminderMessageModal">Message de relance</label>
+
+              <textarea
+                id="reminderMessageModal"
+                rows="7"
+                [(ngModel)]="reminderMessageDraft"
+              ></textarea>
+
+              <span class="modal-help-text">
+                Le prénom du collaborateur, la salutation et la signature seront ajoutés par le backend.
+              </span>
+            </div>
+          </div>
+
+          <div class="copilot-modal-actions">
+            <button
+              type="button"
+              class="btn-secondary"
+              (click)="closeReminderConfirmation()"
+            >
+              Annuler
+            </button>
+
+            <button
+              type="button"
+              class="btn-primary-reminder"
+              [disabled]="isReminderLoadingFor(selected)"
+              (click)="confirmSendInvitationReminder()"
+            >
+              {{ isReminderLoadingFor(selected) ? 'Envoi en cours...' : 'Confirmer l’envoi' }}
+            </button>
+          </div>
+
+        </div>
       </div>
     }
 
