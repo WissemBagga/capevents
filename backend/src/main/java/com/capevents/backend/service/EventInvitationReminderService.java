@@ -3,6 +3,7 @@ package com.capevents.backend.service;
 
 import com.capevents.backend.dto.InvitationReminderHistoryResponse;
 import com.capevents.backend.dto.InvitationReminderResponse;
+import com.capevents.backend.dto.MyInvitationReminderResponse;
 import com.capevents.backend.entity.Event;
 import com.capevents.backend.entity.EventInvitation;
 import com.capevents.backend.entity.EventInvitationReminder;
@@ -95,7 +96,9 @@ public class EventInvitationReminderService {
                 // 1. Notification interne CapEvents, toujours envoyée.
                 notificationService.notifyInvitationReminder(
                         invitation.getUser(),
-                        event
+                        event,
+                        invitation.getId(),
+                        message
                 );
 
                 // 2. Email de relance, selon le profil actif : dev = console, mailtrap = email réel.
@@ -161,6 +164,37 @@ public class EventInvitationReminderService {
                 .stream()
                 .map(this::toHistoryResponse)
                 .toList();
+    }
+
+
+    @Transactional
+    public List<MyInvitationReminderResponse> getMyInvitationReminderHistory(
+            Long invitationId,
+            String currentUserEmail
+    ) {
+        return reminderRepository
+                .findByInvitationIdAndInvitationUserEmailOrderBySentAtDesc(
+                        invitationId,
+                        currentUserEmail
+                )
+                .stream()
+                .map(this::toMyReminderResponse)
+                .toList();
+    }
+
+    private MyInvitationReminderResponse toMyReminderResponse(EventInvitationReminder reminder) {
+        User sentBy = reminder.getSentBy();
+
+        return new MyInvitationReminderResponse(
+                reminder.getId(),
+                reminder.getInvitation().getId(),
+                reminder.getSubject(),
+                reminder.getMessage(),
+                buildFullName(sentBy.getFirstName(), sentBy.getLastName()),
+                reminder.getChannel().name(),
+                reminder.getStatus().name(),
+                reminder.getSentAt()
+        );
     }
 
     private InvitationReminderHistoryResponse toHistoryResponse(EventInvitationReminder reminder) {

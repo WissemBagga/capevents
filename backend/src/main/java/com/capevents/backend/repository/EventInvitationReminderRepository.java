@@ -8,4 +8,8 @@ import java.util.List;
 
 public interface EventInvitationReminderRepository extends JpaRepository<EventInvitationReminder, Long> {
     List<EventInvitationReminder> findByInvitationEventOrderBySentAtDesc(Event event);
+    List<EventInvitationReminder> findByInvitationIdAndInvitationUserEmailOrderBySentAtDesc(
+            Long invitationId,
+            String email
+    );
 }

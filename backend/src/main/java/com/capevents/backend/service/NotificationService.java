@@ -379,15 +379,19 @@ public class NotificationService {
 
 
     @Transactional
-    public void notifyInvitationReminder(User target, Event event) {
+    public void notifyInvitationReminder(User target, Event event, Long invitationId, String reminderMessage) {
         if (target == null || event == null) return;
+
+        String safeMessage = reminderMessage != null && !reminderMessage.isBlank()
+                ? reminderMessage.trim()
+                : "Vous avez une invitation en attente pour l’événement \"" + event.getTitle() + "\".";
 
         createNotification(
                 target,
                 NotificationType.EVENT_INVITATION_REMINDER,
                 "Rappel d’invitation",
-                "Vous avez une invitation en attente pour l’événement \"" + event.getTitle() + "\".",
-                "/my-invitations"
+                "Vous avez reçu une relance pour l’événement \"" + event.getTitle() + "\".",
+                "/my-invitations?invitationId=" + invitationId
         );
     }
 

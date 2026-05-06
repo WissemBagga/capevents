@@ -9,6 +9,8 @@ import { finalize } from 'rxjs';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
+import {MyInvitationReminder} from '../../../core/models/my-invitation-reminder.model';
+
 
 
 @Component({
@@ -27,6 +29,11 @@ export class MyInvitations implements OnInit{
   errorMessage="";
 
   responseLoadingById: Record<number, boolean> = {};
+
+  selectedReminderInvitationId: number | null = null;
+  selectedReminderHistory: MyInvitationReminder[] = [];
+  reminderHistoryLoading = false;
+  reminderHistoryError = '';
 
   ngOnInit(): void {
       this.loadInvitations();
@@ -115,6 +122,38 @@ export class MyInvitations implements OnInit{
       default:
         return status;
     }
+  }
+
+  openReminderHistory(invitationId: number): void {
+    this.selectedReminderInvitationId = invitationId;
+    this.selectedReminderHistory = [];
+    this.reminderHistoryLoading = true;
+    this.reminderHistoryError = '';
+    this.cdr.markForCheck();
+
+    this.myInvitationReminderService.getReminderHistory(invitationId)
+      .pipe(finalize(() => {
+        this.reminderHistoryLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (items) => {
+          this.selectedReminderHistory = items;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.selectedReminderHistory = [];
+          this.reminderHistoryError = 'Impossible de charger les messages de relance.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  closeReminderHistory(): void {
+    this.selectedReminderInvitationId = null;
+    this.selectedReminderHistory = [];
+    this.reminderHistoryError = '';
+    this.cdr.markForCheck();
   }
 
 }
