@@ -1233,67 +1233,6 @@
 }
 
 
-.copilot-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(18, 26, 56, 0.48);
-  z-index: 1000;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-}
-
-.copilot-modal {
-  width: min(720px, 100%);
-  max-height: calc(100vh - 40px);
-  overflow: auto;
-  background: #ffffff;
-  border-radius: 24px;
-  border: 1px solid #E4EAF1;
-  box-shadow: 0 24px 70px rgba(18, 26, 56, 0.28);
-  padding: 24px;
-}
-
-.copilot-modal-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 18px;
-}
-
-.copilot-modal-header h2 {
-  margin: 0 0 6px;
-  color: #121A38;
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 24px;
-  font-weight: 800;
-}
-
-.copilot-modal-header p {
-  margin: 0;
-  color: #46506A;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.modal-close-btn {
-  width: 36px;
-  height: 36px;
-  border: 1px solid #D9E1EA;
-  background: #ffffff;
-  border-radius: 12px;
-  color: #121A38;
-  cursor: pointer;
-  font-size: 22px;
-  line-height: 1;
-}
-
-.copilot-modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .modal-info-card {
   padding: 14px 16px;
   border-radius: 16px;
@@ -1337,13 +1276,6 @@
   line-height: 1.5;
 }
 
-.copilot-modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
 
 .btn-primary-reminder {
   display: inline-flex;
@@ -1364,4 +1296,93 @@
 .btn-primary-reminder:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+.copilot-inline-confirmation {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(29, 181, 226, 0.08), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  border: 1px solid rgba(0, 88, 171, 0.14);
+  box-shadow: 0 12px 32px rgba(18, 26, 56, 0.08);
+  animation: fadeIn 0.18s ease-out both;
+}
+
+.inline-confirmation-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.inline-confirmation-header h4 {
+  margin: 0 0 6px;
+  color: #121A38;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.inline-confirmation-header p {
+  margin: 0;
+  color: #46506A;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.inline-close-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #D9E1EA;
+  background: #ffffff;
+  border-radius: 12px;
+  color: #121A38;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.inline-close-btn:hover {
+  background: #F8FAFC;
+  color: #8F3237;
+}
+
+.copilot-inline-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.reminder-message-group {
+  margin-top: 14px;
+}
+
+.reminder-message-group textarea {
+  width: 100%;
+  border: 1px solid #D9E1EA;
+  border-radius: 16px;
+  padding: 14px;
+  resize: vertical;
+  font: inherit;
+  color: #121A38;
+  background: #ffffff;
+}
+
+.reminder-message-group textarea:focus {
+  outline: none;
+  border-color: rgba(0, 88, 171, 0.28);
+  box-shadow: 0 0 0 4px rgba(0, 88, 171, 0.08);
+}
+
+.modal-help-text {
+  display: block;
+  margin-top: 7px;
+  color: #7B879C;
+  font-size: 12px;
+  line-height: 1.5;
 }
