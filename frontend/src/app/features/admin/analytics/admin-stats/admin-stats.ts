@@ -752,6 +752,34 @@ export class AdminStats {
       }
     }
 
+    if (suggestion.type === 'RSVP_FRICTION') {
+      const responded = this.getCopilotMetadataNumber(suggestion, 'responded_count');
+      const yes = this.getCopilotMetadataNumber(suggestion, 'yes_count');
+      const maybe = this.getCopilotMetadataNumber(suggestion, 'maybe_count');
+      const no = this.getCopilotMetadataNumber(suggestion, 'no_count');
+      const frictionRate = this.getCopilotMetadataNumber(suggestion, 'friction_rate');
+
+      if (responded !== null) {
+        chips.push({ label: 'Réponses', value: String(responded), type: 'neutral' });
+      }
+
+      if (yes !== null) {
+        chips.push({ label: 'Oui', value: String(yes), type: 'success' });
+      }
+
+      if (maybe !== null) {
+        chips.push({ label: 'Peut-être', value: String(maybe), type: 'warning' });
+      }
+
+      if (no !== null) {
+        chips.push({ label: 'Non', value: String(no), type: 'warning' });
+      }
+
+      if (frictionRate !== null) {
+        chips.push({ label: 'Friction', value: `${Math.round(frictionRate * 100)}%`, type: 'warning' });
+      }
+    }
+
     return chips;
   }
 

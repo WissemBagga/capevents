@@ -22,6 +22,7 @@ class HrCopilotService:
         rule_suggestions.extend(self._detect_low_registration_events())
         rule_suggestions.extend(self._detect_low_feedback_events())
         rule_suggestions.extend(self._detect_low_engagement_departments())
+        rule_suggestions.extend(self._detect_rsvp_friction_events())
 
         ranked = self._rank_suggestions(rule_suggestions)[:3]
 
@@ -284,6 +285,94 @@ class HrCopilotService:
 
         return suggestions
 
+    def _detect_rsvp_friction_events(self) -> list[dict]:
+        rows = self._read_rows("""
+            SELECT
+                e.id::text AS event_id,
+                e.title AS event_title,
+
+                COUNT(i.id) FILTER (
+                    WHERE i.rsvp_response IN ('YES', 'MAYBE', 'NO')
+                ) AS responded_count,
+
+                COUNT(i.id) FILTER (
+                    WHERE i.rsvp_response = 'YES'
+                ) AS yes_count,
+
+                COUNT(i.id) FILTER (
+                    WHERE i.rsvp_response = 'MAYBE'
+                ) AS maybe_count,
+
+                COUNT(i.id) FILTER (
+                    WHERE i.rsvp_response = 'NO'
+                ) AS no_count
+
+            FROM events e
+            JOIN event_invitations i ON i.event_id = e.id
+            WHERE e.status = 'PUBLISHED'
+            AND e.start_at > NOW()
+            GROUP BY e.id, e.title
+            HAVING COUNT(i.id) FILTER (
+                WHERE i.rsvp_response IN ('YES', 'MAYBE', 'NO')
+            ) >= 3
+            ORDER BY
+                (
+                    (
+                        COUNT(i.id) FILTER (WHERE i.rsvp_response IN ('MAYBE', 'NO'))
+                    )::float
+                    / NULLIF(
+                        COUNT(i.id) FILTER (WHERE i.rsvp_response IN ('YES', 'MAYBE', 'NO')),
+                        0
+                    )
+                ) DESC
+            LIMIT 3
+        """)
+
+        suggestions = []
+
+        for row in rows:
+            responded_count = int(row["responded_count"] or 0)
+            yes_count = int(row["yes_count"] or 0)
+            maybe_count = int(row["maybe_count"] or 0)
+            no_count = int(row["no_count"] or 0)
+
+            if responded_count == 0:
+                continue
+
+            friction_count = maybe_count + no_count
+            friction_rate = friction_count / responded_count
+
+            if friction_rate < 0.40:
+                continue
+
+            suggestions.append({
+                "type": "RSVP_FRICTION",
+                "priority": "HIGH" if friction_rate >= 0.60 else "MEDIUM",
+                "title": "Comprendre les réponses négatives ou hésitantes",
+                "insight": (
+                    f"L’événement présente {friction_count}/{responded_count} réponse(s) "
+                    f"négative(s) ou hésitante(s), soit {round(friction_rate * 100)}%. "
+                    f"Détail : {no_count} non, {maybe_count} peut-être, {yes_count} oui."
+                ),
+                "recommended_action": (
+                    "Analyser le positionnement de l’événement : créneau, sujet, format ou communication. "
+                    "Une clarification du bénéfice participant peut améliorer l’adhésion."
+                ),
+                "action_type": "REVIEW_RSVP_FRICTION",
+                "related_event_id": row["event_id"],
+                "related_event_title": row["event_title"],
+                "metadata": {
+                    "responded_count": responded_count,
+                    "yes_count": yes_count,
+                    "maybe_count": maybe_count,
+                    "no_count": no_count,
+                    "friction_count": friction_count,
+                    "friction_rate": friction_rate
+                }
+            })
+
+        return suggestions
+
     def _rank_suggestions(self, suggestions: list[dict]) -> list[dict]:
         priority_score = {
             "HIGH": 3,
@@ -379,6 +468,7 @@ class HrCopilotService:
                 "le brouillon final",
                 "brouillon final du message",
                 "améliorer le taux d’inscription pour",
+                "comprendre les réponses négatives ou hésitantes pour",
                 "type :",
                 "priorité :",
                 "constat :",
@@ -429,6 +519,16 @@ class HrCopilotService:
                 f"aux événements internes. Une action ciblée pourrait être proposée afin de mieux répondre "
                 f"aux attentes des collaborateurs concernés. Nous recommandons d’identifier un format court "
                 f"et adapté à leurs disponibilités."
+            )
+        
+        if suggestion["type"] == "RSVP_FRICTION":
+            event_title = suggestion.get("related_event_title") or "l’événement concerné"
+
+            return (
+                f"L’événement « {event_title} » présente un niveau important de réponses négatives "
+                f"ou hésitantes. Nous recommandons d’analyser les causes possibles, notamment le créneau, "
+                f"le format, le sujet ou la clarté de la communication. Une clarification des objectifs et "
+                f"des bénéfices pour les participants peut aider à renforcer l’adhésion."
             )
 
         return suggestion["recommended_action"]
