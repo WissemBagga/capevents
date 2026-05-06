@@ -23,6 +23,9 @@ import { AiHrCopilotSuggestion } from '../../../../core/models/ai-hr-copilot.mod
 
 import { InvitationReminderService } from '../../../../core/services/invitation-reminder.service';
 
+import { AiHrCopilotMonitoringService } from '../../../../core/services/ai-hr-copilot-monitoring.service';
+import { AiHrCopilotMonitoringResponse } from '../../../../core/models/ai-hr-copilot-monitoring.model';
+
 type TrendPointVm = {
   month: string;
   registrations: number;
@@ -45,6 +48,7 @@ export class AdminStats {
   private aiMonitoringService = inject(AiMonitoringService);
   private aiHrCopilotService = inject(AiHrCopilotService);
   private invitationReminderService = inject(InvitationReminderService);
+  private aiHrCopilotMonitoringService = inject(AiHrCopilotMonitoringService);
 
 
   readonly trendChartWidth = 640;
@@ -86,11 +90,16 @@ export class AdminStats {
   selectedReminderSuggestion: AiHrCopilotSuggestion | null = null;
   reminderMessageDraft = '';
 
+  aiCopilotMonitoring: AiHrCopilotMonitoringResponse | null = null;
+  aiCopilotMonitoringLoading = false;
+  aiCopilotMonitoringError = '';
+
   ngOnInit(): void {
     if (this.isHr) {
       this.loadDepartments();
       this.loadAiMonitoring();
       this.loadAiCopilot();
+      this.loadAiCopilotMonitoring();
     }
     this.loadAnalytics();
   }
@@ -895,6 +904,70 @@ export class AdminStats {
     return {
       section: this.getCopilotEventSection(suggestion)
     };
+  }
+
+  loadAiCopilotMonitoring(): void {
+    if (!this.isHr) return;
+
+    this.aiCopilotMonitoringLoading = true;
+    this.aiCopilotMonitoringError = '';
+    this.cdr.markForCheck();
+
+    this.aiHrCopilotMonitoringService.getSummary(10)
+      .pipe(finalize(() => {
+        this.aiCopilotMonitoringLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.aiCopilotMonitoring = response;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.aiCopilotMonitoring = null;
+          this.aiCopilotMonitoringError = 'Impossible de charger le monitoring du Copilote RH.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+
+  copilotSuggestionTypeLabel(type: string): string {
+    switch (type) {
+      case 'LOW_REGISTRATION':
+        return 'Faible inscription';
+      case 'PENDING_INVITATIONS':
+        return 'Invitations en attente';
+      case 'RSVP_FRICTION':
+        return 'Friction RSVP';
+      case 'LOW_FEEDBACK_SCORE':
+        return 'Feedback faible';
+      case 'LOW_DEPARTMENT_ENGAGEMENT':
+        return 'Département peu engagé';
+      default:
+        return type || 'Inconnu';
+    }
+  }
+
+  copilotQwenUsagePercent(): number {
+    return Math.round((this.aiCopilotMonitoring?.qwenUsageRate ?? 0) * 100);
+  }
+
+  copilotSuccessRatePercent(): number {
+    const total = this.aiCopilotMonitoring?.totalCalls ?? 0;
+    const success = this.aiCopilotMonitoring?.successfulCalls ?? 0;
+
+    if (total === 0) return 0;
+
+    return Math.round((success / total) * 100);
+  }
+
+  trackByCopilotType(_: number, item: { type: string; count: number }): string {
+    return item.type;
+  }
+
+  trackByCopilotCall(_: number, item: { requestId: string }): string {
+    return item.requestId;
   }
  
 
