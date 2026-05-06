@@ -26,6 +26,8 @@ import { InvitationReminderService } from '../../../../core/services/invitation-
 import { AiHrCopilotMonitoringService } from '../../../../core/services/ai-hr-copilot-monitoring.service';
 import { AiHrCopilotMonitoringResponse } from '../../../../core/models/ai-hr-copilot-monitoring.model';
 
+import { AiHrCopilotFeedbackService } from '../../../../core/services/ai-hr-copilot-feedback.service';
+
 type TrendPointVm = {
   month: string;
   registrations: number;
@@ -49,6 +51,7 @@ export class AdminStats {
   private aiHrCopilotService = inject(AiHrCopilotService);
   private invitationReminderService = inject(InvitationReminderService);
   private aiHrCopilotMonitoringService = inject(AiHrCopilotMonitoringService);
+  private aiHrCopilotFeedbackService = inject(AiHrCopilotFeedbackService);
 
 
   readonly trendChartWidth = 640;
@@ -93,6 +96,11 @@ export class AdminStats {
   aiCopilotMonitoring: AiHrCopilotMonitoringResponse | null = null;
   aiCopilotMonitoringLoading = false;
   aiCopilotMonitoringError = '';
+
+  copilotFeedbackLoadingKey: string | null = null;
+  copilotFeedbackByKey: Record<string, boolean> = {};
+  copilotFeedbackMessage = '';
+  copilotFeedbackError = '';
 
   ngOnInit(): void {
     if (this.isHr) {
@@ -968,6 +976,61 @@ export class AdminStats {
 
   trackByCopilotCall(_: number, item: { requestId: string }): string {
     return item.requestId;
+  }
+
+  getCopilotSuggestionKey(suggestion: AiHrCopilotSuggestion): string {
+    return `${suggestion.type}-${suggestion.relatedEventId || 'global'}`;
+  }
+
+  hasCopilotFeedback(suggestion: AiHrCopilotSuggestion): boolean {
+    return this.copilotFeedbackByKey[this.getCopilotSuggestionKey(suggestion)] !== undefined;
+  }
+
+  isCopilotFeedbackLoading(suggestion: AiHrCopilotSuggestion): boolean {
+    return this.copilotFeedbackLoadingKey === this.getCopilotSuggestionKey(suggestion);
+  }
+
+  submitCopilotFeedback(
+    suggestion: AiHrCopilotSuggestion,
+    useful: boolean
+  ): void {
+    if (!this.aiCopilot?.requestId) {
+      this.copilotFeedbackError = 'Impossible d’identifier la génération Copilote.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const key = this.getCopilotSuggestionKey(suggestion);
+
+    this.copilotFeedbackLoadingKey = key;
+    this.copilotFeedbackMessage = '';
+    this.copilotFeedbackError = '';
+    this.cdr.markForCheck();
+
+    this.aiHrCopilotFeedbackService.submitFeedback({
+      requestId: this.aiCopilot.requestId,
+      suggestionType: suggestion.type,
+      relatedEventId: suggestion.relatedEventId,
+      useful,
+      comment: null
+    })
+      .pipe(finalize(() => {
+        this.copilotFeedbackLoadingKey = null;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.copilotFeedbackByKey[key] = useful;
+          this.copilotFeedbackMessage =
+            response?.message || 'Merci, votre retour a été enregistré.';
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.copilotFeedbackError =
+            'Impossible d’enregistrer votre retour sur cette suggestion.';
+          this.cdr.markForCheck();
+        }
+      });
   }
  
 

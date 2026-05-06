@@ -362,6 +362,32 @@
                         </span>
                       </div>
 
+                      <div class="copilot-feedback">
+                          <span>Cette suggestion est-elle utile ?</span>
+
+                          <div class="copilot-feedback-actions">
+                            <button
+                              type="button"
+                              class="copilot-feedback-btn useful"
+                              [class.selected]="copilotFeedbackByKey[getCopilotSuggestionKey(s)] === true"
+                              [disabled]="isCopilotFeedbackLoading(s)"
+                              (click)="submitCopilotFeedback(s, true)"
+                            >
+                              Utile
+                            </button>
+
+                            <button
+                                type="button"
+                                class="copilot-feedback-btn not-useful"
+                                [class.selected]="copilotFeedbackByKey[getCopilotSuggestionKey(s)] === false"
+                                [disabled]="isCopilotFeedbackLoading(s)"
+                                (click)="submitCopilotFeedback(s, false)"
+                            >
+                              Pas utile
+                            </button>
+                          </div>
+                      </div>
+
                       <p class="copilot-insight">
                         {{ s.insight }}
                       </p>
@@ -491,6 +517,8 @@
                   <small>{{ aiCopilotMonitoring.qwenUsedCount }} génération(s) Qwen</small>
                 </article>
               </div>
+
+              
 
               <div class="ai-monitoring-content-grid">
                 <article class="ai-monitoring-panel">
@@ -1123,6 +1151,18 @@
               {{ isReminderLoadingFor(selected) ? 'Envoi en cours...' : 'Confirmer l’envoi' }}
             </button>
           </div>
+
+          @if (copilotFeedbackMessage) {
+            <div class="state-message info-msg compact">
+              <p>{{ copilotFeedbackMessage }}</p>
+            </div>
+          }
+
+          @if (copilotFeedbackError) {
+            <div class="state-message error-msg compact" appScrollToMessage>
+              <p>{{ copilotFeedbackError }}</p>
+            </div>
+          }
 
         </div>
       </div>

@@ -44,3 +44,26 @@ class CopilotLogger:
 
         with log_path.open("a", encoding="utf-8") as file:
             file.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+    def log_hr_copilot_feedback(
+        self,
+        request_id: str,
+        suggestion_type: str,
+        related_event_id: str | None,
+        useful: bool,
+        comment: str | None = None
+    ) -> None:
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        log_path = LOG_DIR / f"hr-copilot-feedback-{today}.jsonl"
+
+        payload = {
+            "request_id": request_id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "suggestion_type": suggestion_type,
+            "related_event_id": related_event_id,
+            "useful": useful,
+            "comment": comment
+        }
+
+        with log_path.open("a", encoding="utf-8") as file:
+            file.write(json.dumps(payload, ensure_ascii=False) + "\n")

@@ -68,6 +68,9 @@
                             .requestMatchers("/api/ai/monitoring/hr-copilot/**")
                             .hasAuthority("ROLE_HR")
 
+                            .requestMatchers("/api/ai/hr-copilot/**")
+                            .hasAuthority("ROLE_HR")
+
                             .requestMatchers(HttpMethod.GET, "/api/departments").permitAll()
                             .requestMatchers("/api/auth/me").authenticated()
                             .anyRequest().authenticated()
