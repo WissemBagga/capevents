@@ -240,20 +240,11 @@
                     class="btn-reminder-message"
                     (click)="openReminderHistory(invitation.invitationId)"
                   >
-                    Messages de relance
+                    {{ reminderCountLabel(invitation) }}
                   </button>
                 }
               </div>
             </div>
-
-            <button
-              type="button"
-              class="btn-secondary reminder-message-btn"
-              (click)="openReminderHistory(invitation.invitationId)"
-            >
-              Voir les messages de relance
-            </button>
-
           </article>
         }
       </div>

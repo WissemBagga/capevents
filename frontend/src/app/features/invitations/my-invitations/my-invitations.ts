@@ -185,7 +185,7 @@ export class MyInvitations implements OnInit {
   }
 
   canShowReminderMessages(invitation: MyInvitationResponse): boolean {
-    return invitation.status === 'PENDING' || invitation.status === 'RESPONDED';
+    return (invitation.reminderCount ?? 0) > 0;
   }
 
   selectedInvitationTitle(): string {
@@ -235,5 +235,15 @@ export class MyInvitations implements OnInit {
 
   trackByReminder(_: number, item: MyInvitationReminder): number {
     return item.id;
+  }
+
+  reminderCountLabel(invitation: MyInvitationResponse): string {
+    const count = invitation.reminderCount ?? 0;
+
+    if (count <= 1) {
+      return '1 message de relance';
+    }
+
+    return `${count} messages de relance`;
   }
 }

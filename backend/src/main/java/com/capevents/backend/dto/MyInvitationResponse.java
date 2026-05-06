@@ -5,6 +5,7 @@ import com.capevents.backend.entity.enums.InvitationStatus;
 import com.capevents.backend.entity.enums.InvitationTargetType;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public record MyInvitationResponse(
@@ -19,7 +20,10 @@ public record MyInvitationResponse(
         Instant sentAt,
         String invitedByFullName,
         String invitationSource,
-        String avatarUrl
+        String avatarUrl,
+
+        Integer reminderCount,
+        OffsetDateTime lastReminderSentAt
 ) {
 
 }

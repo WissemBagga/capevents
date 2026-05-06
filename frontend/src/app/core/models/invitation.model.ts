@@ -44,6 +44,11 @@ export interface MyInvitationResponse {
   invitationSource: 'ADMIN' | 'COLLEAGUE';
   invitedByAvatarUrl?: string;
   avatarUrl?: string;
+
+
+  reminderCount: number;
+  lastReminderSentAt?: string | null;
+
 }
 
 

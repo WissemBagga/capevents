@@ -1,5 +1,6 @@
 package com.capevents.backend.service;
 
+import com.capevents.backend.entity.EventInvitationReminder;
 import com.capevents.backend.exception.BadRequestException;
 import com.capevents.backend.exception.NotFoundException;
 import com.capevents.backend.dto.*;
@@ -8,18 +9,16 @@ import com.capevents.backend.entity.EventInvitation;
 import com.capevents.backend.entity.enums.EventAudience;
 import com.capevents.backend.entity.enums.InvitationStatus;
 import com.capevents.backend.entity.enums.InvitationTargetType;
-import com.capevents.backend.repository.EventInvitationRepository;
-import com.capevents.backend.repository.EventRepository;
+import com.capevents.backend.repository.*;
 import com.capevents.backend.entity.enums.EventStatus;
 import com.capevents.backend.service.mail.EmailService;
-import com.capevents.backend.repository.EventRegistrationRepository;
 import com.capevents.backend.entity.enums.RegistrationStatus;
 import com.capevents.backend.entity.User;
-import com.capevents.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -34,6 +33,7 @@ public class EventInvitationService {
     private final EventRegistrationRepository registrationRepository;
     private final NotificationService notificationService;
     private final EmailService emailService;
+    private final EventInvitationReminderRepository reminderRepository;
 
     public EventInvitationService(
             EventRepository eventRepository,
@@ -41,14 +41,15 @@ public class EventInvitationService {
             EventInvitationRepository invitationRepository,
             EventRegistrationRepository registrationRepository,
             NotificationService notificationService,
-            EmailService emailService
-            ) {
+            EmailService emailService, EventInvitationReminderRepository reminderRepository
+    ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.invitationRepository = invitationRepository;
         this.registrationRepository = registrationRepository;
         this.notificationService = notificationService;
         this.emailService = emailService;
+        this.reminderRepository = reminderRepository;
     }
 
     @Transactional
@@ -391,6 +392,12 @@ public class EventInvitationService {
         Event event = invitation.getEvent();
         User invitedBy = invitation.getInvitedBy();
 
+        int reminderCount = reminderRepository.countByInvitation(invitation);
+        OffsetDateTime lastReminderSentAt = reminderRepository
+                .findTopByInvitationOrderBySentAtDesc(invitation)
+                .map(EventInvitationReminder::getSentAt)
+                .orElse(null);
+
         return new MyInvitationResponse(
                 invitation.getId(),
                 event.getId(),
@@ -406,7 +413,10 @@ public class EventInvitationService {
                 invitation.getInvitedBy().getLastName()
                 ),
                 resolveInvitationSource(invitedBy),
-                invitation.getUser().getAvatarUrl()
+                invitation.getUser().getAvatarUrl(),
+                reminderCount,
+                lastReminderSentAt
+
         );
     }
 
