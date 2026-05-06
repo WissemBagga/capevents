@@ -1,7 +1,8 @@
-package com.capevents.backend.dto.ai;
+package com.capevents.backend.dto.ai.recommendation;
 
 import java.util.List;
 
+import com.capevents.backend.dto.ai.AiRecentPredictionDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record AiRecommendationMonitoringSummaryDto(
