@@ -707,7 +707,7 @@ export class AdminStats {
       }
 
       if (cooldown !== null) {
-        chips.push({ label: 'Cooldown', value: `${cooldown}h`, type: 'info' });
+        chips.push({ label: 'Délai', value: `${cooldown}h`, type: 'info' });
       }
     }
 

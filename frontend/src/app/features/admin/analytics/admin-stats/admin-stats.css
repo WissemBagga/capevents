@@ -2,20 +2,21 @@
   to { transform: rotate(360deg); }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fadeInOpacity {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .admin-stats-page {
-  animation: fadeIn 0.3s ease-out both;
+  animation: fadeInOpacity 0.3s ease-out both;
   font-family: 'Verdana', sans-serif;
+  padding: 28px 36px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .page-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0;
+  width: 100%;
 }
 
 /* ===== Page Header ===== */
@@ -848,6 +849,10 @@
 }
 
 @media (max-width: 768px) {
+  .admin-stats-page {
+    padding: 20px 16px;
+  }
+
   .page-header {
     flex-direction: column;
     align-items: stretch;
