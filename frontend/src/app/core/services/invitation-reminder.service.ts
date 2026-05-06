@@ -29,5 +29,5 @@ export class InvitationReminderService {
     return this.http.get<InvitationReminderHistoryResponse[]>(
         `${this.apiUrl}/${eventId}/invitations/reminders`
     );
-    }
+  }
 }

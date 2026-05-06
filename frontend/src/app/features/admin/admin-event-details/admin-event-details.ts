@@ -24,6 +24,9 @@ import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-m
 import { AiFeedbackInsightService } from '../../../core/services/ai-feedback-insight.service';
 import { AiFeedbackInsightResponse, AiFeedbackTopic } from '../../../core/models/ai-feedback-insight.model';
 
+import { InvitationReminderService } from '../../../core/services/invitation-reminder.service';
+import { InvitationReminderHistoryResponse } from '../../../core/models/invitation-reminder-history.model';
+
 
 @Component({
   selector: 'app-admin-event-details',
@@ -43,6 +46,8 @@ export class AdminEventDetails {
   private router = inject(Router);
 
   private aiFeedbackInsightService = inject(AiFeedbackInsightService);
+
+  private invitationReminderService = inject(InvitationReminderService);
 
   event: EventResponse | null = null;
   loading = false;
@@ -93,6 +98,12 @@ export class AdminEventDetails {
   aiFeedbackInsight: AiFeedbackInsightResponse | null = null;
   aiFeedbackLoading = false;
   aiFeedbackErrorMessage = '';
+
+
+  reminderHistory: InvitationReminderHistoryResponse[] = [];
+  reminderHistoryLoading = false;
+  reminderHistoryErrorMessage = '';
+  showReminderHistory = true;
 
   readonly minFeedbacksForFullAiAnalysis = 5;
 
@@ -306,6 +317,11 @@ export class AdminEventDetails {
           this.event = event;
           this.loadParticipants(event.id);
           this.loadInvitations(event.id);
+
+          if (this.isHr) {
+            this.loadReminderHistory(event.id);
+          }
+          
 
           if (this.canRequestFeedbackInsightsFor(event)) {
             this.loadAiFeedbackInsights(event.id);
@@ -1077,6 +1093,82 @@ export class AdminEventDetails {
 
   trackByText(_: number, item: string): string {
     return item;
+  }
+
+
+  loadReminderHistory(eventId: string): void {
+    if (!this.isHr) return;
+
+    this.reminderHistoryLoading = true;
+    this.reminderHistoryErrorMessage = '';
+    this.cdr.markForCheck();
+
+    this.invitationReminderService.getReminderHistory(eventId)
+      .pipe(finalize(() => {
+        this.reminderHistoryLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (items) => {
+          this.reminderHistory = items;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.reminderHistory = [];
+          this.reminderHistoryErrorMessage = 'Impossible de charger l’historique des relances.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  refreshReminderHistory(): void {
+    if (!this.event) return;
+    this.loadReminderHistory(this.event.id);
+  }
+
+  trackByReminderId(_: number, item: InvitationReminderHistoryResponse): number {
+    return item.id;
+  }
+
+  reminderChannelLabel(channel: string): string {
+    switch (channel) {
+      case 'EMAIL':
+        return 'Email';
+      case 'SYSTEM':
+        return 'Notification interne';
+      default:
+        return channel || 'N/D';
+    }
+  }
+
+  reminderStatusLabel(status: string): string {
+    switch (status) {
+      case 'SENT':
+        return 'Envoyée';
+      case 'FAILED':
+        return 'Échec';
+      default:
+        return status || 'N/D';
+    }
+  }
+
+  reminderStatusClass(status: string): string {
+    switch (status) {
+      case 'SENT':
+        return 'status-sent';
+      case 'FAILED':
+        return 'status-failed';
+      default:
+        return 'status-neutral';
+    }
+  }
+
+  get reminderHistorySentCount(): number {
+    return this.reminderHistory.filter(item => item.status === 'SENT').length;
+  }
+
+  get reminderHistoryFailedCount(): number {
+    return this.reminderHistory.filter(item => item.status === 'FAILED').length;
   }
 
 }

@@ -1049,6 +1049,122 @@
             }
         </section>
 
+
+        @if (isHr) {
+            <section class="section-card reminder-history-section">
+                <div class="section-card-header reminder-history-header">
+                <div>
+                    <span class="reminder-kicker">Relances</span>
+                    <h2>Historique des relances d’invitation</h2>
+                    <p class="reminder-subtitle">
+                    Suivi des rappels envoyés aux collaborateurs déjà invités et sans réponse.
+                    </p>
+                </div>
+
+                <button type="button" class="btn-secondary reminder-refresh-btn" (click)="refreshReminderHistory()">
+                    Actualiser
+                </button>
+                </div>
+
+                @if (reminderHistoryLoading) {
+                <div class="state-message loading-msg compact">
+                    <div class="spinner"></div>
+                    <p>Chargement de l’historique des relances...</p>
+                </div>
+                }
+
+                @if (reminderHistoryErrorMessage) {
+                <div class="state-message error-msg compact" appScrollToMessage>
+                    <p>{{ reminderHistoryErrorMessage }}</p>
+                </div>
+                }
+
+                @if (!reminderHistoryLoading && reminderHistory.length === 0) {
+                <div class="state-message info-msg compact">
+                    <p>Aucune relance d’invitation n’a encore été envoyée pour cet événement.</p>
+                </div>
+                }
+
+                @if (!reminderHistoryLoading && reminderHistory.length > 0) {
+                <div class="reminder-summary-grid">
+                    <article class="reminder-summary-card">
+                    <strong>{{ reminderHistory.length }}</strong>
+                    <span>Total relances</span>
+                    </article>
+
+                    <article class="reminder-summary-card success">
+                    <strong>{{ reminderHistorySentCount }}</strong>
+                    <span>Envoyées</span>
+                    </article>
+
+                    <article class="reminder-summary-card danger">
+                    <strong>{{ reminderHistoryFailedCount }}</strong>
+                    <span>Échecs</span>
+                    </article>
+                </div>
+
+                <div class="reminder-history-list">
+                    @for (item of reminderHistory; track trackByReminderId($index, item)) {
+                    <article class="reminder-history-card">
+                        <div class="reminder-history-main">
+                        <div class="reminder-recipient">
+                            <div class="reminder-avatar">
+                            {{ item.recipientFullName ? item.recipientFullName.charAt(0) : item.recipientEmail.charAt(0) }}
+                            </div>
+
+                            <div class="reminder-recipient-text">
+                            <h3>{{ item.recipientFullName || item.recipientEmail }}</h3>
+                            <span>{{ item.recipientEmail }}</span>
+                            </div>
+                        </div>
+
+                        <div class="reminder-badges">
+                            <span class="reminder-status-badge" [class]="reminderStatusClass(item.status)">
+                            {{ reminderStatusLabel(item.status) }}
+                            </span>
+
+                            <span class="reminder-channel-badge">
+                            {{ reminderChannelLabel(item.channel) }}
+                            </span>
+                        </div>
+                        </div>
+
+                        <div class="reminder-meta-grid">
+                        <div>
+                            <span class="reminder-meta-label">Envoyé par</span>
+                            <strong>{{ item.sentByFullName || item.sentByEmail }}</strong>
+                        </div>
+
+                        <div>
+                            <span class="reminder-meta-label">Date</span>
+                            <strong>{{ item.sentAt | date:'dd MMM yyyy · HH:mm' }}</strong>
+                        </div>
+
+                        <div>
+                            <span class="reminder-meta-label">Sujet</span>
+                            <strong>{{ item.subject || 'Rappel d’invitation' }}</strong>
+                        </div>
+                        </div>
+
+                        @if (item.message) {
+                        <div class="reminder-message-box">
+                            <span>Message envoyé</span>
+                            <p>{{ item.message }}</p>
+                        </div>
+                        }
+
+                        @if (item.errorMessage) {
+                        <div class="state-message error-msg compact reminder-error">
+                            <p>{{ item.errorMessage }}</p>
+                        </div>
+                        }
+                    </article>
+                    }
+                </div>
+                }
+            </section>
+            }
+
     }
 
     <!-- ============================================ -->
