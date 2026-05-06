@@ -330,6 +330,7 @@ export class AdminEventDetails {
             this.aiFeedbackErrorMessage = '';
           }
 
+          this.scrollToRequestedSection();
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -1169,6 +1170,37 @@ export class AdminEventDetails {
 
   get reminderHistoryFailedCount(): number {
     return this.reminderHistory.filter(item => item.status === 'FAILED').length;
+  }
+
+
+  private scrollToRequestedSection(): void {
+    const section = this.route.snapshot.queryParamMap.get('section');
+
+    if (!section) return;
+
+    const sectionId = this.resolveSectionElementId(section);
+
+    setTimeout(() => {
+      document
+        .getElementById(sectionId)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 250);
+  }
+
+  private resolveSectionElementId(section: string): string {
+    switch (section) {
+      case 'invitations':
+        return 'admin-event-invitations-section';
+
+      case 'feedback':
+        return 'admin-event-feedback-section';
+
+      case 'reminders':
+        return 'admin-event-reminders-section';
+
+      default:
+        return 'admin-event-overview-section';
+    }
   }
 
 }

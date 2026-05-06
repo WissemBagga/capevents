@@ -846,6 +846,56 @@ export class AdminStats {
 
     return 'Nous vous rappelons que vous avez une invitation en attente sur CapEvents. Votre réponse nous aide à mieux organiser la participation.';
   }
+
+  getCopilotPrimaryActionLabel(suggestion: AiHrCopilotSuggestion): string {
+    switch (suggestion.type) {
+      case 'PENDING_INVITATIONS':
+        return 'Voir les invitations';
+
+      case 'LOW_REGISTRATION':
+        return 'Analyser les inscriptions';
+
+      case 'RSVP_FRICTION':
+        return 'Analyser les réponses';
+
+      case 'LOW_FEEDBACK_SCORE':
+        return 'Voir les feedbacks';
+
+      case 'LOW_DEPARTMENT_ENGAGEMENT':
+        return 'Voir le contexte';
+
+      default:
+        return 'Voir l’événement';
+    }
+  }
+
+  getCopilotEventSection(suggestion: AiHrCopilotSuggestion): string {
+    switch (suggestion.type) {
+      case 'PENDING_INVITATIONS':
+        return 'invitations';
+
+      case 'LOW_REGISTRATION':
+        return 'invitations';
+
+      case 'RSVP_FRICTION':
+        return 'invitations';
+
+      case 'LOW_FEEDBACK_SCORE':
+        return 'feedback';
+
+      case 'LOW_DEPARTMENT_ENGAGEMENT':
+        return 'overview';
+
+      default:
+        return 'overview';
+    }
+  }
+
+  getCopilotEventQueryParams(suggestion: AiHrCopilotSuggestion): Record<string, string> {
+    return {
+      section: this.getCopilotEventSection(suggestion)
+    };
+  }
  
 
 }
