@@ -1,7 +1,7 @@
 package com.capevents.backend.service.ai;
 
 import com.capevents.backend.config.AiServiceProperties;
-import com.capevents.backend.dto.ai.AiDiagnosticsResponseDto;
+import com.capevents.backend.dto.ai.diagnostics.AiDiagnosticsResponseDto;
 
 import java.net.URI;
 

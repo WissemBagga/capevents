@@ -1,4 +1,4 @@
-package com.capevents.backend.dto.ai;
+package com.capevents.backend.dto.ai.feedback;
 
 import java.util.List;
 

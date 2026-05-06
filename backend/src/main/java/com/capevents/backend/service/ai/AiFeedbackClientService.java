@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.UUID;
 
 import com.capevents.backend.config.AiServiceProperties;
-import com.capevents.backend.dto.ai.AiFeedbackInsightResponseDto;
+import com.capevents.backend.dto.ai.feedback.AiFeedbackInsightResponseDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

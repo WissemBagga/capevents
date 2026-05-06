@@ -4,7 +4,7 @@ package com.capevents.backend.service.ai;
 import java.net.URI;
 
 import com.capevents.backend.config.AiServiceProperties;
-import com.capevents.backend.dto.ai.AiRecommendationMonitoringSummaryDto;
+import com.capevents.backend.dto.ai.monitoring.AiRecommendationMonitoringSummaryDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

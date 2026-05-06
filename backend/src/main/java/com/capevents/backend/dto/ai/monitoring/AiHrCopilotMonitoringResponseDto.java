@@ -1,5 +1,7 @@
-package com.capevents.backend.dto.ai.copilot;
+package com.capevents.backend.dto.ai.monitoring;
 
+import com.capevents.backend.dto.ai.copilot.AiCopilotRecentCallDto;
+import com.capevents.backend.dto.ai.copilot.AiCopilotSuggestionTypeSummaryDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -22,6 +24,19 @@ public record AiHrCopilotMonitoringResponseDto(
 
         @JsonProperty("qwen_usage_rate")
         Double qwenUsageRate,
+
+        @JsonProperty("feedback_count")
+        Integer feedbackCount,
+
+        @JsonProperty("useful_feedback_count")
+        Integer usefulFeedbackCount,
+
+        @JsonProperty("not_useful_feedback_count")
+        Integer notUsefulFeedbackCount,
+
+        @JsonProperty("usefulness_rate")
+        Double usefulnessRate,
+
 
         @JsonProperty("top_suggestion_types")
         List<AiCopilotSuggestionTypeSummaryDto> topSuggestionTypes,

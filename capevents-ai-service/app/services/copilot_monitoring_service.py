@@ -17,6 +17,26 @@ class CopilotMonitoringService:
     def get_hr_copilot_summary(self, limit: int = 10) -> HrCopilotMonitoringResponse:
         records = self._read_records()
 
+        feedback_records = self._read_feedback_records()
+
+        feedback_count = len(feedback_records)
+
+        useful_feedback_count = sum(
+            1 for item in feedback_records
+            if bool(item.get("useful")) is True
+        )
+
+        not_useful_feedback_count = sum(
+            1 for item in feedback_records
+            if bool(item.get("useful")) is False
+        )
+
+        usefulness_rate = (
+            useful_feedback_count / feedback_count
+            if feedback_count > 0
+            else 0.0
+        )
+
         total_calls = len(records)
         successful_calls = sum(1 for item in records if item.get("status") == "SUCCESS")
         failed_calls = sum(1 for item in records if item.get("status") == "FAILED")
@@ -70,6 +90,12 @@ class CopilotMonitoringService:
             total_suggestions=total_suggestions,
             qwen_used_count=qwen_used_count,
             qwen_usage_rate=round(qwen_usage_rate, 4),
+
+            feedback_count=feedback_count,
+            useful_feedback_count=useful_feedback_count,
+            not_useful_feedback_count=not_useful_feedback_count,
+            usefulness_rate=round(usefulness_rate, 4),
+
             top_suggestion_types=top_suggestion_types,
             recent_calls=recent_calls
         )
@@ -115,3 +141,24 @@ class CopilotMonitoringService:
             status=str(item.get("status") or "UNKNOWN"),
             message=item.get("message")
         )
+    
+    def _read_feedback_records(self) -> list[dict[str, Any]]:
+        if not LOG_DIR.exists():
+            return []
+
+        records: list[dict[str, Any]] = []
+
+        for path in sorted(LOG_DIR.glob("hr-copilot-feedback-*.jsonl")):
+            with path.open("r", encoding="utf-8") as file:
+                for line in file:
+                    line = line.strip()
+
+                    if not line:
+                        continue
+
+                    try:
+                        records.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue
+
+        return records

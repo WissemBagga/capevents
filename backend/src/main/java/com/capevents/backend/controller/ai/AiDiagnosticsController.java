@@ -1,6 +1,6 @@
-package com.capevents.backend.controller;
+package com.capevents.backend.controller.ai;
 
-import com.capevents.backend.dto.ai.AiDiagnosticsResponseDto;
+import com.capevents.backend.dto.ai.diagnostics.AiDiagnosticsResponseDto;
 import com.capevents.backend.service.ai.AiDiagnosticsClientService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

@@ -1,8 +1,8 @@
 package com.capevents.backend.service.ai;
 
 import com.capevents.backend.config.AiServiceProperties;
-import com.capevents.backend.dto.ai.AiHrCopilotFeedbackRequestDto;
-import com.capevents.backend.dto.ai.AiHrCopilotFeedbackResponseDto;
+import com.capevents.backend.dto.ai.copilot.AiHrCopilotFeedbackRequestDto;
+import com.capevents.backend.dto.ai.copilot.AiHrCopilotFeedbackResponseDto;
 
 import java.net.URI;
 

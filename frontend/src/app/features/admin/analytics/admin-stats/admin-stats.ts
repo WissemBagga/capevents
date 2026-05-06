@@ -1032,6 +1032,10 @@ export class AdminStats {
         }
       });
   }
+
+  copilotUsefulnessPercent(): number {
+    return Math.round((this.aiCopilotMonitoring?.usefulnessRate ?? 0) * 100);
+  }
  
 
 }

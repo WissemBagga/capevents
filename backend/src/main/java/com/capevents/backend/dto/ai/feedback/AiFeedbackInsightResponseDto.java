@@ -1,8 +1,9 @@
-package com.capevents.backend.dto.ai;
+package com.capevents.backend.dto.ai.feedback;
 
 import java.util.List;
 import java.util.Map;
 
+import com.capevents.backend.dto.ai.AiSentimentDistributionDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record AiFeedbackInsightResponseDto(

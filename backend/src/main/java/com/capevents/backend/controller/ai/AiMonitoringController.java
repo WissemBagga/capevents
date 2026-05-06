@@ -1,7 +1,7 @@
-package com.capevents.backend.controller;
+package com.capevents.backend.controller.ai;
 
 
-import com.capevents.backend.dto.ai.AiRecommendationMonitoringSummaryDto;
+import com.capevents.backend.dto.ai.monitoring.AiRecommendationMonitoringSummaryDto;
 import com.capevents.backend.service.ai.AiMonitoringClientService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;

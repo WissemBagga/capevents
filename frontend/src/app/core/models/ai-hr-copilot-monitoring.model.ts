@@ -22,6 +22,12 @@ export interface AiHrCopilotMonitoringResponse {
   totalSuggestions: number;
   qwenUsedCount: number;
   qwenUsageRate: number;
+
+  feedbackCount: number;
+  usefulFeedbackCount: number;
+  notUsefulFeedbackCount: number;
+  usefulnessRate: number;
+
   topSuggestionTypes: AiCopilotSuggestionTypeSummary[];
   recentCalls: AiCopilotRecentCall[];
 }

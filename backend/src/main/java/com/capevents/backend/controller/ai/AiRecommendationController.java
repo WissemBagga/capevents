@@ -1,6 +1,6 @@
-package com.capevents.backend.controller;
+package com.capevents.backend.controller.ai;
 
-import com.capevents.backend.dto.ai.AiRecommendationResponseDto;
+import com.capevents.backend.dto.ai.recommendation.AiRecommendationResponseDto;
 import com.capevents.backend.dto.UserSummaryDto;
 import com.capevents.backend.service.UserService;
 import com.capevents.backend.service.ai.AiRecommendationClientService;

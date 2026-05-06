@@ -31,6 +31,12 @@ export class AiHrCopilotMonitoringService {
             totalSuggestions: 0,
             qwenUsedCount: 0,
             qwenUsageRate: 0,
+
+            feedbackCount: 0,
+            usefulFeedbackCount: 0,
+            notUsefulFeedbackCount: 0,
+            usefulnessRate: 0,
+
             topSuggestionTypes: [],
             recentCalls: []
           })
@@ -54,6 +60,11 @@ export class AiHrCopilotMonitoringService {
       totalSuggestions: response?.totalSuggestions ?? response?.total_suggestions ?? 0,
       qwenUsedCount: response?.qwenUsedCount ?? response?.qwen_used_count ?? 0,
       qwenUsageRate: response?.qwenUsageRate ?? response?.qwen_usage_rate ?? 0,
+
+      feedbackCount: response?.feedbackCount ?? response?.feedback_count ?? 0,
+      usefulFeedbackCount: response?.usefulFeedbackCount ?? response?.useful_feedback_count ?? 0,
+      notUsefulFeedbackCount: response?.notUsefulFeedbackCount ?? response?.not_useful_feedback_count ?? 0,
+      usefulnessRate: response?.usefulnessRate ?? response?.usefulness_rate ?? 0,
 
       topSuggestionTypes: rawTypes.map((item: any): AiCopilotSuggestionTypeSummary => ({
         type: item?.type ?? '',

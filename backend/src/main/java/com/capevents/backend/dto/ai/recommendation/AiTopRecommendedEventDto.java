@@ -1,4 +1,4 @@
-package com.capevents.backend.dto.ai;
+package com.capevents.backend.dto.ai.recommendation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

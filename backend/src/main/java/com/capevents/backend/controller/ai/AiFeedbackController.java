@@ -1,9 +1,9 @@
-package com.capevents.backend.controller;
+package com.capevents.backend.controller.ai;
 
 
 import java.util.UUID;
 
-import com.capevents.backend.dto.ai.AiFeedbackInsightResponseDto;
+import com.capevents.backend.dto.ai.feedback.AiFeedbackInsightResponseDto;
 import com.capevents.backend.service.ai.AiFeedbackClientService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;

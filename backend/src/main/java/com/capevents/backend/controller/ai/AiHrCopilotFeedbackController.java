@@ -1,7 +1,7 @@
-package com.capevents.backend.controller;
+package com.capevents.backend.controller.ai;
 
-import com.capevents.backend.dto.ai.AiHrCopilotFeedbackRequestDto;
-import com.capevents.backend.dto.ai.AiHrCopilotFeedbackResponseDto;
+import com.capevents.backend.dto.ai.copilot.AiHrCopilotFeedbackRequestDto;
+import com.capevents.backend.dto.ai.copilot.AiHrCopilotFeedbackResponseDto;
 import com.capevents.backend.service.ai.AiHrCopilotFeedbackClientService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

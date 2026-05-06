@@ -4,7 +4,7 @@ import com.capevents.backend.config.AiServiceProperties;
 
 import java.net.URI;
 
-import com.capevents.backend.dto.ai.AiHrCopilotResponseDto;
+import com.capevents.backend.dto.ai.copilot.AiHrCopilotResponseDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

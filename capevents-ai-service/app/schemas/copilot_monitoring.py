@@ -27,5 +27,10 @@ class HrCopilotMonitoringResponse(BaseModel):
     qwen_used_count: int
     qwen_usage_rate: float
 
+    feedback_count: int
+    useful_feedback_count: int
+    not_useful_feedback_count: int
+    usefulness_rate: float
+
     top_suggestion_types: list[CopilotSuggestionTypeSummary]
     recent_calls: list[CopilotRecentCall]

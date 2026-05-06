@@ -516,6 +516,17 @@
                   <strong>{{ copilotQwenUsagePercent() }}%</strong>
                   <small>{{ aiCopilotMonitoring.qwenUsedCount }} génération(s) Qwen</small>
                 </article>
+
+                <article class="ai-monitoring-kpi-card success">
+                  <span>Taux d’utilité</span>
+                  <strong>{{ copilotUsefulnessPercent() }}%</strong>
+                  <small>
+                    {{ aiCopilotMonitoring.usefulFeedbackCount }}
+                    utile(s) /
+                    {{ aiCopilotMonitoring.feedbackCount }}
+                    retour(s)
+                  </small>
+                </article>
               </div>
 
               
