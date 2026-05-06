@@ -71,7 +71,7 @@
 
     @if (!loading && invitations.length > 0) {
       <div class="invitation-grid">
-        @for (invitation of invitations; track invitation.eventId + invitation.sentAt) {
+        @for (invitation of invitations; track trackByInvitation($index, invitation)) {
           <article
             class="inv-card"
             [class.response-yes]="invitation.rsvpResponse === 'YES'"
@@ -233,19 +233,107 @@
                     <path d="m12 5 7 7-7 7"/>
                   </svg>
                 </a>
+
+                @if (canShowReminderMessages(invitation)) {
+                  <button
+                    type="button"
+                    class="btn-reminder-message"
+                    (click)="openReminderHistory(invitation.invitationId)"
+                  >
+                    Messages de relance
+                  </button>
+                }
               </div>
             </div>
 
             <button
               type="button"
               class="btn-secondary reminder-message-btn"
-              (click)="openReminderHistory(invitation.id)"
+              (click)="openReminderHistory(invitation.invitationId)"
             >
               Voir les messages de relance
             </button>
 
           </article>
         }
+      </div>
+    }
+
+    @if (selectedReminderInvitationId !== null) {
+      <div class="reminder-modal-backdrop">
+        <div class="reminder-modal">
+          <div class="reminder-modal-header">
+            <div>
+              <span class="modal-kicker">Relances RH</span>
+              <h2>Messages de relance</h2>
+              <p>
+                Historique des messages envoyés par l’équipe RH pour
+                « {{ selectedInvitationTitle() }} ».
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="modal-close-btn"
+              (click)="closeReminderHistory()"
+              aria-label="Fermer"
+            >
+              ×
+            </button>
+          </div>
+
+          @if (reminderHistoryLoading) {
+            <div class="state-message loading-msg">
+              <div class="spinner"></div>
+              <span>Chargement des messages de relance...</span>
+            </div>
+          }
+
+          @if (reminderHistoryError) {
+            <div class="state-message error-msg">
+              <p>{{ reminderHistoryError }}</p>
+            </div>
+          }
+
+          @if (!reminderHistoryLoading && !reminderHistoryError && selectedReminderHistory.length === 0) {
+            <div class="state-message info-msg">
+              <p>Aucun message de relance n’a encore été envoyé pour cette invitation.</p>
+            </div>
+          }
+
+          @if (!reminderHistoryLoading && selectedReminderHistory.length > 0) {
+            <div class="employee-reminder-list">
+              @for (item of selectedReminderHistory; track trackByReminder($index, item)) {
+                <article class="employee-reminder-card">
+                  <div class="employee-reminder-head">
+                    <div>
+                      <strong>{{ item.subject || 'Rappel d’invitation' }}</strong>
+                      <span>
+                        Envoyé par {{ item.sentByFullName || 'Équipe RH' }}
+                      </span>
+                    </div>
+
+                    <span
+                      class="employee-reminder-status"
+                      [class]="reminderStatusClass(item.status)"
+                    >
+                      {{ reminderStatusLabel(item.status) }}
+                    </span>
+                  </div>
+
+                  <p class="employee-reminder-message">
+                    {{ item.message }}
+                  </p>
+
+                  <div class="employee-reminder-meta">
+                    <span>{{ item.sentAt | date:'dd MMM yyyy · HH:mm' }}</span>
+                    <span>{{ reminderChannelLabel(item.channel) }}</span>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </div>
       </div>
     }
 

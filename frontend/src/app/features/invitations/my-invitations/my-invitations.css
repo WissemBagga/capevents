@@ -668,3 +668,228 @@
     flex-direction: column;
   }
 }
+
+.actions {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.btn-reminder-message {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(113, 96, 158, 0.18);
+  background: rgba(113, 96, 158, 0.08);
+  color: #71609E;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-reminder-message:hover {
+  background: rgba(113, 96, 158, 0.13);
+  transform: translateY(-1px);
+}
+
+.info-msg {
+  background: rgba(0, 88, 171, 0.06);
+  color: #0058AB;
+  border: 1px solid rgba(0, 88, 171, 0.12);
+}
+
+.reminder-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(18, 26, 56, 0.48);
+}
+
+.reminder-modal {
+  width: min(720px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  padding: 24px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid #E4EAF1;
+  box-shadow: 0 24px 70px rgba(18, 26, 56, 0.28);
+  animation: fadeIn 0.22s ease-out both;
+}
+
+.reminder-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.modal-kicker {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(113, 96, 158, 0.10);
+  color: #71609E;
+  border: 1px solid rgba(113, 96, 158, 0.16);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.reminder-modal-header h2 {
+  margin: 0 0 6px;
+  color: #121A38;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.reminder-modal-header p {
+  margin: 0;
+  color: #64748B;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.modal-close-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border: 1px solid #D9E1EA;
+  background: #ffffff;
+  border-radius: 12px;
+  color: #121A38;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.employee-reminder-list {
+  display: grid;
+  gap: 14px;
+}
+
+.employee-reminder-card {
+  padding: 16px;
+  border-radius: 18px;
+  background: #F8FAFC;
+  border: 1px solid #E4EAF1;
+}
+
+.employee-reminder-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.employee-reminder-head strong {
+  display: block;
+  font-family: 'Ubuntu', sans-serif;
+  color: #121A38;
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 3px;
+}
+
+.employee-reminder-head span {
+  color: #64748B;
+  font-size: 12px;
+}
+
+.employee-reminder-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.employee-reminder-status.sent {
+  background: rgba(0, 130, 142, 0.10);
+  color: #00828E;
+  border: 1px solid rgba(0, 130, 142, 0.14);
+}
+
+.employee-reminder-status.failed {
+  background: rgba(143, 50, 55, 0.10);
+  color: #8F3237;
+  border: 1px solid rgba(143, 50, 55, 0.14);
+}
+
+.employee-reminder-status.neutral {
+  background: #F1F4F8;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+}
+
+.employee-reminder-message {
+  margin: 0;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #EEF2F7;
+  color: #46506A;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.employee-reminder-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.employee-reminder-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #E4EAF1;
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn-reminder-message {
+    width: 100%;
+  }
+
+  .reminder-modal {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .reminder-modal-header,
+  .employee-reminder-head {
+    flex-direction: column;
+  }
+}

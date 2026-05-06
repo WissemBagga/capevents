@@ -1,17 +1,19 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { EventService } from '../../../core/services/event.service';
-
-import { inject } from '@angular/core';
-import { MyInvitationResponse, InvitationResponseStatus } from '../../../core/models/invitation.model';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
+import { EventService } from '../../../core/services/event.service';
+import { MyInvitationReminderService } from '../../../core/services/my-invitation-reminder.service';
+
+import {
+  MyInvitationResponse,
+  InvitationResponseStatus
+} from '../../../core/models/invitation.model';
+
+import { MyInvitationReminder } from '../../../core/models/my-invitation-reminder.model';
+
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
-
-import {MyInvitationReminder} from '../../../core/models/my-invitation-reminder.model';
-
-
 
 @Component({
   selector: 'app-my-invitations',
@@ -20,13 +22,15 @@ import {MyInvitationReminder} from '../../../core/models/my-invitation-reminder.
   templateUrl: './my-invitations.html',
   styleUrl: './my-invitations.css',
 })
-export class MyInvitations implements OnInit{
+export class MyInvitations implements OnInit {
   private eventService = inject(EventService);
+  private myInvitationReminderService = inject(MyInvitationReminderService);
+  private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
 
-  invitations: MyInvitationResponse[] =[];
+  invitations: MyInvitationResponse[] = [];
   loading = false;
-  errorMessage="";
+  errorMessage = '';
 
   responseLoadingById: Record<number, boolean> = {};
 
@@ -36,32 +40,51 @@ export class MyInvitations implements OnInit{
   reminderHistoryError = '';
 
   ngOnInit(): void {
-      this.loadInvitations();
+    this.loadInvitations();
   }
 
-  private loadInvitations(): void{
+  private loadInvitations(): void {
     this.loading = true;
-    this.errorMessage='';
+    this.errorMessage = '';
     this.cdr.markForCheck();
 
     this.eventService.getMyInvitations()
-    .pipe(finalize(()=> {
-      this.loading = false;
-      this.cdr.markForCheck();
-    }))
-    .subscribe({
-      next:(invitations) => {
-        this.invitations = invitations ?? [];
+      .pipe(finalize(() => {
+        this.loading = false;
         this.cdr.markForCheck();
-      },
-      error: (err) => {
-        this.errorMessage =
-          err?.error.message ||
-          err?.error ||
-          'Impossible de charger vos invitations.';
-        this.cdr.markForCheck();
-      }
-    });
+      }))
+      .subscribe({
+        next: (invitations) => {
+          this.invitations = invitations ?? [];
+          this.openInvitationFromNotificationIfNeeded();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.errorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de charger vos invitations.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  private openInvitationFromNotificationIfNeeded(): void {
+    const invitationIdParam = this.route.snapshot.queryParamMap.get('invitationId');
+
+    if (!invitationIdParam) return;
+
+    const invitationId = Number(invitationIdParam);
+
+    if (!Number.isFinite(invitationId)) return;
+
+    const exists = this.invitations.some(
+      invitation => invitation.invitationId === invitationId
+    );
+
+    if (exists) {
+      this.openReminderHistory(invitationId);
+    }
   }
 
   respond(invitationId: number, response: InvitationResponseStatus): void {
@@ -80,6 +103,7 @@ export class MyInvitations implements OnInit{
               ? { ...invitation, rsvpResponse: response }
               : invitation
           );
+
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -90,6 +114,38 @@ export class MyInvitations implements OnInit{
           this.cdr.markForCheck();
         }
       });
+  }
+
+  openReminderHistory(invitationId: number): void {
+    this.selectedReminderInvitationId = invitationId;
+    this.selectedReminderHistory = [];
+    this.reminderHistoryLoading = true;
+    this.reminderHistoryError = '';
+    this.cdr.markForCheck();
+
+    this.myInvitationReminderService.getReminderHistory(invitationId)
+      .pipe(finalize(() => {
+        this.reminderHistoryLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (items) => {
+          this.selectedReminderHistory = items ?? [];
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.selectedReminderHistory = [];
+          this.reminderHistoryError = 'Impossible de charger les messages de relance.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  closeReminderHistory(): void {
+    this.selectedReminderInvitationId = null;
+    this.selectedReminderHistory = [];
+    this.reminderHistoryError = '';
+    this.cdr.markForCheck();
   }
 
   targetTypeLabel(targetType: string): string {
@@ -119,41 +175,65 @@ export class MyInvitations implements OnInit{
     switch (status) {
       case 'PENDING':
         return 'En attente';
+      case 'RESPONDED':
+        return 'Répondue';
+      case 'EXPIRED':
+        return 'Expirée';
       default:
         return status;
     }
   }
 
-  openReminderHistory(invitationId: number): void {
-    this.selectedReminderInvitationId = invitationId;
-    this.selectedReminderHistory = [];
-    this.reminderHistoryLoading = true;
-    this.reminderHistoryError = '';
-    this.cdr.markForCheck();
-
-    this.myInvitationReminderService.getReminderHistory(invitationId)
-      .pipe(finalize(() => {
-        this.reminderHistoryLoading = false;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: (items) => {
-          this.selectedReminderHistory = items;
-          this.cdr.markForCheck();
-        },
-        error: () => {
-          this.selectedReminderHistory = [];
-          this.reminderHistoryError = 'Impossible de charger les messages de relance.';
-          this.cdr.markForCheck();
-        }
-      });
+  canShowReminderMessages(invitation: MyInvitationResponse): boolean {
+    return invitation.status === 'PENDING' || invitation.status === 'RESPONDED';
   }
 
-  closeReminderHistory(): void {
-    this.selectedReminderInvitationId = null;
-    this.selectedReminderHistory = [];
-    this.reminderHistoryError = '';
-    this.cdr.markForCheck();
+  selectedInvitationTitle(): string {
+    const invitation = this.invitations.find(
+      item => item.invitationId === this.selectedReminderInvitationId
+    );
+
+    return invitation?.eventTitle ?? 'Invitation';
   }
 
+  reminderChannelLabel(channel: string): string {
+    switch (channel) {
+      case 'EMAIL':
+        return 'Email + notification';
+      case 'SYSTEM':
+        return 'Notification interne';
+      default:
+        return channel || 'Notification';
+    }
+  }
+
+  reminderStatusLabel(status: string): string {
+    switch (status) {
+      case 'SENT':
+        return 'Envoyée';
+      case 'FAILED':
+        return 'Échec';
+      default:
+        return status || 'N/D';
+    }
+  }
+
+  reminderStatusClass(status: string): string {
+    switch (status) {
+      case 'SENT':
+        return 'sent';
+      case 'FAILED':
+        return 'failed';
+      default:
+        return 'neutral';
+    }
+  }
+
+  trackByInvitation(_: number, invitation: MyInvitationResponse): number {
+    return invitation.invitationId;
+  }
+
+  trackByReminder(_: number, item: MyInvitationReminder): number {
+    return item.id;
+  }
 }
