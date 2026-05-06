@@ -15,7 +15,8 @@ class HrCopilotSuggestion(BaseModel):
 
 
 class HrCopilotResponse(BaseModel):
+    request_id: str
+    generated_at: str
     suggestions: list[HrCopilotSuggestion]
     qwen_used: bool
     summary_source: str
-

@@ -12,6 +12,8 @@ export interface AiHrCopilotSuggestion {
 }
 
 export interface AiHrCopilotResponse {
+  requestId: string;
+  generatedAt: string;
   suggestions: AiHrCopilotSuggestion[];
   qwenUsed: boolean;
   summarySource: string;

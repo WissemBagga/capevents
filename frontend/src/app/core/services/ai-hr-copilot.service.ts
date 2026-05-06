@@ -22,6 +22,8 @@ export class AiHrCopilotService {
         map((response) => this.normalizeResponse(response)),
         catchError(() =>
           of({
+            requestId: '',
+            generatedAt: '',
             suggestions: [],
             qwenUsed: false,
             summarySource: 'angular_error_fallback'
@@ -36,6 +38,8 @@ export class AiHrCopilotService {
       : [];
 
     return {
+      requestId: response?.requestId ?? response?.request_id ?? '',
+      generatedAt: response?.generatedAt ?? response?.generated_at ?? '',
       suggestions: rawSuggestions.map((item: any): AiHrCopilotSuggestion => ({
         type: item?.type ?? '',
         priority: item?.priority ?? 'LOW',

@@ -8,6 +8,11 @@ from app.schemas.hr_copilot import HrCopilotResponse, HrCopilotSuggestion
 
 from datetime import datetime, timedelta, timezone
 
+from datetime import datetime, timezone
+from uuid import uuid4
+
+from app.services.copilot_logger import CopilotLogger
+
 
 OLLAMA_CHAT_URL = "http://127.0.0.1:11434/api/chat"
 OLLAMA_MODEL = "qwen3:0.6b"
@@ -15,40 +20,71 @@ OLLAMA_TIMEOUT_SECONDS = 45
 
 
 class HrCopilotService:
+
+    def __init__(self) -> None:
+        self.copilot_logger = CopilotLogger()
+
     def get_suggestions(self) -> HrCopilotResponse:
+        request_id = str(uuid4())
+        generated_at = datetime.now(timezone.utc).isoformat()
+
         rule_suggestions = []
 
-        rule_suggestions.extend(self._detect_pending_invitations())
-        rule_suggestions.extend(self._detect_low_registration_events())
-        rule_suggestions.extend(self._detect_low_feedback_events())
-        rule_suggestions.extend(self._detect_low_engagement_departments())
-        rule_suggestions.extend(self._detect_rsvp_friction_events())
+        try:
+            rule_suggestions.extend(self._detect_pending_invitations())
+            rule_suggestions.extend(self._detect_low_registration_events())
+            rule_suggestions.extend(self._detect_low_feedback_events())
+            rule_suggestions.extend(self._detect_low_engagement_departments())
+            rule_suggestions.extend(self._detect_rsvp_friction_events())
 
-        ranked = self._rank_suggestions(rule_suggestions)[:3]
+            ranked = self._rank_suggestions(rule_suggestions)[:3]
 
-        final_suggestions = []
-        qwen_used_any = False
-        source = "rules_only"
+            final_suggestions = []
+            qwen_used_any = False
+            source = "rules_only"
 
-        for suggestion in ranked:
-            draft, qwen_used, draft_source = self._build_qwen_draft(suggestion)
-            qwen_used_any = qwen_used_any or qwen_used
+            for suggestion in ranked:
+                draft, qwen_used, draft_source = self._build_qwen_draft(suggestion)
+                qwen_used_any = qwen_used_any or qwen_used
 
-            if qwen_used:
-                source = draft_source
+                if qwen_used:
+                    source = draft_source
 
-            suggestion_payload = {
-                **suggestion,
-                "draft": draft
-            }
+                final_suggestions.append(
+                    HrCopilotSuggestion(
+                        **suggestion,
+                        draft=draft
+                    )
+                )
 
-            final_suggestions.append(suggestion_payload)
+            self.copilot_logger.log_hr_copilot(
+                request_id=request_id,
+                suggestions=[item.model_dump() for item in final_suggestions],
+                qwen_used=qwen_used_any,
+                summary_source=source,
+                status="SUCCESS",
+                message="HR copilot suggestions generated successfully."
+            )
 
-        return HrCopilotResponse(
-            suggestions=final_suggestions,
-            qwen_used=qwen_used_any,
-            summary_source=source
-        )
+            return HrCopilotResponse(
+                request_id=request_id,
+                generated_at=generated_at,
+                suggestions=final_suggestions,
+                qwen_used=qwen_used_any,
+                summary_source=source
+            )
+
+        except Exception as exc:
+            self.copilot_logger.log_hr_copilot(
+                request_id=request_id,
+                suggestions=[],
+                qwen_used=False,
+                summary_source="error",
+                status="FAILED",
+                message=str(exc)
+            )
+
+            raise
 
     def _read_rows(self, query: str, params: dict | None = None) -> list[dict[str, Any]]:
         with engine.connect() as connection:
