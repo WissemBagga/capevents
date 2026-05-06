@@ -74,6 +74,8 @@
         @for (invitation of invitations; track trackByInvitation($index, invitation)) {
           <article
             class="inv-card"
+            [id]="'invitation-' + invitation.invitationId"
+            [class.highlighted-invitation]="isHighlightedInvitation(invitation)"
             [class.response-yes]="invitation.rsvpResponse === 'YES'"
             [class.response-maybe]="invitation.rsvpResponse === 'MAYBE'"
             [class.response-no]="invitation.rsvpResponse === 'NO'"
@@ -89,6 +91,12 @@
                   {{ invitationSourceLabel(invitation.invitationSource) }}
                 </span>
               </div>
+
+              @if (canShowReminderMessages(invitation)) {
+                <span class="reminder-received-pill">
+                  {{ reminderCountLabel(invitation) }}
+                </span>
+              }
 
               <span class="status-overlay pending">
                 {{ statusLabel(invitation.status) }}

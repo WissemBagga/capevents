@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { EventService } from '../../../core/services/event.service';
@@ -27,6 +27,7 @@ export class MyInvitations implements OnInit {
   private myInvitationReminderService = inject(MyInvitationReminderService);
   private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   invitations: MyInvitationResponse[] = [];
   loading = false;
@@ -38,6 +39,8 @@ export class MyInvitations implements OnInit {
   selectedReminderHistory: MyInvitationReminder[] = [];
   reminderHistoryLoading = false;
   reminderHistoryError = '';
+
+  highlightedInvitationId: number | null = null;
 
   ngOnInit(): void {
     this.loadInvitations();
@@ -78,13 +81,23 @@ export class MyInvitations implements OnInit {
 
     if (!Number.isFinite(invitationId)) return;
 
-    const exists = this.invitations.some(
-      invitation => invitation.invitationId === invitationId
+    const invitation = this.invitations.find(
+      item => item.invitationId === invitationId
     );
 
-    if (exists) {
+    if (!invitation) return;
+
+    this.highlightedInvitationId = invitationId;
+
+    if (this.canShowReminderMessages(invitation)) {
       this.openReminderHistory(invitationId);
     }
+
+    setTimeout(() => {
+      document
+        .getElementById(`invitation-${invitationId}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
   }
 
   respond(invitationId: number, response: InvitationResponseStatus): void {
@@ -116,6 +129,10 @@ export class MyInvitations implements OnInit {
       });
   }
 
+  isHighlightedInvitation(invitation: MyInvitationResponse): boolean {
+    return this.highlightedInvitationId === invitation.invitationId;
+  }
+
   openReminderHistory(invitationId: number): void {
     this.selectedReminderInvitationId = invitationId;
     this.selectedReminderHistory = [];
@@ -145,6 +162,14 @@ export class MyInvitations implements OnInit {
     this.selectedReminderInvitationId = null;
     this.selectedReminderHistory = [];
     this.reminderHistoryError = '';
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { invitationId: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+
     this.cdr.markForCheck();
   }
 
@@ -246,4 +271,6 @@ export class MyInvitations implements OnInit {
 
     return `${count} messages de relance`;
   }
+
+
 }
