@@ -17,6 +17,8 @@ from app.api.copilot_monitoring import router as copilot_monitoring_router
 
 from app.api.hr_copilot_feedback import router as hr_copilot_feedback_router
 
+from app.api.planning import router as planning_router
+
 app = FastAPI(
     title=settings.app_name,
     version="1.0.0",
@@ -42,6 +44,7 @@ app.include_router(diagnostics_router)
 app.include_router(hr_copilot_router)
 app.include_router(copilot_monitoring_router)
 app.include_router(hr_copilot_feedback_router)
+app.include_router(planning_router)
 
 
 @app.get("/")
