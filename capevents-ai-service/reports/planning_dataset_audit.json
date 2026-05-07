@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-05-07T22:02:08.386821+00:00",
+  "dataset_path": "datasets\\processed\\planning_train.csv",
+  "rows_total": 1000,
+  "columns_total": 39,
+  "events": 1000,
+  "outcome_available_distribution": {
+    "1": 684,
+    "0": 316
+  },
+  "trainable_rows": 684,
+  "success_label_distribution_all": {
+    "LOW": 948,
+    "MEDIUM": 44,
+    "HIGH": 8
+  },
+  "success_label_distribution_trainable": {
+    "LOW": 632,
+    "MEDIUM": 44,
+    "HIGH": 8
+  },
+  "missing_required_columns": [],
+  "numeric_summaries": {
+    "capacity": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 6.0,
+      "max": 498.0,
+      "mean": 102.199,
+      "non_zero_count": 1000
+    },
+    "duration_minutes": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 30.0,
+      "max": 240.0,
+      "mean": 97.545,
+      "non_zero_count": 1000
+    },
+    "department_size": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 2.0,
+      "max": 194.0,
+      "mean": 47.237,
+      "non_zero_count": 1000
+    },
+    "registration_rate": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 0.0,
+      "max": 0.9333333333333332,
+      "mean": 0.07255693552638667,
+      "non_zero_count": 226
+    },
+    "attendance_rate": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.05209615864539362,
+      "non_zero_count": 62
+    },
+    "success_score": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 0.0,
+      "max": 0.877142857142857,
+      "mean": 0.06293022555835956,
+      "non_zero_count": 226
+    },
+    "events_same_day_count": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 0.0,
+      "max": 8.0,
+      "mean": 3.234,
+      "non_zero_count": 959
+    },
+    "events_same_department_same_week_count": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 0.0,
+      "max": 4.0,
+      "mean": 0.684,
+      "non_zero_count": 417
+    }
+  },
+  "decision": "NOT_READY_FOR_CLASSIFIER",
+  "regression_ready": true,
+  "decision_explanation": "Le dataset est utilisable pour un premier modèle de régression ou un scoring hybride, mais la classification HIGH/MEDIUM/LOW est trop déséquilibrée si HIGH et MEDIUM sont trop rares."
+}
