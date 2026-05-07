@@ -1,24 +1,39 @@
-# CapEvents AI Datasets
+# Datasets CapEvents AI
 
-## Data strategy
+Ce dossier contient les datasets utilisés pour entraîner et évaluer les modules IA de CapEvents.
 
-The AI service uses a hybrid data strategy:
+## 1. Sources
 
-1. CapEvents internal data is the source of truth.
-2. External public datasets can be used only for pretraining, testing, augmentation, or cold-start scenarios.
-3. Final evaluation must always be done on CapEvents data.
-4. Each row in processed datasets must include a `data_source` column.
+Les données utilisées dans cette version sont hybrides :
 
-## Folders
+- exports CapEvents ;
+- données synthétiques générées pour augmenter la volumétrie ;
+- données externes autorisées, nettoyées et normalisées ;
+- données préparées pour le modèle de recommandation.
 
-- `raw/capevents/`: exports from the CapEvents PostgreSQL database.
-- `external/kaggle/`: authorized public datasets.
-- `processed/`: cleaned and feature-engineered datasets.
-- `splits/`: train / validation / test splits.
+Ces données servent au développement, à l’entraînement initial et à la démonstration du projet.
 
-## Required processed column
+## 2. Important
 
-Every processed dataset must include:
+Les CSV dans `datasets/raw/capevents` ne sont pas utilisés comme source runtime par FastAPI.
 
-```text
-data_source
+En runtime, le service IA lit les données depuis PostgreSQL via `app/data/runtime_loader.py`.
+
+## 3. Dossiers
+
+- `raw/capevents` : exports CapEvents enrichis pour entraînement.
+- `external/kaggle` : sources externes brutes.
+- `processed` : datasets nettoyés et prêts pour entraînement.
+
+## 4. Stratégie professionnelle
+
+Les futures versions des modèles devront utiliser des snapshots datés et documentés.
+
+Chaque dataset d’entraînement doit idéalement inclure :
+
+- une date de génération ;
+- une liste de sources ;
+- une taille ;
+- des règles de nettoyage ;
+- un champ `data_source` si plusieurs sources sont combinées ;
+- un champ `sample_weight` si certaines sources doivent peser moins dans l’apprentissage.

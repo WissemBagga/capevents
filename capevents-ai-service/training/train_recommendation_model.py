@@ -76,7 +76,9 @@ Candidate.
 
 ## Données utilisées
 
-Source principale : PostgreSQL CapEvents.
+Source training : dataset recommendation_train.csv construit à partir d’exports CapEvents enrichis, de données synthétiques cohérentes et, si disponible, de données externes curated.
+
+Source runtime : PostgreSQL CapEvents.
 
 ## Taille dataset
 
@@ -445,7 +447,10 @@ def main() -> None:
         features_path=str(features_path),
         metrics_path=str(metrics_artifact_path),
         model_card_path=str(model_card_path),
-        training_data_source="CapEvents PostgreSQL runtime dataset",
+        training_data_source=(
+            "Dataset processed/recommendation_train.csv "
+            "(exports CapEvents enrichis + données synthétiques/externes curated selon snapshot)"
+        ),
         metrics=metrics_output,
         status="candidate"
     )
