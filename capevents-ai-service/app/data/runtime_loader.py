@@ -140,3 +140,17 @@ def load_runtime_badges() -> pd.DataFrame:
             unlocked_at
         FROM user_badges;
     """)
+
+def load_runtime_invitation_reminders() -> pd.DataFrame:
+    return read_sql_dataframe("""
+        SELECT
+            r.id,
+            r.invitation_id,
+            r.channel,
+            r.status,
+            r.sent_at,
+            i.event_id,
+            i.user_id
+        FROM event_invitation_reminders r
+        JOIN event_invitations i ON i.id = r.invitation_id;
+    """)

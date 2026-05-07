@@ -367,7 +367,10 @@ def create_pair_rows(
     user_badges: pd.DataFrame,
     reference_date: pd.Timestamp,
     data_source: str,
-    sample_weight: float
+    sample_weight: float,
+    reminder_pairs: pd.DataFrame,
+    user_reminders: pd.DataFrame,
+    event_reminders: pd.DataFrame
 ) -> pd.DataFrame:
     users_small = users.copy()
     events_small = events.copy()
@@ -400,6 +403,10 @@ def create_pair_rows(
     dataset = dataset.merge(feedback_pairs, on=["user_id", "event_id"], how="left")
     dataset = dataset.merge(invitation_features, on=["user_id", "event_id"], how="left")
 
+    dataset = dataset.merge(reminder_pairs, on=["user_id", "event_id"], how="left")
+    dataset = dataset.merge(user_reminders, on="user_id", how="left")
+    dataset = dataset.merge(event_reminders, on="event_id", how="left")
+
     dataset["event_category"] = dataset["event_category"].fillna("Autre").astype(str)
 
     dataset = dataset.merge(
@@ -426,19 +433,30 @@ def create_pair_rows(
         "event_present_count",
         "event_avg_rating",
         "event_feedback_count",
+
         "user_total_registrations",
         "user_total_attendances",
         "user_attendance_rate",
         "user_avg_rating",
+
         "points_total",
         "points_events_count",
         "badges_count",
+
         "feedback_rating",
         "has_feedback",
+
         "was_invited",
         "rsvp_yes",
         "rsvp_maybe",
         "rsvp_no",
+
+        "was_reminded",
+        "pair_reminder_count",
+        "days_since_last_reminder",
+        "user_total_reminders_received",
+        "event_total_reminders_sent",
+
         "user_category_registrations",
         "user_category_attendances",
         "user_category_attendance_rate"
@@ -514,6 +532,12 @@ def create_pair_rows(
         "rsvp_maybe",
         "rsvp_no",
 
+        "was_reminded",
+        "pair_reminder_count",
+        "days_since_last_reminder",
+        "user_total_reminders_received",
+        "event_total_reminders_sent",
+
         "registered",
         "attended",
         "feedback_rating",
@@ -550,6 +574,8 @@ def main() -> None:
     points = read_csv_if_exists(input_dir / "points_transactions.csv")
     badges = read_csv_if_exists(input_dir / "user_badges.csv")
 
+    reminders = read_csv_if_exists(input_dir / "event_invitation_reminders.csv")
+
     if users.empty or events.empty:
         raise RuntimeError("users.csv et events.csv sont obligatoires.")
 
@@ -568,6 +594,11 @@ def main() -> None:
     user_category_history = build_user_category_history(registrations, events)
     feedback_pairs = build_feedback_pair_map(feedbacks)
     invitation_features = build_invitation_features(invitations)
+    reminder_pairs, user_reminders, event_reminders = build_invitation_reminder_features(
+        reminders=reminders,
+        invitations=invitations,
+        reference_date=reference_date
+    )
     user_points = build_user_points(points)
     user_badges = build_user_badges(badges)
 
@@ -660,7 +691,10 @@ def main() -> None:
         user_badges=user_badges,
         reference_date=reference_date,
         data_source="CAPEVENTS_CLEAN",
-        sample_weight=1.0
+        sample_weight=1.0,
+        reminder_pairs=reminder_pairs,
+        user_reminders=user_reminders,
+        event_reminders=event_reminders
     )
 
     negative_dataset = create_pair_rows(
@@ -677,7 +711,7 @@ def main() -> None:
         user_badges=user_badges,
         reference_date=reference_date,
         data_source="CAPEVENTS_NEGATIVE_SAMPLED",
-        sample_weight=0.35
+        sample_weight=0.35,
     )
 
     final_dataset = pd.concat(
@@ -697,6 +731,103 @@ def main() -> None:
     print(f"Rows: {len(final_dataset)}")
     print("\nTarget distribution:")
     print(final_dataset["target_score"].value_counts().sort_index())
+
+
+def build_invitation_reminder_features(
+    reminders: pd.DataFrame,
+    invitations: pd.DataFrame,
+    reference_date: pd.Timestamp
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    pair_columns = [
+        "user_id",
+        "event_id",
+        "was_reminded",
+        "pair_reminder_count",
+        "days_since_last_reminder"
+    ]
+
+    user_columns = [
+        "user_id",
+        "user_total_reminders_received"
+    ]
+
+    event_columns = [
+        "event_id",
+        "event_total_reminders_sent"
+    ]
+
+    if reminders.empty or invitations.empty:
+        return (
+            pd.DataFrame(columns=pair_columns),
+            pd.DataFrame(columns=user_columns),
+            pd.DataFrame(columns=event_columns)
+        )
+
+    reminders = reminders.copy()
+    invitations = invitations.copy()
+
+    reminders["invitation_id"] = safe_numeric(reminders["invitation_id"]).astype(int)
+    reminders["status"] = reminders["status"].fillna("").astype(str).str.upper()
+    reminders["sent_at"] = parse_datetime(reminders["sent_at"])
+
+    invitations["id"] = safe_numeric(invitations["id"]).astype(int)
+    invitations["user_id"] = invitations["user_id"].apply(normalize_id)
+    invitations["event_id"] = invitations["event_id"].apply(normalize_id)
+
+    sent_reminders = reminders[
+        reminders["status"] == "SENT"
+    ].copy()
+
+    if sent_reminders.empty:
+        return (
+            pd.DataFrame(columns=pair_columns),
+            pd.DataFrame(columns=user_columns),
+            pd.DataFrame(columns=event_columns)
+        )
+
+    merged = sent_reminders.merge(
+        invitations[["id", "user_id", "event_id"]],
+        left_on="invitation_id",
+        right_on="id",
+        how="inner"
+    )
+
+    if merged.empty:
+        return (
+            pd.DataFrame(columns=pair_columns),
+            pd.DataFrame(columns=user_columns),
+            pd.DataFrame(columns=event_columns)
+        )
+
+    pair_features = merged.groupby(["user_id", "event_id"]).agg(
+        pair_reminder_count=("id_x", "count"),
+        last_reminder_sent_at=("sent_at", "max")
+    ).reset_index()
+
+    pair_features["was_reminded"] = 1
+    pair_features["days_since_last_reminder"] = (
+        reference_date - pair_features["last_reminder_sent_at"]
+    ).dt.days.fillna(999).clip(lower=0).astype(int)
+
+    pair_features = pair_features[
+        [
+            "user_id",
+            "event_id",
+            "was_reminded",
+            "pair_reminder_count",
+            "days_since_last_reminder"
+        ]
+    ]
+
+    user_features = merged.groupby("user_id").agg(
+        user_total_reminders_received=("id_x", "count")
+    ).reset_index()
+
+    event_features = merged.groupby("event_id").agg(
+        event_total_reminders_sent=("id_x", "count")
+    ).reset_index()
+
+    return pair_features, user_features, event_features
 
 
 if __name__ == "__main__":
