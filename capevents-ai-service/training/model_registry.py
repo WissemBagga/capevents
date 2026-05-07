@@ -58,6 +58,12 @@ def register_model_version(
 
     versions = task_entry.setdefault("versions", {})
 
+    if version in versions:
+        raise ValueError(
+            f"La version {version} existe déjà pour la tâche {task}. "
+            "Utilise un nouveau numéro de version, par exemple recommendation-v1.2.0."
+        )
+
     versions[version] = {
         "task": task,
         "version": version,
@@ -76,6 +82,20 @@ def register_model_version(
         task_entry["active_version"] = version
 
     write_registry(registry)
+
+
+
+def model_version_exists(task: str, version: str) -> bool:
+    registry = read_registry()
+
+    task_entry = registry.get("models", {}).get(task)
+
+    if not task_entry:
+        return False
+
+    versions = task_entry.get("versions", {})
+
+    return version in versions
 
 
 def promote_model_version(task: str, version: str) -> None:
@@ -121,3 +141,35 @@ def get_active_model(task: str) -> dict[str, Any]:
         raise ValueError(f"Version active introuvable : {active_version}")
 
     return versions[active_version]
+
+def update_model_status(
+    task: str,
+    version: str,
+    status: str,
+    reason: str | None = None
+) -> None:
+    registry = read_registry()
+
+    task_entry = registry.get("models", {}).get(task)
+    if not task_entry:
+        raise ValueError(f"Tâche inconnue dans le registry : {task}")
+
+    versions = task_entry.get("versions", {})
+    if version not in versions:
+        raise ValueError(f"Version inconnue pour {task} : {version}")
+
+    active_version = task_entry.get("active_version")
+
+    if active_version == version and status != "production":
+        raise ValueError(
+            "Impossible de changer le statut de la version production active. "
+            "Promouvez d’abord une autre version."
+        )
+
+    versions[version]["status"] = status
+    versions[version]["status_updated_at"] = utc_now()
+
+    if reason:
+        versions[version]["status_reason"] = reason
+
+    write_registry(registry)

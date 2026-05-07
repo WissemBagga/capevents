@@ -8,8 +8,7 @@ import numpy as np
 import pandas as pd
 from catboost import CatBoostRanker, Pool
 
-from training.model_registry import register_model_version
-
+from training.model_registry import register_model_version, model_version_exists
 
 IDENTIFIER_COLUMNS = {
     "user_id",
@@ -36,6 +35,13 @@ def build_default_version() -> str:
 
 def prepare_candidate_output_dir(version: str) -> Path:
     output_dir = Path("models_artifacts") / "recommendation" / "versions" / version
+
+    if output_dir.exists() and any(output_dir.iterdir()):
+        raise FileExistsError(
+            f"Le dossier de version existe déjà et n’est pas vide : {output_dir}. "
+            "Choisis une nouvelle version pour éviter d’écraser un modèle existant."
+        )
+
     output_dir.mkdir(parents=True, exist_ok=True)
     return output_dir
 
@@ -285,6 +291,12 @@ def main() -> None:
 
     version = args.version or build_default_version()
     config = load_config(args.config)
+
+    if model_version_exists("recommendation", version):
+        raise ValueError(
+            f"La version {version} existe déjà dans le model registry. "
+            "Choisis une nouvelle version, par exemple recommendation-v1.2.0."
+        )
 
     input_file = Path(config["input_file"])
     report_dir = ensure_directory(config["report_dir"])
