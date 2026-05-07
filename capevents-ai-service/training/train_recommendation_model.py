@@ -1,10 +1,14 @@
+import argparse
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
 from catboost import CatBoostRanker, Pool
+
+from training.model_registry import register_model_version
 
 
 IDENTIFIER_COLUMNS = {
@@ -25,6 +29,74 @@ def ensure_directory(path: str | Path) -> Path:
     return directory
 
 
+def build_default_version() -> str:
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    return f"recommendation-{timestamp}"
+
+
+def prepare_candidate_output_dir(version: str) -> Path:
+    output_dir = Path("models_artifacts") / "recommendation" / "versions" / version
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return output_dir
+
+
+def write_json(path: Path, payload: Any) -> None:
+    with path.open("w", encoding="utf-8") as file:
+        json.dump(payload, file, ensure_ascii=False, indent=2)
+
+
+def write_model_card(
+    path: Path,
+    version: str,
+    metrics: dict,
+    training_rows: int,
+    validation_rows: int
+) -> None:
+    metrics_json = json.dumps(metrics, ensure_ascii=False, indent=2)
+
+    content = f"""# Model Card — {version}
+
+## Modèle
+
+CatBoostRanker pour la recommandation personnalisée d’événements CapEvents.
+
+## Objectif
+
+Classer les événements publiés selon leur pertinence pour un utilisateur donné.
+
+## Statut
+
+Candidate.
+
+## Données utilisées
+
+Source principale : PostgreSQL CapEvents.
+
+## Taille dataset
+
+- Training rows : {training_rows}
+- Validation rows : {validation_rows}
+
+## Métriques
+
+{metrics_json}
+
+## Règle de déploiement
+
+Cette version candidate ne doit pas être utilisée en production tant qu’elle n’a pas été promue avec :
+
+python -m training.promote_model --task recommendation --version {version}
+
+## Limites
+
+- Les performances dépendent de la qualité des historiques d’inscription, présence, invitation et feedback.
+- Le cold-start reste possible pour les nouveaux utilisateurs.
+- Le modèle ne remplace pas les règles métier de disponibilité, capacité et deadline.
+"""
+
+    path.write_text(content, encoding="utf-8")
+
+
 def prepare_dataframe(
     df: pd.DataFrame,
     categorical_features: list[str],
@@ -39,14 +111,11 @@ def prepare_dataframe(
     if group_column not in df.columns:
         raise ValueError(f"La colonne {group_column} est obligatoire pour le ranking.")
 
-    # Le ranker préfère des labels non négatifs.
-    # Les -1 deviennent 0.
     df["target_label"] = pd.to_numeric(
         df[target_column],
         errors="coerce"
     ).fillna(0).clip(lower=0)
 
-    # Colonnes qui doivent absolument rester en texte.
     text_columns = set(categorical_features)
     text_columns.add(group_column)
     text_columns.update(IDENTIFIER_COLUMNS)
@@ -111,7 +180,6 @@ def build_feature_columns(df: pd.DataFrame, drop_columns: list[str]) -> list[str
 
 
 def sort_for_ranking(df: pd.DataFrame) -> pd.DataFrame:
-    # Important : les lignes d’un même user doivent être groupées.
     return df.sort_values(["user_id"]).reset_index(drop=True)
 
 
@@ -127,7 +195,6 @@ def build_pool(
         if feature in feature_columns
     ]
 
-    # Sécurité : convertir explicitement les colonnes catégorielles en string.
     for column in cat_features_existing:
         df[column] = df[column].fillna("UNKNOWN").astype(str)
 
@@ -166,6 +233,7 @@ def ndcg_at_k(labels: np.ndarray, predictions: np.ndarray, k: int = 5) -> float:
         return float(score)
 
     ideal_dcg = dcg(ideal_labels)
+
     if ideal_dcg == 0:
         return 0.0
 
@@ -199,18 +267,36 @@ def evaluate_grouped(
 
 
 def main() -> None:
-    config = load_config()
+    parser = argparse.ArgumentParser(
+        description="Entraîner une version candidate du modèle de recommandation."
+    )
+    parser.add_argument(
+        "--version",
+        default=None,
+        help="Version candidate. Exemple : recommendation-v1.1.0"
+    )
+    parser.add_argument(
+        "--config",
+        default="configs/recommendation_model_config.json",
+        help="Chemin du fichier de configuration."
+    )
+
+    args = parser.parse_args()
+
+    version = args.version or build_default_version()
+    config = load_config(args.config)
 
     input_file = Path(config["input_file"])
-    artifact_dir = ensure_directory(config["artifact_dir"])
     report_dir = ensure_directory(config["report_dir"])
+    output_dir = prepare_candidate_output_dir(version)
 
     if not input_file.exists():
         raise FileNotFoundError(f"Dataset introuvable: {input_file}")
 
+    print(f"[INFO] Version candidate : {version}")
+    print(f"[INFO] Output dir : {output_dir}")
     print(f"[INFO] Chargement dataset: {input_file}")
 
-    # Important : charger les IDs en texte pour éviter que pandas casse les UUID.
     df = pd.read_csv(
         input_file,
         dtype={
@@ -281,7 +367,6 @@ def main() -> None:
 
     valid_sorted = sort_for_ranking(valid_df)
 
-    # Sécurité : s'assurer que les colonnes catégorielles sont encore string avant predict.
     for column in categorical_features:
         valid_sorted[column] = valid_sorted[column].fillna("UNKNOWN").astype(str)
 
@@ -296,7 +381,9 @@ def main() -> None:
     best_score = model.get_best_score()
 
     metrics_output = {
+        "version": version,
         "model_type": "CatBoostRanker",
+        "status": "candidate",
         "input_file": str(input_file),
         "rows_total": int(len(df)),
         "rows_train": int(len(train_df)),
@@ -310,38 +397,62 @@ def main() -> None:
         "catboost_best_score": best_score
     }
 
-    model_path = artifact_dir / "catboost_recommender.cbm"
-    features_path = artifact_dir / "features.json"
-    metrics_artifact_path = artifact_dir / "metrics.json"
-    metrics_report_path = report_dir / "metrics.json"
+    model_path = output_dir / "catboost_recommender.cbm"
+    features_path = output_dir / "features.json"
+    metrics_artifact_path = output_dir / "metrics.json"
+    model_card_path = output_dir / "model_card.md"
+    metrics_report_path = report_dir / f"{version}_metrics.json"
 
     model.save_model(str(model_path))
 
-    with features_path.open("w", encoding="utf-8") as file:
-        json.dump(
-            {
-                "features": feature_columns,
-                "categorical_features": categorical_features,
-                "drop_columns": config["drop_columns"]
-            },
-            file,
-            indent=2,
-            ensure_ascii=False
-        )
+    write_json(
+        features_path,
+        {
+            "features": feature_columns,
+            "categorical_features": categorical_features,
+            "drop_columns": config["drop_columns"]
+        }
+    )
 
-    with metrics_artifact_path.open("w", encoding="utf-8") as file:
-        json.dump(metrics_output, file, indent=2, ensure_ascii=False)
+    write_json(metrics_artifact_path, metrics_output)
+    write_json(metrics_report_path, metrics_output)
 
-    with metrics_report_path.open("w", encoding="utf-8") as file:
-        json.dump(metrics_output, file, indent=2, ensure_ascii=False)
+    write_model_card(
+        path=model_card_path,
+        version=version,
+        metrics=metrics_output,
+        training_rows=len(train_df),
+        validation_rows=len(valid_df)
+    )
+
+    register_model_version(
+        task="recommendation",
+        version=version,
+        model_name="CatBoostRanker",
+        artifact_path=str(model_path),
+        features_path=str(features_path),
+        metrics_path=str(metrics_artifact_path),
+        model_card_path=str(model_card_path),
+        training_data_source="CapEvents PostgreSQL runtime dataset",
+        metrics=metrics_output,
+        status="candidate"
+    )
 
     print("\n=== Training finished ===")
+    print(f"Candidate version: {version}")
     print(f"Model: {model_path}")
     print(f"Features: {features_path}")
     print(f"Metrics artifact: {metrics_artifact_path}")
     print(f"Metrics report: {metrics_report_path}")
+    print(f"Model card: {model_card_path}")
     print("\nValidation metrics:")
     print(json.dumps(metrics, indent=2, ensure_ascii=False))
+    print("\n[INFO] Candidate enregistrée dans models_artifacts/model_registry.json")
+    print("[INFO] Elle n’est pas encore en production.")
+    print(
+        f"[INFO] Pour la promouvoir : "
+        f"python -m training.promote_model --task recommendation --version {version}"
+    )
 
 
 if __name__ == "__main__":
