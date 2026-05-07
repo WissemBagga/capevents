@@ -22,6 +22,11 @@ def read_registry() -> dict[str, Any]:
     with REGISTRY_PATH.open("r", encoding="utf-8") as file:
         return json.load(file)
 
+def normalize_registry_path(path_value: str | None) -> str | None:
+    if path_value is None:
+        return None
+
+    return str(path_value).replace("\\", "/")
 
 def write_registry(registry: dict[str, Any]) -> None:
     REGISTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -57,10 +62,10 @@ def register_model_version(
         "task": task,
         "version": version,
         "model_name": model_name,
-        "artifact_path": artifact_path,
-        "features_path": features_path,
-        "metrics_path": metrics_path,
-        "model_card_path": model_card_path,
+        "artifact_path": normalize_registry_path(artifact_path),
+        "features_path": normalize_registry_path(features_path),
+        "metrics_path": normalize_registry_path(metrics_path),
+        "model_card_path": normalize_registry_path(model_card_path),
         "training_data_source": training_data_source,
         "metrics": metrics or {},
         "status": status,

@@ -23,23 +23,44 @@ def ensure_file_exists(path: Path, label: str) -> None:
         raise ValueError(f"{label} n’est pas un fichier valide : {path}")
 
 
-def ensure_supported_metric_keys(metrics: dict[str, Any]) -> None:
-    required_keys = [
-        "ndcg_at_10",
-        "map_at_10",
-        "precision_at_10"
-    ]
+def normalize_recommendation_metrics(metrics_payload: dict[str, Any]) -> dict[str, Any]:
+    nested_metrics = metrics_payload.get("metrics", {})
 
-    missing_keys = [
-        key for key in required_keys
-        if key not in metrics
-    ]
+    if not isinstance(nested_metrics, dict):
+        nested_metrics = {}
 
-    if missing_keys:
+    normalized = {
+        "precision_at_5": metrics_payload.get("precision_at_5", nested_metrics.get("precision_at_5")),
+        "ndcg_at_5": metrics_payload.get("ndcg_at_5", nested_metrics.get("ndcg_at_5")),
+        "precision_at_10": metrics_payload.get("precision_at_10", nested_metrics.get("precision_at_10")),
+        "ndcg_at_10": metrics_payload.get("ndcg_at_10", nested_metrics.get("ndcg_at_10")),
+        "map_at_10": metrics_payload.get("map_at_10", nested_metrics.get("map_at_10")),
+        "evaluated_users": metrics_payload.get("evaluated_users", nested_metrics.get("evaluated_users")),
+        "evaluated_rows": metrics_payload.get("evaluated_rows", nested_metrics.get("evaluated_rows")),
+        "evaluation_data": metrics_payload.get("evaluation_data", "CapEvents validation dataset"),
+        "metric_note": metrics_payload.get("metric_note", "")
+    }
+
+    has_at_least_one_quality_metric = any(
+        normalized.get(key) is not None
+        for key in [
+            "precision_at_5",
+            "ndcg_at_5",
+            "precision_at_10",
+            "ndcg_at_10",
+            "map_at_10"
+        ]
+    )
+
+    if not has_at_least_one_quality_metric:
         raise ValueError(
-            "metrics.json incomplet. Clés manquantes : "
-            + ", ".join(missing_keys)
+            "metrics.json ne contient aucune métrique exploitable. "
+            "Ajoutez au moins precision_at_5, ndcg_at_5, precision_at_10, ndcg_at_10 ou map_at_10."
         )
+
+    normalized["raw_metrics"] = metrics_payload
+
+    return normalized
 
 
 def create_model_card(
@@ -48,9 +69,13 @@ def create_model_card(
     metrics: dict[str, Any],
     training_data_source: str
 ) -> None:
+    precision_at_5 = metrics.get("precision_at_5")
+    ndcg_at_5 = metrics.get("ndcg_at_5")
+    precision_at_10 = metrics.get("precision_at_10")
     ndcg_at_10 = metrics.get("ndcg_at_10")
     map_at_10 = metrics.get("map_at_10")
-    precision_at_10 = metrics.get("precision_at_10")
+    evaluated_users = metrics.get("evaluated_users")
+    evaluated_rows = metrics.get("evaluated_rows")
     evaluation_data = metrics.get("evaluation_data", "Non précisé")
     metric_note = metrics.get("metric_note", "")
 
@@ -85,9 +110,13 @@ Classer les événements publiés selon leur pertinence pour un utilisateur donn
 
 | Métrique | Valeur |
 |---|---:|
+| Precision@5 | {precision_at_5} |
+| NDCG@5 | {ndcg_at_5} |
+| Precision@10 | {precision_at_10} |
 | NDCG@10 | {ndcg_at_10} |
 | MAP@10 | {map_at_10} |
-| Precision@10 | {precision_at_10} |
+| Utilisateurs évalués | {evaluated_users} |
+| Lignes évaluées | {evaluated_rows} |
 
 ## Note métriques
 
@@ -191,8 +220,8 @@ def main() -> None:
     ensure_file_exists(source_features, "features.json")
     ensure_file_exists(source_metrics, "metrics.json")
 
-    metrics = read_metrics(source_metrics)
-    ensure_supported_metric_keys(metrics)
+    raw_metrics = read_metrics(source_metrics)
+    metrics = normalize_recommendation_metrics(raw_metrics)
 
     candidate_dir = Path("models_artifacts/recommendation/versions") / version
 
