@@ -687,14 +687,14 @@ def main() -> None:
         user_category_history=user_category_history,
         feedback_pairs=feedback_pairs,
         invitation_features=invitation_features,
+        reminder_pairs=reminder_pairs,
+        user_reminders=user_reminders,
+        event_reminders=event_reminders,
         user_points=user_points,
         user_badges=user_badges,
         reference_date=reference_date,
         data_source="CAPEVENTS_CLEAN",
         sample_weight=1.0,
-        reminder_pairs=reminder_pairs,
-        user_reminders=user_reminders,
-        event_reminders=event_reminders
     )
 
     negative_dataset = create_pair_rows(
@@ -707,6 +707,9 @@ def main() -> None:
         user_category_history=user_category_history,
         feedback_pairs=feedback_pairs,
         invitation_features=invitation_features,
+        reminder_pairs=reminder_pairs,
+        user_reminders=user_reminders,
+        event_reminders=event_reminders,
         user_points=user_points,
         user_badges=user_badges,
         reference_date=reference_date,

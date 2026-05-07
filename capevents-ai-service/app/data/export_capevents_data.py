@@ -136,6 +136,21 @@ EXPORT_QUERIES: dict[str, str] = {
             sent_at,
             rsvp_response
         FROM event_invitations;
+    """,
+
+    "event_invitation_reminders": """
+        SELECT
+            id,
+            invitation_id,
+            sent_by,
+            channel,
+            subject,
+            message,
+            status,
+            error_message,
+            sent_at
+        FROM event_invitation_reminders
+        ORDER BY sent_at ASC;
     """
 }
 
