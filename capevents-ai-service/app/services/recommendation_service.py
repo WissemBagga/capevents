@@ -19,14 +19,17 @@ from app.data.runtime_loader import (
     load_runtime_badges
 )
 
+
+from app.core.model_registry import (
+    get_active_model_metadata,
+    resolve_registry_path,
+    ModelRegistryError
+)
+
 from uuid import uuid4
 from app.services.prediction_logger import PredictionLogger
 
-MODEL_PATH = Path("models_artifacts/recommendation/catboost_recommender.cbm")
-FEATURES_PATH = Path("models_artifacts/recommendation/features.json")
 
-MODEL_NAME = "catboost_recommender"
-MODEL_VERSION = "recommendation-v1.0.0"
 
 
 CATEGORY_TO_INTEREST_CODES = {
@@ -86,22 +89,24 @@ def parse_datetime_value(value: Any):
 
 class RecommendationService:
     def __init__(self) -> None:
-        if not MODEL_PATH.exists():
-            raise FileNotFoundError(f"Modèle introuvable: {MODEL_PATH}")
+        self.model: CatBoostRanker | None = None
+        self.model_metadata: dict[str, Any] = {}
 
-        if not FEATURES_PATH.exists():
-            raise FileNotFoundError(f"Fichier features introuvable: {FEATURES_PATH}")
+        self.model_name = "unknown"
+        self.model_version = "unknown"
+        self.model_status = "unknown"
 
-        self.model = CatBoostRanker()
-        self.model.load_model(str(MODEL_PATH))
+        self.features: list[str] = []
+        self.categorical_features: list[str] = []
 
         self.prediction_logger = PredictionLogger()
 
-        with FEATURES_PATH.open("r", encoding="utf-8") as file:
-            metadata = json.load(file)
-
-        self.features: list[str] = metadata["features"]
-        self.categorical_features: list[str] = metadata.get("categorical_features", [])
+        try:
+            self._load_model_from_registry()
+        except ModelRegistryError as exc:
+            raise RuntimeError(
+                f"Impossible de charger le modèle de recommandation depuis le registry : {exc}"
+            ) from exc
 
         self.reload_data()
 
@@ -178,21 +183,21 @@ class RecommendationService:
             self.prediction_logger.log_recommendation(
                 request_id=request_id,
                 user_id=user_id,
-                model_name=MODEL_NAME,
-                model_version=MODEL_VERSION,
+                model_name=self.model_name,
+                model_version=self.model_version,
                 total_candidates=0,
                 recommendations=[],
                 status="USER_NOT_FOUND",
-                message="Utilisateur introuvable dans les données runtime."
+                message="Aucun événement candidat disponible pour cet utilisateur."
             )
 
             return RecommendationResponse(
                 user_id=user_id,
                 total_candidates=0,
                 items=[],
-                message="Utilisateur introuvable dans les données runtime.",
+                message="Aucun événement candidat disponible pour cet utilisateur.",
                 request_id=request_id,
-                model_version=MODEL_VERSION
+                model_version=self.model_version
             )
 
         candidates = self._build_candidate_rows(user_id=user_id, user=user)
@@ -201,8 +206,8 @@ class RecommendationService:
             self.prediction_logger.log_recommendation(
                 request_id=request_id,
                 user_id=user_id,
-                model_name=MODEL_NAME,
-                model_version=MODEL_VERSION,
+                model_name=self.model_name,
+                model_version=self.model_version,
                 total_candidates=0,
                 recommendations=[],
                 status="NO_CANDIDATES",
@@ -215,10 +220,13 @@ class RecommendationService:
                 items=[],
                 message="Aucun événement candidat disponible pour cet utilisateur.",
                 request_id=request_id,
-                model_version=MODEL_VERSION
+                model_version=self.model_version
             )
 
         prediction_input = self._prepare_prediction_input(candidates)
+
+        if self.model is None:
+            raise RuntimeError("Le modèle de recommandation n’est pas chargé.")
 
         predictions = self.model.predict(prediction_input[self.features])
         candidates["score"] = predictions
@@ -255,8 +263,8 @@ class RecommendationService:
         self.prediction_logger.log_recommendation(
             request_id=request_id,
             user_id=user_id,
-            model_name=MODEL_NAME,
-            model_version=MODEL_VERSION,
+            model_name=self.model_name,
+            model_version=self.model_version,
             total_candidates=int(len(candidates)),
             recommendations=log_items,
             status="SUCCESS",
@@ -269,7 +277,7 @@ class RecommendationService:
             items=items,
             message="Recommendations generated successfully.",
             request_id=request_id,
-            model_version=MODEL_VERSION
+            model_version=self.model_version
         )
 
     def _find_user(self, user_id: str) -> pd.Series | None:
@@ -740,3 +748,44 @@ class RecommendationService:
 
         # On limite à 3 raisons pour garder une carte lisible côté Angular.
         return reasons[:3]
+    
+    def _load_model_from_registry(self) -> None:
+        active_model = get_active_model_metadata("recommendation")
+
+        model_path = resolve_registry_path(
+            active_model.get("artifact_path"),
+            required=True
+        )
+
+        features_path = resolve_registry_path(
+            active_model.get("features_path"),
+            required=True
+        )
+
+        model = CatBoostRanker()
+        model.load_model(str(model_path))
+
+        with features_path.open("r", encoding="utf-8") as file:
+            features_payload = json.load(file)
+
+        if isinstance(features_payload, list):
+            features = features_payload
+            categorical_features = []
+        else:
+            features = features_payload.get("features", [])
+            categorical_features = features_payload.get("categorical_features", [])
+
+        if not features:
+            raise ModelRegistryError(
+                f"Aucune feature trouvée dans le fichier features : {features_path}"
+            )
+
+        self.model = model
+        self.model_metadata = active_model
+
+        self.model_name = active_model.get("model_name", "CatBoostRanker")
+        self.model_version = active_model.get("version", "unknown")
+        self.model_status = active_model.get("status", "unknown")
+
+        self.features = features
+        self.categorical_features = categorical_features
