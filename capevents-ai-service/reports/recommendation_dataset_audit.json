@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-05-07T21:21:38.178068+00:00",
+  "dataset_path": "datasets\\processed\\recommendation_train.csv",
+  "rows": 24489,
+  "columns": 45,
+  "users": 1000,
+  "events": 1000,
+  "target_score_distribution": {
+    "0.0": 18489,
+    "1.0": 3466,
+    "2.0": 1084,
+    "-1.0": 940,
+    "3.0": 510
+  },
+  "data_source_distribution": {
+    "CAPEVENTS_NEGATIVE_SAMPLED": 18489,
+    "CAPEVENTS_CLEAN": 6000
+  },
+  "reminder_features": {
+    "was_reminded": {
+      "exists": true,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 8.166932091959655e-05,
+      "non_zero_count": 2,
+      "zero_count": 24487
+    },
+    "pair_reminder_count": {
+      "exists": true,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 8.166932091959655e-05,
+      "non_zero_count": 2,
+      "zero_count": 24487
+    },
+    "days_since_last_reminder": {
+      "exists": true,
+      "min": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "non_zero_count": 0,
+      "zero_count": 24489
+    },
+    "user_total_reminders_received": {
+      "exists": true,
+      "min": 0.0,
+      "max": 2.0,
+      "mean": 0.0498999550818735,
+      "non_zero_count": 1170,
+      "zero_count": 23319
+    },
+    "event_total_reminders_sent": {
+      "exists": true,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.03916043938094655,
+      "non_zero_count": 959,
+      "zero_count": 23530
+    }
+  },
+  "was_reminded_count": 2,
+  "was_reminded_rate": 8.2e-05,
+  "decision": "READY_FOR_BASELINE_ONLY",
+  "decision_explanation": "Les colonnes de relance existent, mais le volume de relances est trop faible pour entraîner une version v1.1.0 fiable basée sur ces signaux."
+}
