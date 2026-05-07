@@ -133,4 +133,4 @@ def model_version_exists(task: str, version: str) -> bool:
 
     versions = task_entry.get("versions", {})
 
-    return version in versions    
+    return version in versions 
