@@ -71,6 +71,9 @@
                             .requestMatchers("/api/ai/hr-copilot/**")
                             .hasAuthority("ROLE_HR")
 
+                            .requestMatchers("/api/ai/planning/**")
+                            .hasAnyAuthority("ROLE_HR", "ROLE_MANAGER")
+
                             .requestMatchers(HttpMethod.GET, "/api/departments").permitAll()
                             .requestMatchers("/api/auth/me").authenticated()
                             .anyRequest().authenticated()
