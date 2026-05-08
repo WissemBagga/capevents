@@ -100,11 +100,7 @@ class PlanningService:
 
         candidates = self._generate_candidate_slots(payload)
 
-        ranked = sorted(
-            candidates,
-            key=lambda item: item["score"],
-            reverse=True
-        )[:payload.limit]
+        ranked = self._select_diverse_slots(candidates, payload.limit)
 
         items = [
             PlanningSlotSuggestion(
@@ -128,7 +124,7 @@ class PlanningService:
             items=items,
             model_info={
                 "module": "IA 4 Planning Intelligent",
-                "version": "planning-hybrid-v0.1",
+                "version": "planning-hybrid-v0.2",
                 "strategy": "historical_statistics_plus_business_rules",
                 "trained_model_used": False,
                 "dataset_path": str(DATASET_PATH)
@@ -234,12 +230,16 @@ class PlanningService:
         if payload.duration_minutes > 180:
             duration_penalty = 0.05
 
-        score = clamp_score(
+        raw_score = clamp_score(
             base_score
             - conflict_penalty
             - department_conflict_penalty
             - duration_penalty
         )
+
+        # Calibration UX : le score affiché représente un potentiel relatif,
+        # pas une probabilité stricte de participation.
+        score = clamp_score(0.35 + 0.65 * raw_score)
 
         return {
             "score": score,
@@ -519,7 +519,7 @@ class PlanningService:
             items=final_items,
             model_info={
                 "module": "IA 4 Planning Intelligent",
-                "version": "planning-proposal-hybrid-v0.1",
+                "version": "planning-proposal-hybrid-v0.2",
                 "strategy": "weekly_history_analysis_plus_slot_scoring",
                 "trained_model_used": False
             }
@@ -657,28 +657,30 @@ class PlanningService:
                 {
                     "title": "Atelier collaboratif engagement interne",
                     "category": "Team building",
-                    "audience": "GLOBAL",
+                    "audience": "DEPARTMENT" if target_department_id else "GLOBAL",
                     "location_type": "ONSITE",
                     "target_department_id": target_department_id,
                     "duration_minutes": 90,
-                    "capacity": 30,
-                    "objective": "Créer un événement fédérateur pour stimuler l’engagement des collaborateurs.",
+                    "capacity": self._default_capacity(users, target_department_id),
+                    "objective": "Renforcer l’engagement des collaborateurs avec un format participatif.",
                     "rationale": [
-                        "Aucune donnée suffisante trouvée sur la semaine précédente.",
-                        "Un format collaboratif est recommandé comme point de départ.",
-                        "Le créneau sera optimisé par le moteur de planning."
+                        "Les données de la semaine précédente sont insuffisantes pour détecter une tendance forte.",
+                        "Un format collaboratif est recommandé comme action de mobilisation.",
+                        "Les créneaux sont optimisés séparément selon l’historique et les conflits calendrier."
                     ],
                     "metrics": {
-                        "source": "fallback_no_weekly_data"
+                        "source": "fallback_no_weekly_data",
+                        "data_confidence": "LOW"
                     }
                 }
             ]
 
         df = weekly_metrics.copy()
         df["category"] = df["category"].fillna("Autre").astype(str)
-        df["audience"] = df["audience"].fillna("GLOBAL").astype(str)
-        df["location_type"] = df["location_type"].fillna("ONSITE").astype(str)
+        df["audience"] = df["audience"].fillna("GLOBAL").astype(str).str.upper()
+        df["location_type"] = df["location_type"].fillna("ONSITE").astype(str).str.upper()
         df["duration_minutes"] = pd.to_numeric(df["duration_minutes"], errors="coerce").fillna(60)
+        df["capacity"] = pd.to_numeric(df["capacity"], errors="coerce").fillna(30)
         df["target_department_id"] = pd.to_numeric(
             df["target_department_id"],
             errors="coerce"
@@ -687,8 +689,31 @@ class PlanningService:
         if target_department_id is not None:
             df = df[
                 (df["target_department_id"] == int(target_department_id))
-                | (df["audience"].astype(str).str.upper() == "GLOBAL")
+                | (df["audience"] == "GLOBAL")
             ].copy()
+
+        if df.empty:
+            return [
+                {
+                    "title": "Atelier collaboratif engagement interne",
+                    "category": "Team building",
+                    "audience": "DEPARTMENT" if target_department_id else "GLOBAL",
+                    "location_type": "ONSITE",
+                    "target_department_id": target_department_id,
+                    "duration_minutes": 90,
+                    "capacity": self._default_capacity(users, target_department_id),
+                    "objective": "Créer une action ciblée pour stimuler l’engagement du département.",
+                    "rationale": [
+                        "Aucun événement récent exploitable n’a été trouvé pour le périmètre demandé.",
+                        "Le moteur recommande une action collaborative à faible risque.",
+                        "Le choix final reste à valider par le RH ou le manager."
+                    ],
+                    "metrics": {
+                        "source": "fallback_no_matching_weekly_data",
+                        "data_confidence": "LOW"
+                    }
+                }
+            ]
 
         category_summary = df.groupby("category").agg(
             events_count=("event_id", "count"),
@@ -696,46 +721,86 @@ class PlanningService:
             avg_attendance_rate=("attendance_rate", "mean"),
             avg_rating=("average_rating", "mean"),
             avg_capacity=("capacity", "mean"),
-            avg_duration=("duration_minutes", "mean")
+            avg_duration=("duration_minutes", "mean"),
+            total_registered=("registered_count", "sum"),
+            total_invitations=("invitation_count", "sum")
         ).reset_index()
 
-        category_summary["opportunity_score"] = (
-            (1 - category_summary["avg_registration_rate"].clip(0, 1)) * 0.45
-            + (1 - category_summary["avg_attendance_rate"].clip(0, 1)) * 0.35
-            + (category_summary["avg_rating"].fillna(0) / 5).clip(0, 1) * 0.20
+        category_summary["avg_rating"] = category_summary["avg_rating"].fillna(0)
+
+        category_summary["data_confidence_score"] = (
+            category_summary["events_count"].clip(0, 5) / 5
         )
 
+        category_summary["engagement_gap"] = (
+            1 - category_summary["avg_registration_rate"].clip(0, 1)
+        )
+
+        category_summary["quality_signal"] = (
+            category_summary["avg_rating"].clip(0, 5) / 5
+        )
+
+        category_summary["demand_signal"] = (
+            category_summary["total_registered"].clip(0, 50) / 50
+        )
+
+        category_summary["proposal_score"] = (
+            0.35 * category_summary["engagement_gap"]
+            + 0.25 * category_summary["quality_signal"]
+            + 0.20 * category_summary["demand_signal"]
+            + 0.20 * category_summary["data_confidence_score"]
+        ).clip(0, 1)
+
+        # Évite de promouvoir des catégories avec trop peu de signal.
         category_summary = category_summary.sort_values(
-            "opportunity_score",
+            ["proposal_score", "events_count"],
             ascending=False
         )
 
         for _, row in category_summary.iterrows():
             category = str(row["category"])
 
-            capacity = int(max(20, min(120, row["avg_capacity"] or 30)))
-            duration = int(max(45, min(180, row["avg_duration"] or 90)))
+            capacity = int(max(
+                20,
+                min(120, row["avg_capacity"] if row["avg_capacity"] > 0 else self._default_capacity(users, target_department_id))
+            ))
+
+            duration = int(max(
+                45,
+                min(180, row["avg_duration"] if row["avg_duration"] > 0 else 90)
+            ))
+
+            avg_registration_rate = float(row["avg_registration_rate"] or 0)
+            avg_attendance_rate = float(row["avg_attendance_rate"] or 0)
+            avg_rating = float(row["avg_rating"] or 0)
+            events_count = int(row["events_count"])
+
+            data_confidence = "MEDIUM" if events_count >= 5 else "LOW"
 
             proposal = {
                 "title": self._proposal_title_for_category(category),
                 "category": category,
                 "audience": "DEPARTMENT" if target_department_id else "GLOBAL",
-                "location_type": "ONSITE",
+                "location_type": self._preferred_location_for_category(category),
                 "target_department_id": target_department_id,
                 "duration_minutes": duration,
                 "capacity": capacity,
                 "objective": self._proposal_objective_for_category(category),
-                "rationale": [
-                    f"La catégorie {category} présente une opportunité d’amélioration sur la semaine précédente.",
-                    f"Taux moyen d’inscription observé : {round(float(row['avg_registration_rate']) * 100)}%.",
-                    f"Taux moyen de présence observé : {round(float(row['avg_attendance_rate']) * 100)}%."
-                ],
+                "rationale": self._build_proposal_rationale(
+                    category=category,
+                    events_count=events_count,
+                    avg_registration_rate=avg_registration_rate,
+                    avg_attendance_rate=avg_attendance_rate,
+                    avg_rating=avg_rating,
+                    data_confidence=data_confidence
+                ),
                 "metrics": {
-                    "events_count_previous_week": int(row["events_count"]),
-                    "avg_registration_rate": round(float(row["avg_registration_rate"]), 4),
-                    "avg_attendance_rate": round(float(row["avg_attendance_rate"]), 4),
-                    "avg_rating": round(float(row["avg_rating"]), 4),
-                    "opportunity_score": round(float(row["opportunity_score"]), 4)
+                    "events_count_previous_week": events_count,
+                    "avg_registration_rate": round(avg_registration_rate, 4),
+                    "avg_attendance_rate": round(avg_attendance_rate, 4),
+                    "avg_rating": round(avg_rating, 4),
+                    "proposal_score": round(float(row["proposal_score"]), 4),
+                    "data_confidence": data_confidence
                 }
             }
 
@@ -777,3 +842,143 @@ class PlanningService:
             category,
             "Proposer un événement interne adapté aux signaux observés dans les données récentes."
         )
+    
+    def _select_diverse_slots(self, candidates: list[dict], limit: int) -> list[dict]:
+        sorted_candidates = sorted(
+            candidates,
+            key=lambda item: item["score"],
+            reverse=True
+        )
+
+        selected: list[dict] = []
+        used_dates: set[str] = set()
+        used_hours: set[int] = set()
+
+        for item in sorted_candidates:
+            date_key = item["start_at"][:10]
+            hour = int(item["hour"])
+
+            if date_key in used_dates:
+                continue
+
+            if len(selected) >= 2 and hour in used_hours:
+                continue
+
+            selected.append(item)
+            used_dates.add(date_key)
+            used_hours.add(hour)
+
+            if len(selected) >= limit:
+                return selected
+
+        for item in sorted_candidates:
+            if item not in selected:
+                selected.append(item)
+
+            if len(selected) >= limit:
+                break
+
+        return selected
+    
+    def _default_capacity(self, users: pd.DataFrame, target_department_id: int | None) -> int:
+        if users.empty:
+            return 30
+
+        if target_department_id is None:
+            return 40
+
+        if "department_id" not in users.columns:
+            return 30
+
+        data = users.copy()
+        data["department_id"] = pd.to_numeric(data["department_id"], errors="coerce").fillna(0).astype(int)
+
+        if "is_active" in data.columns:
+            active = data["is_active"].fillna("").astype(str).str.lower()
+            data = data[active.isin(["true", "1", "yes", "y"])].copy()
+
+        department_size = len(data[data["department_id"] == int(target_department_id)])
+
+        if department_size <= 0:
+            return 30
+
+        return int(max(15, min(80, round(department_size * 0.35))))
+
+
+    def _preferred_location_for_category(self, category: str) -> str:
+        online_categories = {
+            "Webinaire",
+            "Formation",
+            "Conférence"
+        }
+
+        onsite_categories = {
+            "Team building",
+            "Sport",
+            "Bien-être",
+            "Afterwork",
+            "Networking",
+            "Culture d’entreprise"
+        }
+
+        if category in online_categories:
+            return "ONLINE"
+
+        if category in onsite_categories:
+            return "ONSITE"
+
+        return "ONSITE"
+
+
+    def _build_proposal_rationale(
+        self,
+        category: str,
+        events_count: int,
+        avg_registration_rate: float,
+        avg_attendance_rate: float,
+        avg_rating: float,
+        data_confidence: str
+    ) -> list[str]:
+        reasons: list[str] = []
+
+        if data_confidence == "LOW":
+            reasons.append(
+                f"La catégorie {category} dispose d’un signal récent limité ; la proposition doit être validée par le RH."
+            )
+        else:
+            reasons.append(
+                f"La catégorie {category} apparaît suffisamment dans l’historique récent pour guider une proposition."
+            )
+
+        if avg_registration_rate < 0.30:
+            reasons.append(
+                "Le taux d’inscription récent est faible : un format plus ciblé peut aider à améliorer l’engagement."
+            )
+        elif avg_registration_rate < 0.60:
+            reasons.append(
+                "Le taux d’inscription récent est moyen : une nouvelle session mieux positionnée peut améliorer la participation."
+            )
+        else:
+            reasons.append(
+                "Le taux d’inscription récent est encourageant : la catégorie peut être réutilisée avec un bon créneau."
+            )
+
+        if avg_attendance_rate < 0.50:
+            reasons.append(
+                "Le taux de présence suggère de privilégier un format court, clair et facile à intégrer dans l’agenda."
+            )
+        else:
+            reasons.append(
+                "Le taux de présence observé indique un intérêt réel lorsque le créneau est adapté."
+            )
+
+        if avg_rating >= 4:
+            reasons.append(
+                "Les notes de satisfaction sont bonnes, ce qui renforce l’intérêt de proposer un événement similaire."
+            )
+        elif avg_rating > 0:
+            reasons.append(
+                "Les retours de satisfaction restent perfectibles : l’événement doit avoir un objectif clair et opérationnel."
+            )
+
+        return reasons[:4]
