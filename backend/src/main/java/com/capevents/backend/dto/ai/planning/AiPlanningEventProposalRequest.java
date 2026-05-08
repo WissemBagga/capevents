@@ -8,7 +8,7 @@ public record AiPlanningEventProposalRequest(
         String referenceDate,
 
         @JsonProperty("target_department_id")
-        Integer targetDepartmentId,
+        Long targetDepartmentId,
 
         Integer limit,
 

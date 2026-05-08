@@ -10,7 +10,7 @@ public record AiPlanningSuggestionRequest(
         String locationType,
 
         @JsonProperty("target_department_id")
-        Integer targetDepartmentId,
+        Long targetDepartmentId,
 
         @JsonProperty("duration_minutes")
         Integer durationMinutes,
