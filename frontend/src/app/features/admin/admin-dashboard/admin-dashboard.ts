@@ -35,7 +35,7 @@ export class AdminDashboard {
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
-  
+
   private authService = inject(AuthService);
 
   private userService = inject(UserService);
@@ -74,7 +74,7 @@ export class AdminDashboard {
   planningSlotLimit = 3;
   planningDaysHorizon = 30;
   planningTargetDepartmentId: number | null = null;
-  
+
 
 
 
@@ -282,7 +282,7 @@ export class AdminDashboard {
         }
       });
   }
-  
+
 
   cancel(event: EventResponse): void {
     const registered = event.registeredCount ?? 0;
@@ -323,7 +323,7 @@ export class AdminDashboard {
     return this.authService.isHr()
       ? 'Gérez le cycle de vie de tous les événements de la plateforme.'
       : 'Gérez les événements de votre périmètre.';
-  } 
+  }
 
   get isHr(): boolean{
     return this.authService.isHr();
@@ -487,5 +487,18 @@ export class AdminDashboard {
 
   trackByPlanningSlot(_: number, item: any): number {
     return item.rank;
+  }
+
+  planningConfidenceLabel(confidence: string): string {
+    switch (confidence) {
+      case 'MEDIUM':
+        return 'Confiance moyenne';
+      case 'LOW':
+        return 'Confiance faible';
+      case 'VERY_LOW':
+        return 'Confiance très faible';
+      default:
+        return confidence || 'Confiance non définie';
+    }
   }
 }

@@ -179,7 +179,7 @@
 
                         <div class="planning-score">
                           <strong>{{ planningScorePercent(slot.score) }}%</strong>
-                          <span>{{ slot.confidence }}</span>
+                          <span>{{ planningConfidenceLabel(slot.confidence) }}</span>
                         </div>
                       </div>
                     }
@@ -294,7 +294,7 @@
               [class.status-archived]="event.status === 'ARCHIVED'"
               [class.status-rejected]="event.status === 'REJECTED'"
               [class.status-pending]="event.status === 'PENDING'"
-              
+
               >
               {{ statusLabel(event.status) }}
             </span>

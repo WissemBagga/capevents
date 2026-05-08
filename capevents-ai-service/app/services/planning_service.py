@@ -124,7 +124,7 @@ class PlanningService:
             items=items,
             model_info={
                 "module": "IA 4 Planning Intelligent",
-                "version": "planning-hybrid-v0.2",
+                "version": "planning-hybrid-v0.3",
                 "strategy": "historical_statistics_plus_business_rules",
                 "trained_model_used": False,
                 "dataset_path": str(DATASET_PATH)
@@ -214,13 +214,25 @@ class PlanningService:
             target_department_id=payload.target_department_id
         )
 
+        category_hour_score = self._category_hour_score(
+            category=payload.category,
+            hour=hour
+        )
+
+        day_preference_score = self._day_preference_score(day_of_week)
+
+        horizon_score = self._horizon_score(slot_start)
+
         base_score = (
-            0.25 * history["category_registration_rate"]
-            + 0.20 * history["category_attendance_rate"]
-            + 0.20 * history["hour_registration_rate"]
-            + 0.15 * history["day_registration_rate"]
-            + 0.10 * history["department_participation_rate"]
-            + 0.10 * self._time_preference_score(hour)
+            0.18 * history["category_registration_rate"]
+            + 0.14 * history["category_attendance_rate"]
+            + 0.14 * history["hour_registration_rate"]
+            + 0.10 * history["day_registration_rate"]
+            + 0.12 * history["department_participation_rate"]
+            + 0.14 * self._time_preference_score(hour)
+            + 0.12 * category_hour_score
+            + 0.08 * day_preference_score
+            + 0.08 * horizon_score
         )
 
         conflict_penalty = min(0.30, 0.08 * conflicts["events_same_day_count"])
@@ -256,7 +268,10 @@ class PlanningService:
                 "base_score": round(base_score, 4),
                 "conflict_penalty": round(conflict_penalty, 4),
                 "department_conflict_penalty": round(department_conflict_penalty, 4),
-                "duration_penalty": round(duration_penalty, 4)
+                "duration_penalty": round(duration_penalty, 4),
+                "category_hour_score": round(category_hour_score, 4),
+                "day_preference_score": round(day_preference_score, 4),
+                "horizon_score": round(horizon_score, 4)
             }
         }
 
@@ -470,7 +485,8 @@ class PlanningService:
         raw_proposals = self._build_event_proposal_candidates(
             weekly_metrics=weekly_metrics,
             users=users,
-            target_department_id=payload.target_department_id
+            target_department_id=payload.target_department_id,
+            limit=payload.limit
         )
 
         final_items: list[PlanningEventProposal] = []
@@ -519,7 +535,7 @@ class PlanningService:
             items=final_items,
             model_info={
                 "module": "IA 4 Planning Intelligent",
-                "version": "planning-proposal-hybrid-v0.2",
+                "version": "planning-proposal-hybrid-v0.3",
                 "strategy": "weekly_history_analysis_plus_slot_scoring",
                 "trained_model_used": False
             }
@@ -648,32 +664,16 @@ class PlanningService:
         self,
         weekly_metrics: pd.DataFrame,
         users: pd.DataFrame,
-        target_department_id: int | None
+        target_department_id: int | None,
+        limit: int
     ) -> list[dict]:
         proposals: list[dict] = []
 
         if weekly_metrics.empty:
-            return [
-                {
-                    "title": "Atelier collaboratif engagement interne",
-                    "category": "Team building",
-                    "audience": "DEPARTMENT" if target_department_id else "GLOBAL",
-                    "location_type": "ONSITE",
-                    "target_department_id": target_department_id,
-                    "duration_minutes": 90,
-                    "capacity": self._default_capacity(users, target_department_id),
-                    "objective": "Renforcer l’engagement des collaborateurs avec un format participatif.",
-                    "rationale": [
-                        "Les données de la semaine précédente sont insuffisantes pour détecter une tendance forte.",
-                        "Un format collaboratif est recommandé comme action de mobilisation.",
-                        "Les créneaux sont optimisés séparément selon l’historique et les conflits calendrier."
-                    ],
-                    "metrics": {
-                        "source": "fallback_no_weekly_data",
-                        "data_confidence": "LOW"
-                    }
-                }
-            ]
+            return self._fallback_proposal_catalog(
+                users=users,
+                target_department_id=target_department_id
+            )[:limit]
 
         df = weekly_metrics.copy()
         df["category"] = df["category"].fillna("Autre").astype(str)
@@ -693,27 +693,10 @@ class PlanningService:
             ].copy()
 
         if df.empty:
-            return [
-                {
-                    "title": "Atelier collaboratif engagement interne",
-                    "category": "Team building",
-                    "audience": "DEPARTMENT" if target_department_id else "GLOBAL",
-                    "location_type": "ONSITE",
-                    "target_department_id": target_department_id,
-                    "duration_minutes": 90,
-                    "capacity": self._default_capacity(users, target_department_id),
-                    "objective": "Créer une action ciblée pour stimuler l’engagement du département.",
-                    "rationale": [
-                        "Aucun événement récent exploitable n’a été trouvé pour le périmètre demandé.",
-                        "Le moteur recommande une action collaborative à faible risque.",
-                        "Le choix final reste à valider par le RH ou le manager."
-                    ],
-                    "metrics": {
-                        "source": "fallback_no_matching_weekly_data",
-                        "data_confidence": "LOW"
-                    }
-                }
-            ]
+            return self._fallback_proposal_catalog(
+                users=users,
+                target_department_id=target_department_id
+            )[:limit]
 
         category_summary = df.groupby("category").agg(
             events_count=("event_id", "count"),
@@ -806,7 +789,12 @@ class PlanningService:
 
             proposals.append(proposal)
 
-        return proposals
+        return self._supplement_proposals(
+            proposals=proposals,
+            users=users,
+            target_department_id=target_department_id,
+            limit=limit
+        )
     
     def _proposal_title_for_category(self, category: str) -> str:
         mapping = {
@@ -982,3 +970,204 @@ class PlanningService:
             )
 
         return reasons[:4]
+    
+    def _fallback_proposal_catalog(
+        self,
+        users: pd.DataFrame,
+        target_department_id: int | None
+    ) -> list[dict]:
+        audience = "DEPARTMENT" if target_department_id else "GLOBAL"
+        capacity = self._default_capacity(users, target_department_id)
+
+        return [
+            {
+                "title": "Atelier pratique montée en compétences",
+                "category": "Formation",
+                "audience": audience,
+                "location_type": "ONLINE",
+                "target_department_id": target_department_id,
+                "duration_minutes": 60,
+                "capacity": capacity,
+                "objective": "Renforcer les compétences des collaborateurs avec un format court et opérationnel.",
+                "rationale": [
+                    "Les données récentes sont limitées pour ce périmètre.",
+                    "Une formation courte permet de proposer une action utile avec un risque faible.",
+                    "Le créneau sera optimisé par le moteur de planning."
+                ],
+                "metrics": {
+                    "source": "strategic_fallback",
+                    "data_confidence": "LOW"
+                }
+            },
+            {
+                "title": "Défi collaboratif cohésion d’équipe",
+                "category": "Team building",
+                "audience": audience,
+                "location_type": "ONSITE",
+                "target_department_id": target_department_id,
+                "duration_minutes": 90,
+                "capacity": capacity,
+                "objective": "Améliorer la cohésion et l’engagement des équipes.",
+                "rationale": [
+                    "Le moteur recommande une action collaborative lorsque les signaux récents sont faibles.",
+                    "Le format collectif favorise l’engagement et la participation.",
+                    "Le choix final reste à valider par le RH ou le manager."
+                ],
+                "metrics": {
+                    "source": "strategic_fallback",
+                    "data_confidence": "LOW"
+                }
+            },
+            {
+                "title": "Session innovation et idées terrain",
+                "category": "Innovation",
+                "audience": audience,
+                "location_type": "ONSITE",
+                "target_department_id": target_department_id,
+                "duration_minutes": 75,
+                "capacity": capacity,
+                "objective": "Faire émerger des idées concrètes à partir des besoins terrain.",
+                "rationale": [
+                    "Une session innovation permet de créer de l’engagement même avec peu de données récentes.",
+                    "Le format participatif aide à identifier des sujets utiles pour les collaborateurs.",
+                    "Les créneaux proposés limitent les conflits avec l’agenda existant."
+                ],
+                "metrics": {
+                    "source": "strategic_fallback",
+                    "data_confidence": "LOW"
+                }
+            },
+            {
+                "title": "Rencontre culture interne et engagement",
+                "category": "Culture d’entreprise",
+                "audience": audience,
+                "location_type": "ONSITE",
+                "target_department_id": target_department_id,
+                "duration_minutes": 60,
+                "capacity": capacity,
+                "objective": "Renforcer l’adhésion aux pratiques et valeurs internes.",
+                "rationale": [
+                    "La culture interne est pertinente lorsque le moteur manque de signaux récents ciblés.",
+                    "Le format court facilite l’intégration dans l’agenda.",
+                    "La proposition reste à adapter selon le contexte RH."
+                ],
+                "metrics": {
+                    "source": "strategic_fallback",
+                    "data_confidence": "LOW"
+                }
+            },
+            {
+                "title": "Pause bien-être et équilibre au travail",
+                "category": "Bien-être",
+                "audience": audience,
+                "location_type": "ONSITE",
+                "target_department_id": target_department_id,
+                "duration_minutes": 45,
+                "capacity": capacity,
+                "objective": "Soutenir la qualité de vie au travail avec une activité accessible.",
+                "rationale": [
+                    "Un format bien-être peut améliorer l’engagement sans nécessiter une forte préparation.",
+                    "La durée courte réduit le risque de faible disponibilité.",
+                    "Le moteur sélectionne ensuite les créneaux les moins conflictuels."
+                ],
+                "metrics": {
+                    "source": "strategic_fallback",
+                    "data_confidence": "LOW"
+                }
+            }
+        ]
+
+
+    def _supplement_proposals(
+        self,
+        proposals: list[dict],
+        users: pd.DataFrame,
+        target_department_id: int | None,
+        limit: int
+    ) -> list[dict]:
+        if len(proposals) >= limit:
+            return proposals[:limit]
+
+        existing_categories = {
+            str(item.get("category", "")).lower()
+            for item in proposals
+        }
+
+        for fallback in self._fallback_proposal_catalog(users, target_department_id):
+            category_key = str(fallback.get("category", "")).lower()
+
+            if category_key in existing_categories:
+                continue
+
+            proposals.append(fallback)
+            existing_categories.add(category_key)
+
+            if len(proposals) >= limit:
+                break
+
+        return proposals[:limit]
+    
+    def _category_hour_score(self, category: str, hour: int) -> float:
+        category_normalized = str(category or "").lower()
+
+        if "formation" in category_normalized or "webinaire" in category_normalized:
+            if hour in [10, 11, 14]:
+                return 0.85
+            if hour in [9, 15]:
+                return 0.65
+            return 0.45
+
+        if "team" in category_normalized or "sport" in category_normalized or "bien" in category_normalized:
+            if hour in [12, 16, 17]:
+                return 0.85
+            if hour in [15, 18]:
+                return 0.70
+            return 0.45
+
+        if "afterwork" in category_normalized or "networking" in category_normalized:
+            if hour in [16, 17, 18]:
+                return 0.90
+            if hour in [15]:
+                return 0.65
+            return 0.35
+
+        if "innovation" in category_normalized or "atelier" in category_normalized:
+            if hour in [10, 14, 15]:
+                return 0.80
+            if hour in [11, 16]:
+                return 0.65
+            return 0.45
+
+        if hour in [10, 14, 15]:
+            return 0.70
+
+        return 0.50
+
+
+    def _day_preference_score(self, day_of_week: int) -> float:
+        # 0 lundi, 1 mardi, 2 mercredi, 3 jeudi, 4 vendredi
+        if day_of_week in [1, 2, 3]:
+            return 0.80
+
+        if day_of_week == 0:
+            return 0.60
+
+        if day_of_week == 4:
+            return 0.45
+
+        return 0.30
+
+
+    def _horizon_score(self, slot_start: datetime) -> float:
+        days_until = (slot_start - utc_now()).days
+
+        if 7 <= days_until <= 21:
+            return 0.85
+
+        if 22 <= days_until <= 45:
+            return 0.70
+
+        if 3 <= days_until < 7:
+            return 0.55
+
+        return 0.40
