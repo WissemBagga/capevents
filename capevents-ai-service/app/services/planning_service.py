@@ -112,6 +112,7 @@ class PlanningService:
         generated_at = utc_now().isoformat()
 
         candidates = self._generate_candidate_slots(payload)
+        candidates = self._calibrate_candidate_scores(candidates)
 
         ranked = self._select_diverse_slots(candidates, payload.limit)
 
@@ -1332,3 +1333,102 @@ class PlanningService:
             return 0
 
         return int(pd.to_numeric(rows["department_size"], errors="coerce").fillna(0).mean())
+    
+    def _calibrate_candidate_scores(self, candidates: list[dict]) -> list[dict]:
+        if not candidates:
+            return candidates
+
+        model_values = []
+        hybrid_values = []
+
+        for item in candidates:
+            metrics = item.get("metrics", {})
+
+            model_prediction = metrics.get("model_prediction")
+            hybrid_score = metrics.get("hybrid_score", item.get("score", 0))
+
+            if model_prediction is not None:
+                model_values.append(float(model_prediction))
+
+            hybrid_values.append(float(hybrid_score or 0))
+
+        for item in candidates:
+            metrics = item.setdefault("metrics", {})
+
+            model_prediction = metrics.get("model_prediction")
+            hybrid_score = float(metrics.get("hybrid_score", item.get("score", 0)) or 0)
+
+            if model_prediction is not None and model_values:
+                model_rank_score = self._rank_normalized_value(
+                    float(model_prediction),
+                    model_values
+                )
+            else:
+                model_rank_score = 0.5
+
+            hybrid_rank_score = self._rank_normalized_value(
+                hybrid_score,
+                hybrid_values
+            )
+
+            business_score = self._business_slot_score(metrics)
+
+            overlap_count = int(metrics.get("overlap_count", 0) or 0)
+            department_overlap_count = int(metrics.get("department_overlap_count", 0) or 0)
+
+            conflict_penalty = min(0.18, 0.04 * overlap_count)
+            department_penalty = min(0.18, 0.06 * department_overlap_count)
+
+            relative_score = (
+                0.55 * model_rank_score
+                + 0.25 * hybrid_rank_score
+                + 0.20 * business_score
+            )
+
+            display_score = clamp_score(
+                0.35
+                + 0.60 * relative_score
+                - conflict_penalty
+                - department_penalty
+            )
+
+            item["score"] = round(display_score, 4)
+
+            metrics["score_type"] = "relative_ai_potential_score"
+            metrics["model_prediction_raw"] = round(float(model_prediction), 4) if model_prediction is not None else None
+            metrics["model_rank_score"] = round(model_rank_score, 4)
+            metrics["hybrid_rank_score"] = round(hybrid_rank_score, 4)
+            metrics["business_slot_score"] = round(business_score, 4)
+            metrics["display_score"] = round(display_score, 4)
+
+        return candidates
+    
+    def _rank_normalized_value(self, value: float, values: list[float]) -> float:
+        valid_values = [
+            float(item)
+            for item in values
+            if item is not None
+        ]
+
+        if len(valid_values) <= 1:
+            return 0.5
+
+        min_value = min(valid_values)
+        max_value = max(valid_values)
+
+        if abs(max_value - min_value) < 1e-9:
+            return 0.5
+
+        return clamp_score((value - min_value) / (max_value - min_value))
+
+
+    def _business_slot_score(self, metrics: dict) -> float:
+        category_hour_score = float(metrics.get("category_hour_score", 0.5) or 0.5)
+        day_preference_score = float(metrics.get("day_preference_score", 0.5) or 0.5)
+        horizon_score = float(metrics.get("horizon_score", 0.5) or 0.5)
+
+        return clamp_score(
+            0.45 * category_hour_score
+            + 0.30 * day_preference_score
+            + 0.25 * horizon_score
+        )
