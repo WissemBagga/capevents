@@ -22,6 +22,15 @@ from app.data.runtime_loader import (
     load_runtime_invitations
 )
 
+import json
+from catboost import CatBoostRegressor
+
+from app.core.model_registry import (
+    get_active_model_metadata,
+    resolve_registry_path,
+    ModelRegistryError
+)
+
 
 
 DATASET_PATH = Path("datasets/processed/planning_train.csv")
@@ -72,6 +81,10 @@ def clamp_score(value: float) -> float:
 class PlanningService:
     def __init__(self) -> None:
         self.dataset = self._load_dataset()
+        self.planning_model = None
+        self.planning_features_payload = None
+        self.planning_model_metadata = None
+        self._load_planning_model()
 
     def _load_dataset(self) -> pd.DataFrame:
         if not DATASET_PATH.exists():
@@ -124,9 +137,17 @@ class PlanningService:
             items=items,
             model_info={
                 "module": "IA 4 Planning Intelligent",
-                "version": "planning-hybrid-v0.3",
-                "strategy": "historical_statistics_plus_business_rules",
-                "trained_model_used": False,
+                "version": (
+                    self.planning_model_metadata.get("version")
+                    if self.planning_model_metadata
+                    else "planning-hybrid-v0.3"
+                ),
+                "strategy": (
+                    "catboost_regressor_plus_business_rules"
+                    if self.planning_model is not None
+                    else "historical_statistics_plus_business_rules"
+                ),
+                "trained_model_used": self.planning_model is not None,
                 "dataset_path": str(DATASET_PATH)
             }
         )
@@ -214,6 +235,14 @@ class PlanningService:
             target_department_id=payload.target_department_id
         )
 
+        model_prediction = self._predict_slot_success_score(
+            payload=payload,
+            slot_start=slot_start,
+            runtime_events=runtime_events,
+            history=history,
+            conflicts=conflicts
+        )
+
         category_hour_score = self._category_hour_score(
             category=payload.category,
             hour=hour
@@ -253,6 +282,21 @@ class PlanningService:
         # pas une probabilité stricte de participation.
         score = clamp_score(0.35 + 0.65 * raw_score)
 
+        hybrid_score = clamp_score(0.35 + 0.65 * raw_score)
+
+        if model_prediction is not None:
+            model_score = clamp_score(0.35 + 0.65 * model_prediction)
+
+            score = clamp_score(
+                0.70 * model_score
+                + 0.30 * hybrid_score
+            )
+
+            trained_model_used = True
+        else:
+            score = hybrid_score
+            trained_model_used = False
+
         return {
             "score": score,
             "confidence": self._confidence_label(history),
@@ -271,7 +315,10 @@ class PlanningService:
                 "duration_penalty": round(duration_penalty, 4),
                 "category_hour_score": round(category_hour_score, 4),
                 "day_preference_score": round(day_preference_score, 4),
-                "horizon_score": round(horizon_score, 4)
+                "horizon_score": round(horizon_score, 4),
+                "trained_model_used": trained_model_used,
+                "model_prediction": round(model_prediction, 4) if model_prediction is not None else None,
+                "hybrid_score": round(hybrid_score, 4),
             }
         }
 
@@ -535,9 +582,17 @@ class PlanningService:
             items=final_items,
             model_info={
                 "module": "IA 4 Planning Intelligent",
-                "version": "planning-proposal-hybrid-v0.3",
-                "strategy": "weekly_history_analysis_plus_slot_scoring",
-                "trained_model_used": False
+                "version": (
+                    self.planning_model_metadata.get("version")
+                    if self.planning_model_metadata
+                    else "planning-proposal-hybrid-v0.3"
+                ),
+                "strategy": (
+                    "weekly_history_analysis_plus_catboost_slot_scoring"
+                    if self.planning_model is not None
+                    else "weekly_history_analysis_plus_hybrid_slot_scoring"
+                ),
+                "trained_model_used": self.planning_model is not None
             }
         )
 
@@ -1171,3 +1226,109 @@ class PlanningService:
             return 0.55
 
         return 0.40
+    
+    def _load_planning_model(self) -> None:
+        try:
+            metadata = get_active_model_metadata("planning")
+
+            model_path = resolve_registry_path(
+                metadata.get("artifact_path"),
+                required=True
+            )
+
+            features_path = resolve_registry_path(
+                metadata.get("features_path"),
+                required=True
+            )
+
+            model = CatBoostRegressor()
+            model.load_model(str(model_path))
+
+            with features_path.open("r", encoding="utf-8") as file:
+                features_payload = json.load(file)
+
+            self.planning_model = model
+            self.planning_features_payload = features_payload
+            self.planning_model_metadata = metadata
+
+        except Exception:
+            self.planning_model = None
+            self.planning_features_payload = None
+            self.planning_model_metadata = None
+
+    def _predict_slot_success_score(
+        self,
+        payload: PlanningSuggestionRequest,
+        slot_start: datetime,
+        runtime_events: pd.DataFrame,
+        history: dict,
+        conflicts: dict
+    ) -> float | None:
+        if self.planning_model is None or self.planning_features_payload is None:
+            return None
+
+        try:
+            features = self.planning_features_payload["features"]
+            categorical_features = self.planning_features_payload.get("categorical_features", [])
+
+            row = {
+                "event_category": payload.category,
+                "event_audience": payload.audience,
+                "event_location_type": payload.location_type if hasattr(payload, "location_type") else payload.location_type,
+                "target_department_id": payload.target_department_id or 0,
+                "capacity": payload.capacity,
+                "duration_minutes": payload.duration_minutes,
+                "day_of_week": slot_start.weekday(),
+                "hour": slot_start.hour,
+                "month": slot_start.month,
+                "is_morning": int(8 <= slot_start.hour <= 11),
+                "is_afternoon": int(12 <= slot_start.hour <= 17),
+                "is_afterwork": int(slot_start.hour >= 18),
+                "department_size": self._estimate_department_size(payload.target_department_id),
+                "events_same_day_count": conflicts.get("events_same_day_count", 0),
+                "events_same_department_same_week_count": conflicts.get("department_overlap_count", 0),
+                "historical_category_registration_rate": history.get("category_registration_rate", 0),
+                "historical_category_attendance_rate": history.get("category_attendance_rate", 0),
+                "historical_department_participation_rate": history.get("department_participation_rate", 0),
+                "historical_hour_registration_rate": history.get("hour_registration_rate", 0),
+                "historical_day_registration_rate": history.get("day_registration_rate", 0)
+            }
+
+            df = pd.DataFrame([row])
+
+            for column in features:
+                if column not in df.columns:
+                    df[column] = "UNKNOWN" if column in categorical_features else 0
+
+            for column in categorical_features:
+                df[column] = df[column].fillna("UNKNOWN").astype(str)
+
+            for column in features:
+                if column not in categorical_features:
+                    df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+            prediction = float(self.planning_model.predict(df[features])[0])
+
+            return clamp_score(prediction)
+
+        except Exception:
+            return None
+        
+    def _estimate_department_size(self, target_department_id: int | None) -> int:
+        if self.dataset.empty:
+            return 0
+
+        if target_department_id is None:
+            return int(pd.to_numeric(self.dataset.get("department_size", 0), errors="coerce").fillna(0).mean())
+
+        rows = self.dataset[
+            pd.to_numeric(
+                self.dataset.get("target_department_id", 0),
+                errors="coerce"
+            ).fillna(0).astype(int) == int(target_department_id)
+        ]
+
+        if rows.empty or "department_size" not in rows.columns:
+            return 0
+
+        return int(pd.to_numeric(rows["department_size"], errors="coerce").fillna(0).mean())
