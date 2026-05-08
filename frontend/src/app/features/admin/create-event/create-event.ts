@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { EventService } from '../../../core/services/event.service';
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -11,6 +11,7 @@ import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories
 import { EVENT_IMAGE_PRESETS, getDefaultEventImage } from '../../../core/constants/event-image-presets';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+
 
 
 @Component({
@@ -27,6 +28,7 @@ export class CreateEvent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
 
   readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
   readonly eventImagePresets = EVENT_IMAGE_PRESETS;
@@ -63,12 +65,13 @@ export class CreateEvent {
   });
 
   ngOnInit(): void {
-  this.loadDepartments();
-  this.applyRoleRules();
-  this.onLocationTypeChange();
-  this.onAudienceChange();
-  this.syncEventImageSelection();
-}
+    this.loadDepartments();
+    this.applyRoleRules();
+    this.onLocationTypeChange();
+    this.onAudienceChange();
+    this.syncEventImageSelection();
+    this.applyAiPlanningProposalIfPresent();
+  }
 
   get isHr(): boolean {
     return this.authService.hasRole('ROLE_HR');
@@ -358,4 +361,68 @@ export class CreateEvent {
       return false;
     }
   }
+
+  private applyAiPlanningProposalIfPresent(): void {
+    const key = this.route.snapshot.queryParamMap.get('aiProposal');
+
+    if (!key) return;
+
+    const raw = sessionStorage.getItem(key);
+
+    if (!raw) return;
+
+    try {
+      const proposal = JSON.parse(raw);
+
+      const startAtLocal = this.toDateTimeLocalValue(proposal.startAt);
+      const deadlineLocal = this.buildDefaultRegistrationDeadline(proposal.startAt);
+
+      this.form.patchValue({
+        title: proposal.title ?? '',
+        category: proposal.category ?? '',
+        description: proposal.description ?? '',
+        startAt: startAtLocal,
+        durationMinutes: proposal.durationMinutes ?? 60,
+        locationType: proposal.locationType ?? 'ONSITE',
+        capacity: proposal.capacity ?? 30,
+        registrationDeadline: deadlineLocal,
+        audience: this.isManager ? 'DEPARTMENT' : proposal.audience ?? 'DEPARTMENT',
+        targetDepartmentId: this.isManager ? this.currentDepartmentId : proposal.targetDepartmentId ?? null
+      });
+
+      this.onLocationTypeChange();
+      this.onAudienceChange();
+
+      this.imageMode = 'AUTO';
+      this.syncEventImageSelection();
+
+      sessionStorage.removeItem(key);
+
+      this.successMessage = 'Proposition IA appliquée au formulaire. Vérifiez les informations avant validation.';
+      this.cdr.markForCheck();
+    } catch {
+      this.errorMessage = 'Impossible de charger la proposition IA.';
+      this.cdr.markForCheck();
+    }
+  }
+
+  private toDateTimeLocalValue(value: string): string {
+    if (!value) return '';
+
+    const date = new Date(value);
+    const offsetMs = date.getTimezoneOffset() * 60000;
+    const localDate = new Date(date.getTime() - offsetMs);
+
+    return localDate.toISOString().slice(0, 16);
+  }
+
+  private buildDefaultRegistrationDeadline(startAt: string): string {
+    if (!startAt) return '';
+
+    const date = new Date(startAt);
+    date.setDate(date.getDate() - 1);
+
+    return this.toDateTimeLocalValue(date.toISOString());
+  }
+
 }

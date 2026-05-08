@@ -16,6 +16,12 @@ import { Department } from '../../../core/models/department.model';
 
 import { resolveEventImageUrl } from '../../../core/constants/event-image-presets';
 
+import { AiPlanningService } from '../../../core/services/ai-planning.service';
+import {
+  AiPlanningEventProposal,
+  AiPlanningEventProposalResponse
+} from '../../../core/models/ai-planning.model';
+
 
 
 @Component({
@@ -33,6 +39,8 @@ export class AdminDashboard {
   private authService = inject(AuthService);
 
   private userService = inject(UserService);
+
+  private aiPlanningService = inject(AiPlanningService);
 
   departments: Department[] = [];
   selectedAudience = 'ALL';
@@ -54,6 +62,18 @@ export class AdminDashboard {
   totalItems = 0;
   hasNext = false;
   hasPrevious = false;
+
+
+  aiPlanningLoading = false;
+  aiPlanningError = '';
+  aiPlanningResponse: AiPlanningEventProposalResponse | null = null;
+  showAiPlanningPanel = false;
+
+  planningReferenceDate = '';
+  planningLimit = 3;
+  planningSlotLimit = 3;
+  planningDaysHorizon = 30;
+  planningTargetDepartmentId: number | null = null;
   
 
 
@@ -61,6 +81,11 @@ export class AdminDashboard {
   ngOnInit(): void {
     if (this.authService.isHr()) {
       this.loadDepartments();
+    }
+
+    if (this.authService.isManager()) {
+      const currentUser = this.authService.getCurrentUserSnapshot();
+      this.planningTargetDepartmentId = currentUser?.departmentId ?? null;
     }
     this.loadEvents();
   }
@@ -302,5 +327,165 @@ export class AdminDashboard {
 
   get isHr(): boolean{
     return this.authService.isHr();
+  }
+
+  get isManager(): boolean {
+    return this.authService.isManager();
+  }
+
+  get currentDepartmentName(): string {
+    return this.authService.getCurrentUserSnapshot()?.departmentName || 'Votre département';
+  }
+
+  canUsePlanningAi(): boolean {
+    return this.authService.isHr() || this.authService.isManager();
+  }
+
+  toggleAiPlanningPanel(): void {
+    this.showAiPlanningPanel = !this.showAiPlanningPanel;
+    this.cdr.markForCheck();
+  }
+
+  loadAiPlanningProposals(): void {
+    if (!this.canUsePlanningAi()) return;
+
+    this.aiPlanningLoading = true;
+    this.aiPlanningError = '';
+    this.aiPlanningResponse = null;
+    this.cdr.markForCheck();
+
+    const targetDepartmentId = this.authService.isManager()
+      ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
+      : this.planningTargetDepartmentId;
+
+    this.aiPlanningService.proposeEvents({
+      referenceDate: this.planningReferenceDate || null,
+      targetDepartmentId,
+      limit: this.planningLimit,
+      slotLimit: this.planningSlotLimit,
+      daysHorizon: this.planningDaysHorizon
+    })
+      .pipe(finalize(() => {
+        this.aiPlanningLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response) => {
+          this.aiPlanningResponse = response;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.aiPlanningError =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de générer les propositions IA.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  planningScorePercent(score: number): number {
+    return Math.round((score ?? 0) * 100);
+  }
+
+  planningAudienceLabel(audience: string): string {
+    switch (audience) {
+      case 'GLOBAL':
+        return 'Global';
+      case 'DEPARTMENT':
+        return 'Département';
+      default:
+        return audience || 'N/D';
+    }
+  }
+
+  planningLocationLabel(locationType: string): string {
+    switch (locationType) {
+      case 'ONSITE':
+        return 'Présentiel';
+      case 'ONLINE':
+        return 'En ligne';
+      case 'EXTERNAL':
+        return 'Externe';
+      default:
+        return locationType || 'N/D';
+    }
+  }
+
+  usePlanningProposal(proposal: AiPlanningEventProposal): void {
+    const firstSlot = proposal.suggestedSlots?.[0];
+
+    if (!firstSlot) {
+      this.aiPlanningError = 'Cette proposition ne contient aucun créneau utilisable.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const draft = {
+      title: proposal.title,
+      category: proposal.category,
+      description: this.buildPlanningDescription(proposal),
+      startAt: firstSlot.startAt,
+      durationMinutes: proposal.durationMinutes,
+      locationType: proposal.locationType || 'ONSITE',
+      capacity: proposal.capacity,
+      audience: this.authService.isManager() ? 'DEPARTMENT' : proposal.audience,
+      targetDepartmentId: this.authService.isManager()
+        ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
+        : proposal.targetDepartmentId
+    };
+
+    const key = `ai-planning-proposal-${Date.now()}`;
+    sessionStorage.setItem(key, JSON.stringify(draft));
+
+    this.router.navigate(['/admin/create-event'], {
+      queryParams: {
+        aiProposal: key
+      }
+    });
+  }
+
+  private buildPlanningDescription(proposal: AiPlanningEventProposal): string {
+    const rationale = (proposal.rationale ?? [])
+      .map(item => `- ${item}`)
+      .join('\n');
+
+    return [
+      proposal.objective,
+      '',
+      'Proposition générée par IA Planning Intelligent.',
+      '',
+      'Justification :',
+      rationale
+    ].join('\n');
+  }
+
+  copyPlanningProposal(proposal: AiPlanningEventProposal): void {
+    const firstSlot = proposal.suggestedSlots?.[0];
+
+    const text = [
+      `Titre : ${proposal.title}`,
+      `Catégorie : ${proposal.category}`,
+      `Audience : ${this.planningAudienceLabel(proposal.audience)}`,
+      `Format : ${this.planningLocationLabel(proposal.locationType)}`,
+      `Durée : ${proposal.durationMinutes} minutes`,
+      `Capacité : ${proposal.capacity} places`,
+      firstSlot ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}` : '',
+      '',
+      `Objectif : ${proposal.objective}`,
+      '',
+      'Justification :',
+      ...(proposal.rationale ?? []).map(item => `- ${item}`)
+    ].filter(Boolean).join('\n');
+
+    navigator.clipboard?.writeText(text);
+  }
+
+  trackByPlanningProposal(_: number, item: AiPlanningEventProposal): number {
+    return item.rank;
+  }
+
+  trackByPlanningSlot(_: number, item: any): number {
+    return item.rank;
   }
 }
