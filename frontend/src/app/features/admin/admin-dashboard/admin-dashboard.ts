@@ -447,16 +447,25 @@ export class AdminDashboard {
 
   private buildPlanningDescription(proposal: AiPlanningEventProposal): string {
     const rationale = (proposal.rationale ?? [])
-      .map(item => `- ${item}`)
+      .map(item => `• ${item}`)
       .join('\n');
+
+    const firstSlot = proposal.suggestedSlots?.[0];
+
+    const slotText = firstSlot
+      ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}`
+      : 'Créneau recommandé : à confirmer';
 
     return [
       proposal.objective,
       '',
       'Proposition générée par IA Planning Intelligent.',
+      slotText,
       '',
       'Justification :',
-      rationale
+      rationale,
+      '',
+      'Note : cette proposition doit être validée par le RH ou le manager avant publication.'
     ].join('\n');
   }
 
