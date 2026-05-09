@@ -31,6 +31,7 @@ from app.core.model_registry import (
     ModelRegistryError
 )
 
+from app.services.planning_logger import append_planning_log
 
 
 DATASET_PATH = Path("datasets/processed/planning_train.csv")
@@ -131,7 +132,7 @@ class PlanningService:
             for index, item in enumerate(ranked, start=1)
         ]
 
-        return PlanningSuggestionResponse(
+        response = PlanningSuggestionResponse(
             request_id=request_id,
             generated_at=generated_at,
             total_candidates=len(candidates),
@@ -152,6 +153,31 @@ class PlanningService:
                 "dataset_path": str(DATASET_PATH)
             }
         )
+
+        try:
+            append_planning_log(
+                "SLOT_SUGGESTIONS_GENERATED",
+                {
+                    "request_id": request_id,
+                    "category": payload.category,
+                    "audience": payload.audience,
+                    "location_type": payload.location_type,
+                    "target_department_id": payload.target_department_id,
+                    "duration_minutes": payload.duration_minutes,
+                    "capacity": payload.capacity,
+                    "from_date": payload.from_date,
+                    "days_horizon": payload.days_horizon,
+                    "limit": payload.limit,
+                    "total_candidates": response.total_candidates,
+                    "returned_items": len(response.items),
+                    "model_info": response.model_info
+                }
+            )
+        except Exception:
+            # Le monitoring ne doit jamais bloquer la réponse IA.
+            pass
+
+        return response
 
     def _generate_candidate_slots(self, payload: PlanningSuggestionRequest) -> list[dict]:
         start_date = parse_start_date(payload.from_date)
@@ -571,7 +597,7 @@ class PlanningService:
                 )
             )
 
-        return PlanningEventProposalResponse(
+        response = PlanningEventProposalResponse(
             request_id=request_id,
             generated_at=generated_at,
             analysis_period={
@@ -596,6 +622,21 @@ class PlanningService:
                 "trained_model_used": self.planning_model is not None
             }
         )
+
+        append_planning_log(
+            "EVENT_PROPOSALS_GENERATED",
+            {
+                "request_id": request_id,
+                "target_department_id": payload.target_department_id,
+                "limit": payload.limit,
+                "slot_limit": payload.slot_limit,
+                "days_horizon": payload.days_horizon,
+                "total_proposals": response.total_proposals,
+                "model_info": response.model_info
+            }
+        )
+
+        return response
 
 
     def _previous_week_range(self, reference_date: str | None) -> tuple[datetime, datetime]:

@@ -5,6 +5,8 @@ import com.capevents.backend.config.AiServiceProperties;
 
 import java.net.URI;
 
+import com.capevents.backend.dto.ai.monitoring.AiPlanningUsageRequest;
+import com.capevents.backend.dto.ai.monitoring.AiPlanningUsageResponse;
 import com.capevents.backend.dto.ai.planning.AiPlanningEventProposalRequest;
 import com.capevents.backend.dto.ai.planning.AiPlanningEventProposalResponse;
 import com.capevents.backend.dto.ai.planning.AiPlanningSuggestionRequest;
@@ -68,6 +70,20 @@ public class AiPlanningClientService {
         );
     }
 
+    public AiPlanningUsageResponse logUsage(AiPlanningUsageRequest payload) {
+        URI uri = UriComponentsBuilder
+                .fromHttpUrl(aiServiceProperties.getBaseUrl())
+                .path("/ai/planning/usage")
+                .build()
+                .toUri();
+
+        return postToAiService(
+                uri,
+                payload,
+                AiPlanningUsageResponse.class,
+                "Impossible de journaliser l’usage IA Planning."
+        );
+    }
     private <TRequest, TResponse> TResponse postToAiService(
             URI uri,
             TRequest payload,

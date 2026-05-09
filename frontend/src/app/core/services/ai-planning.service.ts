@@ -110,4 +110,23 @@ export class AiPlanningService {
       }))
     };
   }
+
+  logUsage(payload: AiPlanningUsageRequest): Observable<AiPlanningUsageResponse> {
+    return this.http
+      .post<any>(`${this.apiUrl}/usage`, {
+        request_id: payload.requestId ?? null,
+        action: payload.action,
+        proposal_rank: payload.proposalRank ?? null,
+        proposal_title: payload.proposalTitle ?? null,
+        category: payload.category ?? null,
+        target_department_id: payload.targetDepartmentId ?? null,
+        selected_slot_start_at: payload.selectedSlotStartAt ?? null,
+        selected_slot_score: payload.selectedSlotScore ?? null,
+        source: payload.source ?? 'angular_admin_dashboard'
+      })
+      .pipe(map(response => ({
+        status: response?.status ?? '',
+        loggedAt: response?.loggedAt ?? response?.logged_at ?? ''
+      })));
+  }
 }

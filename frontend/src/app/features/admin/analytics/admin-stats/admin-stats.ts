@@ -1036,6 +1036,29 @@ export class AdminStats {
   copilotUsefulnessPercent(): number {
     return Math.round((this.aiCopilotMonitoring?.usefulnessRate ?? 0) * 100);
   }
+
+  private logPlanningUsage(
+    proposal: AiPlanningEventProposal,
+    action: 'COPIED' | 'USED_TO_PREFILL'
+  ): void {
+    const firstSlot = proposal.suggestedSlots?.[0];
+
+    this.aiPlanningService.logUsage({
+      requestId: this.aiPlanningResponse?.requestId,
+      action,
+      proposalRank: proposal.rank,
+      proposalTitle: proposal.title,
+      category: proposal.category,
+      targetDepartmentId: proposal.targetDepartmentId,
+      selectedSlotStartAt: firstSlot?.startAt ?? null,
+      selectedSlotScore: firstSlot?.score ?? null,
+      source: 'admin_dashboard'
+    }).subscribe({
+      error: () => {
+        // Le monitoring ne doit jamais bloquer l’utilisateur.
+      }
+    });
+  }
  
 
 }

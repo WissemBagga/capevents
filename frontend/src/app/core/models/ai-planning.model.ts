@@ -61,3 +61,21 @@ export interface AiPlanningEventProposalResponse {
   items: AiPlanningEventProposal[];
   modelInfo: Record<string, any>;
 }
+
+
+export interface AiPlanningUsageRequest {
+  requestId?: string;
+  action: 'COPIED' | 'USED_TO_PREFILL';
+  proposalRank?: number;
+  proposalTitle?: string;
+  category?: string;
+  targetDepartmentId?: number | null;
+  selectedSlotStartAt?: string | null;
+  selectedSlotScore?: number | null;
+  source?: string;
+}
+
+export interface AiPlanningUsageResponse {
+  status: string;
+  loggedAt: string;
+}

@@ -1,6 +1,8 @@
 package com.capevents.backend.controller.ai;
 
 
+import com.capevents.backend.dto.ai.monitoring.AiPlanningUsageRequest;
+import com.capevents.backend.dto.ai.monitoring.AiPlanningUsageResponse;
 import com.capevents.backend.dto.ai.planning.AiPlanningEventProposalRequest;
 import com.capevents.backend.dto.ai.planning.AiPlanningEventProposalResponse;
 import com.capevents.backend.dto.ai.planning.AiPlanningSuggestionRequest;
@@ -55,6 +57,14 @@ public class AiPlanningController {
                 secureProposalPayloadForCurrentUser(payload, authentication);
 
         return aiPlanningClientService.proposeEvents(securedPayload);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_HR', 'ROLE_MANAGER')")
+    @PostMapping("/usage")
+    public AiPlanningUsageResponse logUsage(
+            @RequestBody AiPlanningUsageRequest payload
+    ) {
+        return aiPlanningClientService.logUsage(payload);
     }
 
     private AiPlanningSuggestionRequest secureSuggestionPayloadForCurrentUser(
