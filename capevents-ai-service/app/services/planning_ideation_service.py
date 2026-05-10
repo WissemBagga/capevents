@@ -13,6 +13,12 @@ ALLOWED_AUDIENCES = {"GLOBAL", "DEPARTMENT"}
 class PlanningIdeationService:
     def __init__(self) -> None:
         self.llm_client = PlanningLlmClient()
+        self.last_error: str | None = None
+
+    def model_info(self) -> dict[str, Any]:
+        info = self.llm_client.model_info()
+        info["last_ideation_error"] = self.last_error
+        return info
 
     def generate_event_concepts(
         self,
@@ -21,87 +27,99 @@ class PlanningIdeationService:
         target_department_id: int | None,
         limit: int
     ) -> list[dict[str, Any]]:
+        self.last_error = None
+
         context = self._build_context(
             weekly_metrics=weekly_metrics,
             users=users,
             target_department_id=target_department_id
         )
 
-        system_prompt = self._system_prompt()
-        user_prompt = self._user_prompt(context=context, limit=max(limit * 5, 15))
+        concept_count = min(max(limit, 3), 5)
 
         try:
             response = self.llm_client.generate_json(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt
+                system_prompt=self._system_prompt(),
+                user_prompt=self._user_prompt(context=context, limit=concept_count)
             )
 
             concepts = response.get("concepts", [])
 
-            return self._validate_concepts(
+            clean = self._validate_concepts(
                 concepts=concepts,
                 target_department_id=target_department_id,
                 users=users
             )
 
-        except PlanningLlmError:
+            if not clean:
+                raise PlanningLlmError("Le LLM a répondu, mais les concepts générés sont trop faibles ou trop génériques.")
+
+            return clean
+
+        except PlanningLlmError as exception:
+            self.last_error = str(exception)
+
             return self._safe_minimal_fallback(
                 target_department_id=target_department_id,
-                users=users
+                users=users,
+                error_message=self.last_error
             )
 
     def _system_prompt(self) -> str:
         return """
-Tu es un assistant IA de planification RH pour CapEvents.
-
-Ta mission :
-- Générer des idées d’événements internes professionnelles.
-- Utiliser uniquement les signaux fournis.
-- Ne jamais inventer un lien de visioconférence, une salle précise ou une adresse.
-- Ne jamais décider à la place du RH ou du manager.
-- Produire uniquement du JSON valide.
-
-Important :
-Le classement final sera fait par CatBoost et par des règles métier.
-Ton rôle est uniquement de proposer des concepts candidats variés.
-"""
+    /no_think
+    Tu es un assistant IA RH pour CapEvents.
+    Réponds uniquement avec un JSON valide.
+    Aucun texte hors JSON.
+    Aucune explication.
+    Aucune balise markdown.
+    Aucun lien, aucune adresse, aucune salle.
+    """
 
     def _user_prompt(self, context: dict[str, Any], limit: int) -> str:
+        compact_context = {
+            "scope": context.get("scope"),
+            "data_quality": context.get("data_quality"),
+            "observed_categories": context.get("observed_categories", [])[:6],
+            "category_summary": context.get("category_summary", [])[:5]
+        }
+
         return f"""
-Génère {limit} concepts candidats d’événements internes à partir du contexte ci-dessous.
+    /no_think
+    Génère exactement {limit} idées d’événements internes.
 
-Chaque concept doit être spécifique, varié et professionnel.
-
-Format JSON obligatoire :
-{{
-  "concepts": [
+    Réponds uniquement avec ce format JSON compact :
     {{
-      "title": "...",
-      "category": "...",
-      "audience": "GLOBAL ou DEPARTMENT",
-      "location_type": "ONSITE ou ONLINE ou EXTERNAL",
-      "duration_minutes": 45,
-      "capacity": 30,
-      "objective": "...",
-      "rationale": ["...", "...", "..."],
-      "data_signals": ["...", "..."]
+    "concepts": [
+        {{
+        "t": "titre court",
+        "c": "catégorie",
+        "a": "GLOBAL",
+        "l": "ONSITE",
+        "d": 60,
+        "cap": 30,
+        "o": "objectif court",
+        "r": ["raison 1", "raison 2"],
+        "s": ["signal 1"]
+        }}
+    ]
     }}
-  ]
-}}
 
-Contraintes :
-- 3 à 5 mots-clés métier dans le titre si possible.
-- Pas de titres génériques répétés.
-- Pas de lien meet.
-- Pas d’adresse.
-- Pas de salle.
-- Catégories possibles : celles observées dans le contexte, ou une catégorie RH cohérente.
-- Si les données sont faibles, explique clairement que la proposition doit être validée par RH.
-- Le ton doit être professionnel, naturel, pas robotique.
+    Contraintes :
+    - t maximum 55 caractères.
+    - o maximum 120 caractères.
+    - r contient exactement 2 raisons courtes.
+    - s contient maximum 2 signaux.
+    - a vaut GLOBAL ou DEPARTMENT.
+    - l vaut ONSITE, ONLINE ou EXTERNAL.
+    - Pas de lien.
+    - Pas d’adresse.
+    - Pas de salle.
+    - Pas de texte hors JSON.
 
-Contexte :
-{json.dumps(context, ensure_ascii=False, indent=2)}
-"""
+    Contexte :
+    {json.dumps(compact_context, ensure_ascii=False)}
+    """
 
     def _build_context(
         self,
@@ -111,15 +129,15 @@ Contexte :
     ) -> dict[str, Any]:
         context: dict[str, Any] = {
             "target_department_id": target_department_id,
-            "department_scope": "DEPARTMENT" if target_department_id else "GLOBAL",
+            "scope": "DEPARTMENT" if target_department_id else "GLOBAL",
             "active_users_count": int(len(users)) if users is not None else 0,
+            "data_quality": "LOW",
+            "observed_categories": [],
             "recent_events": [],
-            "category_summary": [],
-            "observed_categories": []
+            "category_summary": []
         }
 
         if weekly_metrics is None or weekly_metrics.empty:
-            context["data_quality"] = "LOW"
             context["note"] = "Aucun événement récent exploitable sur la semaine analysée."
             return context
 
@@ -147,7 +165,8 @@ Contexte :
 
         context["recent_events"] = (
             df[available_cols]
-            .head(12)
+            .head(5)
+            .round(4)
             .to_dict(orient="records")
         )
 
@@ -161,7 +180,7 @@ Contexte :
             total_invitations=("invitation_count", "sum")
         ).reset_index()
 
-        for col in [
+        for column in [
             "avg_registration_rate",
             "avg_attendance_rate",
             "avg_rating",
@@ -169,9 +188,14 @@ Contexte :
             "avg_duration",
             "total_invitations"
         ]:
-            summary[col] = pd.to_numeric(summary[col], errors="coerce").fillna(0)
+            summary[column] = pd.to_numeric(summary[column], errors="coerce").fillna(0)
 
-        context["category_summary"] = summary.round(4).to_dict(orient="records")
+        context["category_summary"] = (
+            summary.sort_values(["events_count", "total_invitations"], ascending=False)
+            .head(6)
+            .round(4)
+            .to_dict(orient="records")
+        )
 
         return context
 
@@ -185,41 +209,77 @@ Contexte :
         seen_titles: set[str] = set()
 
         for item in concepts:
-            title = str(item.get("title", "")).strip()
-            category = str(item.get("category", "")).strip()
+            if not isinstance(item, dict):
+                continue
+
+            title = str(item.get("title") or item.get("t") or "").strip()
+            category = str(item.get("category") or item.get("c") or "").strip()
+
+            if self._is_low_quality_text(title, min_words=3):
+                continue
 
             if len(title) < 8 or len(category) < 2:
                 continue
 
-            if title.lower() in seen_titles:
+            title_key = title.lower()
+
+            if title_key in seen_titles:
                 continue
 
-            seen_titles.add(title.lower())
+            seen_titles.add(title_key)
 
-            audience = str(item.get("audience") or ("DEPARTMENT" if target_department_id else "GLOBAL")).upper()
-            if audience not in ALLOWED_AUDIENCES:
-                audience = "DEPARTMENT" if target_department_id else "GLOBAL"
+            audience = str(
+                item.get("audience")
+                or item.get("a")
+                or ("DEPARTMENT" if target_department_id else "GLOBAL")
+            ).upper()
 
             if target_department_id is not None:
                 audience = "DEPARTMENT"
 
-            location_type = str(item.get("location_type") or "ONSITE").upper()
+            if audience not in ALLOWED_AUDIENCES:
+                audience = "GLOBAL"
+
+            location_type = str(
+                item.get("location_type")
+                or item.get("l")
+                or "ONSITE"
+            ).upper()
+
             if location_type not in ALLOWED_LOCATION_TYPES:
                 location_type = "ONSITE"
 
-            duration = int(item.get("duration_minutes") or 60)
+            duration = self._safe_int(
+                item.get("duration_minutes") or item.get("d"),
+                60
+            )
             duration = max(30, min(180, duration))
 
-            capacity = int(item.get("capacity") or self._default_capacity(users, target_department_id))
+            capacity = self._safe_int(
+                item.get("capacity") or item.get("cap"),
+                self._default_capacity(users, target_department_id)
+            )
             capacity = max(10, min(150, capacity))
 
-            rationale = item.get("rationale") or []
+            rationale = item.get("rationale") or item.get("r") or []
             if not isinstance(rationale, list):
                 rationale = [str(rationale)]
 
-            data_signals = item.get("data_signals") or []
+            data_signals = item.get("data_signals") or item.get("s") or []
             if not isinstance(data_signals, list):
                 data_signals = [str(data_signals)]
+
+            objective = self._normalize_objective(
+                objective=str(item.get("objective") or item.get("o") or "").strip(),
+                title=title,
+                category=category
+            )
+
+            normalized_rationale = self._normalize_rationale(
+                rationale=rationale,
+                category=category,
+                data_signals=data_signals
+            )
 
             clean.append({
                 "title": title[:120],
@@ -229,12 +289,16 @@ Contexte :
                 "target_department_id": target_department_id,
                 "duration_minutes": duration,
                 "capacity": capacity,
-                "objective": str(item.get("objective", "")).strip()[:500],
-                "rationale": [str(reason).strip() for reason in rationale if str(reason).strip()][:4],
+                "objective": objective[:500],
+                "rationale": normalized_rationale,
                 "metrics": {
                     "source": "llm_generated_concept",
-                    "data_signals": [str(signal).strip() for signal in data_signals if str(signal).strip()][:5],
-                    "data_confidence": "LLM_ASSISTED"
+                    "data_confidence": "LLM_ASSISTED",
+                    "data_signals": [
+                        str(signal).strip()
+                        for signal in data_signals
+                        if str(signal).strip()
+                    ][:5]
                 }
             })
 
@@ -248,15 +312,23 @@ Contexte :
             return min(60, max(20, int(len(users) * 0.15)))
 
         data = users.copy()
-        data["department_id"] = pd.to_numeric(data["department_id"], errors="coerce").fillna(0).astype(int)
+        data["department_id"] = pd.to_numeric(
+            data["department_id"],
+            errors="coerce"
+        ).fillna(0).astype(int)
+
         size = len(data[data["department_id"] == int(target_department_id)])
 
-        return min(80, max(15, int(size * 0.35))) if size > 0 else 30
+        if size <= 0:
+            return 30
+
+        return min(80, max(15, int(size * 0.35)))
 
     def _safe_minimal_fallback(
         self,
         target_department_id: int | None,
-        users: pd.DataFrame
+        users: pd.DataFrame,
+        error_message: str | None = None
     ) -> list[dict[str, Any]]:
         audience = "DEPARTMENT" if target_department_id else "GLOBAL"
         capacity = self._default_capacity(users, target_department_id)
@@ -272,13 +344,84 @@ Contexte :
                 "capacity": capacity,
                 "objective": "Identifier des priorités concrètes et mobiliser les collaborateurs autour d’actions utiles.",
                 "rationale": [
-                    "Le générateur LLM n’est pas disponible.",
+                    "Le générateur LLM n’a pas pu être utilisé.",
                     "Une proposition de secours est utilisée pour garantir la continuité du service.",
                     "La proposition doit être validée par le RH ou le manager."
                 ],
                 "metrics": {
                     "source": "fallback_llm_unavailable",
-                    "data_confidence": "LOW"
+                    "data_confidence": "LOW",
+                    "llm_error": error_message
                 }
             }
+        ]
+
+    def _safe_int(self, value: Any, default: int) -> int:
+        try:
+            return int(value)
+        except Exception:
+            return default
+
+    def _is_low_quality_text(self, value: str, min_words: int = 4) -> bool:
+        text = str(value or "").strip().lower()
+
+        if not text:
+            return True
+
+        words = [word for word in text.replace("-", " ").split() if word.strip()]
+
+        if len(words) < min_words:
+            return True
+
+        generic_values = {
+            "partage",
+            "collaboration",
+            "conférence",
+            "sport",
+            "formation",
+            "atelier",
+            "partage et collaboration",
+            "collaboration et partage",
+            "conférence et sport"
+        }
+
+        return text in generic_values
+
+
+    def _normalize_objective(
+        self,
+        objective: str,
+        title: str,
+        category: str
+    ) -> str:
+        if not self._is_low_quality_text(objective, min_words=7):
+            return objective.strip()
+
+        return (
+            f"Proposer un événement {category.lower()} structuré autour de « {title} » "
+            "afin de renforcer l’engagement, le partage d’expérience et la participation des collaborateurs."
+        )
+
+
+    def _normalize_rationale(
+        self,
+        rationale: list,
+        category: str,
+        data_signals: list
+    ) -> list[str]:
+        clean = [
+            str(item).strip()
+            for item in rationale
+            if not self._is_low_quality_text(str(item), min_words=4)
+        ]
+
+        if len(clean) >= 2:
+            return clean[:4]
+
+        signal_text = ", ".join(str(signal) for signal in data_signals[:2]) if data_signals else "les signaux récents disponibles"
+
+        return [
+            f"La catégorie {category} ressort comme une piste exploitable à partir de {signal_text}.",
+            "Le format proposé reste à valider par le RH ou le manager avant publication.",
+            "Le créneau sera ensuite optimisé par le modèle de planning et les contraintes calendrier."
         ]
