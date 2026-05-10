@@ -28,6 +28,9 @@ import { AiHrCopilotMonitoringResponse } from '../../../../core/models/ai-hr-cop
 
 import { AiHrCopilotFeedbackService } from '../../../../core/services/ai-hr-copilot-feedback.service';
 
+import { AiPlanningService } from '../../../../core/services/ai-planning.service';
+import { AiPlanningMonitoringSummary } from '../../../../core/models/ai-planning.model';
+
 type TrendPointVm = {
   month: string;
   registrations: number;
@@ -102,14 +105,58 @@ export class AdminStats {
   copilotFeedbackMessage = '';
   copilotFeedbackError = '';
 
+  private aiPlanningService = inject(AiPlanningService);
+
+  planningMonitoringLoading = false;
+  planningMonitoringError = '';
+  planningMonitoring: AiPlanningMonitoringSummary | null = null;
+  planningMonitoringDays = 30;
+
   ngOnInit(): void {
     if (this.isHr) {
       this.loadDepartments();
       this.loadAiMonitoring();
       this.loadAiCopilot();
       this.loadAiCopilotMonitoring();
+      this.loadPlanningMonitoring();
     }
     this.loadAnalytics();
+  }
+
+  loadPlanningMonitoring(): void {
+    this.planningMonitoringLoading = true;
+    this.planningMonitoringError = '';
+    this.cdr.markForCheck();
+
+    const targetDepartmentId = this.authService.isManager()
+      ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
+      : null;
+
+    this.aiPlanningService.getMonitoringSummary(
+      this.planningMonitoringDays,
+      targetDepartmentId
+    )
+      .pipe(finalize(() => {
+        this.planningMonitoringLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (summary) => {
+          this.planningMonitoring = summary;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.planningMonitoringError =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de charger le monitoring IA Planning.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  planningUsagePercent(): number {
+    return Math.round((this.planningMonitoring?.usageRate ?? 0) * 100);
   }
 
   private loadDepartments(): void {
@@ -1037,28 +1084,8 @@ export class AdminStats {
     return Math.round((this.aiCopilotMonitoring?.usefulnessRate ?? 0) * 100);
   }
 
-  private logPlanningUsage(
-    proposal: AiPlanningEventProposal,
-    action: 'COPIED' | 'USED_TO_PREFILL'
-  ): void {
-    const firstSlot = proposal.suggestedSlots?.[0];
-
-    this.aiPlanningService.logUsage({
-      requestId: this.aiPlanningResponse?.requestId,
-      action,
-      proposalRank: proposal.rank,
-      proposalTitle: proposal.title,
-      category: proposal.category,
-      targetDepartmentId: proposal.targetDepartmentId,
-      selectedSlotStartAt: firstSlot?.startAt ?? null,
-      selectedSlotScore: firstSlot?.score ?? null,
-      source: 'admin_dashboard'
-    }).subscribe({
-      error: () => {
-        // Le monitoring ne doit jamais bloquer l’utilisateur.
-      }
-    });
-  }
+ 
+  
  
 
 }

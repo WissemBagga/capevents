@@ -622,6 +622,111 @@
           </section>
         }
 
+        <section class="admin-card stats-section ai-monitoring-section">
+          <div class="card-header">
+            <div>
+              <span class="ai-section-kicker">IA 4</span>
+              <h2 class="card-title">Monitoring Planning Intelligent</h2>
+              <p class="card-subtitle">
+                Suivi des propositions générées, copiées et utilisées pour préremplir la création d’événement.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="btn-secondary"
+              [disabled]="planningMonitoringLoading"
+              (click)="loadPlanningMonitoring()"
+            >
+              Actualiser
+            </button>
+          </div>
+
+          @if (planningMonitoringLoading) {
+            <div class="state-message loading-msg">
+              <div class="spinner"></div>
+              <p>Chargement du monitoring IA Planning...</p>
+            </div>
+          }
+
+          @if (planningMonitoringError) {
+            <div class="state-message error-msg">
+              <p>{{ planningMonitoringError }}</p>
+            </div>
+          }
+
+          @if (!planningMonitoringLoading && planningMonitoring) {
+            <div class="ai-monitoring-grid">
+              <div class="monitoring-metric-card">
+                <span>Générations</span>
+                <strong>{{ planningMonitoring.totalGenerations }}</strong>
+                <small>sur {{ planningMonitoring.periodDays }} jours</small>
+              </div>
+
+              <div class="monitoring-metric-card">
+                <span>Propositions utilisées</span>
+                <strong>{{ planningMonitoring.usedToPrefillCount }}</strong>
+                <small>préremplissage formulaire</small>
+              </div>
+
+              <div class="monitoring-metric-card">
+                <span>Copies</span>
+                <strong>{{ planningMonitoring.copiedCount }}</strong>
+                <small>propositions copiées</small>
+              </div>
+
+              <div class="monitoring-metric-card">
+                <span>Taux d’utilisation</span>
+                <strong>{{ planningUsagePercent() }}%</strong>
+                <small>usage / génération</small>
+              </div>
+            </div>
+
+            <div class="ai-monitoring-two-columns">
+              <div class="monitoring-list-card">
+                <h3>Catégories les plus utilisées</h3>
+
+                @if (planningMonitoring.topCategories.length === 0) {
+                  <p class="muted-text">Aucune catégorie utilisée pour le moment.</p>
+                }
+
+                @for (item of planningMonitoring.topCategories; track item['category']) {
+                  <div class="monitoring-list-row">
+                    <span>{{ item['category'] }}</span>
+                    <strong>{{ item['count'] }}</strong>
+                  </div>
+                }
+              </div>
+
+              <div class="monitoring-list-card">
+                <h3>Propositions les plus utilisées</h3>
+
+                @if (planningMonitoring.topProposals.length === 0) {
+                  <p class="muted-text">Aucune proposition utilisée pour le moment.</p>
+                }
+
+                @for (item of planningMonitoring.topProposals; track item['title']) {
+                  <div class="monitoring-list-row">
+                    <span>{{ item['title'] }}</span>
+                    <strong>{{ item['count'] }}</strong>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="monitoring-list-card full">
+              <h3>Versions modèle utilisées</h3>
+
+              @for (item of planningMonitoring.modelVersions; track item['version']) {
+                <div class="monitoring-list-row">
+                  <span>{{ item['version'] }}</span>
+                  <strong>{{ item['count'] }}</strong>
+                </div>
+              }
+            </div>
+          }
+        </section>
+
         @if (isManager && analytics) {
           <section class="admin-card stats-section">
             <div class="card-header">

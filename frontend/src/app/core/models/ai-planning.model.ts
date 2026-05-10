@@ -63,19 +63,16 @@ export interface AiPlanningEventProposalResponse {
 }
 
 
-export interface AiPlanningUsageRequest {
-  requestId?: string;
-  action: 'COPIED' | 'USED_TO_PREFILL';
-  proposalRank?: number;
-  proposalTitle?: string;
-  category?: string;
-  targetDepartmentId?: number | null;
-  selectedSlotStartAt?: string | null;
-  selectedSlotScore?: number | null;
-  source?: string;
-}
-
-export interface AiPlanningUsageResponse {
-  status: string;
-  loggedAt: string;
+export interface AiPlanningMonitoringSummary {
+  periodDays: number;
+  targetDepartmentId: number | null;
+  totalGenerations: number;
+  totalUsageEvents: number;
+  copiedCount: number;
+  usedToPrefillCount: number;
+  usageRate: number;
+  topCategories: Array<Record<string, any>>;
+  topProposals: Array<Record<string, any>>;
+  modelVersions: Array<Record<string, any>>;
+  latestEvents: Array<Record<string, any>>;
 }

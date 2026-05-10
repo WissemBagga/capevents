@@ -1,8 +1,7 @@
 package com.capevents.backend.controller.ai;
 
 
-import com.capevents.backend.dto.ai.monitoring.AiPlanningUsageRequest;
-import com.capevents.backend.dto.ai.monitoring.AiPlanningUsageResponse;
+import com.capevents.backend.dto.ai.monitoring.AiPlanningMonitoringSummary;
 import com.capevents.backend.dto.ai.planning.AiPlanningEventProposalRequest;
 import com.capevents.backend.dto.ai.planning.AiPlanningEventProposalResponse;
 import com.capevents.backend.dto.ai.planning.AiPlanningSuggestionRequest;
@@ -60,11 +59,19 @@ public class AiPlanningController {
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_HR', 'ROLE_MANAGER')")
-    @PostMapping("/usage")
-    public AiPlanningUsageResponse logUsage(
-            @RequestBody AiPlanningUsageRequest payload
+    @GetMapping("/monitoring/summary")
+    public AiPlanningMonitoringSummary getMonitoringSummary(
+            @RequestParam(defaultValue = "30") Integer days,
+            @RequestParam(required = false) Long targetDepartmentId,
+            Authentication authentication
     ) {
-        return aiPlanningClientService.logUsage(payload);
+        Long securedDepartmentId = targetDepartmentId;
+
+        if (hasAuthority(authentication, "ROLE_MANAGER")) {
+            securedDepartmentId = getCurrentUserDepartmentId(authentication);
+        }
+
+        return aiPlanningClientService.getMonitoringSummary(days, securedDepartmentId);
     }
 
     private AiPlanningSuggestionRequest secureSuggestionPayloadForCurrentUser(

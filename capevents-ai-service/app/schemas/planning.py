@@ -64,18 +64,30 @@ class PlanningEventProposalResponse(BaseModel):
     model_info: dict
 
 
-class PlanningUsageLogRequest(BaseModel):
-    request_id: str | None = None
-    action: str = "USED_TO_PREFILL"
-    proposal_rank: int | None = None
-    proposal_title: str | None = None
-    category: str | None = None
+class PlanningMonitoringTopCategory(BaseModel):
+    category: str
+    count: int
+
+
+class PlanningMonitoringTopProposal(BaseModel):
+    title: str
+    count: int
+
+
+class PlanningMonitoringModelVersion(BaseModel):
+    version: str
+    count: int
+
+
+class PlanningMonitoringSummaryResponse(BaseModel):
+    period_days: int
     target_department_id: int | None = None
-    selected_slot_start_at: str | None = None
-    selected_slot_score: float | None = None
-    source: str = "angular_admin_dashboard"
-
-
-class PlanningUsageLogResponse(BaseModel):
-    status: str
-    logged_at: str
+    total_generations: int
+    total_usage_events: int
+    copied_count: int
+    used_to_prefill_count: int
+    usage_rate: float
+    top_categories: list[PlanningMonitoringTopCategory]
+    top_proposals: list[PlanningMonitoringTopProposal]
+    model_versions: list[PlanningMonitoringModelVersion]
+    latest_events: list[dict]

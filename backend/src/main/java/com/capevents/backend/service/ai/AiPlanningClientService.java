@@ -5,8 +5,7 @@ import com.capevents.backend.config.AiServiceProperties;
 
 import java.net.URI;
 
-import com.capevents.backend.dto.ai.monitoring.AiPlanningUsageRequest;
-import com.capevents.backend.dto.ai.monitoring.AiPlanningUsageResponse;
+import com.capevents.backend.dto.ai.monitoring.AiPlanningMonitoringSummary;
 import com.capevents.backend.dto.ai.planning.AiPlanningEventProposalRequest;
 import com.capevents.backend.dto.ai.planning.AiPlanningEventProposalResponse;
 import com.capevents.backend.dto.ai.planning.AiPlanningSuggestionRequest;
@@ -70,20 +69,48 @@ public class AiPlanningClientService {
         );
     }
 
-    public AiPlanningUsageResponse logUsage(AiPlanningUsageRequest payload) {
-        URI uri = UriComponentsBuilder
-                .fromHttpUrl(aiServiceProperties.getBaseUrl())
-                .path("/ai/planning/usage")
-                .build()
-                .toUri();
 
-        return postToAiService(
-                uri,
-                payload,
-                AiPlanningUsageResponse.class,
-                "Impossible de journaliser l’usage IA Planning."
-        );
+    public AiPlanningMonitoringSummary getMonitoringSummary(
+            Integer days,
+            Long targetDepartmentId
+    ) {
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromHttpUrl(aiServiceProperties.getBaseUrl())
+                .path("/ai/planning/monitoring/summary")
+                .queryParam("days", days != null ? days : 30);
+
+        if (targetDepartmentId != null) {
+            builder.queryParam("target_department_id", targetDepartmentId);
+        }
+
+        URI uri = builder.build().toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("x-ai-service-key", aiServiceProperties.getServiceKey());
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<AiPlanningMonitoringSummary> response =
+                    aiRestTemplate.exchange(
+                            uri,
+                            HttpMethod.GET,
+                            request,
+                            AiPlanningMonitoringSummary.class
+                    );
+
+            return response.getBody();
+
+        } catch (RestClientException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    "Le monitoring IA Planning est indisponible.",
+                    exception
+            );
+        }
     }
+
+
     private <TRequest, TResponse> TResponse postToAiService(
             URI uri,
             TRequest payload,
