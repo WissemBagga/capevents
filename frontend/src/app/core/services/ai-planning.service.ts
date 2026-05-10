@@ -7,10 +7,11 @@ import {
   AiPlanningEventProposalRequest,
   AiPlanningEventProposalResponse,
   AiPlanningSuggestionRequest,
-  AiPlanningSuggestionResponse, AiPlanningMonitoringSummary, AiPlanningUsageRequest,
-AiPlanningUsageResponse
+  AiPlanningSuggestionResponse,
+  AiPlanningMonitoringSummary,
+  AiPlanningUsageRequest,
+  AiPlanningUsageResponse
 } from '../models/ai-planning.model';
-
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,57 @@ export class AiPlanningService {
     return this.http
       .post<any>(`${this.apiUrl}/event-proposals`, this.toProposalApiPayload(payload))
       .pipe(map(response => this.normalizeProposalResponse(response)));
+  }
+
+  getMonitoringSummary(
+    days = 30,
+    targetDepartmentId: number | null = null
+  ): Observable<AiPlanningMonitoringSummary> {
+    const params: Record<string, string> = {
+      days: String(days)
+    };
+
+    if (targetDepartmentId !== null) {
+      params['targetDepartmentId'] = String(targetDepartmentId);
+    }
+
+    return this.http
+      .get<any>(`${this.apiUrl}/monitoring/summary`, { params })
+      .pipe(map(response => ({
+        periodDays: response?.periodDays ?? response?.period_days ?? 30,
+        targetDepartmentId: response?.targetDepartmentId ?? response?.target_department_id ?? null,
+        totalGenerations: response?.totalGenerations ?? response?.total_generations ?? 0,
+        totalUsageEvents: response?.totalUsageEvents ?? response?.total_usage_events ?? 0,
+        copiedCount: response?.copiedCount ?? response?.copied_count ?? 0,
+        usedToPrefillCount: response?.usedToPrefillCount ?? response?.used_to_prefill_count ?? 0,
+        createdFromAiCount: response?.createdFromAiCount ?? response?.created_from_ai_count ?? 0,
+        usageRate: response?.usageRate ?? response?.usage_rate ?? 0,
+        topCategories: response?.topCategories ?? response?.top_categories ?? [],
+        topProposals: response?.topProposals ?? response?.top_proposals ?? [],
+        modelVersions: response?.modelVersions ?? response?.model_versions ?? [],
+        latestEvents: response?.latestEvents ?? response?.latest_events ?? []
+      })));
+  }
+
+  logUsage(payload: AiPlanningUsageRequest): Observable<AiPlanningUsageResponse> {
+    return this.http
+      .post<any>(`${this.apiUrl}/usage`, {
+        request_id: payload.requestId ?? null,
+        action: payload.action,
+        proposal_rank: payload.proposalRank ?? null,
+        proposal_title: payload.proposalTitle ?? null,
+        category: payload.category ?? null,
+        target_department_id: payload.targetDepartmentId ?? null,
+        selected_slot_start_at: payload.selectedSlotStartAt ?? null,
+        selected_slot_score: payload.selectedSlotScore ?? null,
+        created_event_id: payload.createdEventId ?? null,
+        created_event_status: payload.createdEventStatus ?? null,
+        source: payload.source ?? 'angular_admin_dashboard'
+      })
+      .pipe(map(response => ({
+        status: response?.status ?? '',
+        loggedAt: response?.loggedAt ?? response?.logged_at ?? ''
+      })));
   }
 
   private toSuggestionApiPayload(payload: AiPlanningSuggestionRequest): any {
@@ -112,54 +164,4 @@ export class AiPlanningService {
       }))
     };
   }
-
-  getMonitoringSummary(days = 30, targetDepartmentId: number | null = null): Observable<AiPlanningMonitoringSummary> {
-    const params: Record<string, string> = {
-      days: String(days)
-    };
-    
-    createdFromAiCount: response?.createdFromAiCount ?? response?.created_from_ai_count ?? 0,
-
-    if (targetDepartmentId !== null) {
-      params['targetDepartmentId'] = String(targetDepartmentId);
-    }
-
-    return this.http
-      .get<any>(`${this.apiUrl}/monitoring/summary`, { params })
-      .pipe(map(response => ({
-        periodDays: response?.periodDays ?? response?.period_days ?? 30,
-        targetDepartmentId: response?.targetDepartmentId ?? response?.target_department_id ?? null,
-        totalGenerations: response?.totalGenerations ?? response?.total_generations ?? 0,
-        totalUsageEvents: response?.totalUsageEvents ?? response?.total_usage_events ?? 0,
-        copiedCount: response?.copiedCount ?? response?.copied_count ?? 0,
-        usedToPrefillCount: response?.usedToPrefillCount ?? response?.used_to_prefill_count ?? 0,
-        usageRate: response?.usageRate ?? response?.usage_rate ?? 0,
-        topCategories: response?.topCategories ?? response?.top_categories ?? [],
-        topProposals: response?.topProposals ?? response?.top_proposals ?? [],
-        modelVersions: response?.modelVersions ?? response?.model_versions ?? [],
-        latestEvents: response?.latestEvents ?? response?.latest_events ?? []
-      })));
-  }
-
-  logUsage(payload: AiPlanningUsageRequest): Observable<AiPlanningUsageResponse> {
-    return this.http
-      .post<any>(`${this.apiUrl}/usage`, {
-        request_id: payload.requestId ?? null,
-        action: payload.action,
-        proposal_rank: payload.proposalRank ?? null,
-        proposal_title: payload.proposalTitle ?? null,
-        category: payload.category ?? null,
-        target_department_id: payload.targetDepartmentId ?? null,
-        selected_slot_start_at: payload.selectedSlotStartAt ?? null,
-        selected_slot_score: payload.selectedSlotScore ?? null,
-        created_event_id: payload.createdEventId ?? null,
-        created_event_status: payload.createdEventStatus ?? null,
-        source: payload.source ?? 'angular_admin_dashboard'
-      })
-      .pipe(map(response => ({
-        status: response?.status ?? '',
-        loggedAt: response?.loggedAt ?? response?.logged_at ?? ''
-      })));
-  }
-
 }

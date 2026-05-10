@@ -243,16 +243,13 @@ export class CreateEvent {
 
     this.publishing = true;
     this.errorMessage = '';
-    this.logAiPlanningEventCreated(
-      createdEvent?.id ?? null,
-      'PUBLISHED'
-    );
     this.successMessage = '';
     this.cdr.markForCheck();
 
     const rawImage = this.form.get('imageUrl')?.value?.trim() || '';
 
     if (this.imageMode === 'CUSTOM_URL' && rawImage && !this.isHttpUrl(rawImage)) {
+      this.publishing = false;
       this.errorMessage = 'Veuillez saisir une URL image valide commençant par http:// ou https://';
       this.cdr.markForCheck();
       return;
@@ -265,6 +262,11 @@ export class CreateEvent {
         this.eventService.publishEvent(createdEvent.id)
           .subscribe({
             next: () => {
+              this.logAiPlanningEventCreated(
+                createdEvent?.id ?? null,
+                'PUBLISHED'
+              );
+
               this.publishing = false;
               this.successMessage = 'Événement créé et publié avec succès.';
               this.cdr.markForCheck();
@@ -480,10 +482,12 @@ export class CreateEvent {
         if (this.aiPlanningTrackingKey) {
           sessionStorage.removeItem(this.aiPlanningTrackingKey);
         }
+
         this.aiPlanningTracking = null;
+        this.aiPlanningTrackingKey = null;
       },
-      error: () => {
-        // Le monitoring ne bloque jamais la création.
+      error: (err) => {
+        console.error('[AI PLANNING EVENT CREATED LOG ERROR]', err);
       }
     });
   }

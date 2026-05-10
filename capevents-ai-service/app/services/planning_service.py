@@ -14,6 +14,8 @@ from app.schemas.planning import (
     PlanningEventProposal
 )
 
+from collections import Counter
+
 from app.data.runtime_loader import (
     load_runtime_events,
     load_runtime_users,
@@ -32,6 +34,12 @@ from app.core.model_registry import (
 )
 
 from app.services.prediction_logger import PredictionLogger
+
+import hashlib
+from collections import Counter
+
+
+from app.services.planning_ideation_service import PlanningIdeationService
 
 
 DATASET_PATH = Path("datasets/processed/planning_train.csv")
@@ -76,6 +84,24 @@ def parse_start_date(value: str | None) -> datetime:
 
     return parsed.to_pydatetime()
 
+def parse_candidate_start_date(value: str | None) -> datetime:
+    min_start = utc_now() + timedelta(days=1)
+
+    if not value:
+        return min_start
+
+    parsed = pd.to_datetime(value, errors="coerce", utc=True)
+
+    if pd.isna(parsed):
+        return min_start
+
+    parsed_dt = parsed.to_pydatetime()
+
+    if parsed_dt < min_start:
+        return min_start
+
+    return parsed_dt
+
 
 def clamp_score(value: float) -> float:
     return max(0.0, min(1.0, value))
@@ -87,6 +113,7 @@ class PlanningService:
         self.planning_model = None
         self.planning_features_payload = None
         self.planning_model_metadata = None
+        self.ideation_service = PlanningIdeationService()
         self._load_planning_model()
 
     def _load_dataset(self) -> pd.DataFrame:
@@ -182,7 +209,7 @@ class PlanningService:
         return response
 
     def _generate_candidate_slots(self, payload: PlanningSuggestionRequest) -> list[dict]:
-        start_date = parse_start_date(payload.from_date)
+        start_date = parse_candidate_start_date(payload.from_date)
         runtime_events = self._load_runtime_events_safe()
 
         candidates: list[dict] = []
@@ -558,10 +585,16 @@ class PlanningService:
             invitations=invitations
         )
 
-        raw_proposals = self._build_event_proposal_candidates(
+        raw_proposals = self.ideation_service.generate_event_concepts(
             weekly_metrics=weekly_metrics,
             users=users,
             target_department_id=payload.target_department_id,
+            limit=payload.limit
+        )
+
+        raw_proposals = self._rank_llm_generated_proposals(
+            proposals=raw_proposals,
+            weekly_metrics=weekly_metrics,
             limit=payload.limit
         )
 
@@ -636,7 +669,16 @@ class PlanningService:
                 payload={
                     "limit": payload.limit,
                     "slot_limit": payload.slot_limit,
-                    "days_horizon": payload.days_horizon
+                    "days_horizon": payload.days_horizon,
+                    "generated_titles": [
+                        {
+                            "rank": item.rank,
+                            "title": item.title,
+                            "category": item.category,
+                            "source": item.metrics.get("source")
+                        }
+                        for item in response.items
+                    ]
                 }
             )
         except Exception:
@@ -768,15 +810,18 @@ class PlanningService:
         weekly_metrics: pd.DataFrame,
         users: pd.DataFrame,
         target_department_id: int | None,
-        limit: int
+        limit: int,
+        seed: str = ""
     ) -> list[dict]:
         proposals: list[dict] = []
 
         if weekly_metrics.empty:
-            return self._fallback_proposal_catalog(
+            fallback = self._fallback_proposal_catalog(
                 users=users,
-                target_department_id=target_department_id
-            )[:limit]
+                target_department_id=target_department_id,
+                seed=seed
+            )
+            return self._rank_and_diversify_proposals(fallback, limit)
 
         df = weekly_metrics.copy()
         df["category"] = df["category"].fillna("Autre").astype(str)
@@ -796,10 +841,12 @@ class PlanningService:
             ].copy()
 
         if df.empty:
-            return self._fallback_proposal_catalog(
+            fallback = self._fallback_proposal_catalog(
                 users=users,
-                target_department_id=target_department_id
-            )[:limit]
+                target_department_id=target_department_id,
+                seed=seed
+            )
+            return self._rank_and_diversify_proposals(fallback, limit)
 
         category_summary = df.groupby("category").agg(
             events_count=("event_id", "count"),
@@ -863,15 +910,25 @@ class PlanningService:
 
             data_confidence = "MEDIUM" if events_count >= 5 else "LOW"
 
+            used_titles = {
+                str(item.get("title", ""))
+                for item in proposals
+            }
+            concept = self._proposal_concept_for_category(
+                category=category,
+                seed=seed,
+                used_titles=used_titles
+            )
+
             proposal = {
-                "title": self._proposal_title_for_category(category),
+                "title": concept["title"],
                 "category": category,
                 "audience": "DEPARTMENT" if target_department_id else "GLOBAL",
                 "location_type": self._preferred_location_for_category(category),
                 "target_department_id": target_department_id,
                 "duration_minutes": duration,
                 "capacity": capacity,
-                "objective": self._proposal_objective_for_category(category),
+                "objective": concept["objective"],
                 "rationale": self._build_proposal_rationale(
                     category=category,
                     events_count=events_count,
@@ -892,12 +949,15 @@ class PlanningService:
 
             proposals.append(proposal)
 
-        return self._supplement_proposals(
+        proposals = self._supplement_proposals(
             proposals=proposals,
             users=users,
             target_department_id=target_department_id,
-            limit=limit
+            limit=max(limit * 3, 8),
+            seed=seed
         )
+
+        return self._rank_and_diversify_proposals(proposals, limit)
     
     def _proposal_title_for_category(self, category: str) -> str:
         mapping = {
@@ -1077,108 +1137,66 @@ class PlanningService:
     def _fallback_proposal_catalog(
         self,
         users: pd.DataFrame,
-        target_department_id: int | None
+        target_department_id: int | None,
+        seed: str = "",
+        used_titles: set[str] | None = None
     ) -> list[dict]:
         audience = "DEPARTMENT" if target_department_id else "GLOBAL"
         capacity = self._default_capacity(users, target_department_id)
 
-        return [
-            {
-                "title": "Atelier pratique montée en compétences",
-                "category": "Formation",
-                "audience": audience,
-                "location_type": "ONLINE",
-                "target_department_id": target_department_id,
-                "duration_minutes": 60,
-                "capacity": capacity,
-                "objective": "Renforcer les compétences des collaborateurs avec un format court et opérationnel.",
-                "rationale": [
-                    "Les données récentes sont limitées pour ce périmètre.",
-                    "Une formation courte permet de proposer une action utile avec un risque faible.",
-                    "Le créneau sera optimisé par le moteur de planning."
-                ],
-                "metrics": {
-                    "source": "strategic_fallback",
-                    "data_confidence": "LOW"
-                }
-            },
-            {
-                "title": "Défi collaboratif cohésion d’équipe",
-                "category": "Team building",
-                "audience": audience,
-                "location_type": "ONSITE",
-                "target_department_id": target_department_id,
-                "duration_minutes": 90,
-                "capacity": capacity,
-                "objective": "Améliorer la cohésion et l’engagement des équipes.",
-                "rationale": [
-                    "Le moteur recommande une action collaborative lorsque les signaux récents sont faibles.",
-                    "Le format collectif favorise l’engagement et la participation.",
-                    "Le choix final reste à valider par le RH ou le manager."
-                ],
-                "metrics": {
-                    "source": "strategic_fallback",
-                    "data_confidence": "LOW"
-                }
-            },
-            {
-                "title": "Session innovation et idées terrain",
-                "category": "Innovation",
-                "audience": audience,
-                "location_type": "ONSITE",
-                "target_department_id": target_department_id,
-                "duration_minutes": 75,
-                "capacity": capacity,
-                "objective": "Faire émerger des idées concrètes à partir des besoins terrain.",
-                "rationale": [
-                    "Une session innovation permet de créer de l’engagement même avec peu de données récentes.",
-                    "Le format participatif aide à identifier des sujets utiles pour les collaborateurs.",
-                    "Les créneaux proposés limitent les conflits avec l’agenda existant."
-                ],
-                "metrics": {
-                    "source": "strategic_fallback",
-                    "data_confidence": "LOW"
-                }
-            },
-            {
-                "title": "Rencontre culture interne et engagement",
-                "category": "Culture d’entreprise",
-                "audience": audience,
-                "location_type": "ONSITE",
-                "target_department_id": target_department_id,
-                "duration_minutes": 60,
-                "capacity": capacity,
-                "objective": "Renforcer l’adhésion aux pratiques et valeurs internes.",
-                "rationale": [
-                    "La culture interne est pertinente lorsque le moteur manque de signaux récents ciblés.",
-                    "Le format court facilite l’intégration dans l’agenda.",
-                    "La proposition reste à adapter selon le contexte RH."
-                ],
-                "metrics": {
-                    "source": "strategic_fallback",
-                    "data_confidence": "LOW"
-                }
-            },
-            {
-                "title": "Pause bien-être et équilibre au travail",
-                "category": "Bien-être",
-                "audience": audience,
-                "location_type": "ONSITE",
-                "target_department_id": target_department_id,
-                "duration_minutes": 45,
-                "capacity": capacity,
-                "objective": "Soutenir la qualité de vie au travail avec une activité accessible.",
-                "rationale": [
-                    "Un format bien-être peut améliorer l’engagement sans nécessiter une forte préparation.",
-                    "La durée courte réduit le risque de faible disponibilité.",
-                    "Le moteur sélectionne ensuite les créneaux les moins conflictuels."
-                ],
-                "metrics": {
-                    "source": "strategic_fallback",
-                    "data_confidence": "LOW"
-                }
-            }
+        strategic_categories = [
+            "Formation",
+            "Team building",
+            "Innovation",
+            "Culture d’entreprise",
+            "Bien-être",
+            "Conférence",
+            "Atelier",
+            "Webinaire",
+            "Afterwork",
+            "Networking",
+            "Sport",
+            "RSE"
         ]
+
+        proposals: list[dict] = []
+        used_titles = used_titles or set()
+
+        for category in strategic_categories:
+            concept = self._proposal_concept_for_category(
+                category=category,
+                seed=seed,
+                used_titles=used_titles
+            )
+            used_titles.add(concept["title"])
+
+            duration = self._default_duration_for_category(category)
+            location_type = self._preferred_location_for_category(category)
+
+            proposals.append(
+                {
+                    "title": concept["title"],
+                    "category": category,
+                    "audience": audience,
+                    "location_type": location_type,
+                    "target_department_id": target_department_id,
+                    "duration_minutes": duration,
+                    "capacity": capacity,
+                    "objective": concept["objective"],
+                    "rationale": [
+                        "Les données récentes sont limitées pour ce périmètre.",
+                        "Cette proposition est issue du catalogue stratégique IA avec diversification automatique.",
+                        "Le créneau sera optimisé par le modèle de planning avant validation RH ou manager."
+                    ],
+                    "metrics": {
+                        "source": "strategic_diversified_catalog",
+                        "data_confidence": "LOW",
+                        "proposal_score": self._strategic_category_score(category)
+                    }
+                }
+            )
+
+        return proposals
 
 
     def _supplement_proposals(
@@ -1186,29 +1204,39 @@ class PlanningService:
         proposals: list[dict],
         users: pd.DataFrame,
         target_department_id: int | None,
-        limit: int
+        limit: int,
+        seed: str = ""
     ) -> list[dict]:
-        if len(proposals) >= limit:
-            return proposals[:limit]
-
         existing_categories = {
             str(item.get("category", "")).lower()
             for item in proposals
         }
 
-        for fallback in self._fallback_proposal_catalog(users, target_department_id):
-            category_key = str(fallback.get("category", "")).lower()
+        used_titles = {
+            str(item.get("title", ""))
+            for item in proposals
+        }
 
-            if category_key in existing_categories:
+        for fallback in self._fallback_proposal_catalog(
+            users=users,
+            target_department_id=target_department_id,
+            seed=seed,
+            used_titles=used_titles
+        ):
+            category_key = str(fallback.get("category", "")).lower()
+            title_key = str(fallback.get("title", ""))
+
+            if category_key in existing_categories and title_key in used_titles:
                 continue
 
             proposals.append(fallback)
             existing_categories.add(category_key)
+            used_titles.add(title_key)
 
             if len(proposals) >= limit:
                 break
 
-        return proposals[:limit]
+        return proposals
     
     def _category_hour_score(self, category: str, hour: int) -> float:
         category_normalized = str(category or "").lower()
@@ -1479,3 +1507,641 @@ class PlanningService:
             + 0.30 * day_preference_score
             + 0.25 * horizon_score
         )
+    
+    def _proposal_concepts(self) -> dict[str, list[dict[str, str]]]:
+        return {
+            "Formation": [
+                {
+                    "title": "Atelier pratique montée en compétences",
+                    "objective": "Renforcer les compétences des collaborateurs avec un format court et opérationnel."
+                },
+                {
+                    "title": "Session flash bonnes pratiques métier",
+                    "objective": "Partager des méthodes concrètes pour améliorer l’efficacité au quotidien."
+                },
+                {
+                    "title": "Parcours express apprentissage collaboratif",
+                    "objective": "Favoriser le partage de savoirs entre collaborateurs avec un format interactif."
+                },
+                {
+                    "title": "Formation courte outils et méthodes",
+                    "objective": "Accompagner les équipes dans l’adoption de pratiques utiles et directement applicables."
+                }
+            ],
+            "Conférence": [
+                {
+                    "title": "Conférence interne retour d’expérience",
+                    "objective": "Capitaliser sur les expériences récentes et partager les apprentissages clés."
+                },
+                {
+                    "title": "Table ronde retours terrain",
+                    "objective": "Faire émerger des enseignements opérationnels à partir des situations vécues par les équipes."
+                },
+                {
+                    "title": "Session partage vision et priorités",
+                    "objective": "Aligner les collaborateurs autour des priorités internes et des enjeux à venir."
+                },
+                {
+                    "title": "Rencontre expert retour d’expérience",
+                    "objective": "Valoriser les expertises internes et transformer les retours terrain en actions concrètes."
+                }
+            ],
+            "Sport": [
+                {
+                    "title": "Challenge sportif cohésion équipe",
+                    "objective": "Renforcer l’esprit d’équipe avec une activité collective accessible."
+                },
+                {
+                    "title": "Pause active énergie et cohésion",
+                    "objective": "Créer un moment dynamique pour soutenir l’engagement et le bien-être."
+                },
+                {
+                    "title": "Tournoi interne esprit d’équipe",
+                    "objective": "Favoriser les interactions entre collaborateurs autour d’un format convivial."
+                },
+                {
+                    "title": "Session activité physique et équilibre",
+                    "objective": "Encourager une routine saine tout en renforçant la cohésion."
+                }
+            ],
+            "Team building": [
+                {
+                    "title": "Défi collaboratif cohésion d’équipe",
+                    "objective": "Améliorer la cohésion et l’engagement des équipes."
+                },
+                {
+                    "title": "Atelier cohésion et collaboration",
+                    "objective": "Développer la confiance, la communication et la coopération entre collaborateurs."
+                },
+                {
+                    "title": "Challenge collectif résolution de problème",
+                    "objective": "Stimuler l’intelligence collective avec une activité pratique et participative."
+                },
+                {
+                    "title": "Moment équipe engagement et coopération",
+                    "objective": "Créer un espace collectif pour renforcer les liens et l’engagement."
+                }
+            ],
+            "Innovation": [
+                {
+                    "title": "Session innovation et idées terrain",
+                    "objective": "Faire émerger des idées concrètes à partir des besoins terrain."
+                },
+                {
+                    "title": "Atelier idéation amélioration continue",
+                    "objective": "Identifier des pistes d’amélioration concrètes avec les collaborateurs."
+                },
+                {
+                    "title": "Sprint idées innovation interne",
+                    "objective": "Mobiliser les équipes autour de propositions utiles et réalisables."
+                },
+                {
+                    "title": "Laboratoire d’idées collaboratif",
+                    "objective": "Favoriser l’expression d’idées nouvelles et leur transformation en actions."
+                }
+            ],
+            "Bien-être": [
+                {
+                    "title": "Pause bien-être et équilibre au travail",
+                    "objective": "Soutenir l’équilibre et la qualité de vie au travail."
+                },
+                {
+                    "title": "Atelier énergie et gestion du stress",
+                    "objective": "Aider les collaborateurs à préserver leur énergie dans un cadre professionnel exigeant."
+                },
+                {
+                    "title": "Session équilibre et prévention",
+                    "objective": "Sensibiliser aux pratiques simples pour améliorer le bien-être au quotidien."
+                }
+            ],
+            "Culture d’entreprise": [
+                {
+                    "title": "Rencontre culture interne et engagement",
+                    "objective": "Renforcer l’adhésion aux valeurs et pratiques internes."
+                },
+                {
+                    "title": "Moment culture et vision commune",
+                    "objective": "Créer un temps d’échange autour de l’identité et des priorités internes."
+                },
+                {
+                    "title": "Atelier valeurs et collaboration",
+                    "objective": "Relier les valeurs internes aux comportements concrets du quotidien."
+                }
+            ],
+            "Atelier": [
+                {
+                    "title": "Workshop collaboratif bonnes pratiques",
+                    "objective": "Partager et formaliser des pratiques utiles entre équipes."
+                },
+                {
+                    "title": "Atelier pratique résolution collective",
+                    "objective": "Résoudre une problématique concrète avec une démarche participative."
+                },
+                {
+                    "title": "Session collaborative amélioration équipe",
+                    "objective": "Identifier des leviers d’amélioration directement applicables."
+                }
+            ],
+            "Webinaire": [
+                {
+                    "title": "Webinaire expert partage de connaissances",
+                    "objective": "Diffuser une expertise utile avec un format accessible à distance."
+                },
+                {
+                    "title": "Live interne tendances et pratiques",
+                    "objective": "Informer les collaborateurs sur un sujet clé avec un format court."
+                },
+                {
+                    "title": "Webinaire flash apprentissage métier",
+                    "objective": "Apporter une réponse concrète à un besoin métier identifié."
+                }
+            ],
+            "Afterwork": [
+                {
+                    "title": "Afterwork réseau interne",
+                    "objective": "Favoriser les échanges informels et le réseau interne."
+                },
+                {
+                    "title": "Moment convivial inter-équipes",
+                    "objective": "Créer des liens entre collaborateurs dans un cadre informel."
+                },
+                {
+                    "title": "Rencontre informelle partage et réseau",
+                    "objective": "Encourager les échanges transverses et la cohésion."
+                }
+            ],
+            "Networking": [
+                {
+                    "title": "Forum d’échanges et networking interne",
+                    "objective": "Créer des connexions entre collaborateurs et équipes."
+                },
+                {
+                    "title": "Speed networking interne",
+                    "objective": "Multiplier les échanges courts entre collaborateurs de différents périmètres."
+                },
+                {
+                    "title": "Rencontre réseau métiers",
+                    "objective": "Faciliter la découverte des expertises internes."
+                }
+            ],
+            "RSE": [
+                {
+                    "title": "Journée engagement RSE",
+                    "objective": "Encourager l’engagement responsable des collaborateurs."
+                },
+                {
+                    "title": "Atelier impact positif et responsabilité",
+                    "objective": "Sensibiliser aux actions responsables applicables au quotidien."
+                },
+                {
+                    "title": "Action collective responsabilité sociale",
+                    "objective": "Mobiliser les équipes autour d’une initiative à impact positif."
+                }
+            ]
+        }
+
+
+    def _proposal_concept_for_category(
+        self,
+        category: str,
+        seed: str = "",
+        used_titles: set[str] | None = None
+    ) -> dict[str, str]:
+        concepts = self._proposal_concepts().get(category)
+
+        if not concepts:
+            concepts = [
+                {
+                    "title": f"Événement interne ciblé — {category}",
+                    "objective": "Proposer un événement interne adapté aux signaux observés dans les données récentes."
+                },
+                {
+                    "title": f"Session collaborative autour de {category}",
+                    "objective": "Créer un moment utile et participatif autour d’un besoin identifié."
+                },
+                {
+                    "title": f"Atelier opérationnel — {category}",
+                    "objective": "Transformer un sujet interne en action concrète avec les collaborateurs."
+                }
+            ]
+
+        used_titles = used_titles or set()
+        title_counts, _ = self._recent_proposal_counters(days=30)
+
+        def concept_sort_key(concept: dict[str, str]) -> tuple[int, int, float]:
+            title = concept["title"]
+            used_penalty = 100 if title in used_titles else 0
+            recent_penalty = title_counts.get(title, 0) * 10
+
+            stable_hash = int(
+                hashlib.sha256(f"{seed}|{category}|{title}".encode("utf-8")).hexdigest(),
+                16
+            )
+
+            tie_breaker = (stable_hash % 1000) / 1000
+
+            return (
+                used_penalty,
+                recent_penalty,
+                tie_breaker
+            )
+
+        return sorted(concepts, key=concept_sort_key)[0]
+    
+    def _strategic_category_score(self, category: str) -> float:
+        scores = {
+            "Formation": 0.68,
+            "Team building": 0.66,
+            "Innovation": 0.64,
+            "Culture d’entreprise": 0.62,
+            "Bien-être": 0.60,
+            "Conférence": 0.58,
+            "Atelier": 0.57,
+            "Webinaire": 0.56,
+            "Networking": 0.55,
+            "Afterwork": 0.53,
+            "Sport": 0.52,
+            "RSE": 0.50
+        }
+
+        return scores.get(category, 0.45)
+
+
+    def _default_duration_for_category(self, category: str) -> int:
+        durations = {
+            "Formation": 60,
+            "Webinaire": 45,
+            "Conférence": 45,
+            "Atelier": 75,
+            "Team building": 90,
+            "Innovation": 75,
+            "Culture d’entreprise": 60,
+            "Bien-être": 45,
+            "Sport": 60,
+            "Afterwork": 90,
+            "Networking": 60,
+            "RSE": 75
+        }
+
+        return durations.get(category, 60)
+
+
+    def _recent_proposal_counters(self, days: int = 30) -> tuple[Counter, Counter]:
+        log_dir = Path("logs/predictions")
+        start_date = utc_now() - timedelta(days=days)
+
+        title_counts: Counter = Counter()
+        category_counts: Counter = Counter()
+
+        if not log_dir.exists():
+            return title_counts, category_counts
+
+        for path in log_dir.glob("planning-*.jsonl"):
+            try:
+                with path.open("r", encoding="utf-8") as file:
+                    for line in file:
+                        line = line.strip()
+
+                        if not line:
+                            continue
+
+                        try:
+                            record = json.loads(line)
+                        except Exception:
+                            continue
+
+                        logged_at_raw = record.get("logged_at")
+                        if not logged_at_raw:
+                            continue
+
+                        try:
+                            logged_at = datetime.fromisoformat(
+                                str(logged_at_raw).replace("Z", "+00:00")
+                            )
+                        except Exception:
+                            continue
+
+                        if logged_at < start_date:
+                            continue
+
+                        if record.get("event_type") == "PROPOSAL_USAGE":
+                            if record.get("proposal_title"):
+                                title_counts[str(record["proposal_title"])] += 1
+
+                            if record.get("category"):
+                                category_counts[str(record["category"])] += 1
+
+                        for proposal in record.get("proposals", []) or []:
+                            if proposal.get("title"):
+                                title_counts[str(proposal["title"])] += 1
+
+                            if proposal.get("category"):
+                                category_counts[str(proposal["category"])] += 1
+
+            except Exception:
+                continue
+
+        return title_counts, category_counts
+
+
+    def _rank_and_diversify_proposals(
+        self,
+        proposals: list[dict],
+        limit: int
+    ) -> list[dict]:
+        if not proposals:
+            return []
+
+        title_counts, category_counts = self._recent_proposal_counters(days=30)
+
+        unique_by_title: dict[str, dict] = {}
+
+        for proposal in proposals:
+            title = str(proposal.get("title", ""))
+
+            if not title:
+                continue
+
+            existing = unique_by_title.get(title)
+
+            if existing is None:
+                unique_by_title[title] = proposal
+                continue
+
+            current_score = float(proposal.get("metrics", {}).get("proposal_score", 0))
+            existing_score = float(existing.get("metrics", {}).get("proposal_score", 0))
+
+            if current_score > existing_score:
+                unique_by_title[title] = proposal
+
+        candidates = list(unique_by_title.values())
+
+        def adjusted_score(proposal: dict) -> float:
+            metrics = proposal.get("metrics", {})
+            title = str(proposal.get("title", ""))
+            category = str(proposal.get("category", ""))
+
+            base_score = float(metrics.get("proposal_score", self._strategic_category_score(category)))
+
+            title_penalty = min(0.25, 0.08 * title_counts.get(title, 0))
+            category_penalty = min(0.22, 0.05 * category_counts.get(category, 0))
+
+            source_bonus = 0.02 if metrics.get("source") != "strategic_diversified_catalog" else 0.0
+
+            return base_score + source_bonus - title_penalty - category_penalty
+
+        sorted_candidates = sorted(
+            candidates,
+            key=adjusted_score,
+            reverse=True
+        )
+
+        selected: list[dict] = []
+        used_categories: set[str] = set()
+
+        for proposal in sorted_candidates:
+            category = str(proposal.get("category", ""))
+
+            if category in used_categories:
+                continue
+
+            selected.append(proposal)
+            used_categories.add(category)
+
+            if len(selected) >= limit:
+                return selected
+
+        for proposal in sorted_candidates:
+            if proposal not in selected:
+                selected.append(proposal)
+
+            if len(selected) >= limit:
+                break
+
+        return selected
+    
+
+    def _rank_llm_generated_proposals(
+        self,
+        proposals: list[dict],
+        weekly_metrics: pd.DataFrame,
+        limit: int
+    ) -> list[dict]:
+        if not proposals:
+            return []
+
+        category_stats = self._category_stats_from_weekly_metrics(weekly_metrics)
+        title_counts, category_counts = self._recent_planning_usage_counters(days=30)
+
+        scored: list[tuple[float, dict]] = []
+
+        for proposal in proposals:
+            category = str(proposal.get("category", ""))
+            title = str(proposal.get("title", ""))
+
+            stats = category_stats.get(category, {})
+
+            registration_rate = float(stats.get("registration_rate", 0.35))
+            attendance_rate = float(stats.get("attendance_rate", 0.50))
+            rating = float(stats.get("rating", 0))
+            events_count = float(stats.get("events_count", 0))
+
+            engagement_gap = 1 - min(1, registration_rate)
+            attendance_signal = min(1, attendance_rate)
+            rating_signal = min(1, rating / 5) if rating > 0 else 0.45
+            data_confidence = min(1, events_count / 5)
+
+            novelty_penalty = min(0.30, 0.10 * title_counts.get(title, 0))
+            category_repetition_penalty = min(0.20, 0.05 * category_counts.get(category, 0))
+
+            # Score dynamique, calculé depuis les données + nouveauté.
+            score = (
+                0.30 * engagement_gap
+                + 0.25 * attendance_signal
+                + 0.20 * rating_signal
+                + 0.15 * data_confidence
+                + 0.10 * self._proposal_completeness_score(proposal)
+                - novelty_penalty
+                - category_repetition_penalty
+            )
+
+            proposal.setdefault("metrics", {})
+            proposal["metrics"].update({
+                "ranking_score": round(float(score), 4),
+                "ranking_source": "dynamic_data_score_plus_novelty",
+                "category_registration_rate": round(registration_rate, 4),
+                "category_attendance_rate": round(attendance_rate, 4),
+                "category_rating": round(rating, 4),
+                "recent_title_count": title_counts.get(title, 0),
+                "recent_category_count": category_counts.get(category, 0)
+            })
+
+            scored.append((score, proposal))
+
+        scored.sort(key=lambda item: item[0], reverse=True)
+
+        selected: list[dict] = []
+        used_categories: set[str] = set()
+
+        for _, proposal in scored:
+            category = str(proposal.get("category", ""))
+
+            if category in used_categories and len(selected) < limit - 1:
+                continue
+
+            selected.append(proposal)
+            used_categories.add(category)
+
+            if len(selected) >= limit:
+                return selected
+
+        return [item[1] for item in scored[:limit]]
+    
+
+    def _category_stats_from_weekly_metrics(self, weekly_metrics: pd.DataFrame) -> dict[str, dict]:
+        if weekly_metrics is None or weekly_metrics.empty:
+            return {}
+
+        df = weekly_metrics.copy()
+        df["category"] = df["category"].fillna("Autre").astype(str)
+
+        grouped = df.groupby("category").agg(
+            events_count=("event_id", "count"),
+            registration_rate=("registration_rate", "mean"),
+            attendance_rate=("attendance_rate", "mean"),
+            rating=("average_rating", "mean")
+        ).reset_index()
+
+        result: dict[str, dict] = {}
+
+        for _, row in grouped.iterrows():
+            result[str(row["category"])] = {
+                "events_count": float(row["events_count"] or 0),
+                "registration_rate": float(row["registration_rate"] or 0),
+                "attendance_rate": float(row["attendance_rate"] or 0),
+                "rating": float(row["rating"] or 0)
+            }
+
+        return result
+
+
+    def _proposal_completeness_score(self, proposal: dict) -> float:
+        score = 0.0
+
+        if proposal.get("title"):
+            score += 0.25
+
+        if proposal.get("objective"):
+            score += 0.25
+
+        if proposal.get("rationale") and len(proposal.get("rationale", [])) >= 2:
+            score += 0.25
+
+        if proposal.get("category") and proposal.get("duration_minutes") and proposal.get("capacity"):
+            score += 0.25
+
+        return min(1.0, score)
+
+
+    def _recent_planning_usage_counters(self, days: int = 30) -> tuple[Counter, Counter]:
+        log_dir = Path("logs/predictions")
+        start_date = utc_now() - timedelta(days=days)
+
+        title_counts: Counter = Counter()
+        category_counts: Counter = Counter()
+
+        if not log_dir.exists():
+            return title_counts, category_counts
+
+        for path in log_dir.glob("planning-*.jsonl"):
+            try:
+                with path.open("r", encoding="utf-8") as file:
+                    for line in file:
+                        line = line.strip()
+
+                        if not line:
+                            continue
+
+                        try:
+                            record = json.loads(line)
+                        except Exception:
+                            continue
+
+                        logged_at_raw = record.get("logged_at")
+                        if not logged_at_raw:
+                            continue
+
+                        try:
+                            logged_at = datetime.fromisoformat(
+                                str(logged_at_raw).replace("Z", "+00:00")
+                            )
+                        except Exception:
+                            continue
+
+                        if logged_at < start_date:
+                            continue
+
+                        if record.get("proposal_title"):
+                            title_counts[str(record["proposal_title"])] += 1
+
+                        if record.get("category"):
+                            category_counts[str(record["category"])] += 1
+
+            except Exception:
+                continue
+
+        return title_counts, category_counts
+    
+
+    def debug_ideation(
+        self,
+        payload
+    ):
+        generated_at = utc_now().isoformat()
+
+        week_start, week_end = self._previous_week_range(payload.reference_date)
+
+        users = load_runtime_users()
+        events = load_runtime_events()
+        registrations = load_runtime_registrations()
+        feedbacks = load_runtime_feedbacks()
+        invitations = load_runtime_invitations()
+
+        weekly_events = self._filter_events_between(events, week_start, week_end)
+
+        weekly_metrics = self._build_weekly_event_metrics(
+            weekly_events=weekly_events,
+            registrations=registrations,
+            feedbacks=feedbacks,
+            invitations=invitations
+        )
+
+        concepts = self.ideation_service.generate_event_concepts(
+            weekly_metrics=weekly_metrics,
+            users=users,
+            target_department_id=payload.target_department_id,
+            limit=payload.limit
+        )
+
+        concepts = self._rank_llm_generated_proposals(
+            proposals=concepts,
+            weekly_metrics=weekly_metrics,
+            limit=payload.limit
+        )
+
+        return {
+            "generated_at": generated_at,
+            "analysis_period": {
+                "from": week_start.isoformat(),
+                "to": week_end.isoformat(),
+                "source": "previous_week"
+            },
+            "total_concepts": len(concepts),
+            "items": concepts,
+            "model_info": {
+                "module": "IA 4 Planning Intelligent",
+                "stage": "ideation_debug",
+                "ideation_strategy": "llm_generated_concepts_plus_dynamic_ranking",
+                "llm_enabled": True
+            }
+        }

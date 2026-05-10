@@ -544,8 +544,8 @@ export class AdminDashboard {
       selectedSlotScore: firstSlot?.score ?? null,
       source: 'admin_dashboard'
     }).subscribe({
-      error: () => {
-        // Le monitoring ne bloque jamais l’utilisateur.
+      error: (err) => {
+        console.error('[AI PLANNING USAGE LOG ERROR]', err);
       }
     });
   }

@@ -2,10 +2,7 @@ package com.capevents.backend.controller.ai;
 
 
 import com.capevents.backend.dto.ai.monitoring.AiPlanningMonitoringSummary;
-import com.capevents.backend.dto.ai.planning.AiPlanningEventProposalRequest;
-import com.capevents.backend.dto.ai.planning.AiPlanningEventProposalResponse;
-import com.capevents.backend.dto.ai.planning.AiPlanningSuggestionRequest;
-import com.capevents.backend.dto.ai.planning.AiPlanningSuggestionResponse;
+import com.capevents.backend.dto.ai.planning.*;
 import com.capevents.backend.entity.User;
 import com.capevents.backend.repository.UserRepository;
 import com.capevents.backend.service.ai.AiPlanningClientService;
@@ -95,6 +92,49 @@ public class AiPlanningController {
                     payload.fromDate(),
                     payload.daysHorizon(),
                     payload.limit()
+            );
+        }
+
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_HR', 'ROLE_MANAGER')")
+    @PostMapping("/usage")
+    public AiPlanningUsageResponse logUsage(
+            @RequestBody AiPlanningUsageRequest payload,
+            Authentication authentication
+    ) {
+        AiPlanningUsageRequest securedPayload = secureUsagePayloadForCurrentUser(
+                payload,
+                authentication
+        );
+
+        return aiPlanningClientService.logUsage(securedPayload);
+    }
+
+    private AiPlanningUsageRequest secureUsagePayloadForCurrentUser(
+            AiPlanningUsageRequest payload,
+            Authentication authentication
+    ) {
+        if (hasAuthority(authentication, "ROLE_HR")) {
+            return payload;
+        }
+
+        if (hasAuthority(authentication, "ROLE_MANAGER")) {
+            Long managerDepartmentId = getCurrentUserDepartmentId(authentication);
+
+            return new AiPlanningUsageRequest(
+                    payload.requestId(),
+                    payload.action(),
+                    payload.proposalRank(),
+                    payload.proposalTitle(),
+                    payload.category(),
+                    managerDepartmentId,
+                    payload.selectedSlotStartAt(),
+                    payload.selectedSlotScore(),
+                    payload.createdEventId(),
+                    payload.createdEventStatus(),
+                    payload.source()
             );
         }
 

@@ -10,7 +10,9 @@ from app.schemas.planning import (
     PlanningEventProposalResponse,
     PlanningMonitoringSummaryResponse,
     PlanningUsageLogRequest,
-    PlanningUsageLogResponse
+    PlanningUsageLogResponse,
+    PlanningIdeationDebugRequest,
+    PlanningIdeationDebugResponse
 )
 from app.services.planning_service import PlanningService
 from app.services.planning_monitoring_service import get_planning_monitoring_summary
@@ -23,6 +25,8 @@ router = APIRouter(
 
 planning_service = PlanningService()
 planning_logger = PredictionLogger()
+
+
 
 @router.post("/suggestions", response_model=PlanningSuggestionResponse)
 def suggest_planning_slots(
@@ -76,3 +80,10 @@ def log_planning_usage(
         status="logged",
         logged_at=logged_at
     )
+
+@router.post("/ideation/debug", response_model=PlanningIdeationDebugResponse)
+def debug_planning_ideation(
+    payload: PlanningIdeationDebugRequest,
+    _: bool = Depends(verify_ai_service_key)
+):
+    return planning_service.debug_ideation(payload)

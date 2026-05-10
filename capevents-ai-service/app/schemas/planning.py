@@ -110,3 +110,29 @@ class PlanningUsageLogRequest(BaseModel):
 class PlanningUsageLogResponse(BaseModel):
     status: str
     logged_at: str
+
+class PlanningIdeationDebugRequest(BaseModel):
+    reference_date: str | None = None
+    target_department_id: int | None = None
+    limit: int = Field(default=10, ge=1, le=30)
+
+
+class PlanningIdeationConcept(BaseModel):
+    title: str
+    category: str
+    audience: str
+    location_type: str
+    target_department_id: int | None = None
+    duration_minutes: int
+    capacity: int
+    objective: str
+    rationale: list[str]
+    metrics: dict
+
+
+class PlanningIdeationDebugResponse(BaseModel):
+    generated_at: str
+    analysis_period: dict
+    total_concepts: int
+    items: list[PlanningIdeationConcept]
+    model_info: dict

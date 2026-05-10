@@ -20,6 +20,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
+import com.capevents.backend.dto.ai.planning.AiPlanningUsageRequest;
+import com.capevents.backend.dto.ai.planning.AiPlanningUsageResponse;
 
 @Service
 public class AiPlanningClientService {
@@ -108,6 +110,23 @@ public class AiPlanningClientService {
                     exception
             );
         }
+    }
+
+    public AiPlanningUsageResponse logUsage(
+            AiPlanningUsageRequest payload
+    ) {
+        URI uri = UriComponentsBuilder
+                .fromHttpUrl(aiServiceProperties.getBaseUrl())
+                .path("/ai/planning/usage")
+                .build()
+                .toUri();
+
+        return postToAiService(
+                uri,
+                payload,
+                AiPlanningUsageResponse.class,
+                "Impossible de journaliser l’usage IA Planning."
+        );
     }
 
 
