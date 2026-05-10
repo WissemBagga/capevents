@@ -436,11 +436,26 @@ export class AdminDashboard {
     };
 
     const key = `ai-planning-proposal-${Date.now()}`;
+    const trackingKey = `ai-planning-tracking-${Date.now()}`;
+
     sessionStorage.setItem(key, JSON.stringify(draft));
+
+    sessionStorage.setItem(trackingKey, JSON.stringify({
+      requestId: this.aiPlanningResponse?.requestId,
+      proposalRank: proposal.rank,
+      proposalTitle: proposal.title,
+      category: proposal.category,
+      targetDepartmentId: draft.targetDepartmentId,
+      selectedSlotStartAt: firstSlot.startAt,
+      selectedSlotScore: firstSlot.score
+    }));
+
+    this.logPlanningUsage(proposal, 'USED_TO_PREFILL');
 
     this.router.navigate(['/admin/create-event'], {
       queryParams: {
-        aiProposal: key
+        aiProposal: key,
+        aiTracking: trackingKey
       }
     });
   }
@@ -488,6 +503,7 @@ export class AdminDashboard {
     ].filter(Boolean).join('\n');
 
     navigator.clipboard?.writeText(text);
+    this.logPlanningUsage(proposal, 'COPIED');
   }
 
   trackByPlanningProposal(_: number, item: AiPlanningEventProposal): number {
@@ -509,5 +525,28 @@ export class AdminDashboard {
       default:
         return confidence || 'Confiance non définie';
     }
+  }
+
+  private logPlanningUsage(
+    proposal: AiPlanningEventProposal,
+    action: 'COPIED' | 'USED_TO_PREFILL'
+  ): void {
+    const firstSlot = proposal.suggestedSlots?.[0];
+
+    this.aiPlanningService.logUsage({
+      requestId: this.aiPlanningResponse?.requestId,
+      action,
+      proposalRank: proposal.rank,
+      proposalTitle: proposal.title,
+      category: proposal.category,
+      targetDepartmentId: proposal.targetDepartmentId,
+      selectedSlotStartAt: firstSlot?.startAt ?? null,
+      selectedSlotScore: firstSlot?.score ?? null,
+      source: 'admin_dashboard'
+    }).subscribe({
+      error: () => {
+        // Le monitoring ne bloque jamais l’utilisateur.
+      }
+    });
   }
 }

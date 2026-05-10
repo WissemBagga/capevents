@@ -70,9 +70,30 @@ export interface AiPlanningMonitoringSummary {
   totalUsageEvents: number;
   copiedCount: number;
   usedToPrefillCount: number;
+  createdFromAiCount: number;
   usageRate: number;
   topCategories: Array<Record<string, any>>;
   topProposals: Array<Record<string, any>>;
   modelVersions: Array<Record<string, any>>;
   latestEvents: Array<Record<string, any>>;
+}
+
+
+export interface AiPlanningUsageRequest {
+  requestId?: string;
+  action: 'COPIED' | 'USED_TO_PREFILL' | 'EVENT_CREATED_FROM_AI_PROPOSAL';
+  proposalRank?: number;
+  proposalTitle?: string;
+  category?: string;
+  targetDepartmentId?: number | null;
+  selectedSlotStartAt?: string | null;
+  selectedSlotScore?: number | null;
+  createdEventId?: string | null;
+  createdEventStatus?: string | null;
+  source?: string;
+}
+
+export interface AiPlanningUsageResponse {
+  status: string;
+  loggedAt: string;
 }

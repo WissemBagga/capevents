@@ -86,8 +86,27 @@ class PlanningMonitoringSummaryResponse(BaseModel):
     total_usage_events: int
     copied_count: int
     used_to_prefill_count: int
+    created_from_ai_count: int = 0
     usage_rate: float
     top_categories: list[PlanningMonitoringTopCategory]
     top_proposals: list[PlanningMonitoringTopProposal]
     model_versions: list[PlanningMonitoringModelVersion]
     latest_events: list[dict]
+
+class PlanningUsageLogRequest(BaseModel):
+    request_id: str | None = None
+    action: str = "USED_TO_PREFILL"
+    proposal_rank: int | None = None
+    proposal_title: str | None = None
+    category: str | None = None
+    target_department_id: int | None = None
+    selected_slot_start_at: str | None = None
+    selected_slot_score: float | None = None
+    created_event_id: str | None = None
+    created_event_status: str | None = None
+    source: str = "angular_admin_dashboard"
+
+
+class PlanningUsageLogResponse(BaseModel):
+    status: str
+    logged_at: str

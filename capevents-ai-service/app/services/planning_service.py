@@ -31,7 +31,7 @@ from app.core.model_registry import (
     ModelRegistryError
 )
 
-from app.services.planning_logger import append_planning_log
+from app.services.prediction_logger import PredictionLogger
 
 
 DATASET_PATH = Path("datasets/processed/planning_train.csv")
@@ -49,6 +49,8 @@ PRESENT_ATTENDANCE_VALUES = {
     "ATTENDED",
     "CONFIRMED_PRESENT"
 }
+
+planning_logger = PredictionLogger()
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -155,26 +157,26 @@ class PlanningService:
         )
 
         try:
-            append_planning_log(
-                "SLOT_SUGGESTIONS_GENERATED",
-                {
-                    "request_id": request_id,
-                    "category": payload.category,
+            planning_logger.log_planning(
+                event_type="SLOT_SUGGESTIONS_GENERATED",
+                request_id=request_id,
+                category=payload.category,
+                target_department_id=payload.target_department_id,
+                total_candidates=response.total_candidates,
+                returned_items=len(response.items),
+                model_info=response.model_info,
+                source="fastapi_planning_service",
+                payload={
                     "audience": payload.audience,
                     "location_type": payload.location_type,
-                    "target_department_id": payload.target_department_id,
                     "duration_minutes": payload.duration_minutes,
                     "capacity": payload.capacity,
                     "from_date": payload.from_date,
                     "days_horizon": payload.days_horizon,
-                    "limit": payload.limit,
-                    "total_candidates": response.total_candidates,
-                    "returned_items": len(response.items),
-                    "model_info": response.model_info
+                    "limit": payload.limit
                 }
             )
         except Exception:
-            # Le monitoring ne doit jamais bloquer la réponse IA.
             pass
 
         return response
@@ -623,18 +625,22 @@ class PlanningService:
             }
         )
 
-        append_planning_log(
-            "EVENT_PROPOSALS_GENERATED",
-            {
-                "request_id": request_id,
-                "target_department_id": payload.target_department_id,
-                "limit": payload.limit,
-                "slot_limit": payload.slot_limit,
-                "days_horizon": payload.days_horizon,
-                "total_proposals": response.total_proposals,
-                "model_info": response.model_info
-            }
-        )
+        try:
+            planning_logger.log_planning(
+                event_type="EVENT_PROPOSALS_GENERATED",
+                request_id=request_id,
+                target_department_id=payload.target_department_id,
+                total_proposals=response.total_proposals,
+                model_info=response.model_info,
+                source="fastapi_planning_service",
+                payload={
+                    "limit": payload.limit,
+                    "slot_limit": payload.slot_limit,
+                    "days_horizon": payload.days_horizon
+                }
+            )
+        except Exception:
+            pass
 
         return response
 

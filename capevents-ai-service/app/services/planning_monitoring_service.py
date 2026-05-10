@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 
-LOG_DIR = Path("logs/planning")
+LOG_DIR = Path("logs/predictions")
 
 
 def parse_datetime(value: str | None) -> datetime | None:
@@ -80,6 +80,11 @@ def get_planning_monitoring_summary(
         if item.get("action") == "USED_TO_PREFILL"
     ]
 
+    created_from_ai = [
+        item for item in usages
+        if item.get("action") == "EVENT_CREATED_FROM_AI_PROPOSAL"
+    ]
+
     categories = Counter(
         item.get("category")
         for item in usages
@@ -121,6 +126,7 @@ def get_planning_monitoring_summary(
         "total_usage_events": len(usages),
         "copied_count": len(copied),
         "used_to_prefill_count": total_used,
+        "created_from_ai_count": len(created_from_ai),
         "usage_rate": round(usage_rate, 4),
         "top_categories": [
             {"category": category, "count": count}

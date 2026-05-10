@@ -12,6 +12,8 @@ import { EVENT_IMAGE_PRESETS, getDefaultEventImage } from '../../../core/constan
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
+import { AiPlanningService } from '../../../core/services/ai-planning.service';
+
 
 
 @Component({
@@ -29,6 +31,10 @@ export class CreateEvent {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
+
+  private aiPlanningService = inject(AiPlanningService);
+  private aiPlanningTracking: any | null = null;
+  private aiPlanningTrackingKey: string | null = null;
 
   readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
   readonly eventImagePresets = EVENT_IMAGE_PRESETS;
@@ -195,6 +201,7 @@ export class CreateEvent {
     const rawImage = this.form.get('imageUrl')?.value?.trim() || '';
 
     if (this.imageMode === 'CUSTOM_URL' && rawImage && !this.isHttpUrl(rawImage)) {
+      this.savingDraft = false;
       this.errorMessage = 'Veuillez saisir une URL image valide commençant par http:// ou https://';
       this.cdr.markForCheck();
       return;
@@ -203,7 +210,12 @@ export class CreateEvent {
     const payload = this.buildPayload();
 
     this.eventService.createEvent(payload).subscribe({
-      next: () => {
+      next: (createdEvent) => {
+        this.logAiPlanningEventCreated(
+          createdEvent?.id ?? null,
+          createdEvent?.status ?? 'DRAFT'
+        );
+
         this.savingDraft = false;
         this.successMessage = 'Événement enregistré en brouillon.';
         this.cdr.markForCheck();
@@ -231,6 +243,10 @@ export class CreateEvent {
 
     this.publishing = true;
     this.errorMessage = '';
+    this.logAiPlanningEventCreated(
+      createdEvent?.id ?? null,
+      'PUBLISHED'
+    );
     this.successMessage = '';
     this.cdr.markForCheck();
 
@@ -365,6 +381,21 @@ export class CreateEvent {
   private applyAiPlanningProposalIfPresent(): void {
     const key = this.route.snapshot.queryParamMap.get('aiProposal');
 
+    const trackingKey = this.route.snapshot.queryParamMap.get('aiTracking');
+    this.aiPlanningTrackingKey = trackingKey;
+
+    if (trackingKey) {
+      const rawTracking = sessionStorage.getItem(trackingKey);
+
+      if (rawTracking) {
+        try {
+          this.aiPlanningTracking = JSON.parse(rawTracking);
+        } catch {
+          this.aiPlanningTracking = null;
+        }
+      }
+    }
+
     if (!key) return;
 
     const raw = sessionStorage.getItem(key);
@@ -423,6 +454,38 @@ export class CreateEvent {
     date.setDate(date.getDate() - 1);
 
     return this.toDateTimeLocalValue(date.toISOString());
+  }
+
+
+  private logAiPlanningEventCreated(
+    createdEventId: string | null,
+    createdEventStatus: string | null
+  ): void {
+    if (!this.aiPlanningTracking) return;
+
+    this.aiPlanningService.logUsage({
+      requestId: this.aiPlanningTracking.requestId,
+      action: 'EVENT_CREATED_FROM_AI_PROPOSAL',
+      proposalRank: this.aiPlanningTracking.proposalRank,
+      proposalTitle: this.aiPlanningTracking.proposalTitle,
+      category: this.aiPlanningTracking.category,
+      targetDepartmentId: this.aiPlanningTracking.targetDepartmentId,
+      selectedSlotStartAt: this.aiPlanningTracking.selectedSlotStartAt,
+      selectedSlotScore: this.aiPlanningTracking.selectedSlotScore,
+      createdEventId,
+      createdEventStatus,
+      source: 'create_event_form'
+    }).subscribe({
+      next: () => {
+        if (this.aiPlanningTrackingKey) {
+          sessionStorage.removeItem(this.aiPlanningTrackingKey);
+        }
+        this.aiPlanningTracking = null;
+      },
+      error: () => {
+        // Le monitoring ne bloque jamais la création.
+      }
+    });
   }
 
 }

@@ -7,7 +7,8 @@ import {
   AiPlanningEventProposalRequest,
   AiPlanningEventProposalResponse,
   AiPlanningSuggestionRequest,
-  AiPlanningSuggestionResponse, AiPlanningMonitoringSummary
+  AiPlanningSuggestionResponse, AiPlanningMonitoringSummary, AiPlanningUsageRequest,
+AiPlanningUsageResponse
 } from '../models/ai-planning.model';
 
 
@@ -116,6 +117,8 @@ export class AiPlanningService {
     const params: Record<string, string> = {
       days: String(days)
     };
+    
+    createdFromAiCount: response?.createdFromAiCount ?? response?.created_from_ai_count ?? 0,
 
     if (targetDepartmentId !== null) {
       params['targetDepartmentId'] = String(targetDepartmentId);
@@ -137,4 +140,26 @@ export class AiPlanningService {
         latestEvents: response?.latestEvents ?? response?.latest_events ?? []
       })));
   }
+
+  logUsage(payload: AiPlanningUsageRequest): Observable<AiPlanningUsageResponse> {
+    return this.http
+      .post<any>(`${this.apiUrl}/usage`, {
+        request_id: payload.requestId ?? null,
+        action: payload.action,
+        proposal_rank: payload.proposalRank ?? null,
+        proposal_title: payload.proposalTitle ?? null,
+        category: payload.category ?? null,
+        target_department_id: payload.targetDepartmentId ?? null,
+        selected_slot_start_at: payload.selectedSlotStartAt ?? null,
+        selected_slot_score: payload.selectedSlotScore ?? null,
+        created_event_id: payload.createdEventId ?? null,
+        created_event_status: payload.createdEventStatus ?? null,
+        source: payload.source ?? 'angular_admin_dashboard'
+      })
+      .pipe(map(response => ({
+        status: response?.status ?? '',
+        loggedAt: response?.loggedAt ?? response?.logged_at ?? ''
+      })));
+  }
+
 }
