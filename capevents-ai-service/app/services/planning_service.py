@@ -1247,10 +1247,22 @@ class PlanningService:
 
             stats = category_stats.get(category, {})
 
-            registration_rate = float(stats.get("registration_rate", 0.35))
-            attendance_rate = float(stats.get("attendance_rate", 0.50))
-            rating = float(stats.get("rating", 0))
-            events_count = float(stats.get("events_count", 0))
+            registration_rate = self._safe_metric_float(
+                stats.get("registration_rate"),
+                0.35
+            )
+            attendance_rate = self._safe_metric_float(
+                stats.get("attendance_rate"),
+                0.50
+            )
+            rating = self._safe_metric_float(
+                stats.get("rating"),
+                0.0
+            )
+            events_count = self._safe_metric_float(
+                stats.get("events_count"),
+                0.0
+            )
 
             engagement_gap = 1 - min(1, registration_rate)
             attendance_signal = min(1, attendance_rate)
@@ -1260,7 +1272,6 @@ class PlanningService:
             novelty_penalty = min(0.30, 0.10 * title_counts.get(title, 0))
             category_repetition_penalty = min(0.20, 0.05 * category_counts.get(category, 0))
 
-            # Score dynamique, calculé depuis les données + nouveauté.
             score = (
                 0.30 * engagement_gap
                 + 0.25 * attendance_signal
@@ -1271,44 +1282,48 @@ class PlanningService:
                 - category_repetition_penalty
             )
 
+            score = clamp_score(score)
+
             proposal.setdefault("metrics", {})
             proposal["metrics"].update({
-                "ranking_score": round(float(score), 4),
+                "ranking_score": round(score, 4),
                 "ranking_source": "dynamic_data_score_plus_novelty",
                 "category_registration_rate": round(registration_rate, 4),
                 "category_attendance_rate": round(attendance_rate, 4),
                 "category_rating": round(rating, 4),
-                "recent_title_count": title_counts.get(title, 0),
-                "recent_category_count": category_counts.get(category, 0)
+                "recent_title_count": int(title_counts.get(title, 0)),
+                "recent_category_count": int(category_counts.get(category, 0))
             })
 
             scored.append((score, proposal))
 
-            scored.sort(key=lambda item: item[0], reverse=True)
+        scored.sort(key=lambda item: item[0], reverse=True)
 
-            selected: list[dict] = []
-            used_categories: set[str] = set()
+        selected: list[dict] = []
+        used_categories: set[str] = set()
 
-            for _, proposal in scored:
-                category = str(proposal.get("category", ""))
+        # Première passe : diversifier les catégories.
+        for _, proposal in scored:
+            category = str(proposal.get("category", ""))
 
-                if category in used_categories:
-                    continue
+            if category in used_categories:
+                continue
 
+            selected.append(proposal)
+            used_categories.add(category)
+
+            if len(selected) >= limit:
+                return selected
+
+        # Deuxième passe : compléter si le LLM a généré plusieurs propositions de même catégorie.
+        for _, proposal in scored:
+            if proposal not in selected:
                 selected.append(proposal)
-                used_categories.add(category)
 
-                if len(selected) >= limit:
-                    return selected
+            if len(selected) >= limit:
+                break
 
-            for _, proposal in scored:
-                if proposal not in selected:
-                    selected.append(proposal)
-
-                if len(selected) >= limit:
-                    break
-
-            return selected
+        return selected
     
 
     def _category_stats_from_weekly_metrics(self, weekly_metrics: pd.DataFrame) -> dict[str, dict]:
@@ -1316,7 +1331,24 @@ class PlanningService:
             return {}
 
         df = weekly_metrics.copy()
+
+        if "category" not in df.columns:
+            return {}
+
         df["category"] = df["category"].fillna("Autre").astype(str)
+
+        for column in [
+            "registration_rate",
+            "attendance_rate",
+            "average_rating"
+        ]:
+            if column not in df.columns:
+                df[column] = 0
+
+            df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+        if "event_id" not in df.columns:
+            df["event_id"] = df.index.astype(str)
 
         grouped = df.groupby("category").agg(
             events_count=("event_id", "count"),
@@ -1328,11 +1360,13 @@ class PlanningService:
         result: dict[str, dict] = {}
 
         for _, row in grouped.iterrows():
-            result[str(row["category"])] = {
-                "events_count": float(row["events_count"] or 0),
-                "registration_rate": float(row["registration_rate"] or 0),
-                "attendance_rate": float(row["attendance_rate"] or 0),
-                "rating": float(row["rating"] or 0)
+            category = str(row["category"])
+
+            result[category] = {
+                "events_count": self._safe_metric_float(row.get("events_count"), 0),
+                "registration_rate": self._safe_metric_float(row.get("registration_rate"), 0.35),
+                "attendance_rate": self._safe_metric_float(row.get("attendance_rate"), 0.50),
+                "rating": self._safe_metric_float(row.get("rating"), 0)
             }
 
         return result
@@ -1493,3 +1527,20 @@ class PlanningService:
             (df["target_department_id"] == int(target_department_id))
             | (df["audience"] == "GLOBAL")
         ].copy()
+    
+    def _safe_metric_float(self, value: Any, default: float = 0.0) -> float:
+        try:
+            if value is None:
+                return default
+
+            numeric_value = float(value)
+
+            if pd.isna(numeric_value):
+                return default
+
+            if numeric_value == float("inf") or numeric_value == float("-inf"):
+                return default
+
+            return numeric_value
+        except Exception:
+            return default

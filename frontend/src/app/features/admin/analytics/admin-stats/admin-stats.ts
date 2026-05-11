@@ -118,8 +118,12 @@ export class AdminStats {
       this.loadAiMonitoring();
       this.loadAiCopilot();
       this.loadAiCopilotMonitoring();
+    }
+
+    if (this.isHr || this.isManager) {
       this.loadPlanningMonitoring();
     }
+
     this.loadAnalytics();
   }
 

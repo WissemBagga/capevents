@@ -76,10 +76,6 @@ export class AdminDashboard {
   planningTargetDepartmentId: number | null = null;
 
 
-  const safeLimit = Math.min(Math.max(this.planningLimit || 3, 1), 5);
-  const safeSlotLimit = Math.min(Math.max(this.planningSlotLimit || 3, 1), 5);
-  const safeDaysHorizon = Math.min(Math.max(this.planningDaysHorizon || 30, 7), 50);
-
 
   ngOnInit(): void {
     if (this.authService.isHr()) {
@@ -361,6 +357,10 @@ export class AdminDashboard {
       ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
       : this.planningTargetDepartmentId;
 
+    const safeLimit = Math.min(Math.max(Number(this.planningLimit) || 3, 1), 5);
+    const safeSlotLimit = Math.min(Math.max(Number(this.planningSlotLimit) || 3, 1), 5);
+    const safeDaysHorizon = Math.min(Math.max(Number(this.planningDaysHorizon) || 30, 7), 50);
+
     this.aiPlanningService.proposeEvents({
       referenceDate: this.planningReferenceDate || null,
       targetDepartmentId,
@@ -424,6 +424,10 @@ export class AdminDashboard {
       return;
     }
 
+    const targetDepartmentId = this.authService.isManager()
+      ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
+      : proposal.targetDepartmentId;
+
     const draft = {
       title: proposal.title,
       category: proposal.category,
@@ -435,30 +439,30 @@ export class AdminDashboard {
       audience: this.authService.isManager() ? 'DEPARTMENT' : proposal.audience,
       targetDepartmentId: this.authService.isManager()
         ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
-        : proposal.targetDepartmentId
+        : proposal.targetDepartmentId,
+
+      aiPlanningUsage: {
+        requestId: this.aiPlanningResponse?.requestId ?? null,
+        proposalRank: proposal.rank,
+        proposalTitle: proposal.title,
+        category: proposal.category,
+        targetDepartmentId: this.authService.isManager()
+          ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
+          : proposal.targetDepartmentId,
+        selectedSlotStartAt: firstSlot.startAt,
+        selectedSlotScore: firstSlot.score
+      }
     };
 
     const key = `ai-planning-proposal-${Date.now()}`;
-    const trackingKey = `ai-planning-tracking-${Date.now()}`;
 
     sessionStorage.setItem(key, JSON.stringify(draft));
-
-    sessionStorage.setItem(trackingKey, JSON.stringify({
-      requestId: this.aiPlanningResponse?.requestId,
-      proposalRank: proposal.rank,
-      proposalTitle: proposal.title,
-      category: proposal.category,
-      targetDepartmentId: draft.targetDepartmentId,
-      selectedSlotStartAt: firstSlot.startAt,
-      selectedSlotScore: firstSlot.score
-    }));
 
     this.logPlanningUsage(proposal, 'USED_TO_PREFILL');
 
     this.router.navigate(['/admin/create-event'], {
       queryParams: {
-        aiProposal: key,
-        aiTracking: trackingKey
+        aiProposal: key
       }
     });
   }
@@ -527,42 +531,25 @@ export class AdminDashboard {
   ): void {
     const firstSlot = proposal.suggestedSlots?.[0];
 
+    const targetDepartmentId = this.authService.isManager()
+      ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
+      : proposal.targetDepartmentId;
+
     this.aiPlanningService.logUsage({
-      requestId: this.aiPlanningResponse?.requestId,
+      requestId: this.aiPlanningResponse?.requestId ?? undefined,
       action,
       proposalRank: proposal.rank,
       proposalTitle: proposal.title,
       category: proposal.category,
-      targetDepartmentId: proposal.targetDepartmentId,
+      targetDepartmentId,
       selectedSlotStartAt: firstSlot?.startAt ?? null,
       selectedSlotScore: firstSlot?.score ?? null,
-      source: 'admin_dashboard'
+      source: 'angular_admin_dashboard'
     }).subscribe({
-      error: (err) => {
-        console.error('[AI PLANNING USAGE LOG ERROR]', err);
+      error: () => {
+        // Monitoring non bloquant.
       }
     });
   }
 
-  private buildPlanningAdminNote(proposal: AiPlanningEventProposal): string {
-    const firstSlot = proposal.suggestedSlots?.[0];
-
-    const rationale = (proposal.rationale ?? [])
-      .map(item => `• ${item}`)
-      .join('\n');
-
-    const slotText = firstSlot
-      ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}`
-      : 'Créneau recommandé : à confirmer';
-
-    return [
-      'Note IA interne',
-      slotText,
-      '',
-      'Justification :',
-      rationale,
-      '',
-      'Cette proposition doit être validée par le RH ou le manager avant publication.'
-    ].join('\n');
-  }
 }

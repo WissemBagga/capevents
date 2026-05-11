@@ -33,8 +33,7 @@ export class CreateEvent {
   private route = inject(ActivatedRoute);
 
   private aiPlanningService = inject(AiPlanningService);
-  private aiPlanningTracking: any | null = null;
-  private aiPlanningTrackingKey: string | null = null;
+  private aiPlanningUsageToLog: any | null = null;
 
   readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
   readonly eventImagePresets = EVENT_IMAGE_PRESETS;
@@ -211,10 +210,7 @@ export class CreateEvent {
 
     this.eventService.createEvent(payload).subscribe({
       next: (createdEvent) => {
-        this.logAiPlanningEventCreated(
-          createdEvent?.id ?? null,
-          createdEvent?.status ?? 'DRAFT'
-        );
+        this.logCreatedFromAiProposal(createdEvent?.id ?? null, 'DRAFT');
 
         this.savingDraft = false;
         this.successMessage = 'Événement enregistré en brouillon.';
@@ -262,10 +258,7 @@ export class CreateEvent {
         this.eventService.publishEvent(createdEvent.id)
           .subscribe({
             next: () => {
-              this.logAiPlanningEventCreated(
-                createdEvent?.id ?? null,
-                'PUBLISHED'
-              );
+              this.logCreatedFromAiProposal(createdEvent?.id ?? null, 'PUBLISHED');
 
               this.publishing = false;
               this.successMessage = 'Événement créé et publié avec succès.';
@@ -381,31 +374,30 @@ export class CreateEvent {
   }
 
   private applyAiPlanningProposalIfPresent(): void {
-    const key = this.route.snapshot.queryParamMap.get('aiProposal');
-
+    const proposalKey = this.route.snapshot.queryParamMap.get('aiProposal');
     const trackingKey = this.route.snapshot.queryParamMap.get('aiTracking');
-    this.aiPlanningTrackingKey = trackingKey;
 
-    if (trackingKey) {
-      const rawTracking = sessionStorage.getItem(trackingKey);
+    if (!proposalKey) return;
 
-      if (rawTracking) {
-        try {
-          this.aiPlanningTracking = JSON.parse(rawTracking);
-        } catch {
-          this.aiPlanningTracking = null;
-        }
-      }
-    }
+    const rawProposal = sessionStorage.getItem(proposalKey);
 
-    if (!key) return;
-
-    const raw = sessionStorage.getItem(key);
-
-    if (!raw) return;
+    if (!rawProposal) return;
 
     try {
-      const proposal = JSON.parse(raw);
+      const proposal = JSON.parse(rawProposal);
+
+      if (trackingKey) {
+        const rawTracking = sessionStorage.getItem(trackingKey);
+
+        if (rawTracking) {
+          this.aiPlanningUsageToLog = JSON.parse(rawTracking);
+          sessionStorage.removeItem(trackingKey);
+        }
+      }
+
+      if (!this.aiPlanningUsageToLog && proposal.aiPlanningUsage) {
+        this.aiPlanningUsageToLog = proposal.aiPlanningUsage;
+      }
 
       const startAtLocal = this.toDateTimeLocalValue(proposal.startAt);
       const deadlineLocal = this.buildDefaultRegistrationDeadline(proposal.startAt);
@@ -420,7 +412,9 @@ export class CreateEvent {
         capacity: proposal.capacity ?? 30,
         registrationDeadline: deadlineLocal,
         audience: this.isManager ? 'DEPARTMENT' : proposal.audience ?? 'DEPARTMENT',
-        targetDepartmentId: this.isManager ? this.currentDepartmentId : proposal.targetDepartmentId ?? null
+        targetDepartmentId: this.isManager
+          ? this.currentDepartmentId
+          : proposal.targetDepartmentId ?? null
       });
 
       this.onLocationTypeChange();
@@ -429,7 +423,7 @@ export class CreateEvent {
       this.imageMode = 'AUTO';
       this.syncEventImageSelection();
 
-      sessionStorage.removeItem(key);
+      sessionStorage.removeItem(proposalKey);
 
       this.successMessage = 'Proposition IA appliquée au formulaire. Vérifiez les informations avant validation.';
       this.cdr.markForCheck();
@@ -458,36 +452,33 @@ export class CreateEvent {
     return this.toDateTimeLocalValue(date.toISOString());
   }
 
-
-  private logAiPlanningEventCreated(
-    createdEventId: string | null,
-    createdEventStatus: string | null
+  private logCreatedFromAiProposal(
+    createdEventId: string | null | undefined,
+    createdEventStatus: 'DRAFT' | 'PUBLISHED'
   ): void {
-    if (!this.aiPlanningTracking) return;
+    if (!this.aiPlanningUsageToLog) {
+      console.warn('Aucun tracking IA Planning trouvé pour cet événement.');
+      return;
+    }
 
     this.aiPlanningService.logUsage({
-      requestId: this.aiPlanningTracking.requestId,
+      requestId: this.aiPlanningUsageToLog.requestId ?? undefined,
       action: 'EVENT_CREATED_FROM_AI_PROPOSAL',
-      proposalRank: this.aiPlanningTracking.proposalRank,
-      proposalTitle: this.aiPlanningTracking.proposalTitle,
-      category: this.aiPlanningTracking.category,
-      targetDepartmentId: this.aiPlanningTracking.targetDepartmentId,
-      selectedSlotStartAt: this.aiPlanningTracking.selectedSlotStartAt,
-      selectedSlotScore: this.aiPlanningTracking.selectedSlotScore,
-      createdEventId,
+      proposalRank: this.aiPlanningUsageToLog.proposalRank ?? null,
+      proposalTitle: this.aiPlanningUsageToLog.proposalTitle ?? null,
+      category: this.aiPlanningUsageToLog.category ?? null,
+      targetDepartmentId: this.aiPlanningUsageToLog.targetDepartmentId ?? null,
+      selectedSlotStartAt: this.aiPlanningUsageToLog.selectedSlotStartAt ?? null,
+      selectedSlotScore: this.aiPlanningUsageToLog.selectedSlotScore ?? null,
+      createdEventId: createdEventId ?? null,
       createdEventStatus,
-      source: 'create_event_form'
+      source: 'angular_create_event'
     }).subscribe({
       next: () => {
-        if (this.aiPlanningTrackingKey) {
-          sessionStorage.removeItem(this.aiPlanningTrackingKey);
-        }
-
-        this.aiPlanningTracking = null;
-        this.aiPlanningTrackingKey = null;
+        this.aiPlanningUsageToLog = null;
       },
-      error: (err) => {
-        console.error('[AI PLANNING EVENT CREATED LOG ERROR]', err);
+      error: () => {
+        // Monitoring non bloquant.
       }
     });
   }

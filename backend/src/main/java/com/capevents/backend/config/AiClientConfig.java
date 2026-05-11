@@ -17,11 +17,17 @@ public class AiClientConfig {
             RestTemplateBuilder builder,
             AiServiceProperties aiServiceProperties
     ) {
-        Duration timeout = Duration.ofSeconds(aiServiceProperties.getTimeoutSeconds());
+        int timeoutSeconds = Math.max(
+                aiServiceProperties.getTimeoutSeconds(),
+                240
+        );
+
+        Duration connectTimeout = Duration.ofSeconds(10);
+        Duration readTimeout = Duration.ofSeconds(timeoutSeconds);
 
         return builder
-                .connectTimeout(timeout)
-                .readTimeout(timeout)
+                .connectTimeout(connectTimeout)
+                .readTimeout(readTimeout)
                 .build();
     }
 }

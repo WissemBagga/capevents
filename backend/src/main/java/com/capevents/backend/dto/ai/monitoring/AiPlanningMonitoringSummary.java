@@ -1,6 +1,5 @@
 package com.capevents.backend.dto.ai.monitoring;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -24,6 +23,9 @@ public record AiPlanningMonitoringSummary(
 
         @JsonProperty("used_to_prefill_count")
         Integer usedToPrefillCount,
+
+        @JsonProperty("created_from_ai_count")
+        Integer createdFromAiCount,
 
         @JsonProperty("usage_rate")
         Double usageRate,

@@ -174,20 +174,39 @@ class PlanningIdeationService:
                     if len(clean) >= minimum_required:
                         break
 
+            if len(clean) < minimum_required:
+                clean = self._supplement_missing_concepts(
+                    concepts=clean,
+                    target_department_id=target_department_id,
+                    users=users,
+                    required_count=minimum_required,
+                    reason="llm_returned_less_valid_concepts_than_requested"
+                )
+
             if len(clean) == 0:
-                raise PlanningLlmError(
-                    "Le LLM a répondu, mais les concepts générés sont trop faibles ou non professionnels."
+                clean = self._supplement_missing_concepts(
+                    concepts=[],
+                    target_department_id=target_department_id,
+                    users=users,
+                    required_count=minimum_required,
+                    reason="llm_returned_no_valid_concept"
                 )
 
             return clean[:minimum_required]
 
-        except PlanningLlmError as exception:
+            return clean[:minimum_required]
+
+        except Exception as exception:
             self.last_error = str(exception)
 
-            return self._safe_minimal_fallback(
+            required_count = min(max(limit, 3), 5)
+
+            return self._supplement_missing_concepts(
+                concepts=[],
                 target_department_id=target_department_id,
                 users=users,
-                error_message=self.last_error
+                required_count=required_count,
+                reason=f"llm_generation_failed: {self.last_error}"
             )
 
     def _system_prompt(self) -> str:
@@ -744,3 +763,133 @@ Contexte :
             return int(value)
         except Exception:
             return default
+
+    def _supplement_missing_concepts(
+        self,
+        concepts: list[dict[str, Any]],
+        target_department_id: int | None,
+        users: pd.DataFrame,
+        required_count: int,
+        reason: str
+    ) -> list[dict[str, Any]]:
+        existing_titles = {
+            str(item.get("title", "")).lower()
+            for item in concepts
+        }
+
+        existing_categories = {
+            str(item.get("category", "")).lower()
+            for item in concepts
+        }
+
+        audience = "DEPARTMENT" if target_department_id else "GLOBAL"
+        capacity = self._default_capacity(users, target_department_id)
+
+        fallback_candidates = [
+            {
+                "title": "Atelier amélioration continue inter-équipes",
+                "category": "Atelier",
+                "location_type": "ONSITE",
+                "objective": "Identifier des pistes d’amélioration concrètes et renforcer la collaboration entre équipes.",
+                "rationale": [
+                    "Le format atelier permet d’exploiter les retours récents même lorsque les données sont limitées.",
+                    "La proposition reste à valider par le RH ou le manager avant publication."
+                ]
+            },
+            {
+                "title": "Webinaire pratiques digitales et collaboration",
+                "category": "Webinaire",
+                "location_type": "ONLINE",
+                "objective": "Partager des pratiques digitales utiles pour améliorer la collaboration et l’efficacité professionnelle.",
+                "rationale": [
+                    "Le format en ligne facilite la participation des collaborateurs de plusieurs périmètres.",
+                    "Le créneau sera optimisé par le modèle de planning selon les disponibilités futures."
+                ]
+            },
+            {
+                "title": "Session innovation opérationnelle et idées terrain",
+                "category": "Innovation",
+                "location_type": "ONSITE",
+                "objective": "Faire émerger des idées concrètes à partir des besoins terrain et des signaux récents.",
+                "rationale": [
+                    "L’innovation collaborative permet de transformer les retours des équipes en actions utiles.",
+                    "La proposition doit être validée avant publication pour garantir son alignement métier."
+                ]
+            },
+            {
+                "title": "Rencontre culture interne et engagement",
+                "category": "Culture d’entreprise",
+                "location_type": "ONSITE",
+                "objective": "Renforcer l’engagement des collaborateurs autour des valeurs et pratiques internes.",
+                "rationale": [
+                    "Le format favorise l’adhésion et la compréhension des priorités internes.",
+                    "Cette proposition complète les recommandations issues de la semaine précédente."
+                ]
+            },
+            {
+                "title": "Atelier bien-être et équilibre professionnel",
+                "category": "Bien-être",
+                "location_type": "ONSITE",
+                "objective": "Soutenir le bien-être des collaborateurs avec un format court, accessible et participatif.",
+                "rationale": [
+                    "Le bien-être peut soutenir l’engagement et la disponibilité des collaborateurs.",
+                    "Le créneau sera sélectionné selon les contraintes calendrier et les signaux historiques."
+                ]
+            },
+            {
+                "title": "Table ronde retours terrain et bonnes pratiques",
+                "category": "Conférence",
+                "location_type": "ONSITE",
+                "objective": "Capitaliser sur les expériences récentes et partager des bonnes pratiques entre collaborateurs.",
+                "rationale": [
+                    "Les retours terrain permettent d’orienter les prochains événements vers des besoins concrets.",
+                    "La validation RH ou manager reste nécessaire avant publication."
+                ]
+            },
+            {
+                "title": "Formation gestion du changement",
+                "category": "Formation",
+                "location_type": "ONSITE",
+                "objective": "Accompagner les collaborateurs dans l’adaptation aux changements organisationnels.",
+                "rationale": [
+                    "La formation permet de répondre à un besoin professionnel transversal.",
+                    "Le modèle de planning proposera ensuite les créneaux les plus adaptés."
+                ]
+            }
+        ]
+
+        for candidate in fallback_candidates:
+            title_key = candidate["title"].lower()
+            category_key = candidate["category"].lower()
+
+            if title_key in existing_titles:
+                continue
+
+            # On essaie d'abord de diversifier les catégories.
+            if category_key in existing_categories and len(concepts) < required_count - 1:
+                continue
+
+            concepts.append({
+                "title": candidate["title"],
+                "category": candidate["category"],
+                "audience": audience,
+                "location_type": candidate["location_type"],
+                "target_department_id": target_department_id,
+                "duration_minutes": 60,
+                "capacity": capacity,
+                "objective": candidate["objective"],
+                "rationale": candidate["rationale"],
+                "metrics": {
+                    "source": "data_guardrail_supplement",
+                    "data_confidence": "LOW",
+                    "supplement_reason": reason
+                }
+            })
+
+            existing_titles.add(title_key)
+            existing_categories.add(category_key)
+
+            if len(concepts) >= required_count:
+                break
+
+        return concepts[:required_count]
