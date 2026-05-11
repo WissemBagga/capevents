@@ -9,6 +9,88 @@ from app.services.planning_llm_client import PlanningLlmClient, PlanningLlmError
 ALLOWED_LOCATION_TYPES = {"ONSITE", "ONLINE", "EXTERNAL"}
 ALLOWED_AUDIENCES = {"GLOBAL", "DEPARTMENT"}
 
+ALLOWED_CATEGORIES = {
+    "Formation",
+    "Conférence",
+    "Atelier",
+    "Webinaire",
+    "Team building",
+    "Culture d’entreprise",
+    "Bien-être",
+    "Innovation",
+    "Networking",
+    "Afterwork",
+    "RSE",
+    "Sport"
+}
+
+CATEGORY_ALIASES = {
+    "FORMATION": "Formation",
+    "CONFERENCE": "Conférence",
+    "CONFÉRENCE": "Conférence",
+    "CONFÉREMENT": "Conférence",
+    "CONFÉRENCEMENT": "Conférence",
+    "ATELIER": "Atelier",
+    "WORKSHOP": "Atelier",
+    "WEBINAIRE": "Webinaire",
+    "WEBINAR": "Webinaire",
+    "LIVE": "Webinaire",
+    "TEAM BUILDING": "Team building",
+    "TEAMBUILDING": "Team building",
+    "CULTURE": "Culture d’entreprise",
+    "CULTURE D’ENTREPRISE": "Culture d’entreprise",
+    "CULTURE D'ENTREPRISE": "Culture d’entreprise",
+    "BIEN-ÊTRE": "Bien-être",
+    "BIEN ETRE": "Bien-être",
+    "BIEN-ETRE": "Bien-être",
+    "INNOVATION": "Innovation",
+    "NETWORKING": "Networking",
+    "RESEAU": "Networking",
+    "RÉSEAU": "Networking",
+    "AFTERWORK": "Afterwork",
+    "RSE": "RSE",
+    "SPORT": "Sport"
+}
+
+FORBIDDEN_TITLE_TERMS = {
+    "concours",
+    "football",
+    "tennis",
+    "match",
+    "tournoi scolaire",
+    "sciences"
+}
+
+GENERIC_TEXT_VALUES = {
+    "partage",
+    "collaboration",
+    "conférence",
+    "sport",
+    "formation",
+    "atelier",
+    "partage et collaboration",
+    "collaboration et partage",
+    "conférence et sport"
+}
+
+GENERIC_SIGNAL_VALUES = {
+    "signal",
+    "signal-1",
+    "signal-2",
+    "signal de données",
+    "signal de données 1",
+    "signal de données 2",
+    "donnée 1",
+    "donnée 2",
+    "data signal",
+    "data signal 1",
+    "signaux positifs",
+    "participer",
+    "participation",
+    "collaboration",
+    "partage"
+}
+
 
 class PlanningIdeationService:
     def __init__(self) -> None:
@@ -40,7 +122,10 @@ class PlanningIdeationService:
         try:
             response = self.llm_client.generate_json(
                 system_prompt=self._system_prompt(),
-                user_prompt=self._user_prompt(context=context, limit=concept_count)
+                user_prompt=self._user_prompt(
+                    context=context,
+                    limit=concept_count
+                )
             )
 
             concepts = response.get("concepts", [])
@@ -51,10 +136,50 @@ class PlanningIdeationService:
                 users=users
             )
 
-            if not clean:
-                raise PlanningLlmError("Le LLM a répondu, mais les concepts générés sont trop faibles ou trop génériques.")
+            minimum_required = min(max(limit, 3), 5)
 
-            return clean
+            if len(clean) < minimum_required:
+                retry_response = self.llm_client.generate_json(
+                    system_prompt=self._system_prompt(),
+                    user_prompt=self._user_prompt(
+                        context={
+                            **context,
+                            "quality_instruction": (
+                                "La génération précédente contient trop peu de concepts valides. "
+                                "Génère uniquement des événements RH internes professionnels, "
+                                "avec des titres précis, des catégories autorisées et des objectifs exploitables."
+                            )
+                        },
+                        limit=minimum_required
+                    )
+                )
+
+                retry_concepts = retry_response.get("concepts", [])
+
+                retry_clean = self._validate_concepts(
+                    concepts=retry_concepts,
+                    target_department_id=target_department_id,
+                    users=users
+                )
+
+                existing_titles = {item["title"].lower() for item in clean}
+
+                for item in retry_clean:
+                    title_key = item["title"].lower()
+
+                    if title_key not in existing_titles:
+                        clean.append(item)
+                        existing_titles.add(title_key)
+
+                    if len(clean) >= minimum_required:
+                        break
+
+            if len(clean) == 0:
+                raise PlanningLlmError(
+                    "Le LLM a répondu, mais les concepts générés sont trop faibles ou non professionnels."
+                )
+
+            return clean[:minimum_required]
 
         except PlanningLlmError as exception:
             self.last_error = str(exception)
@@ -67,59 +192,77 @@ class PlanningIdeationService:
 
     def _system_prompt(self) -> str:
         return """
-    /no_think
-    Tu es un assistant IA RH pour CapEvents.
-    Réponds uniquement avec un JSON valide.
-    Aucun texte hors JSON.
-    Aucune explication.
-    Aucune balise markdown.
-    Aucun lien, aucune adresse, aucune salle.
-    """
+/no_think
+Tu es un assistant IA RH pour CapEvents.
+
+Réponds uniquement avec un JSON valide.
+Aucun texte hors JSON.
+Aucune explication.
+Aucune balise markdown.
+Aucun lien.
+Aucune adresse.
+Aucune salle.
+
+Les propositions doivent être professionnelles, internes, RH, exploitables et adaptées à une entreprise.
+"""
 
     def _user_prompt(self, context: dict[str, Any], limit: int) -> str:
         compact_context = {
             "scope": context.get("scope"),
             "data_quality": context.get("data_quality"),
             "observed_categories": context.get("observed_categories", [])[:6],
-            "category_summary": context.get("category_summary", [])[:5]
+            "category_summary": context.get("category_summary", [])[:5],
+            "quality_instruction": context.get("quality_instruction")
         }
 
         return f"""
-    /no_think
-    Génère exactement {limit} idées d’événements internes.
+/no_think
+Génère exactement {limit} idées d’événements internes RH.
 
-    Réponds uniquement avec ce format JSON compact :
+Réponds uniquement avec ce format JSON compact :
+{{
+  "concepts": [
     {{
-    "concepts": [
-        {{
-        "t": "titre court",
-        "c": "catégorie",
-        "a": "GLOBAL",
-        "l": "ONSITE",
-        "d": 60,
-        "cap": 30,
-        "o": "objectif court",
-        "r": ["raison 1", "raison 2"],
-        "s": ["signal 1"]
-        }}
-    ]
+      "t": "titre professionnel précis",
+      "c": "catégorie autorisée",
+      "a": "GLOBAL",
+      "l": "ONSITE",
+      "d": 60,
+      "cap": 30,
+      "o": "objectif professionnel clair",
+      "r": ["raison métier 1", "raison métier 2"],
+      "s": ["signal de données 1"]
     }}
+  ]
+}}
 
-    Contraintes :
-    - t maximum 55 caractères.
-    - o maximum 120 caractères.
-    - r contient exactement 2 raisons courtes.
-    - s contient maximum 2 signaux.
-    - a vaut GLOBAL ou DEPARTMENT.
-    - l vaut ONSITE, ONLINE ou EXTERNAL.
-    - Pas de lien.
-    - Pas d’adresse.
-    - Pas de salle.
-    - Pas de texte hors JSON.
+Catégories autorisées exactement :
+Formation, Conférence, Atelier, Webinaire, Team building, Culture d’entreprise, Bien-être, Innovation, Networking, Afterwork, RSE, Sport.
 
-    Contexte :
-    {json.dumps(compact_context, ensure_ascii=False)}
-    """
+Contraintes :
+- t maximum 55 caractères.
+- t doit être professionnel et spécifique.
+- o maximum 140 caractères.
+- r contient exactement 2 raisons professionnelles.
+- s contient maximum 2 signaux concrets.
+- a vaut GLOBAL ou DEPARTMENT.
+- l vaut ONSITE, ONLINE ou EXTERNAL.
+- Webinaire doit être ONLINE.
+- Pas de concours, football, tennis, match, sciences ou activité scolaire.
+- Pas de lien.
+- Pas d’adresse.
+- Pas de salle.
+- Pas de texte hors JSON.
+
+Exemples de style attendu :
+- "Atelier amélioration continue inter-équipes"
+- "Webinaire pratiques digitales et collaboration"
+- "Table ronde retours terrain et bonnes pratiques"
+- "Session innovation opérationnelle et idées terrain"
+
+Contexte :
+{json.dumps(compact_context, ensure_ascii=False)}
+"""
 
     def _build_context(
         self,
@@ -142,8 +285,31 @@ class PlanningIdeationService:
             return context
 
         df = weekly_metrics.copy()
+
+        if "category" not in df.columns:
+            df["category"] = "Autre"
+
+        if "title" not in df.columns:
+            df["title"] = ""
+
         df["category"] = df["category"].fillna("Autre").astype(str)
         df["title"] = df["title"].fillna("").astype(str)
+
+        for column in [
+            "registration_rate",
+            "attendance_rate",
+            "average_rating",
+            "capacity",
+            "duration_minutes",
+            "invitation_count"
+        ]:
+            if column not in df.columns:
+                df[column] = 0
+
+            df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+        if "event_id" not in df.columns:
+            df["event_id"] = df.index.astype(str)
 
         context["data_quality"] = "MEDIUM" if len(df) >= 5 else "LOW"
         context["observed_categories"] = sorted(df["category"].dropna().unique().tolist())
@@ -161,7 +327,7 @@ class PlanningIdeationService:
             "invitation_count"
         ]
 
-        available_cols = [col for col in recent_cols if col in df.columns]
+        available_cols = [column for column in recent_cols if column in df.columns]
 
         context["recent_events"] = (
             df[available_cols]
@@ -179,16 +345,6 @@ class PlanningIdeationService:
             avg_duration=("duration_minutes", "mean"),
             total_invitations=("invitation_count", "sum")
         ).reset_index()
-
-        for column in [
-            "avg_registration_rate",
-            "avg_attendance_rate",
-            "avg_rating",
-            "avg_capacity",
-            "avg_duration",
-            "total_invitations"
-        ]:
-            summary[column] = pd.to_numeric(summary[column], errors="coerce").fillna(0)
 
         context["category_summary"] = (
             summary.sort_values(["events_count", "total_invitations"], ascending=False)
@@ -213,12 +369,19 @@ class PlanningIdeationService:
                 continue
 
             title = str(item.get("title") or item.get("t") or "").strip()
-            category = str(item.get("category") or item.get("c") or "").strip()
 
-            if self._is_low_quality_text(title, min_words=3):
+            raw_category = str(item.get("category") or item.get("c") or "").strip()
+            category = self._normalize_category(raw_category)
+
+            if category is None:
                 continue
 
-            if len(title) < 8 or len(category) < 2:
+            category = self._infer_category_from_title(
+                title=title,
+                current_category=category
+            )
+
+            if not self._is_professional_title(title):
                 continue
 
             title_key = title.lower()
@@ -249,6 +412,11 @@ class PlanningIdeationService:
             if location_type not in ALLOWED_LOCATION_TYPES:
                 location_type = "ONSITE"
 
+            location_type = self._preferred_location_for_category(
+                category=category,
+                current_location=location_type
+            )
+
             duration = self._safe_int(
                 item.get("duration_minutes") or item.get("d"),
                 60
@@ -269,6 +437,8 @@ class PlanningIdeationService:
             if not isinstance(data_signals, list):
                 data_signals = [str(data_signals)]
 
+            data_signals = self._clean_data_signals(data_signals)
+
             objective = self._normalize_objective(
                 objective=str(item.get("objective") or item.get("o") or "").strip(),
                 title=title,
@@ -283,7 +453,7 @@ class PlanningIdeationService:
 
             clean.append({
                 "title": title[:120],
-                "category": category[:60],
+                "category": category,
                 "audience": audience,
                 "location_type": location_type,
                 "target_department_id": target_department_id,
@@ -294,17 +464,214 @@ class PlanningIdeationService:
                 "metrics": {
                     "source": "llm_generated_concept",
                     "data_confidence": "LLM_ASSISTED",
-                    "data_signals": [
-                        str(signal).strip()
-                        for signal in data_signals
-                        if str(signal).strip()
-                    ][:5]
+                    "data_signals": data_signals
                 }
             })
 
         return clean
 
-    def _default_capacity(self, users: pd.DataFrame, target_department_id: int | None) -> int:
+    def _normalize_category(self, value: str) -> str | None:
+        raw = str(value or "").strip()
+
+        if not raw:
+            return None
+
+        if raw in ALLOWED_CATEGORIES:
+            return raw
+
+        upper = raw.upper().strip()
+
+        if upper in CATEGORY_ALIASES:
+            return CATEGORY_ALIASES[upper]
+
+        normalized = (
+            upper
+            .replace("É", "E")
+            .replace("È", "E")
+            .replace("Ê", "E")
+            .replace("À", "A")
+            .replace("’", "'")
+        )
+
+        for key, category in CATEGORY_ALIASES.items():
+            key_normalized = (
+                key.upper()
+                .replace("É", "E")
+                .replace("È", "E")
+                .replace("Ê", "E")
+                .replace("À", "A")
+                .replace("’", "'")
+            )
+
+            if normalized == key_normalized:
+                return category
+
+        return None
+
+    def _infer_category_from_title(
+        self,
+        title: str,
+        current_category: str
+    ) -> str:
+        text = str(title or "").lower()
+
+        if "webinaire" in text or "webinar" in text or text.startswith("live "):
+            return "Webinaire"
+
+        if "bien-être" in text or "bien etre" in text or "stress" in text or "santé mentale" in text:
+            return "Bien-être"
+
+        if "team building" in text or "cohésion" in text:
+            return "Team building"
+
+        if "innovation" in text or "idéation" in text or "créativité" in text:
+            return "Innovation"
+
+        if "networking" in text or "réseau" in text:
+            return "Networking"
+
+        if "afterwork" in text:
+            return "Afterwork"
+
+        if "rse" in text or "responsabilité" in text:
+            return "RSE"
+
+        if "formation" in text or "apprentissage" in text:
+            return "Formation"
+
+        if "conférence" in text or "table ronde" in text:
+            return "Conférence"
+
+        if "atelier" in text or "workshop" in text:
+            return "Atelier"
+
+        return current_category
+
+    def _preferred_location_for_category(
+        self,
+        category: str,
+        current_location: str
+    ) -> str:
+        normalized = str(category or "").strip().lower()
+
+        if normalized == "webinaire":
+            return "ONLINE"
+
+        if normalized in {"afterwork", "team building", "sport", "bien-être", "culture d’entreprise"}:
+            return "ONSITE"
+
+        if normalized in {"formation", "conférence"}:
+            return current_location if current_location in {"ONLINE", "ONSITE"} else "ONSITE"
+
+        return current_location if current_location in ALLOWED_LOCATION_TYPES else "ONSITE"
+
+    def _is_professional_title(self, title: str) -> bool:
+        text = str(title or "").strip()
+
+        if self._is_low_quality_text(text, min_words=3):
+            return False
+
+        if len(text) < 12:
+            return False
+
+        if self._has_forbidden_title_terms(text):
+            return False
+
+        return True
+
+    def _has_forbidden_title_terms(self, title: str) -> bool:
+        text = str(title or "").strip().lower()
+
+        return any(term in text for term in FORBIDDEN_TITLE_TERMS)
+
+    def _is_low_quality_text(self, value: str, min_words: int = 4) -> bool:
+        text = str(value or "").strip().lower()
+
+        if not text:
+            return True
+
+        words = [
+            word
+            for word in text.replace("-", " ").split()
+            if word.strip()
+        ]
+
+        if len(words) < min_words:
+            return True
+
+        return text in GENERIC_TEXT_VALUES
+
+    def _normalize_objective(
+        self,
+        objective: str,
+        title: str,
+        category: str
+    ) -> str:
+        if not self._is_low_quality_text(objective, min_words=7):
+            return objective.strip()
+
+        return (
+            f"Organiser un événement interne de type {category.lower()} autour de « {title} » "
+            "afin de renforcer l’engagement, le partage de connaissances et la collaboration entre collaborateurs."
+        )
+
+    def _normalize_rationale(
+        self,
+        rationale: list,
+        category: str,
+        data_signals: list
+    ) -> list[str]:
+        clean = [
+            str(item).strip()
+            for item in rationale
+            if not self._is_low_quality_text(str(item), min_words=4)
+        ]
+
+        if len(clean) >= 2:
+            return clean[:4]
+
+        if data_signals:
+            signal_text = ", ".join(str(signal) for signal in data_signals[:2])
+        else:
+            signal_text = "les données récentes disponibles"
+
+        return [
+            f"La catégorie {category} ressort comme une piste exploitable à partir de {signal_text}.",
+            "Le format proposé reste à valider par le RH ou le manager avant publication.",
+            "Le créneau sera ensuite optimisé par le modèle de planning et les contraintes calendrier."
+        ]
+
+    def _clean_data_signals(self, data_signals: list) -> list[str]:
+        clean: list[str] = []
+
+        for signal in data_signals:
+            value = str(signal or "").strip()
+            value_lower = value.lower()
+
+            if not value:
+                continue
+
+            if value_lower in GENERIC_SIGNAL_VALUES:
+                continue
+
+            if value_lower.startswith("signal de données"):
+                continue
+
+            if value_lower.startswith("signal-"):
+                continue
+
+            if len(value.split()) < 3:
+                continue
+
+            clean.append(value)
+
+        return clean[:5]
+
+    def _default_capacity(
+        self,
+        users: pd.DataFrame,
+        target_department_id: int | None
+    ) -> int:
         if users is None or users.empty:
             return 30
 
@@ -317,12 +684,14 @@ class PlanningIdeationService:
             errors="coerce"
         ).fillna(0).astype(int)
 
-        size = len(data[data["department_id"] == int(target_department_id)])
+        department_size = len(
+            data[data["department_id"] == int(target_department_id)]
+        )
 
-        if size <= 0:
+        if department_size <= 0:
             return 30
 
-        return min(80, max(15, int(size * 0.35)))
+        return min(80, max(15, int(department_size * 0.35)))
 
     def _safe_minimal_fallback(
         self,
@@ -361,67 +730,3 @@ class PlanningIdeationService:
             return int(value)
         except Exception:
             return default
-
-    def _is_low_quality_text(self, value: str, min_words: int = 4) -> bool:
-        text = str(value or "").strip().lower()
-
-        if not text:
-            return True
-
-        words = [word for word in text.replace("-", " ").split() if word.strip()]
-
-        if len(words) < min_words:
-            return True
-
-        generic_values = {
-            "partage",
-            "collaboration",
-            "conférence",
-            "sport",
-            "formation",
-            "atelier",
-            "partage et collaboration",
-            "collaboration et partage",
-            "conférence et sport"
-        }
-
-        return text in generic_values
-
-
-    def _normalize_objective(
-        self,
-        objective: str,
-        title: str,
-        category: str
-    ) -> str:
-        if not self._is_low_quality_text(objective, min_words=7):
-            return objective.strip()
-
-        return (
-            f"Proposer un événement {category.lower()} structuré autour de « {title} » "
-            "afin de renforcer l’engagement, le partage d’expérience et la participation des collaborateurs."
-        )
-
-
-    def _normalize_rationale(
-        self,
-        rationale: list,
-        category: str,
-        data_signals: list
-    ) -> list[str]:
-        clean = [
-            str(item).strip()
-            for item in rationale
-            if not self._is_low_quality_text(str(item), min_words=4)
-        ]
-
-        if len(clean) >= 2:
-            return clean[:4]
-
-        signal_text = ", ".join(str(signal) for signal in data_signals[:2]) if data_signals else "les signaux récents disponibles"
-
-        return [
-            f"La catégorie {category} ressort comme une piste exploitable à partir de {signal_text}.",
-            "Le format proposé reste à valider par le RH ou le manager avant publication.",
-            "Le créneau sera ensuite optimisé par le modèle de planning et les contraintes calendrier."
-        ]
