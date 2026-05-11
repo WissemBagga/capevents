@@ -99,7 +99,9 @@ export class AiPlanningService {
 
   private toProposalApiPayload(payload: AiPlanningEventProposalRequest): any {
     return {
-      reference_date: payload.referenceDate ?? null,
+      reference_date: payload.referenceDate
+        ? new Date(payload.referenceDate).toISOString()
+        : null,
       target_department_id: payload.targetDepartmentId ?? null,
       limit: payload.limit ?? 3,
       slot_limit: payload.slotLimit ?? 3,

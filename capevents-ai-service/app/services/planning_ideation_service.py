@@ -212,6 +212,20 @@ Les propositions doivent être professionnelles, internes, RH, exploitables et a
             "data_quality": context.get("data_quality"),
             "observed_categories": context.get("observed_categories", [])[:6],
             "category_summary": context.get("category_summary", [])[:5],
+            "category_diversity_pool": [
+                "Formation",
+                "Conférence",
+                "Atelier",
+                "Webinaire",
+                "Team building",
+                "Culture d’entreprise",
+                "Bien-être",
+                "Innovation",
+                "Networking",
+                "Afterwork",
+                "RSE",
+                "Sport"
+            ],
             "quality_instruction": context.get("quality_instruction")
         }
 

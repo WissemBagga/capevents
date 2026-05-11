@@ -76,6 +76,9 @@ export class AdminDashboard {
   planningTargetDepartmentId: number | null = null;
 
 
+  const safeLimit = Math.min(Math.max(this.planningLimit || 3, 1), 5);
+  const safeSlotLimit = Math.min(Math.max(this.planningSlotLimit || 3, 1), 5);
+  const safeDaysHorizon = Math.min(Math.max(this.planningDaysHorizon || 30, 7), 50);
 
 
   ngOnInit(): void {
@@ -361,9 +364,9 @@ export class AdminDashboard {
     this.aiPlanningService.proposeEvents({
       referenceDate: this.planningReferenceDate || null,
       targetDepartmentId,
-      limit: this.planningLimit,
-      slotLimit: this.planningSlotLimit,
-      daysHorizon: this.planningDaysHorizon
+      limit: safeLimit,
+      slotLimit: safeSlotLimit,
+      daysHorizon: safeDaysHorizon
     })
       .pipe(finalize(() => {
         this.aiPlanningLoading = false;
@@ -461,26 +464,17 @@ export class AdminDashboard {
   }
 
   private buildPlanningDescription(proposal: AiPlanningEventProposal): string {
-    const rationale = (proposal.rationale ?? [])
-      .map(item => `• ${item}`)
-      .join('\n');
-
-    const firstSlot = proposal.suggestedSlots?.[0];
-
-    const slotText = firstSlot
-      ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}`
-      : 'Créneau recommandé : à confirmer';
+    const category = proposal.category || 'événement interne';
+    const title = proposal.title || 'événement interne';
 
     return [
+      `Participez à « ${title} », un événement interne de type ${category.toLowerCase()} conçu pour accompagner les collaborateurs dans leur développement professionnel.`,
+      '',
       proposal.objective,
       '',
-      'Proposition générée par IA Planning Intelligent.',
-      slotText,
+      'Cette session proposera un moment d’échange, de partage de pratiques et de réflexion collective autour d’un sujet utile au quotidien professionnel.',
       '',
-      'Justification :',
-      rationale,
-      '',
-      'Note : cette proposition doit être validée par le RH ou le manager avant publication.'
+      'Votre participation contribuera à enrichir les échanges et à renforcer la collaboration au sein de l’organisation.'
     ].join('\n');
   }
 
@@ -548,5 +542,27 @@ export class AdminDashboard {
         console.error('[AI PLANNING USAGE LOG ERROR]', err);
       }
     });
+  }
+
+  private buildPlanningAdminNote(proposal: AiPlanningEventProposal): string {
+    const firstSlot = proposal.suggestedSlots?.[0];
+
+    const rationale = (proposal.rationale ?? [])
+      .map(item => `• ${item}`)
+      .join('\n');
+
+    const slotText = firstSlot
+      ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}`
+      : 'Créneau recommandé : à confirmer';
+
+    return [
+      'Note IA interne',
+      slotText,
+      '',
+      'Justification :',
+      rationale,
+      '',
+      'Cette proposition doit être validée par le RH ou le manager avant publication.'
+    ].join('\n');
   }
 }

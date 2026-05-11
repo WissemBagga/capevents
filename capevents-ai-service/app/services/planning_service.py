@@ -570,6 +570,11 @@ class PlanningService:
 
         weekly_events = self._filter_events_between(events, week_start, week_end)
 
+        weekly_events = self._filter_events_for_planning_scope(
+            events=weekly_events,
+            target_department_id=payload.target_department_id
+        )
+
         weekly_metrics = self._build_weekly_event_metrics(
             weekly_events=weekly_events,
             registrations=registrations,
@@ -589,6 +594,11 @@ class PlanningService:
             weekly_metrics=weekly_metrics,
             limit=payload.limit
         )
+
+        data_window_source = "previous_week"
+
+        if weekly_metrics.empty:
+            data_window_source = "previous_week_no_department_data"
 
         final_items: list[PlanningEventProposal] = []
 
@@ -630,12 +640,12 @@ class PlanningService:
             analysis_period={
                 "from": week_start.isoformat(),
                 "to": week_end.isoformat(),
-                "source": "previous_week"
+                "source": data_window_source
             },
             total_proposals=len(final_items),
             items=final_items,
             model_info={
-                "module": "IA 4 Planning Intelligent",
+                "module": "Planning Intelligent",
                 "version": (
                     self.planning_model_metadata.get("version")
                     if self.planning_model_metadata
@@ -668,7 +678,8 @@ class PlanningService:
                             "rank": item.rank,
                             "title": item.title,
                             "category": item.category,
-                            "source": item.metrics.get("source")
+                            "source": item.metrics.get("source"),
+                            "ranking_source": item.metrics.get("ranking_source")
                         }
                         for item in response.items
                     ]
@@ -1273,24 +1284,31 @@ class PlanningService:
 
             scored.append((score, proposal))
 
-        scored.sort(key=lambda item: item[0], reverse=True)
+            scored.sort(key=lambda item: item[0], reverse=True)
 
-        selected: list[dict] = []
-        used_categories: set[str] = set()
+            selected: list[dict] = []
+            used_categories: set[str] = set()
 
-        for _, proposal in scored:
-            category = str(proposal.get("category", ""))
+            for _, proposal in scored:
+                category = str(proposal.get("category", ""))
 
-            if category in used_categories and len(selected) < limit - 1:
-                continue
+                if category in used_categories:
+                    continue
 
-            selected.append(proposal)
-            used_categories.add(category)
+                selected.append(proposal)
+                used_categories.add(category)
 
-            if len(selected) >= limit:
-                return selected
+                if len(selected) >= limit:
+                    return selected
 
-        return [item[1] for item in scored[:limit]]
+            for _, proposal in scored:
+                if proposal not in selected:
+                    selected.append(proposal)
+
+                if len(selected) >= limit:
+                    break
+
+            return selected
     
 
     def _category_stats_from_weekly_metrics(self, weekly_metrics: pd.DataFrame) -> dict[str, dict]:
@@ -1404,6 +1422,11 @@ class PlanningService:
 
         weekly_events = self._filter_events_between(events, week_start, week_end)
 
+        weekly_events = self._filter_events_for_planning_scope(
+            events=weekly_events,
+            target_department_id=payload.target_department_id
+        )
+
         weekly_metrics = self._build_weekly_event_metrics(
             weekly_events=weekly_events,
             registrations=registrations,
@@ -1440,3 +1463,33 @@ class PlanningService:
                 "llm": self.ideation_service.model_info()
             }
         }
+
+    def _filter_events_for_planning_scope(
+        self,
+        events: pd.DataFrame,
+        target_department_id: int | None
+    ) -> pd.DataFrame:
+        if events is None or events.empty:
+            return pd.DataFrame()
+
+        if target_department_id is None:
+            return events.copy()
+
+        df = events.copy()
+
+        if "audience" not in df.columns:
+            df["audience"] = ""
+
+        if "target_department_id" not in df.columns:
+            df["target_department_id"] = 0
+
+        df["audience"] = df["audience"].fillna("").astype(str).str.upper()
+        df["target_department_id"] = pd.to_numeric(
+            df["target_department_id"],
+            errors="coerce"
+        ).fillna(0).astype(int)
+
+        return df[
+            (df["target_department_id"] == int(target_department_id))
+            | (df["audience"] == "GLOBAL")
+        ].copy()

@@ -35,9 +35,9 @@ class PlanningSuggestionResponse(BaseModel):
 class PlanningEventProposalRequest(BaseModel):
     reference_date: str | None = None
     target_department_id: int | None = None
-    limit: int = Field(default=3, ge=1, le=10)
+    limit: int = Field(default=3, ge=1, le=5)
     slot_limit: int = Field(default=3, ge=1, le=5)
-    days_horizon: int = Field(default=30, ge=7, le=120)
+    days_horizon: int = Field(default=30, ge=7, le=50)
 
 
 class PlanningEventProposal(BaseModel):
