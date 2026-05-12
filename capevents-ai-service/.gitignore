@@ -1,7 +1,9 @@
 .venv/
 __pycache__/
 .env
+.pytest_cache/
 
+catboost_info/
 models_artifacts/
 logs/
 
@@ -13,3 +15,8 @@ mlruns/
 
 *.pyc
 .ipynb_checkpoints/
+
+
+datasets/clean/_backup_before_fix_remaining_warnings_v1/
+datasets/clean/_backup_before_fix_self_invitations/
+datasets/clean/_backup_before_fix_warnings_v1/
