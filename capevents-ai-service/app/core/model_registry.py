@@ -14,7 +14,7 @@ def read_model_registry() -> dict[str, Any]:
     if not REGISTRY_PATH.exists():
         raise ModelRegistryError(
             f"Model registry introuvable : {REGISTRY_PATH}. "
-            "Exécutez d’abord : python -m training.register_existing_recommendation_model"
+            "Exécutez d'abord : python -m training.register_existing_recommendation_model"
         )
 
     with REGISTRY_PATH.open("r", encoding="utf-8") as file:
@@ -39,7 +39,6 @@ def get_active_model_metadata(task: str) -> dict[str, Any]:
         )
 
     versions = task_entry.get("versions", {})
-
     metadata = versions.get(active_version)
 
     if not metadata:
@@ -49,7 +48,7 @@ def get_active_model_metadata(task: str) -> dict[str, Any]:
 
     if metadata.get("status") != "production":
         raise ModelRegistryError(
-            f"La version active {active_version} n’est pas en statut production."
+            f"La version active {active_version} n'est pas en statut production."
         )
 
     return metadata
@@ -58,7 +57,7 @@ def get_active_model_metadata(task: str) -> dict[str, Any]:
 def resolve_registry_path(path_value: str | None, required: bool = True) -> Path | None:
     if not path_value:
         if required:
-            raise ModelRegistryError("Chemin d’artefact manquant dans le registry.")
+            raise ModelRegistryError("Chemin d'artefact manquant dans le registry.")
         return None
 
     path = Path(path_value)

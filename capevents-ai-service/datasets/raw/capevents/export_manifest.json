@@ -1,0 +1,66 @@
+{
+  "exported_at": "2026-04-30T16:45:25.707413+00:00",
+  "source": "CAPEVENTS_POSTGRESQL",
+  "datasets": [
+    {
+      "dataset": "users",
+      "status": "EXPORTED",
+      "rows": 26,
+      "path": "datasets\\raw\\capevents\\users.csv"
+    },
+    {
+      "dataset": "departments",
+      "status": "EXPORTED",
+      "rows": 7,
+      "path": "datasets\\raw\\capevents\\departments.csv"
+    },
+    {
+      "dataset": "events",
+      "status": "EXPORTED",
+      "rows": 52,
+      "path": "datasets\\raw\\capevents\\events.csv"
+    },
+    {
+      "dataset": "event_registrations",
+      "status": "EXPORTED",
+      "rows": 74,
+      "path": "datasets\\raw\\capevents\\event_registrations.csv"
+    },
+    {
+      "dataset": "event_feedbacks",
+      "status": "EXPORTED",
+      "rows": 7,
+      "path": "datasets\\raw\\capevents\\event_feedbacks.csv"
+    },
+    {
+      "dataset": "interests",
+      "status": "EXPORTED",
+      "rows": 20,
+      "path": "datasets\\raw\\capevents\\interests.csv"
+    },
+    {
+      "dataset": "user_interests",
+      "status": "EXPORTED",
+      "rows": 41,
+      "path": "datasets\\raw\\capevents\\user_interests.csv"
+    },
+    {
+      "dataset": "points_transactions",
+      "status": "EXPORTED",
+      "rows": 111,
+      "path": "datasets\\raw\\capevents\\points_transactions.csv"
+    },
+    {
+      "dataset": "user_badges",
+      "status": "EXPORTED",
+      "rows": 6,
+      "path": "datasets\\raw\\capevents\\user_badges.csv"
+    },
+    {
+      "dataset": "event_invitations",
+      "status": "EXPORTED",
+      "rows": 267,
+      "path": "datasets\\raw\\capevents\\event_invitations.csv"
+    }
+  ]
+}

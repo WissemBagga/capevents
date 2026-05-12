@@ -1,0 +1,32 @@
+{
+  "target": "success_score",
+  "features": [
+    "event_category",
+    "event_audience",
+    "event_location_type",
+    "target_department_id",
+    "capacity",
+    "duration_minutes",
+    "day_of_week",
+    "hour",
+    "month",
+    "is_morning",
+    "is_afternoon",
+    "is_afterwork",
+    "department_size",
+    "events_same_day_count",
+    "events_same_department_same_week_count",
+    "historical_category_registration_rate",
+    "historical_category_attendance_rate",
+    "historical_department_participation_rate",
+    "historical_hour_registration_rate",
+    "historical_day_registration_rate"
+  ],
+  "categorical_features": [
+    "event_category",
+    "event_audience",
+    "event_location_type",
+    "target_department_id"
+  ],
+  "model_type": "CatBoostRegressor"
+}
