@@ -7,7 +7,7 @@ from app.services.diagnostics_service import DiagnosticsService
 
 router = APIRouter(
     prefix="/ai/diagnostics",
-    tags=["AI Diagnostics"]
+    tags=["Diagnostics"],
 )
 
 diagnostics_service = DiagnosticsService()

@@ -3,6 +3,11 @@ from pydantic import BaseModel
 
 class AiDiagnosticsResponse(BaseModel):
     status: str
+
+    database_available: bool
+    model_registry_available: bool
+    active_models: list[str]
+
     model_loaded: bool
     features_loaded: bool
     model_name: str
@@ -19,4 +24,5 @@ class AiDiagnosticsResponse(BaseModel):
 
     ollama_available: bool
     ollama_model: str
+
     message: str
