@@ -1,0 +1,1001 @@
+id,first_name,last_name,email,phone,job_title,department_id,is_active,email_verified,created_at,last_login_at
+9f494bc5-731f-4f38-a367-32640bd2b56d,Ahmed,Rahmani,ahmedrahmani@capgemini.com,+21654598332,Responsable RH,2.0,True,True,2026-03-28 00:06:54.456921+00:00,
+8d96e8da-9993-495a-a0c2-848796ac710e,Sami,Gharbi,sami@capgemini.com,,Développeur back-end,1.0,True,True,2026-03-14 00:23:15.791212+00:00,
+d6fe6795-80b6-44d5-81a2-ba29873a9947,Youssef,Trabelsi,youssef@capgemini.com,,Développeur full-stack,1.0,True,True,2026-03-14 00:27:30.109867+00:00,
+9d09832f-ff19-4c77-9c05-12881b06c117,Fraj,Ben Othmen,frajbenothmen@capgemini.com,+21654598338,,2.0,True,True,2026-03-13 19:14:31.855859+00:00,
+ada33a22-047d-41f7-9001-c78a46d52ecc,Fatma,Ben Ali,fatma@capgemini.com,+21695847523,,2.0,True,True,2026-03-13 19:10:46.549100+00:00,
+49df03d0-fa40-4cdf-b3df-abf37a14050b,Mounir,Ali,mounirali@capgemini.com,+21653568471,,3.0,True,True,2026-03-13 19:07:44.484673+00:00,
+694b0956-4e4d-45ad-893c-29800a2bcfd9,Abdelhamid,Ben Mohamed,abdelhamidbenmohamed@capgemini.com,+21655364789,Ingénieur logiciel,1.0,True,True,2026-03-14 00:12:35.260931+00:00,
+33730d91-9a14-4721-aec1-1f1aaa89bb40,Wissem,Bagga,wissem.bagga@capgemini.com,+21694837763,Responsable RH,,True,True,2026-03-13 19:03:07.813805+00:00,
+c96c33b2-deb4-4624-905a-4bb4eba9b66b,Foued,Bagga,foued.bagga@capgemini.com,+21694847763,,1.0,True,True,2026-03-23 13:17:59.063516+00:00,
+aa4e1ebb-5f2c-431e-b14c-49099924347c,Soufien,Najjar,soufien@capgemini.com,+21695213598,,1.0,True,True,2026-03-13 19:13:03.897326+00:00,
+d5d7156b-757a-4b4f-9950-c3a38b7b858d,Zied,Bagga,zied.bagga@capgemini.com,+21694847763,,1.0,True,True,2026-03-24 15:19:47.914950+00:00,
+8c8251fd-fa99-4fc2-b3f4-b974d8961ad6,Ali,Ben saleh,ali@capgemini.com,+21654826843,Developpeur Fullstack,3.0,True,True,2026-04-01 09:35:33.440218+00:00,
+d87f398c-41bc-4a59-b46a-8033c209243f,Ahmed,Ben Ahmed,ahmedbenahmed@capgemini.com,+21697847763,Manager Dept IT,3.0,True,True,2026-03-13 19:05:36.494766+00:00,
+16f1ef83-2744-47e3-a8fa-a79542e39c6e,Ines,Charfi,ines@capgemini.com,+21694837763,Comptable,3.0,True,True,2026-03-29 00:00:38.930116+00:00,
+c79bf178-2ad7-46c5-a8bc-69d76f5a35b2,Hichem,Mansouri,hichem@capgemini.com,,Technicien support,,False,False,2026-03-14 00:13:24.353950+00:00,
+2a2ff3aa-a839-4038-a81c-29bf4839823e,Aya,Ben Amor,aya@capgemini.com,+21636015050,Analyste financier,3.0,True,True,2026-04-21 19:53:46.988416+00:00,
+e94c386e-8464-4a22-be9a-6beb0e5d7a7b,Abdelhamid,Dridi,abdlahmiddridi@capgemini.com,+2164837763,Développeur logiciel,1.0,True,True,2026-03-18 23:54:11.687383+00:00,
+d420025c-f809-4d32-9066-98749e88aeb9,Abdelhamid,Dhaoui,abdelhamiddhaoui@capgemini.com,+2164837763,Analyste financier,3.0,True,True,2026-03-19 00:00:59.894348+00:00,
+d2143c02-7643-4dad-9edd-73d7e485eec7,Rania,Triki,rania@capgemini.com,+21658543123,Assistante RH,1.0,True,True,2026-04-21 22:41:35.333424+00:00,
+7c67d46c-3aec-42ba-86ea-e64be34be51d,Karim,Soudani,karim@capgemini.com,+21620647916,Software engineering,1.0,True,True,2026-04-25 14:17:59.506562+00:00,
+514d1d62-3100-4b79-9ace-199ed15abd30,Ahmed,Trabelsi,ahmedtrabelsi@capgemini.com,+21654598331,Ingénieur IT,1.0,True,True,2026-03-27 23:30:00.719450+00:00,
+04d1e3f4-5420-4b71-a3a5-85f2ed790744,Omar,Ben Saleh,omar@capgemini.com,+2165632568,,3.0,True,True,2026-03-13 19:09:23.145237+00:00,
+c03e864e-d2ed-4ce5-856b-2334fbcb17c0,Mounir,Hajj kacem,mounirhajjkacem@capgemini.com,+21694847763,Manager technique,4.0,True,True,2026-04-21 13:17:58.455354+00:00,
+3c0142b7-95e6-4f7f-b870-c04bcbdf37c3,Nour,Jlassi,nourjlassi@capgemini.com,+21694837763,Chargée administrative,2.0,True,True,2026-04-06 15:41:54.895022+00:00,
+ae62feb9-2fe5-4f14-9abc-6d3de60551e9,Mariem,Khelifi,mariem@capgemini.com,,Analyste métier,,True,True,2026-03-14 00:32:26.312266+00:00,
+05ebad91-5c0a-406d-b835-141c19b231e0,Fares,Naoui,fares@capgemini.com,+21695847763,Développeur,2.0,True,True,2026-03-27 11:15:57.459669+00:00,
+60a4713c-9862-4c54-b843-99e82e3e7bea,Jean,Girard,jean.girard@capgemini.com,+21654288348,HR Business Partner,2,True,True,2024-04-25 22:56:48.609511+00:00,2025-12-30 19:56:57.060214+00:00
+85e3ccdc-ad7f-4b05-b057-8593c1f4a450,Molka,Louati,molka.louati@capgemini.com,+21636655303,Responsable ventes,5,True,True,2025-02-06 11:43:44.992878+00:00,2025-08-02 14:13:13.137783+00:00
+6487383a-0fb9-4616-a52e-d9a0ba69cc53,Dorrah,Bouzid,dorrah.bouzid@capgemini.com,+21624862562,Responsable financier,3,True,True,2024-12-22 10:51:54.548625+00:00,2025-03-31 15:29:45.934237+00:00
+4126b992-e218-4090-8952-12b50eedb60c,Laura,Fournier,laura.fournier@capgemini.com,+21690821858,Contrôleur de gestion,3,True,True,2024-03-17 18:05:51.686762+00:00,2025-06-27 02:32:02.005808+00:00
+e8dda1ab-4e22-4b44-b642-16d429b530e6,Amel,Kallel,amel.kallel@capgemini.com,+21698590419,Community manager,4,True,False,2024-07-12 15:27:48.352892+00:00,2024-11-07 22:11:43.240975+00:00
+9e67de25-ee28-48ad-b3f0-3836d4278119,Sarra,Lahmar,sarra.lahmar@capgemini.com,+21699087633,DevOps engineer,1,False,False,2025-08-24 02:00:30.708238+00:00,2025-09-04 21:35:53.786926+00:00
+53bc19ae-6115-4448-91c2-079f930260b9,Salma,Mansouri,salma.mansouri@capgemini.com,+21650725822,Responsable achats,11,True,True,2025-07-19 17:09:58.551725+00:00,2025-10-28 15:52:53.531899+00:00
+67b9e613-4792-4b7e-88f0-54df3f761ed0,Carlos,Schneider,carlos.schneider@capgemini.com,+21652745557,Event coordinator,12,True,True,2026-03-16 10:01:31.605825+00:00,2026-03-31 11:13:08.466244+00:00
+f3525842-5ccf-4d32-b3c0-eb58cb4ae783,Aymen,Messaoudi,aymen.messaoudi@capgemini.com,+21627155093,Technicien électronique,7,True,True,2025-02-13 19:37:45.008680+00:00,2025-05-21 09:18:10.088416+00:00
+7d2c6a5c-bbcc-46be-8ba4-b7518ab7a644,Mohamed,Gharbi,mohamed.gharbi@capgemini.com,+21658990992,Ingénieur capteurs,7,True,True,2023-04-06 13:31:38.968505+00:00,2025-09-22 07:08:28.694945+00:00
+8062edae-a09d-450b-b9e9-61d162542cc6,Dorrah,Baccouche,dorrah.baccouche@capgemini.com,+21690486340,Juriste d’entreprise,10,True,True,2023-07-12 00:16:17.509046+00:00,2025-12-08 11:07:52.477022+00:00
+7dddaa8e-deb1-42ed-88bb-dc5a16514cdc,Sabrine,Hamdi,sabrine.hamdi@capgemini.com,+21652165991,Responsable communication marketing,4,True,True,2025-06-15 08:42:48.923586+00:00,2025-11-10 11:41:45.260388+00:00
+a06df71a-41d5-45c9-ba0e-d7de01b095a9,Aicha,Karray,aicha.karray@capgemini.com,+21620847120,Coordinateur amélioration continue,8,False,False,2023-06-12 17:08:45.189626+00:00,2023-06-30 01:38:56.633198+00:00
+241a414d-fb4b-4547-8d2a-86a522a57210,Mariem,Cherif,mariem.cherif@capgemini.com,+21690332529,QA engineer,1,True,True,2026-01-02 20:56:38.497918+00:00,2026-01-10 21:32:07.635571+00:00
+5fe4475c-7b8d-4cab-b303-1f34d174a1a2,Miguel,Roux,miguel.roux@capgemini.com,+21698813253,Sales development representative,5,True,True,2024-03-03 06:17:06.231484+00:00,2025-09-17 07:49:06.592029+00:00
+5c093bcb-a8f8-495e-9e59-fe544f16ea0b,Ethan,Dubois,ethan.dubois@capgemini.com,+21694391591,Développeur full-stack,1,True,True,2025-01-28 05:22:42.611110+00:00,2025-01-29 08:22:46.908810+00:00
+e8a80a6e-ee71-4373-8db9-cb211b8b0d92,Asma,Kouki,asma.kouki@capgemini.com,+21623909817,Responsable développement,6,True,True,2025-07-05 03:43:33.827483+00:00,2026-03-23 10:36:29.200353+00:00
+84e69d57-36b1-481d-a823-b2bb1e0eff7b,Youssef,Ben Amor,youssef.ben.amor@capgemini.com,+21620511533,Customer success manager,9,True,True,2026-03-14 07:40:19.830871+00:00,2026-03-25 12:50:42.336958+00:00
+553f633d-4e8b-4e4b-a5c1-02de094d0933,Ines,Frikha,ines.frikha@capgemini.com,+21624968652,Gestionnaire paie,2,True,True,2025-04-17 16:28:26.763378+00:00,2025-05-24 17:38:19.999262+00:00
+24142aac-d1c8-42ac-a86d-f1049fd901a2,Siwar,Bagga,siwar.bagga@capgemini.com,+21653445008,Ingénieur IoT,7,True,True,2025-02-21 04:17:46.794052+00:00,2026-02-12 19:18:11.521704+00:00
+7fe85746-fe19-422b-8bf2-d167d79a2d1a,Nizar,Frikha,nizar.frikha@capgemini.com,+21650100854,Ingénieur logiciel,1,True,True,2026-03-08 11:45:57.924572+00:00,2026-04-07 13:29:16.196414+00:00
+c13abe7d-3c09-4714-9eb5-f4811cd6ae6b,Manon,Becker,manon.becker@capgemini.com,+21653888448,Scrum master,6,True,True,2023-05-29 12:19:01.373398+00:00,2026-02-02 20:34:02.508504+00:00
+a6c81a36-4a3a-4684-8a2a-15a4167abc2c,Sabrine,Jaziri,sabrine.jaziri@capgemini.com,+21621075717,Auditeur interne,3,True,True,2024-06-18 19:04:50.024318+00:00,2025-03-08 14:34:23.844803+00:00
+9dfc227f-7a2c-4af9-81e9-aaf98bdb8fda,Leila,Masmoudi,leila.masmoudi@capgemini.com,+21628066160,Coordinateur projet,6,True,True,2024-02-01 10:54:09.249025+00:00,2024-02-04 19:00:34.906399+00:00
+2b6d1065-0b7d-4434-8df1-5b0f01a68955,Nizar,Ben Ahmed,nizar.ben.ahmed@capgemini.com,+21624414714,Responsable développement,6,True,False,2025-09-19 00:44:17.909968+00:00,2025-12-28 07:15:14.514192+00:00
+f88e79f6-5cdb-401c-9b0a-0035434d7b18,Hend,Gharbi,hend.gharbi@capgemini.com,+21651479145,SEO specialist,4,True,True,2023-11-08 12:08:49.810093+00:00,2023-11-13 18:56:57.094866+00:00
+a7f7f5a9-460c-4634-86dd-96133ca51131,Marie,Thomas,marie.thomas@capgemini.com,+21654203452,Chargé de reporting financier,3,True,True,2025-01-08 08:37:29.511272+00:00,2025-02-18 06:31:29.466871+00:00
+92c00d82-349d-4eef-bcfb-103b7523b3d7,Hend,Hammami,hend.hammami@capgemini.com,+21620537284,Responsable ventes,5,True,True,2024-12-26 06:50:56.050204+00:00,2025-11-14 02:32:58.727077+00:00
+93c2ea2c-f36b-43fb-8081-333512ad6dfe,Amine,Rekik,amine.rekik@capgemini.com,+21621535704,Acheteur projets,11,True,True,2023-03-06 10:24:10.235702+00:00,2024-10-24 20:48:25.179645+00:00
+f52d7c87-3049-428f-93a9-7640c68297bc,Yosra,Ben Amor,yosra.ben.amor@capgemini.com,+21698847434,Analyste financier,3,False,False,2024-05-30 03:18:08.871677+00:00,2024-09-07 05:37:15.275201+00:00
+86c5b659-a2b1-435e-ad5f-6550a8be0606,Ikram,Jlassi,ikram.jlassi@capgemini.com,+21697534010,Procurement specialist,11,True,True,2025-05-19 04:47:00.965925+00:00,2025-07-11 08:23:27.381713+00:00
+dfc8f475-9202-4a52-9002-24f557cc4c64,Fedi,Chebbi,fedi.chebbi@capgemini.com,+21624109236,Assistant RH,2,True,True,2023-05-30 20:59:54.389022+00:00,2023-12-26 20:28:24.916166+00:00
+6923b135-0a80-41b6-a29d-108910d3481e,Marie,Taylor,marie.taylor@capgemini.com,+21625337952,Conseiller support niveau 2,9,True,True,2024-11-26 09:09:36.061540+00:00,2025-01-26 17:02:04.040135+00:00
+170d2f68-2e8a-4567-81c1-cd4a0016ee2d,Mourad,Najjar,mourad.najjar@capgemini.com,+21694245601,Développeur front-end,1,True,True,2025-10-20 08:35:18.998411+00:00,2026-01-10 12:32:04.096968+00:00
+e3a19585-197c-4218-9d75-752360108ba0,Lina,Ben Ali,lina.ben.ali@capgemini.com,+21698093995,HR Business Partner,2,True,True,2023-09-25 17:18:43.133107+00:00,2025-07-23 10:33:56.796489+00:00
+c6ffe56c-2cfa-45ed-8b6e-38deadfc1762,Hugo,Brown,hugo.brown@capgemini.com,+21695614536,Comptable,3,True,True,2025-08-24 13:07:52.215757+00:00,2025-09-04 22:59:48.627787+00:00
+96fcb81f-46c4-4e0d-9431-72d62e53de35,Leila,Bouzaiene,leila.bouzaiene@capgemini.com,+21624781271,Data engineer IoT,7,True,True,2023-09-04 08:52:11.703037+00:00,2025-09-02 16:31:41.565374+00:00
+19599c23-5a07-447f-8730-c23290710835,Julien,Robert,julien.robert@capgemini.com,+21693258500,Chef de projet,6,True,True,2023-12-18 20:38:52.468727+00:00,2025-07-06 22:20:25.210669+00:00
+b15a72a1-bc55-4829-9428-b18b203ba820,Malek,Chouchane,malek.chouchane@capgemini.com,+21651803213,Responsable qualité,8,False,True,2025-07-26 13:12:33.802361+00:00,2025-07-31 12:55:20.881360+00:00
+6c72c3eb-81e1-402e-8b91-1b315094e27e,Salma,Bouslama,salma.bouslama@capgemini.com,+21621756018,Content manager,4,True,True,2026-01-02 22:19:05.005337+00:00,2026-02-18 09:01:27.026409+00:00
+e1146103-3e33-4ed7-9a4c-3426f5922da9,Amira,Bensalem,amira.bensalem@capgemini.com,+21653470693,Sales development representative,5,True,True,2024-09-21 10:40:24.918939+00:00,2025-01-05 09:26:11.793804+00:00
+f85deb38-8a7f-46fd-aa7f-0c9d18401a70,Amel,Charfi,amel.charfi@capgemini.com,+21693397504,Développeur front-end,1,True,True,2023-02-26 18:19:25.556696+00:00,2026-01-02 20:48:59.154962+00:00
+18aee4d1-ff77-49a2-bce1-9d47c65368ae,Thomas,Rousseau,thomas.rousseau@capgemini.com,+21653756769,Legal counsel,10,True,True,2024-04-03 15:31:40.411148+00:00,2025-07-11 08:18:00.435817+00:00
+8953121f-1a21-4cf5-9842-a8bab20d555c,Walid,Bouslama,walid.bouslama@capgemini.com,+21624916745,Community manager,4,True,True,2025-10-08 15:14:53.735712+00:00,2025-12-17 03:21:34.356930+00:00
+dbb62cac-e512-454a-a2dd-cd278e6b0b3e,Hichem,Karray,hichem.karray@capgemini.com,+21696990912,Support operations analyst,9,True,True,2023-01-17 16:56:17.048285+00:00,2024-04-09 03:50:13.364251+00:00
+db0a6297-8193-47c9-a815-151141095ca6,Isabel,Lopez,isabel.lopez@capgemini.com,+21691523926,Responsable achats,11,True,True,2025-07-29 04:49:52.206387+00:00,2026-03-11 16:23:15.527891+00:00
+5bba076a-bfef-4cf9-be7b-eaf7160e722e,Emna,Bensalem,emna.bensalem@capgemini.com,+21625457846,Architecte logiciel,1,True,False,2024-03-24 22:06:49.961809+00:00,2025-12-02 01:42:23.303346+00:00
+18913824-a75f-44b9-a1c5-cec90c6cd419,Aya,Mathlouthi,aya.mathlouthi@capgemini.com,+21658037814,Responsable ventes,5,True,True,2024-06-19 00:21:18.527625+00:00,2024-07-01 23:47:28.048743+00:00
+c4aac5db-f0a1-41f7-ad7b-af5bdfaee13f,Sabrine,Ben Salah,sabrine.ben.salah@capgemini.com,+21654641014,Trésorier,3,True,True,2025-03-13 09:35:50.882167+00:00,2025-11-18 04:14:50.857453+00:00
+bbeb5b7f-c80b-4db1-ba90-903c1a075cf7,Lotfi,Karray,lotfi.karray@capgemini.com,+21629383108,Ingénieur avant-vente,5,True,True,2024-05-05 05:25:27.832515+00:00,2024-11-17 02:26:44.074539+00:00
+465f2a51-6e74-4cea-b466-c62c29193b73,Walid,Najjar,walid.najjar@capgemini.com,+21640201743,Responsable développement,6,True,True,2025-08-03 04:33:46.020949+00:00,2025-11-09 22:08:33.843876+00:00
+e0b47f14-ef2d-49fc-b298-7e81497f4563,Pierre,Durand,pierre.durand@capgemini.com,+21690830933,Gestionnaire fournisseurs,11,True,True,2026-03-11 23:01:54.637718+00:00,2026-03-27 04:09:59.782447+00:00
+5cfa3cf8-4522-4c4c-8087-ae79149ab327,Amine,Derbel,amine.derbel@capgemini.com,+21627173658,Sales development representative,5,True,True,2023-03-26 10:41:40.986559+00:00,2025-10-02 11:30:40.660982+00:00
+91859730-a2c4-46b6-855a-a89620a317df,Pierre,Wilson,pierre.wilson@capgemini.com,+21622125455,Commercial B2B,5,True,True,2023-06-18 07:27:53.856824+00:00,2024-04-23 03:24:00.320866+00:00
+24870417-d44d-4285-9509-b22a9365deee,Seif,Bouazizi,seif.bouazizi@capgemini.com,+21623841497,Business developer,5,False,False,2025-03-29 05:11:21.386815+00:00,2025-05-04 18:07:34.503760+00:00
+6ff3f4c3-324c-4f23-9667-106f6600724b,Dorrah,Messaoudi,dorrah.messaoudi@capgemini.com,+21650131684,Responsable développement,6,True,True,2023-09-29 16:25:11.753371+00:00,2023-12-03 03:09:31.035460+00:00
+3909b249-70c8-463b-b5e2-36bc233df5f5,Firas,Bouzid,firas.bouzid@capgemini.com,+21654313970,Ingénieur logiciel,1,True,True,2023-02-04 23:06:58.727632+00:00,2025-03-11 10:49:02.029542+00:00
+b13534c3-1d41-4edb-ad71-f6f58ff36484,Amira,Bjaoui,amira.bjaoui@capgemini.com,+21654414070,Comptable,3,True,True,2024-05-16 21:58:29.106595+00:00,2024-10-18 21:58:55.422386+00:00
+98096adb-c347-4b91-b157-13d91467faa7,Anna,Fournier,anna.fournier@capgemini.com,+21655769080,Commercial B2B,5,True,True,2024-03-19 06:22:02.771869+00:00,2024-03-31 01:03:49.221334+00:00
+8f0f60eb-864b-4f40-8a52-83b880ef9342,Leila,Guermazi,leila.guermazi@capgemini.com,+21695477343,Trésorier,3,True,True,2023-03-23 15:27:18.727621+00:00,2024-05-28 11:52:48.601795+00:00
+edc57913-68cf-4b04-a356-052f6ffdbcff,Camille,Anderson,camille.anderson@capgemini.com,+21625339261,Ingénieur capteurs,7,True,True,2023-02-28 21:34:03.410966+00:00,2024-11-11 20:45:26.025249+00:00
+3215d909-b0ac-4c4e-a139-afd4230fe685,Firas,Ksouri,firas.ksouri@capgemini.com,+21640534234,Ingénieur logiciel,1,True,True,2023-04-09 13:36:56.524167+00:00,2025-01-08 22:40:52.512970+00:00
+4b525688-1acd-4981-b213-0ea3aa8ecb43,Seif,Guesmi,seif.guesmi@capgemini.com,+21656611209,Product owner,6,True,True,2025-04-05 05:03:18.705801+00:00,2025-06-25 20:06:26.277009+00:00
+f26d448f-05f1-49b5-915f-c47667f8a942,Ana,Blanc,ana.blanc@capgemini.com,+21620823898,HR Business Partner,2,True,True,2024-12-11 19:03:13.615652+00:00,2026-04-09 18:51:41.745424+00:00
+2c6db120-61ac-4444-868a-bb75396aaae3,Chaker,Brahmi,chaker.brahmi@capgemini.com,+21654447834,Ingénieur avant-vente,5,True,True,2025-06-23 17:20:16.336289+00:00,2025-11-15 03:19:00.497462+00:00
+49af6a16-f923-4210-8c56-e311e38c564d,Nesrine,Khalfallah,nesrine.khalfallah@capgemini.com,+21636443663,Chargé de reporting financier,3,True,True,2023-12-28 02:57:36.866559+00:00,2025-03-09 21:05:41.607807+00:00
+b54fdc5c-e828-48f4-8b75-28fe75c046a8,Dorrah,Guermazi,dorrah.guermazi@capgemini.com,+21623544570,Chef de projet,6,True,True,2025-05-04 12:02:04.123999+00:00,2025-07-09 08:28:40.703038+00:00
+e8a07a8b-73cb-4a62-ba3e-b27bb60066e1,Aymen,Baccouche,aymen.baccouche@capgemini.com,+21651060150,Business analyst,6,False,True,2024-05-09 07:11:20.684260+00:00,2024-08-31 14:14:06.171499+00:00
+77912841-0831-4559-9152-00fd23a9a51c,Diego,Petit,diego.petit@capgemini.com,+21629711847,Auditeur qualité,8,True,True,2024-01-28 20:11:13.841605+00:00,2025-11-26 00:03:57.355087+00:00
+f19708c8-85b2-4faa-825b-a2fefaac0687,Ikram,Gharbi,ikram.gharbi@capgemini.com,+21629680380,Développeur front-end,1,True,True,2024-05-23 22:05:57.854626+00:00,2026-04-02 03:05:22.018203+00:00
+d038d3e8-db0f-4824-9216-4de208fd6652,Sami,Abidi,sami.abidi@capgemini.com,+21620943183,Technicien électronique,7,True,True,2024-08-20 03:28:09.626266+00:00,2026-04-10 05:45:53.288432+00:00
+83b7b362-55ff-44b1-870b-dd179a5fc394,Sonia,Mansour,sonia.mansour@capgemini.com,+21620879196,Responsable développement,6,True,True,2024-09-20 20:41:54.353934+00:00,2025-06-22 16:12:48.840195+00:00
+5dc41219-d217-4f8f-a4d3-a9ec3b263384,Sabrine,Dridi,sabrine.dridi@capgemini.com,+21625562264,Coordinateur projet,6,True,True,2024-10-13 13:26:31.731009+00:00,2025-03-18 03:32:45.179082+00:00
+88ca13bd-4e60-4303-800f-294b5b96f80d,Mohamed,Bjaoui,mohamed.bjaoui@capgemini.com,+21620983477,Trésorier,3,True,True,2024-06-05 07:55:02.206557+00:00,2025-01-24 06:21:01.266492+00:00
+21e93a46-e401-457d-ad44-d22012a753d7,Ala,Ferchichi,ala.ferchichi@capgemini.com,+21650439798,Quality assurance manager,8,True,True,2026-02-21 13:39:56.914780+00:00,2026-04-14 13:26:33.927456+00:00
+35b57b10-e7d8-43bd-9022-13bcd6044d36,Daniel,Becker,daniel.becker@capgemini.com,+21621840096,Développeur full-stack,1,True,False,2025-08-09 09:04:30.241302+00:00,2026-02-16 15:52:30.614585+00:00
+e1a6a44d-3130-4403-b5cb-3639929a10a0,Adel,Mejri,adel.mejri@capgemini.com,+21626813182,Scrum master,6,True,True,2024-12-07 00:29:45.273221+00:00,2025-07-06 12:12:07.120198+00:00
+66e23ee6-0c84-4b0a-8695-e735c473b919,Lotfi,Bouzaiene,lotfi.bouzaiene@capgemini.com,+21690436079,Data analyst,1,False,True,2024-10-31 19:38:32.562331+00:00,2025-01-09 01:07:07.054764+00:00
+540abdf1-304b-4ae8-be52-92cdac07dce3,Aya,Bouhlel,aya.bouhlel@capgemini.com,+21695445477,Talent acquisition specialist,2,True,True,2025-08-28 19:57:25.595649+00:00,2026-04-16 01:22:22.926266+00:00
+ce83a092-82c8-459d-a3f0-992a16e68c2c,Houssem,Bouzid,houssem.bouzid@capgemini.com,+21636057000,Technicien électronique,7,True,True,2025-10-26 14:35:32.355579+00:00,2026-03-12 19:06:58.639393+00:00
+8447be2e-4776-47d8-b0e5-e6a88f3e7d22,Hana,Mejri,hana.mejri@capgemini.com,+21699691513,Responsable achats,11,True,True,2023-06-07 20:20:51.108749+00:00,2026-01-02 17:06:55.151294+00:00
+1d623cd5-7c52-4925-a204-0c46c3869a1d,Karim,Zaier,karim.zaier@capgemini.com,+21690248872,Responsable RH,2,True,True,2026-04-19 13:00:17.014829+00:00,2026-04-20 16:16:04.393759+00:00
+d1d788a6-dd4c-4608-94bc-b1fd10c2a24e,Sarah,Wilson,sarah.wilson@capgemini.com,+21621648446,Responsable développement,6,True,True,2025-08-07 21:02:01.914383+00:00,2026-02-15 16:08:16.671989+00:00
+e3327257-45ae-4912-b4c2-08f9cb4d8536,Skander,Maalej,skander.maalej@capgemini.com,+21622629763,Acheteur IT,11,True,True,2023-01-18 16:44:49.751246+00:00,2024-10-15 00:22:01.991445+00:00
+539b3526-9e3d-45bd-baef-ec9d16abc2eb,Amine,Bouslama,amine.bouslama@capgemini.com,+21697191309,Architecte logiciel,1,True,True,2025-08-27 18:40:32.283298+00:00,2026-04-22 08:30:59.644417+00:00
+07e91d9a-58ac-4123-b88a-e84d593d3c95,Meriem,Ben Salah,meriem.ben.salah@capgemini.com,+21626102171,Chargé support client,9,True,True,2024-10-21 22:21:52.551367+00:00,2025-06-06 08:34:45.999329+00:00
+d07b17dc-7457-4ac7-81fc-f5ba88f492bc,Sami,Mhiri,sami.mhiri@capgemini.com,+21693005049,Acheteur IT,11,True,True,2024-09-13 03:01:29.493536+00:00,2025-08-03 17:47:42.252737+00:00
+67a9bdfe-c1f6-4192-8df9-d2341b9bf61f,Malek,Ferjani,malek.ferjani@capgemini.com,+21656646125,Responsable financier,3,True,True,2024-09-23 20:44:25.973998+00:00,2025-04-10 12:50:37.505654+00:00
+77ebff33-67f5-4c17-8bff-846fc504a43d,Skander,Hadded,skander.hadded@capgemini.com,+21653418595,Analyste financier,3,True,True,2023-12-02 06:45:38.177509+00:00,2024-12-30 22:04:21.816645+00:00
+fd139f69-a02f-403a-a413-19b49a716926,Walid,Bagga,walid.bagga@capgemini.com,+21656103356,Auditeur interne,3,True,True,2023-07-21 23:58:35.615856+00:00,2024-05-01 04:28:04.204215+00:00
+1d564304-c607-4b67-b00b-0c3c6644f9c6,Bilel,Sayadi,bilel.sayadi@capgemini.com,+21691374991,Legal counsel,10,True,True,2023-08-11 21:02:58.171183+00:00,2025-01-22 21:14:51.274602+00:00
+386678c1-8afb-482c-b6b3-73f0980bd1cf,Salma,Kallel,salma.kallel@capgemini.com,+21651182974,Gestionnaire paie,2,False,True,2023-12-22 18:32:14.633197+00:00,2024-04-29 17:19:33.495493+00:00
+7d24e8ab-d927-443c-a1e1-04b73211032b,Fatma,Bennour,fatma.bennour@capgemini.com,+21690380426,Développeur back-end,1,True,True,2024-12-19 09:08:04.256926+00:00,2026-03-01 09:39:07.044267+00:00
+dc77d7ee-0010-4612-9a40-e655be92d3eb,Aya,Makni,aya.makni@capgemini.com,+21623044013,Coordinateur projet,6,True,True,2024-09-25 20:01:46.601801+00:00,2024-11-14 07:30:23.836884+00:00
+c848b20c-f059-4930-95e5-93f28ae465c9,Tarek,Miled,tarek.miled@capgemini.com,+21699065301,Développeur full-stack,1,True,True,2023-10-17 14:21:41.211212+00:00,2024-09-17 00:40:06.052754+00:00
+5b666a1b-6391-46d4-8c0c-b2e34ab3fb1b,Karim,Sellami,karim.sellami@capgemini.com,+21627700439,Technicien support applicatif,9,True,True,2025-01-28 16:20:08.453040+00:00,2025-09-28 22:16:03.344730+00:00
+3e97ef54-2c80-4360-8b88-839042ab9574,Adel,Bennour,adel.bennour@capgemini.com,+21620004619,Coordinateur projet,6,True,True,2023-12-11 10:52:03.860962+00:00,2024-05-19 15:09:19.970074+00:00
+83181837-ca9a-4a93-95ef-82c0c1624078,Mohamed,Chouchane,mohamed.chouchane@capgemini.com,+21624928646,Auditeur interne,3,True,True,2025-03-26 09:59:15.292248+00:00,2025-08-29 06:07:33.840325+00:00
+7c02e81b-64f2-451d-bbab-b807fd72ef10,Sarra,Ben Amor,sarra.ben.amor@capgemini.com,+21622653232,Firmware engineer,7,True,True,2025-06-19 05:11:53.548551+00:00,2025-09-09 05:53:37.478137+00:00
+13b60d08-4e39-4999-9cce-26b8ce8619c7,Emily,Lemoine,emily.lemoine@capgemini.com,+21653017889,Coordinateur projet,6,True,True,2024-08-28 07:12:41.124630+00:00,2026-01-08 05:14:26.589393+00:00
+519b9a11-2a24-4779-b6be-e9dbde661345,Haythem,Cherif,haythem.cherif@capgemini.com,+21697174166,Sales development representative,5,True,True,2023-02-18 10:09:12.218364+00:00,2025-12-23 11:56:32.570060+00:00
+0198bc4b-8443-4754-8317-49b56f81ecea,Ala,Rekik,ala.rekik@capgemini.com,+21636375693,Manager IT,1,True,True,2023-12-25 10:14:17.987078+00:00,2024-01-03 06:21:18.944104+00:00
+cd45e040-a67a-4dcd-9015-7d07e78b78d0,Nizar,Belaid,nizar.belaid@capgemini.com,+21691579633,Analyste financier,3,True,True,2023-02-02 16:04:21.468852+00:00,2025-10-23 17:03:11.110985+00:00
+83fa4897-ec74-4b08-86e3-0d09187fe146,Meriem,Sghaier,meriem.sghaier@capgemini.com,+21690020587,Business analyst,6,True,True,2025-06-09 20:11:07.710798+00:00,2025-07-14 14:54:04.112621+00:00
+debfdb17-41a8-47ec-a914-677fa4a8b9d1,Laura,Lopez,laura.lopez@capgemini.com,+21692397402,Chargé sourcing,11,True,True,2023-11-13 10:47:10.775265+00:00,2023-11-14 03:36:11.808060+00:00
+6f4c6165-4dbe-4ad2-8a95-2bd31eda39cc,Foued,Mansour,foued.mansour@capgemini.com,+21625708221,Data analyst,1,False,False,2024-01-28 21:05:28.719306+00:00,2024-02-04 17:21:32.836024+00:00
+db513ac4-80bc-4d09-864b-24fb5dee1da4,Hend,Frikha,hend.frikha@capgemini.com,+21623125493,Administrateur systèmes,1,True,True,2023-10-24 22:48:59.683636+00:00,2025-08-30 11:33:59.042478+00:00
+d8442010-86d2-470e-89d9-f9e4e6c5e0df,Mehdi,Belhaj,mehdi.belhaj@capgemini.com,+21622665404,Développeur full-stack,1,True,True,2025-06-15 11:20:30.609848+00:00,2025-06-18 01:35:11.168852+00:00
+45f2fe70-a2a2-4fcc-b0f2-29306540418a,Iyed,Mathlouthi,iyed.mathlouthi@capgemini.com,+21656061821,Auditeur qualité,8,True,True,2023-05-24 11:29:33.771023+00:00,2024-07-12 14:46:35.890274+00:00
+9688090a-bae1-4697-9360-a77944da2a0e,Maria,Johnson,maria.johnson@capgemini.com,+21697722993,Product owner,6,False,False,2023-02-17 10:55:23.630928+00:00,2023-06-01 02:56:52.653249+00:00
+4bd7d747-9088-4441-a4ca-12c5a3c80cfb,Skander,Ben Ahmed,skander.ben.ahmed@capgemini.com,+21640717672,Responsable achats,11,True,True,2025-08-26 22:32:32.296405+00:00,2026-03-14 13:52:58.826955+00:00
+1f386289-521a-489e-a60a-2c215d2f95e7,Amine,Maalej,amine.maalej@capgemini.com,+21640640721,Business developer,5,True,True,2025-11-18 18:09:55.082784+00:00,2026-04-07 19:31:42.450953+00:00
+fca54b39-ad76-4871-81f2-5f93bcf119a2,Amel,Cherif,amel.cherif@capgemini.com,+21629589453,Manager IT,1,True,True,2023-03-21 00:32:26.899991+00:00,2025-08-24 16:52:36.808167+00:00
+a653f1b8-2202-491e-8b31-77d92d162949,Youssef,Ben Othmen,youssef.ben.othmen@capgemini.com,+21653747861,Architecte logiciel,1,True,True,2023-06-23 23:01:23.466301+00:00,2026-02-28 13:51:32.143916+00:00
+29a2042e-69ee-471d-ad13-086615962ccf,Emna,Trabelsi,emna.trabelsi@capgemini.com,+21621072417,Responsable RH,2,True,True,2023-09-06 04:57:57.019263+00:00,2025-12-23 20:33:19.710208+00:00
+2cd12ab6-9690-4f95-a135-d3dc346ec176,Nourhene,Sellami,nourhene.sellami@capgemini.com,+21654782289,Administrateur systèmes,1,True,True,2025-08-24 02:49:59.309834+00:00,2025-12-13 05:40:39.569905+00:00
+978615d9-0394-47fb-a990-7b91e37cbcf3,Omar,Sellami,omar.sellami@capgemini.com,+21636395319,Talent acquisition specialist,2,True,True,2025-04-10 00:11:25.525216+00:00,2025-06-05 01:35:14.492245+00:00
+39a22ca0-e67b-4e63-8b37-6aea793fe5ea,Nadia,Elloumi,nadia.elloumi@capgemini.com,+21623364541,Chargé d’études marketing,4,True,True,2023-05-04 14:46:31.624143+00:00,2025-11-30 09:24:08.802770+00:00
+1092232c-ca39-4c9d-90f6-d303d67af0e4,Lucia,Schneider,lucia.schneider@capgemini.com,+21651101830,Gestionnaire paie,2,True,True,2023-08-30 23:53:55.029645+00:00,2024-05-11 13:44:43.546033+00:00
+72efd112-3855-4a02-9572-9799474fbdf0,Mouna,Hadded,mouna.hadded@capgemini.com,+21656508875,Responsable RH,2,True,True,2023-12-05 03:44:09.056026+00:00,2025-10-08 10:46:06.578624+00:00
+8eb23e0d-e7bd-4642-b245-6338a02daf5d,Chaker,Bagga,chaker.bagga@capgemini.com,+21629284544,Data engineer IoT,7,True,True,2026-03-26 00:34:59.274000+00:00,2026-04-12 03:27:25.198058+00:00
+da4776f2-e6b8-4c43-abd8-a693f8b71f5f,Rihab,Sassi,rihab.sassi@capgemini.com,+21651352784,Coordinateur projet,6,True,True,2023-07-01 09:17:25.318220+00:00,2024-04-19 01:39:13.323266+00:00
+921f32d9-32ea-4d21-8db4-7b339d13a5b6,Chaima,Zaier,chaima.zaier@capgemini.com,+21623403208,Contrôleur de gestion,3,True,True,2026-02-10 03:29:32.449611+00:00,2026-04-26 07:49:04.797351+00:00
+7bf1e94f-695d-4afe-9fb2-f60aff59abb9,Hana,Sghaier,hana.sghaier@capgemini.com,+21627956474,Architecte logiciel,1,True,True,2023-08-05 14:49:45.984605+00:00,2023-11-23 00:35:11.776224+00:00
+ea40f618-7f28-4677-9945-8b26e9dad431,Houda,Gharbi,houda.gharbi@capgemini.com,+21698289962,Technicien électronique,7,True,True,2024-09-28 13:11:44.635748+00:00,2025-10-18 20:58:08.968264+00:00
+ed50a04f-41be-4ee7-89ae-aed7531faa34,Saber,Ayari,saber.ayari@capgemini.com,+21625048597,Responsable ventes,5,True,True,2024-06-21 19:25:10.459071+00:00,2025-08-09 00:31:24.294034+00:00
+009106ed-775c-4434-bfde-f95de8733d4b,Samia,Dhaoui,samia.dhaoui@capgemini.com,+21691898860,Développeur front-end,1,True,True,2023-09-08 00:20:01.322003+00:00,2025-08-24 17:35:39.318377+00:00
+b8b374dd-9fa4-4bbd-9bb0-e00bf90d665f,Dorrah,Brahmi,dorrah.brahmi@capgemini.com,+21656985571,Gestionnaire paie,2,True,True,2023-08-10 09:51:12.979174+00:00,2026-02-09 09:41:48.529471+00:00
+1423a03e-cee5-47c1-8a33-c4e950c56923,Zied,Tlili,zied.tlili@capgemini.com,+21626188099,QA engineer,1,True,True,2023-07-11 19:27:37.082861+00:00,2024-11-07 03:36:32.266199+00:00
+113c738a-c462-4ce1-8d84-bd0ba9a11de9,Lucia,Taylor,lucia.taylor@capgemini.com,+21697760849,Consultant innovation,6,True,True,2025-01-02 05:20:22.802270+00:00,2025-06-29 09:34:47.618650+00:00
+a28bebfa-b4eb-4a1f-9fc2-0354999a2f57,Sonia,Ben Salah,sonia.ben.salah@capgemini.com,+21623042702,Développeur embarqué,7,True,True,2023-12-18 01:24:18.063702+00:00,2024-02-28 13:35:18.835505+00:00
+5eaddab7-e9e5-496f-98cf-f1c69022ecfa,Fatma,Gharbi,fatma.gharbi@capgemini.com,+21699145270,Développeur back-end,1,True,True,2024-09-21 16:52:40.702237+00:00,2025-04-09 10:27:54.577075+00:00
+16aecb05-9ec8-4d03-8476-a54437617f6a,Pablo,Schneider,pablo.schneider@capgemini.com,+21650882494,Développeur embarqué,7,True,True,2024-01-24 09:34:18.580815+00:00,2024-11-22 06:31:36.868801+00:00
+db51b55f-fef8-478b-b35a-f2511f4012c2,Dorrah,Derbel,dorrah.derbel@capgemini.com,+21699784009,Chargé des contrats,10,True,True,2024-01-31 08:21:46.988630+00:00,2024-11-27 02:04:17.334368+00:00
+10ce4b9d-f78c-4d8e-8d10-eddbd1739f65,Zied,Mhiri,zied.mhiri@capgemini.com,+21651494988,Chef de projet,6,False,False,2026-02-20 03:32:58.104025+00:00,2026-04-12 04:36:46.156378+00:00
+8a674818-0a1b-475b-a8c9-cbe1e87d7943,Fedi,Sassi,fedi.sassi@capgemini.com,+21624015638,Quality assurance manager,8,True,True,2025-08-25 19:47:18.258524+00:00,2025-12-26 02:35:29.704337+00:00
+fcde4003-2759-47b7-b54d-25da4c86740a,Eya,Boughzela,eya.boughzela@capgemini.com,+21640831673,Quality assurance manager,8,True,True,2023-04-20 17:19:51.253488+00:00,2025-06-19 11:25:44.995581+00:00
+182f7f8c-7ece-40b1-9940-ad0854333381,Dorrah,Mabrouk,dorrah.mabrouk@capgemini.com,+21629358549,Contrôleur de gestion,3,True,True,2026-01-14 20:12:41.190586+00:00,2026-03-15 15:09:45.684272+00:00
+2175c618-8005-4079-a3b1-a423bd703308,Salma,Sayadi,salma.sayadi@capgemini.com,+21625722081,DevOps engineer,1,False,False,2024-10-16 01:43:02.554864+00:00,2025-07-06 12:45:30.120388+00:00
+2924ebf4-7416-4911-9fb8-c3bd86f39111,Leila,Ben Amor,leila.ben.amor@capgemini.com,+21621121387,Conseiller support niveau 2,9,True,True,2024-02-22 12:34:31.346511+00:00,2025-12-29 14:07:56.220579+00:00
+3f86e892-6ecb-4028-b135-17c98a50e599,Emna,Zaier,emna.zaier@capgemini.com,+21624141733,Technicien électronique,7,True,True,2025-11-05 20:50:32.816936+00:00,2025-12-18 18:58:28.054690+00:00
+3fed2f1f-ed8e-425e-a9c7-8401c4bea33c,Sofiane,Mansouri,sofiane.mansouri@capgemini.com,+21624185233,Développeur embarqué,7,True,True,2024-03-01 23:33:42.153199+00:00,2026-02-03 11:19:21.155193+00:00
+bc4f2415-4186-4d74-ba12-52a4a7b18bc6,Omar,Mabrouk,omar.mabrouk@capgemini.com,+21653511131,Data analyst,1,True,True,2024-01-23 18:20:22.310751+00:00,2024-06-23 03:26:12.285948+00:00
+1a5ca586-55ef-4c1b-9c5f-2f5b56931420,Sonia,Derbel,sonia.derbel@capgemini.com,+21621929473,Scrum master,6,True,True,2023-06-19 17:48:10.908781+00:00,2023-12-08 00:02:29.473335+00:00
+9d9f828f-6d17-4846-b840-5c49524aebe1,Tarek,Rahmani,tarek.rahmani@capgemini.com,+21695444575,SEO specialist,4,True,True,2023-07-06 06:23:07.567971+00:00,2024-08-05 20:37:09.633711+00:00
+f5a200ca-45a2-445d-906e-548d24f00cd6,Aicha,Gharbi,aicha.gharbi@capgemini.com,+21623406763,Talent acquisition specialist,2,True,True,2023-04-24 07:35:32.980238+00:00,2023-07-07 05:32:05.335551+00:00
+2976ce73-94df-4e12-ac34-fb596591b7c2,Bilel,Frikha,bilel.frikha@capgemini.com,+21697107818,Responsable ventes,5,True,True,2023-02-05 12:56:29.448770+00:00,2023-06-27 11:55:57.111838+00:00
+4f401a8b-a036-4ae4-ac18-f69336a55209,Khaled,Bouzid,khaled.bouzid@capgemini.com,+21691751557,Ingénieur IoT,7,True,True,2026-03-22 16:12:42.215494+00:00,2026-03-29 03:42:41.231411+00:00
+0232704b-fe64-4d43-ae17-055e3ae29f0c,Antoine,Brown,antoine.brown@capgemini.com,+21690732331,Développeur embarqué,7,False,False,2024-04-03 11:27:13.287296+00:00,2025-02-16 17:33:45.910817+00:00
+274ae9a0-e988-401e-abd7-6ebe2287f737,Dorrah,Dridi,dorrah.dridi@capgemini.com,+21650614589,Ingénieur logiciel,1,True,True,2023-07-15 18:06:16.138020+00:00,2024-10-06 19:53:06.089237+00:00
+95678daf-22ef-4265-aecc-265d306f786c,Sonia,Ghariani,sonia.ghariani@capgemini.com,+21658849846,Responsable ventes,5,True,True,2025-09-26 18:34:03.582892+00:00,2026-02-13 03:36:46.034858+00:00
+da6180bb-789f-4ba7-887c-08f5033ce3bd,Bilel,Najjar,bilel.najjar@capgemini.com,+21628419932,Chargé marketing,4,True,True,2025-02-24 18:41:37.335341+00:00,2025-08-24 18:24:27.888334+00:00
+36188e90-d5be-40a4-9643-81566debb269,Tarek,Dhaoui,tarek.dhaoui@capgemini.com,+21640156819,Chargé de reporting financier,3,True,True,2024-10-16 13:36:46.982655+00:00,2024-11-04 06:07:11.518916+00:00
+b6421516-65a2-4794-a3cf-e6d057cb9c36,Nizar,Karray,nizar.karray@capgemini.com,+21690039731,Scrum master,6,True,True,2023-07-11 17:31:15.933774+00:00,2025-10-30 01:38:05.391455+00:00
+08dc70fc-64c7-4fb3-ab1f-76c43226fdbf,Mia,Taylor,mia.taylor@capgemini.com,+21629888835,Chef de projet,6,True,False,2023-07-01 01:44:08.603488+00:00,2023-08-11 23:10:04.910342+00:00
+eb0df4f4-149a-40ce-ab54-70d49d31204a,James,Weber,james.weber@capgemini.com,+21653333457,Développeur back-end,1,True,True,2026-03-13 04:09:29.729347+00:00,2026-04-24 07:17:51.011892+00:00
+767ea648-35e6-4c66-b049-e1eb3d86476b,Nourhene,Kouki,nourhene.kouki@capgemini.com,+21640288837,Ingénieur qualité,8,False,True,2024-09-21 21:36:02.016889+00:00,2025-04-16 12:17:49.543990+00:00
+b028e6d5-941b-4894-816c-80a8024ffabd,Aya,Mejri,aya.mejri@capgemini.com,+21690731996,DevOps engineer,1,True,True,2023-02-07 12:24:19.608365+00:00,2026-01-08 12:45:29.927121+00:00
+0d3b9abd-2bf6-47a0-b674-e66bfbd1c058,Nadia,Gharbi,nadia.gharbi@capgemini.com,+21623284296,Responsable support,9,True,True,2023-07-01 14:47:07.975335+00:00,2023-10-01 16:09:13.362829+00:00
+fd4de66f-9089-4132-b386-bcc0aed023a5,Ines,Mathlouthi,ines.mathlouthi@capgemini.com,+21624100530,Coordinateur projet,6,True,True,2024-04-26 05:30:50.984251+00:00,2025-02-19 19:04:36.582127+00:00
+cda07ab2-acb0-42ea-8b8d-d21f330bf70c,Rahma,Sassi,rahma.sassi@capgemini.com,+21655780810,DevOps engineer,1,True,True,2026-02-02 18:13:42.517006+00:00,2026-03-28 03:52:25.898373+00:00
+a3ff7146-5c5d-4b32-aa8d-e1dc67bae50e,Sami,Masmoudi,sami.masmoudi@capgemini.com,+21621778191,Business analyst,6,True,True,2024-11-30 17:04:31.352755+00:00,2026-03-26 14:20:41.284974+00:00
+0280d734-a9d4-4fa0-ab8b-772dff7f7954,Iyed,Mansouri,iyed.mansouri@capgemini.com,+21690821291,Growth marketer,4,True,True,2024-07-27 15:44:25.775691+00:00,2025-10-26 07:58:39.248854+00:00
+5bfb3b47-b622-4dea-bcef-0b3827189ab1,Lina,Rekik,lina.rekik@capgemini.com,+21695027311,Analyste financier,3,True,True,2025-03-16 17:14:26.078870+00:00,2026-03-14 17:10:25.368951+00:00
+7b2ed7d5-f93f-4698-ab83-c0b80f41facc,Emily,Bertrand,emily.bertrand@capgemini.com,+21627136430,DevOps engineer,1,False,False,2024-02-07 20:08:13.433514+00:00,2025-05-18 21:49:14.794142+00:00
+8b802ae2-7e2f-4ae3-b9db-55586c1e446d,Nizar,Khemiri,nizar.khemiri@capgemini.com,+21658718544,Responsable développement,6,True,True,2025-09-16 13:01:13.102138+00:00,2025-12-10 03:09:23.532143+00:00
+1815820e-1287-4637-b9f1-9bd95f95ca22,Miguel,Laurent,miguel.laurent@capgemini.com,+21652856851,Chargé de reporting financier,3,True,True,2025-05-07 23:56:06.407195+00:00,2026-04-20 21:36:23.664001+00:00
+b5327700-4b72-4e84-bd67-c0134c3733c6,Mariem,Najjar,mariem.najjar@capgemini.com,+21628460391,HR Business Partner,2,True,True,2023-11-08 23:48:33.545774+00:00,2025-02-25 05:09:54.983846+00:00
+fd337d25-a333-4d37-94b8-71f30778f874,Lotfi,Ghariani,lotfi.ghariani@capgemini.com,+21622924081,Développeur front-end,1,True,True,2024-06-14 14:09:39.284509+00:00,2025-01-12 10:37:08.678675+00:00
+55831852-80ae-4ac9-b6c1-ecd2efaef1b7,Nizar,Mejri,nizar.mejri@capgemini.com,+21653643405,Assistant RH,2,True,True,2024-01-12 12:17:16.412189+00:00,2025-09-17 12:05:19.356406+00:00
+b899ea61-699a-400a-98b6-1966f23e209b,Rami,Ferchichi,rami.ferchichi@capgemini.com,+21697438970,Chargé support client,9,True,True,2023-01-02 17:10:50.107282+00:00,2025-02-08 10:49:28.719167+00:00
+ac16955a-100a-49c4-9550-f3e3c118b812,Mourad,Brahmi,mourad.brahmi@capgemini.com,+21624951939,Chargé marketing,4,True,True,2023-10-04 05:45:45.987618+00:00,2025-06-24 14:43:26.976916+00:00
+54409a34-c3aa-481c-899b-bb0da3317aeb,Anis,Ben Salah,anis.ben.salah@capgemini.com,+21626390966,HR Business Partner,2,False,False,2025-10-03 20:13:35.281525+00:00,2025-11-16 14:19:06.238662+00:00
+8109e1d3-64d6-452e-8d2d-8f0129c10b07,Siwar,Brahmi,siwar.brahmi@capgemini.com,+21622152116,Responsable financier,3,True,True,2024-08-16 07:35:11.055474+00:00,2024-10-06 12:26:56.929787+00:00
+18461a76-23dd-484e-ac0a-37f832c9ef57,Oliver,Leroy,oliver.leroy@capgemini.com,+21626566075,Ingénieur avant-vente,5,True,True,2023-03-12 14:30:48.577514+00:00,2024-12-11 17:29:06.828679+00:00
+912a90c4-9c49-4b06-b8aa-4363306047bd,Nizar,Guermazi,nizar.guermazi@capgemini.com,+21620828597,Business developer,5,True,True,2025-06-01 00:06:18.394039+00:00,2025-08-20 12:57:08.647493+00:00
+770a3736-dd6c-443d-92ff-d84e014a53e9,Meriem,Bouzid,meriem.bouzid@capgemini.com,+21625580265,Commercial B2B,5,True,True,2025-07-01 23:49:14.604022+00:00,2025-09-14 11:33:34.674801+00:00
+216e3c28-a95a-4cd1-b163-01b319c3d109,Emna,Kammoun,emna.kammoun@capgemini.com,+21629524596,Technicien support applicatif,9,True,False,2023-10-19 05:28:39.115479+00:00,2025-07-16 22:59:25.595561+00:00
+29f74c43-1a2b-4d01-b448-078c38c9e28a,Foued,Hadded,foued.hadded@capgemini.com,+21691534235,Scrum master,6,True,True,2026-02-09 15:32:35.459351+00:00,2026-04-05 16:15:41.046025+00:00
+cd925f76-6a4a-4b65-b4d7-839f7aa778fc,Thomas,Lewis,thomas.lewis@capgemini.com,+21650366201,Auditeur interne,3,True,True,2025-09-10 09:26:11.554308+00:00,2025-11-12 21:29:45.391596+00:00
+e7425416-7558-4a4c-b82a-b8381c76e35b,Sofiane,Louati,sofiane.louati@capgemini.com,+21650969571,Administrateur systèmes,1,False,False,2025-04-14 05:21:59.203795+00:00,2025-05-19 14:23:17.484560+00:00
+d7f518f6-8981-4973-9c42-b49423f7f23e,Maria,Michel,maria.michel@capgemini.com,+21693686324,Coordinateur amélioration continue,8,True,True,2025-10-29 07:33:34.569801+00:00,2025-11-07 13:13:49.172101+00:00
+233d2989-90d7-4cf0-9bea-58a5e4bac3d2,Marwen,Bagga,marwen.bagga@capgemini.com,+21627963827,Responsable RH,2,True,True,2025-11-10 16:03:32.691558+00:00,2026-03-17 06:37:14.011425+00:00
+2e981684-37c3-4d1b-b874-e32a851cd0af,Sofiane,Ksouri,sofiane.ksouri@capgemini.com,+21696129163,Chargé support client,9,True,True,2025-06-23 16:24:53.514383+00:00,2025-12-30 03:46:41.094089+00:00
+37984151-0631-4f6f-b709-904ba8c61676,Dorrah,Kouki,dorrah.kouki@capgemini.com,+21621681988,Manager IT,1,True,True,2024-01-22 23:54:39.898386+00:00,2024-11-01 05:30:53.317270+00:00
+c45d7879-b91c-47e2-9f80-fe17082b34a9,Omar,Maalej,omar.maalej@capgemini.com,+21622149265,Chargé de recrutement,2,True,True,2024-12-19 09:25:44.719652+00:00,2025-01-13 20:32:39.074819+00:00
+82acf793-5875-4b86-a2c7-7bfc77ca1687,Walid,Gharbi,walid.gharbi@capgemini.com,+21627423667,Chargé d’études marketing,4,True,True,2025-03-04 20:58:21.382628+00:00,2025-10-13 14:18:26.837675+00:00
+45c10be6-7fac-4883-8cee-b772caa3f8de,Manon,David,manon.david@capgemini.com,+21629965246,Commercial B2B,5,True,True,2025-01-20 18:02:05.805175+00:00,2026-01-07 15:15:22.950161+00:00
+b55fd364-1df7-46e9-8a10-21de5cd5b1f3,Seif,Guermazi,seif.guermazi@capgemini.com,+21627989775,Analyste financier,3,True,True,2025-02-09 04:03:04.897677+00:00,2026-04-23 01:28:07.480215+00:00
+1cd8ca71-932d-472a-befa-2aa189cc5a74,Aicha,Lahmar,aicha.lahmar@capgemini.com,+21622490875,QA engineer,1,True,True,2025-07-27 17:53:43.798561+00:00,2026-04-14 10:35:09.785253+00:00
+b273077f-41d4-4b27-99b4-fa52d85d84e2,Marie,Bertrand,marie.bertrand@capgemini.com,+21650916428,QA engineer,1,True,True,2025-02-08 20:00:17.097619+00:00,2026-01-02 03:57:42.846722+00:00
+8a3bbec3-4136-45f6-b098-bbb2be370926,Karim,Najjar,karim.najjar@capgemini.com,+21691382270,QA engineer,1,True,True,2026-01-20 22:42:03.062840+00:00,2026-04-27 01:02:30.467847+00:00
+6d306999-ddb5-47e6-9aec-107cca3f6bbb,Aicha,Bouzid,aicha.bouzid@capgemini.com,+21628656369,Responsable RH,2,True,True,2023-01-30 17:57:53.609303+00:00,2024-06-06 21:05:52.554389+00:00
+74164678-a923-474f-9942-ef98874b21a7,Skander,Khemiri,skander.khemiri@capgemini.com,+21622278996,Scrum master,6,True,True,2023-07-16 07:47:23.887922+00:00,2023-08-19 04:44:05.084360+00:00
+23ce8810-f0b8-4d2e-8e2b-68771418b437,Hend,Trabelsi,hend.trabelsi@capgemini.com,+21653569516,Legal counsel,10,True,True,2024-11-17 07:23:10.194815+00:00,2025-11-17 18:43:38.387051+00:00
+622dbe54-2ae7-45b3-9c3e-e10174715762,Carlos,Navarro,carlos.navarro@capgemini.com,+21654269068,Responsable communication marketing,4,True,True,2024-01-07 21:46:58.795986+00:00,2024-08-22 17:49:08.442395+00:00
+4696641d-ca0e-4d94-9047-ade0d245ddb5,Nour,Zaier,nour.zaier@capgemini.com,+21640556318,Assistant RH,2,True,True,2024-02-19 22:07:32.558272+00:00,2024-05-14 07:37:34.368115+00:00
+b67484d6-57c8-48b2-bc51-671001b1bcda,Rim,Miled,rim.miled@capgemini.com,+21699121490,Assistant RH,2,True,True,2024-04-05 15:35:26.188584+00:00,2026-03-21 21:13:21.610558+00:00
+2ef6e49e-2db4-4aba-9300-2be6b73234f7,Khaled,Hadded,khaled.hadded@capgemini.com,+21655637710,Assistant RH,2,True,True,2024-01-19 08:20:40.299145+00:00,2026-04-07 02:48:22.407143+00:00
+a5e91f29-76ad-47df-8a3c-43ad203ed9c3,Sabrine,Maalej,sabrine.maalej@capgemini.com,+21694918792,Coordinateur projet,6,True,True,2025-04-30 19:17:26.272383+00:00,2025-11-30 08:56:44.031537+00:00
+59566cb1-e2b4-4f2a-80be-6b9dcc4429c7,Chaima,Bjaoui,chaima.bjaoui@capgemini.com,+21627271498,Manager IT,1,True,True,2024-10-16 10:36:28.927062+00:00,2025-11-14 21:20:11.079025+00:00
+f5977bb6-11a7-4cfa-aa87-84f33d13bae2,Yosra,Ghariani,yosra.ghariani@capgemini.com,+21697760301,Responsable qualité,8,False,False,2024-07-31 07:04:57.313765+00:00,2025-01-10 22:06:43.519351+00:00
+4a0da242-8758-4153-94cc-b7593207978b,Lea,Fournier,lea.fournier@capgemini.com,+21636405507,Data analyst,1,True,True,2024-09-23 17:49:16.406044+00:00,2026-03-09 14:37:18.016570+00:00
+76c67646-085b-4496-a704-025ae0fbf520,Aicha,Elloumi,aicha.elloumi@capgemini.com,+21653946564,Business analyst,6,True,True,2024-08-09 17:53:55.183341+00:00,2024-11-06 06:39:57.460685+00:00
+fea147a7-2981-47cc-8b65-ea434394a5f1,Aymen,Rekik,aymen.rekik@capgemini.com,+21697435347,Product owner,6,True,True,2025-03-20 19:15:35.047374+00:00,2025-05-05 09:02:02.071056+00:00
+d3bfd85f-c44c-4a88-ab2d-49f456911251,Fatma,Abidi,fatma.abidi@capgemini.com,+21625676984,Responsable ventes,5,False,True,2024-09-25 20:39:33.136419+00:00,2025-09-13 13:58:47.311679+00:00
+38f613ea-5861-4cc9-b537-b6b20e606666,Nesrine,Bouzid,nesrine.bouzid@capgemini.com,+21628246340,DevOps engineer,1,True,True,2025-04-25 07:57:24.393808+00:00,2025-11-03 20:48:37.938477+00:00
+d25b06d5-af6c-43d4-9ba8-d64bdd39a1a4,Amira,Ben Ahmed,amira.ben.ahmed@capgemini.com,+21622725224,Technicien électronique,7,True,True,2023-11-17 16:21:17.691667+00:00,2025-07-19 08:32:53.247067+00:00
+0b259536-155f-4e39-9154-32d25e0d2eca,Sonia,Baccouche,sonia.baccouche@capgemini.com,+21640717200,Consultant innovation,6,True,True,2023-12-20 01:00:58.232634+00:00,2025-09-17 03:44:59.908914+00:00
+1d75134b-1973-443a-8c64-a5c87a7ea0a6,Dorrah,Bensalem,dorrah.bensalem@capgemini.com,+21695469494,QA engineer,1,False,False,2023-03-03 01:31:57.177594+00:00,2023-04-29 19:32:26.736749+00:00
+8195d324-ed95-44b5-a354-9232cab4e1c0,Aymen,Belaid,aymen.belaid@capgemini.com,+21690297633,Gestionnaire fournisseurs,11,True,True,2024-12-19 07:54:43.511389+00:00,2026-03-19 06:56:36.507754+00:00
+4c166401-3fd9-47c6-993a-883bd0d2ca29,Alice,Girard,alice.girard@capgemini.com,+21625150197,Responsable support,9,True,True,2023-08-27 22:31:10.230688+00:00,2024-04-07 13:14:06.647281+00:00
+a839e782-c52a-420c-a7e1-e03328578e0d,Skander,Marzouk,skander.marzouk@capgemini.com,+21625129773,Administrateur systèmes,1,True,True,2025-08-10 16:16:48.261146+00:00,2025-11-27 17:21:08.250373+00:00
+d37584ec-a50a-4b61-84db-4ad4f2629fd7,Aya,Sghaier,aya.sghaier@capgemini.com,+21620846656,Growth marketer,4,True,True,2023-12-26 04:22:01.402686+00:00,2025-11-03 10:54:52.663263+00:00
+ea94002e-07bf-4277-9b9a-4f657eaa8125,Sabrine,Mansour,sabrine.mansour@capgemini.com,+21696635695,Responsable achats,11,True,True,2023-12-20 08:14:19.380449+00:00,2025-06-26 20:06:37.305993+00:00
+786cfe59-0bda-4930-9ccd-c6d0ff02b662,Marta,Girard,marta.girard@capgemini.com,+21698140032,Ingénieur logiciel,1,True,True,2025-11-26 16:53:55.949435+00:00,2026-04-25 20:27:00.250483+00:00
+3827f77d-c5b6-4965-a25c-b6482d583783,Mia,Robert,mia.robert@capgemini.com,+21640740408,Auditeur interne,3,True,True,2025-10-08 22:50:36.104923+00:00,2026-03-13 10:00:41.148338+00:00
+00a63ee3-b72e-4d31-b5f3-e2c9113709fa,Yosra,Mathlouthi,yosra.mathlouthi@capgemini.com,+21691300076,Responsable achats,11,True,True,2026-01-24 05:48:01.122335+00:00,2026-03-07 05:07:56.925978+00:00
+8292224d-865d-414d-b46e-895c5152d1a0,Rahma,Khalfallah,rahma.khalfallah@capgemini.com,+21658718113,Assistant RH,2,True,True,2026-02-17 06:52:24.726954+00:00,2026-02-23 21:57:07.977560+00:00
+5a0d457e-b130-4a86-8cf9-1ff778d42d02,Saber,Ksouri,saber.ksouri@capgemini.com,+21625510701,Ingénieur avant-vente,5,True,True,2025-11-05 09:40:33.025618+00:00,2025-11-24 03:12:31.702743+00:00
+3153eaad-facb-4e77-bf73-9a19018c032d,Asma,Ghariani,asma.ghariani@capgemini.com,+21696259344,Product owner,6,True,True,2024-08-02 01:15:12.985770+00:00,2025-10-12 22:41:47.877599+00:00
+ae75c4a9-7ea7-409f-a66c-06627caee92d,Zied,Bouzid,zied.bouzid@capgemini.com,+21654011623,Business analyst,6,False,False,2025-12-20 07:20:58.505120+00:00,2026-02-20 10:45:51.952109+00:00
+7b19046f-9ad2-4f03-b469-0a8c894bbccb,Sami,Mejri,sami.mejri@capgemini.com,+21658125654,Data engineer IoT,7,True,True,2024-12-27 16:27:20.965962+00:00,2025-01-22 17:32:06.077703+00:00
+1878e9de-abc1-4dcc-b6d3-1113c76c1a59,Siwar,Mabrouk,siwar.mabrouk@capgemini.com,+21658867038,Responsable financier,3,True,True,2023-12-06 19:00:46.172500+00:00,2026-04-10 02:40:01.384070+00:00
+1ee0455f-7a11-42b3-883e-1a778adfa225,Fares,Ben Ali,fares.ben.ali@capgemini.com,+21628381633,Ingénieur logiciel,1,True,True,2023-11-07 06:40:22.190531+00:00,2025-04-16 22:49:26.848756+00:00
+238a56d0-1293-48e8-a2dc-dd39a1ea5a94,Aicha,Ksouri,aicha.ksouri@capgemini.com,+21690875245,Scrum master,6,True,True,2026-04-15 20:25:52.993372+00:00,2026-04-19 15:08:53.193040+00:00
+16db286d-1b67-49c2-b2c8-9d4d0fa29db6,Iyed,Bagga,iyed.bagga@capgemini.com,+21651033642,Gestionnaire paie,2,True,True,2023-10-20 18:46:47.778939+00:00,2024-08-19 19:51:53.801618+00:00
+b0d526ca-0d90-450b-90b4-50747cab06a8,Dorrah,Dhaoui,dorrah.dhaoui@capgemini.com,+21625136347,Commercial B2B,5,False,True,2026-03-30 20:54:11.295888+00:00,2026-04-19 23:30:35.031732+00:00
+801da756-704e-490d-a6e0-da0816bd7066,Rahma,Cherif,rahma.cherif@capgemini.com,+21621857207,Comptable,3,True,True,2025-11-22 07:23:47.964697+00:00,2025-12-10 12:48:22.555161+00:00
+16ce6d70-5405-478a-a25a-cc332ef4b47c,Youssef,Sghaier,youssef.sghaier@capgemini.com,+21655223882,Conseiller support niveau 2,9,True,True,2025-07-27 08:00:21.382015+00:00,2025-08-12 12:54:34.244734+00:00
+04ae859c-0c10-43f9-b75f-3eda713debdb,Amine,Masmoudi,amine.masmoudi@capgemini.com,+21695181385,Talent acquisition specialist,2,True,True,2026-04-19 10:21:46.536142+00:00,2026-04-19 15:23:30.233239+00:00
+ce27506a-6bbb-4843-9346-2fd118966745,Manon,Leroy,manon.leroy@capgemini.com,+21694908015,Responsable financier,3,True,True,2026-01-30 22:43:05.592389+00:00,2026-03-08 01:24:46.899418+00:00
+eb0e5714-103d-4cc9-9b7e-b0267f027196,Saber,Ghariani,saber.ghariani@capgemini.com,+21658127084,Responsable formation,2,True,True,2024-02-22 23:17:51.461340+00:00,2025-09-18 11:53:50.346981+00:00
+036311af-4d37-429f-bcee-1957beb2bdf5,Maxime,Blanc,maxime.blanc@capgemini.com,+21658650837,Chargé d’études marketing,4,True,True,2023-11-17 18:14:31.262394+00:00,2025-02-21 15:08:49.784914+00:00
+083adc5e-4f88-4bb2-98cc-7d2b6713765f,Yosra,Bouslama,yosra.bouslama@capgemini.com,+21691071717,Trésorier,3,True,True,2023-12-07 02:23:21.612540+00:00,2024-05-11 21:59:46.223555+00:00
+b84486da-21ec-4b82-bf29-a0ba711862f5,Sarra,Kammoun,sarra.kammoun@capgemini.com,+21621545650,Ingénieur qualité,8,True,True,2024-08-27 21:44:50.087265+00:00,2025-02-10 10:19:18.509340+00:00
+9cca5d9d-2083-45f2-baf5-a904076fa298,Laura,Girard,laura.girard@capgemini.com,+21655592031,Responsable développement,6,True,True,2024-09-06 01:54:49.527621+00:00,2026-04-03 18:14:55.542473+00:00
+caca8e6f-6250-4097-921b-cd1598cb3532,Zied,Bennour,zied.bennour@capgemini.com,+21627516227,Analyste financier,3,True,True,2024-09-25 14:34:35.771422+00:00,2025-05-17 11:57:15.188217+00:00
+a912e90c-b716-4a56-8005-1c9111759dfd,Karim,Guermazi,karim.guermazi@capgemini.com,+21650444580,Responsable RH,2,True,True,2025-02-04 13:41:27.813733+00:00,2026-04-09 15:53:23.735649+00:00
+ab9a105c-5f0d-4478-9b04-9f0953d430cb,Amine,Sassi,amine.sassi@capgemini.com,+21698990325,Data analyst,1,True,True,2025-11-28 01:21:47.608585+00:00,2026-02-14 16:31:27.611559+00:00
+69055cc0-87cb-4fa5-8c26-8295525fd6a6,Sarah,Navarro,sarah.navarro@capgemini.com,+21622192839,Responsable conformité,10,False,False,2025-06-22 14:46:32.196874+00:00,2025-07-18 08:08:48.275436+00:00
+54ff204c-a298-4d0d-bd0e-d9817a501b70,Nour,Boughzela,nour.boughzela@capgemini.com,+21697406372,Responsable RH,2,True,True,2023-12-17 12:12:19.644056+00:00,2024-01-31 22:23:37.346664+00:00
+2237a47b-d19c-43f7-b1bb-db7310cd2750,Chaker,Ferchichi,chaker.ferchichi@capgemini.com,+21654789253,Coordinateur projet,6,True,True,2023-05-12 23:29:20.422434+00:00,2023-06-28 19:33:55.866794+00:00
+d0254122-89ed-45f1-9608-36032344bddd,Yosra,Mhiri,yosra.mhiri@capgemini.com,+21650961094,Gestionnaire paie,2,True,True,2024-04-06 15:53:03.464628+00:00,2024-12-23 00:44:35.017880+00:00
+9c80f797-b35a-496e-a518-bd9b32ba13b9,Grace,Michel,grace.michel@capgemini.com,+21694562171,Ingénieur qualité,8,True,True,2025-01-30 17:31:17.521979+00:00,2025-12-06 04:10:03.286787+00:00
+592aac8f-3efc-40e6-8749-bea31258b4be,Rami,Derbel,rami.derbel@capgemini.com,+21658551927,Chef de projet,6,True,True,2024-01-30 15:27:04.840545+00:00,2024-12-30 00:56:56.833821+00:00
+ff547326-c297-4923-8b93-97313a467f80,Ikram,Ben Othmen,ikram.ben.othmen@capgemini.com,+21654983581,Gestionnaire paie,2,True,True,2023-11-27 20:23:01.199892+00:00,2025-05-31 20:32:38.836384+00:00
+9de64ac2-5823-48b6-ad5a-3f693fa94794,Houssem,Gharbi,houssem.gharbi@capgemini.com,+21653142646,Gestionnaire paie,2,True,True,2024-09-24 08:56:37.431673+00:00,2024-12-26 22:33:22.171926+00:00
+51ebf637-56d7-4151-9a37-caaafc9dbb76,Kenza,Marzouk,kenza.marzouk@capgemini.com,+21636346216,Product owner,6,False,True,2023-08-09 02:18:36.291811+00:00,2024-04-27 07:12:11.189151+00:00
+a0cca5a6-1adb-48cd-8eb4-3ddd051a194a,Aymen,Jlassi,aymen.jlassi@capgemini.com,+21622047035,Ingénieur avant-vente,5,True,True,2025-05-27 16:50:36.196133+00:00,2025-09-29 00:50:08.704467+00:00
+ed82293a-7780-4964-81ba-549c9d99252e,Rihab,Ksouri,rihab.ksouri@capgemini.com,+21691902387,Responsable développement,6,False,False,2023-12-19 03:15:46.568542+00:00,2024-04-14 07:16:44.258213+00:00
+e85bf3a0-343f-43c6-9d3c-0139253eb5fe,Salma,Tlili,salma.tlili@capgemini.com,+21696748568,DevOps engineer,1,True,False,2026-03-09 18:57:14.455062+00:00,2026-04-09 20:48:48.876133+00:00
+cba14f0b-756c-46b4-82ed-29b71212aeae,Grace,Blanc,grace.blanc@capgemini.com,+21621765030,Scrum master,6,True,True,2023-10-15 18:16:12.144231+00:00,2026-03-09 10:18:14.656259+00:00
+d17fb9bc-4d75-4c84-a425-1d1973803d5a,Carlos,Morel,carlos.morel@capgemini.com,+21690617212,Firmware engineer,7,True,True,2023-07-12 16:57:26.252445+00:00,2025-03-31 09:38:46.811624+00:00
+1c9ec459-2c6a-47a7-b3cb-6090d55196b1,David,Bertrand,david.bertrand@capgemini.com,+21650463432,Architecte IoT,7,True,True,2024-06-11 21:38:17.173116+00:00,2026-01-22 21:07:10.219179+00:00
+465719ec-e1f8-4d36-9993-f4ac5c2f5ce8,Claire,Lefebvre,claire.lefebvre@capgemini.com,+21699590535,Administrateur systèmes,1,True,False,2024-12-09 06:31:58.217403+00:00,2025-06-10 19:00:01.158854+00:00
+4abcf7de-7bd9-4a8b-8086-69d62985a420,Bilel,Sghaier,bilel.sghaier@capgemini.com,+21625612219,SEO specialist,4,True,True,2025-01-23 18:07:18.844451+00:00,2025-02-23 01:49:25.429339+00:00
+bcd22804-cb9b-430b-879b-fbdade368183,Sonia,Louati,sonia.louati@capgemini.com,+21656170783,Consultant innovation,6,True,True,2025-12-12 19:53:20.569424+00:00,2026-01-01 11:25:16.636862+00:00
+d4a71d21-d547-4736-9c69-2ae754d8e3f0,Nourhene,Bouhlel,nourhene.bouhlel@capgemini.com,+21629899066,Firmware engineer,7,True,False,2025-03-15 20:16:36.350036+00:00,2025-09-14 14:22:52.951131+00:00
+f97a0b32-2873-4e32-aeb0-26f42cfbc29d,Nesrine,Jlassi,nesrine.jlassi@capgemini.com,+21693400730,Responsable formation,2,True,True,2024-09-29 07:56:40.060263+00:00,2025-11-24 11:47:17.308193+00:00
+3577cac5-0476-4aff-b030-5793997dce28,Chaima,Elloumi,chaima.elloumi@capgemini.com,+21653762234,Data analyst,1,True,True,2026-04-22 08:37:38.881192+00:00,2026-04-24 05:23:32.697028+00:00
+452777ba-f4f5-499a-b425-429aeb0e3b1c,Antoine,Leroy,antoine.leroy@capgemini.com,+21650692255,Manager IT,1,False,False,2025-08-08 01:21:53.248882+00:00,2025-08-11 15:19:23.026693+00:00
+1b030e36-9144-4f9e-b30f-599f3b124204,Mourad,Guetat,mourad.guetat@capgemini.com,+21651835614,Coordinateur projet,6,True,True,2024-02-24 11:32:09.842108+00:00,2025-02-05 12:39:26.520886+00:00
+544f4247-a6c8-459e-997a-f558b28f1006,Siwar,Frikha,siwar.frikha@capgemini.com,+21629068756,Auditeur interne,3,True,True,2023-10-30 11:48:42.275306+00:00,2025-03-16 06:08:42.501898+00:00
+a76c196d-d55a-489a-9e41-2892f1411a8b,Rahma,Masmoudi,rahma.masmoudi@capgemini.com,+21640207768,Chargé marketing,4,True,True,2026-01-25 13:43:38.040724+00:00,2026-04-18 16:45:39.946130+00:00
+317b3030-2453-480a-be7a-493d61b447f0,Hend,Kammoun,hend.kammoun@capgemini.com,+21694984188,Chef de projet,6,True,True,2025-06-11 02:35:35.342388+00:00,2025-07-02 06:46:06.346380+00:00
+017696a2-9349-44d2-85ef-da7c880e1732,Miguel,Martin,miguel.martin@capgemini.com,+21622448802,Manager IT,1,True,True,2023-09-30 20:48:08.535166+00:00,2024-02-02 03:16:26.902040+00:00
+48ecf4f9-3692-43b7-ae68-8199908358ec,Salma,Ferjani,salma.ferjani@capgemini.com,+21696502531,Ingénieur logiciel,1,True,True,2026-02-24 16:45:12.608915+00:00,2026-04-14 00:55:59.654515+00:00
+8e9296c5-bcd9-48b9-a595-2c11e6d596ef,Mia,Roux,mia.roux@capgemini.com,+21697348245,Content manager,4,True,True,2026-03-26 16:29:36.427584+00:00,2026-04-14 14:49:37.564544+00:00
+f6806b32-13b0-4bad-8432-75e40ac780cd,Dorrah,Khemiri,dorrah.khemiri@capgemini.com,+21694820430,SEO specialist,4,False,False,2025-04-08 06:18:04.674386+00:00,2025-04-09 19:08:22.987236+00:00
+523b8c7a-c2fe-456d-b96a-d35efdae8e10,Tarek,Cherif,tarek.cherif@capgemini.com,+21623107780,Test lead,8,True,False,2024-03-20 09:31:24.195865+00:00,2024-08-30 17:02:19.898011+00:00
+c413e723-b297-4c8d-b0ed-efcc688a626c,Sofiane,Belhaj,sofiane.belhaj@capgemini.com,+21636255733,Analyste financier,3,True,False,2024-10-30 22:00:24.449317+00:00,2025-02-08 20:16:43.010005+00:00
+d8820e49-04ca-49fb-ae6e-24da3db841fb,Sonia,Tlili,sonia.tlili@capgemini.com,+21691899480,Responsable financier,3,True,True,2025-03-06 01:47:41.393936+00:00,2025-12-22 01:22:14.534365+00:00
+c28e7618-80de-42f7-960e-0d5fc0249abb,Foued,Mokhtar,foued.mokhtar@capgemini.com,+21624237725,Content officer interne,12,False,False,2026-03-25 17:33:08.030097+00:00,2026-04-11 21:34:28.472487+00:00
+d0f286e9-aeb3-4658-8f6c-b7a7d6120051,Ikram,Najjar,ikram.najjar@capgemini.com,+21698168328,Conseiller client,5,True,True,2024-12-11 05:09:58.961288+00:00,2026-01-23 13:29:15.163375+00:00
+28719ef7-aaa2-49fe-b12a-4c8df12ddbbe,Ella,Faure,ella.faure@capgemini.com,+21629627469,Ingénieur qualité,8,True,True,2024-08-18 23:54:47.463206+00:00,2026-04-11 13:05:43.487399+00:00
+ab6db78b-7377-4bd2-b600-5e71d3b60e91,Henry,Garnier,henry.garnier@capgemini.com,+21628160828,Assistant RH,2,True,True,2024-01-21 20:10:40.023411+00:00,2024-04-27 11:24:49.267817+00:00
+3a08652a-01d6-4fac-9ce5-fcbee3269ae4,Lotfi,Chebbi,lotfi.chebbi@capgemini.com,+21696798132,Architecte logiciel,1,True,True,2023-03-31 18:00:42.522219+00:00,2024-08-23 15:45:37.585701+00:00
+b78c727b-e0cf-4632-95c8-6d754d1b626c,Mouna,Maalej,mouna.maalej@capgemini.com,+21696672533,Content manager,4,True,True,2024-01-21 03:12:56.354179+00:00,2025-12-10 11:52:45.320965+00:00
+ab4d36f2-bc4b-4bfe-9c61-410dabc43c84,Nadia,Kammoun,nadia.kammoun@capgemini.com,+21699183671,Développeur front-end,1,True,True,2025-04-30 02:36:17.092399+00:00,2026-01-10 07:22:52.533532+00:00
+96166042-3372-46a1-969f-c215f392ece8,Malek,Bjaoui,malek.bjaoui@capgemini.com,+21698850599,Responsable RH,2,True,True,2024-08-27 17:32:28.999140+00:00,2026-04-11 17:33:04.504843+00:00
+b9c5c31c-70c5-4d31-b5fa-06019974af0a,Amine,Tlili,amine.tlili@capgemini.com,+21696866581,Responsable conformité,10,True,True,2023-10-29 07:06:06.181002+00:00,2025-12-25 17:57:14.620405+00:00
+7c907411-53e7-4a2f-9fb2-368bef893ae6,Maxime,Simon,maxime.simon@capgemini.com,+21693082295,Gestionnaire paie,2,True,True,2025-04-02 01:07:47.415495+00:00,2026-01-31 00:03:49.205381+00:00
+c3cebde2-04c5-4bd6-8742-5138c5699944,Firas,Chebbi,firas.chebbi@capgemini.com,+21654664275,Compliance officer,10,True,True,2025-01-18 10:07:56.369426+00:00,2025-02-25 08:55:19.131693+00:00
+1350d9cc-bc62-4dbc-b818-0ec25656b4c8,Julien,Fischer,julien.fischer@capgemini.com,+21640891677,Account manager,5,True,True,2025-04-21 08:56:52.848017+00:00,2025-08-09 06:41:20.034314+00:00
+63e9a468-4a9e-41f5-ad39-fa933a0e0e64,Lea,Dubois,lea.dubois@capgemini.com,+21692541681,Customer success manager,9,False,True,2024-10-03 21:38:50.483744+00:00,2025-03-01 21:15:17.057096+00:00
+a0aecded-0f41-4eb0-8992-01472f33e2ed,Houda,Saidi,houda.saidi@capgemini.com,+21694496885,Conseiller client,5,True,True,2023-08-23 22:40:08.864378+00:00,2023-11-30 12:26:00.671907+00:00
+921a0f6a-b2e3-4312-947d-dbb1a59b7f17,Rami,Messaoudi,rami.messaoudi@capgemini.com,+21620375299,Responsable support,9,True,True,2024-10-24 01:34:28.773852+00:00,2025-05-26 17:31:04.698287+00:00
+b129122c-5e22-4eac-ada4-bdeab206bf97,Nadia,Belhaj,nadia.belhaj@capgemini.com,+21692259620,Chargé sourcing,11,True,True,2024-06-18 20:18:02.658280+00:00,2026-04-29 02:18:50.128255+00:00
+be819bb5-4387-4c8b-aff9-250ac5ddc5c2,Amine,Hadded,amine.hadded@capgemini.com,+21696344198,Ingénieur logiciel,1,True,True,2025-10-24 14:00:56.753922+00:00,2026-04-17 01:37:56.712270+00:00
+133e5f53-d96b-496c-9fda-2cf4d64e21fe,Youssef,Khemiri,youssef.khemiri@capgemini.com,+21692991989,Développeur full-stack,1,False,False,2024-05-23 10:53:25.041150+00:00,2024-12-31 18:54:20.290739+00:00
+4c9ed491-fd91-409f-a4ce-61dddd56f08f,Adel,Miled,adel.miled@capgemini.com,+21624839760,Growth marketer,4,True,True,2024-09-07 21:17:35.294757+00:00,2026-01-27 12:05:15.454919+00:00
+d2b19326-abcc-4c08-ac49-a94f14bc8481,Kenza,Bagga,kenza.bagga@capgemini.com,+21622959147,Scrum master,6,True,True,2024-09-14 13:20:06.157692+00:00,2024-11-09 10:53:11.288556+00:00
+d7187d09-a013-49c8-a1b3-d822b39752f7,Houda,Miled,houda.miled@capgemini.com,+21625330128,Comptable,3,True,True,2025-05-27 14:31:45.384016+00:00,2026-02-14 01:34:16.510172+00:00
+ae923cee-de34-4666-b2f5-d8b68dd987f9,Sofiane,Baccouche,sofiane.baccouche@capgemini.com,+21636617539,Responsable ventes,5,True,True,2025-09-29 05:45:06.980724+00:00,2025-12-26 23:09:13.293524+00:00
+ea1a0264-de52-481b-a0f7-f867deda082c,Rihab,Horchani,rihab.horchani@capgemini.com,+21652353969,Manager IT,1,True,True,2023-02-14 20:10:44.699471+00:00,2023-07-06 13:32:52.951055+00:00
+136f0269-75a4-4b80-bd35-7c42da9c9843,Anis,Sayadi,anis.sayadi@capgemini.com,+21650772297,Customer success manager,9,True,True,2023-04-20 03:14:06.558415+00:00,2026-03-10 20:05:35.840549+00:00
+9a1159ca-5027-4cc5-acce-0e458cb282f9,Nesrine,Bouazizi,nesrine.bouazizi@capgemini.com,+21621340224,Sales development representative,5,True,True,2023-08-13 11:17:16.615932+00:00,2023-10-09 07:09:34.134752+00:00
+77ed7cf5-803c-4187-83b3-25897714182f,Sophia,Robert,sophia.robert@capgemini.com,+21652907796,Data engineer IoT,7,False,True,2023-08-21 14:51:24.859706+00:00,2023-10-10 19:54:41.566093+00:00
+fafdca7b-2cc4-4de9-ae3c-7a78fdef7d92,Lina,Maalej,lina.maalej@capgemini.com,+21620827274,Contrôleur de gestion,3,True,True,2026-01-02 03:04:27.531093+00:00,2026-03-16 23:24:09.658446+00:00
+c347dd6b-20d6-49f1-b00c-10e9d401a28a,Foued,Sellami,foued.sellami@capgemini.com,+21627387646,Développeur back-end,1,True,False,2024-08-23 07:59:13.902655+00:00,2025-01-08 08:58:59.208713+00:00
+a591d7b9-6744-40ef-b79a-1c739115b99c,Aziz,Mabrouk,aziz.mabrouk@capgemini.com,+21652460724,Responsable développement,6,True,True,2024-12-31 03:38:38.481423+00:00,2025-08-04 03:05:41.114379+00:00
+75c4fd88-9e44-46ab-b324-a068f16ab956,Aymen,Miled,aymen.miled@capgemini.com,+21640817546,Customer success manager,9,True,True,2026-03-25 17:32:54.415905+00:00,2026-04-23 03:17:38.835628+00:00
+278dc842-25a6-4a12-919b-ae5cb5106a96,Rahma,Guesmi,rahma.guesmi@capgemini.com,+21621843814,Support operations analyst,9,True,True,2025-10-26 22:27:15.460957+00:00,2026-01-01 07:41:11.863565+00:00
+c4f2d79f-23af-4742-9bde-78ffe22cfce6,Fatma,Haddad,fatma.haddad@capgemini.com,+21691693934,Responsable financier,3,True,True,2023-06-22 06:36:25.849580+00:00,2024-02-01 19:52:11.076476+00:00
+d045ce18-decd-4a51-b04a-c4a0b10839a7,Amine,Hammami,amine.hammami@capgemini.com,+21695807267,Manager IT,1,True,True,2023-10-25 18:12:43.851231+00:00,2026-02-18 09:40:42.654249+00:00
+2aefd1c6-5b84-45ec-ba52-ac77cc48ac56,Kenza,Kallel,kenza.kallel@capgemini.com,+21696194387,Architecte logiciel,1,True,True,2025-08-14 02:31:47.187369+00:00,2026-02-14 01:48:28.250441+00:00
+68188865-471e-41c4-ab21-d803009fe1ae,Firas,Belhaj,firas.belhaj@capgemini.com,+21622878586,HR Business Partner,2,True,True,2023-11-28 16:59:09.322968+00:00,2024-12-30 05:55:24.681169+00:00
+52f2e173-d75b-4075-99c9-bd30847845ad,Houssem,Brahmi,houssem.brahmi@capgemini.com,+21695340289,Développeur full-stack,1,True,True,2023-08-19 05:27:14.086758+00:00,2024-11-04 08:11:14.822447+00:00
+7271cad9-975d-443d-9dc6-13dc2769c77d,Mariem,Hadded,mariem.hadded@capgemini.com,+21653464957,Scrum master,6,True,True,2024-07-22 12:47:57.462681+00:00,2025-03-17 06:06:58.833315+00:00
+553aa3f4-b0d4-4902-96eb-9580f1ab5102,Bilel,Ferchichi,bilel.ferchichi@capgemini.com,+21640671025,Chargé d’études marketing,4,True,False,2024-05-10 07:34:33.108764+00:00,2025-04-11 14:54:36.436992+00:00
+bb262322-0e8b-4c64-957d-3ecaf2e87b49,Leila,Ben Othmen,leila.ben.othmen@capgemini.com,+21628298244,Administrateur systèmes,1,True,True,2024-07-26 00:43:39.374240+00:00,2026-04-03 23:07:46.976346+00:00
+9f62bec9-e71d-4e58-8eb0-f51c0c93bd4e,Chaker,Guetat,chaker.guetat@capgemini.com,+21628619297,SEO specialist,4,True,True,2025-05-22 04:31:32.414661+00:00,2026-02-25 03:16:50.483656+00:00
+0adcb60f-0603-40e1-a5ed-5a689f27bfe2,Aya,Belhaj,aya.belhaj@capgemini.com,+21651779336,Analyste financier,3,True,True,2026-03-04 00:42:34.249823+00:00,2026-03-05 07:34:33.134917+00:00
+43381f31-2dca-40f6-af9f-f06934befcd2,Oliver,Thomas,oliver.thomas@capgemini.com,+21626430695,Chargé communication interne,12,True,True,2026-02-13 17:48:23.061987+00:00,2026-02-28 04:53:40.982466+00:00
+11938edb-7027-491c-9527-eaf7738ea9cd,Julien,Anderson,julien.anderson@capgemini.com,+21655402846,Chef de projet,6,True,True,2024-09-13 09:26:22.763576+00:00,2025-07-20 14:06:52.205739+00:00
+42985594-b4de-4967-9bb0-fa9bd3a9e08f,Paul,Simon,paul.simon@capgemini.com,+21697693241,Ingénieur avant-vente,5,True,True,2024-03-31 21:43:13.348563+00:00,2025-09-25 23:58:44.451682+00:00
+fa28ce57-bb38-4d8a-a0f3-a2d5cd14c061,Seif,Mokhtar,seif.mokhtar@capgemini.com,+21636424114,Manager IT,1,True,True,2023-06-12 23:40:09.150007+00:00,2024-11-23 05:01:15.128163+00:00
+9e386737-237f-4416-ad22-3e4e59f3de3a,Claire,Girard,claire.girard@capgemini.com,+21627047151,Manager IT,1,True,True,2025-09-06 02:09:51.976373+00:00,2025-11-10 21:57:19.495137+00:00
+d10a4f93-a536-4542-b5ff-c16717ab9f40,Leila,Sayadi,leila.sayadi@capgemini.com,+21653129938,Coordinateur projet,6,True,True,2023-05-14 16:13:44.995658+00:00,2024-04-18 02:13:44.173352+00:00
+7b168703-cc4f-43e5-9775-7d74b4db3f7f,Wassim,Horchani,wassim.horchani@capgemini.com,+21625229522,Coordinateur amélioration continue,8,True,True,2025-05-11 22:59:38.387044+00:00,2025-08-30 23:16:47.568110+00:00
+1488e2ee-e5fc-4fda-a6c5-2e6dbdbec50b,Mourad,Hammami,mourad.hammami@capgemini.com,+21628020788,Technicien électronique,7,True,True,2023-05-01 00:44:17.424628+00:00,2023-05-27 19:13:32.245075+00:00
+ba465ba6-c272-4a1d-a2a5-154d5850d7fc,Hana,Chebbi,hana.chebbi@capgemini.com,+21691608510,HR Business Partner,2,True,True,2025-07-26 01:38:35.730064+00:00,2025-08-18 09:46:13.277236+00:00
+4104f49c-666e-4c48-8185-e1ef630c83c1,Grace,Durand,grace.durand@capgemini.com,+21655521864,Responsable qualité,8,True,False,2025-06-13 01:30:13.433004+00:00,2025-09-01 17:22:53.837308+00:00
+eb85b268-bb88-4119-939d-492d2322518f,Skander,Bouazizi,skander.bouazizi@capgemini.com,+21691641002,Développeur embarqué,7,True,True,2024-07-21 17:32:09.058239+00:00,2024-12-31 08:53:37.973642+00:00
+eaa9cc85-b28c-4878-9ca7-f4d797d0e0d9,Iyed,Gharbi,iyed.gharbi@capgemini.com,+21623847529,Développeur front-end,1,True,True,2025-01-31 22:25:45.063039+00:00,2025-02-17 00:03:02.401167+00:00
+06fcdd2c-53a6-496a-9efa-7dd79a271da4,Rim,Maalej,rim.maalej@capgemini.com,+21697775231,Technicien électronique,7,True,True,2025-02-19 13:31:05.609629+00:00,2025-12-08 11:16:47.448858+00:00
+e4f84c7d-fddd-4aec-b66c-9e63b0300989,Adel,Sassi,adel.sassi@capgemini.com,+21693123680,Responsable financier,3,True,True,2023-07-13 06:00:06.089402+00:00,2026-04-01 05:45:47.161641+00:00
+50480e44-2e0d-4139-aa9b-67dfcc405d62,Mouna,Rekik,mouna.rekik@capgemini.com,+21620721952,Développeur back-end,1,True,True,2023-08-19 08:53:38.234334+00:00,2024-03-31 10:52:30.599043+00:00
+4b3f668a-c5f0-43d5-ab24-83157512c528,Nesrine,Ben Othmen,nesrine.ben.othmen@capgemini.com,+21656595861,Responsable ventes,5,True,True,2024-03-25 22:08:24.102577+00:00,2025-12-23 00:48:53.192729+00:00
+0b3a5337-8158-4195-b718-c1f64fec5d76,Jean,Wagner,jean.wagner@capgemini.com,+21625383409,DevOps engineer,1,True,True,2024-03-02 09:03:18.969567+00:00,2025-11-20 18:05:43.325844+00:00
+0deccb0f-28c2-4434-a9fc-b509e554f041,Karim,Bouzid,karim.bouzid@capgemini.com,+21656222515,Responsable développement,6,True,True,2024-07-17 07:31:30.655519+00:00,2024-10-07 16:55:38.225853+00:00
+af7062e2-a303-4cd5-b817-30e44dc3a4e3,Mia,Sanchez,mia.sanchez@capgemini.com,+21622882740,Acheteur IT,11,False,False,2023-03-27 14:41:12.027143+00:00,2023-12-10 21:17:14.894624+00:00
+be09ca96-c6bc-47f0-8da2-2fe50ad27d22,Louis,Wilson,louis.wilson@capgemini.com,+21624553682,Architecte logiciel,1,True,True,2026-03-13 06:55:11.429451+00:00,2026-04-12 21:00:53.037051+00:00
+2620e675-d3ba-4ca5-85bf-2dd08f05bca7,Noah,Lemoine,noah.lemoine@capgemini.com,+21692013088,Growth marketer,4,True,True,2025-09-07 18:33:32.767031+00:00,2025-10-16 18:52:28.809092+00:00
+f1ea7bc8-4511-4946-992a-69c581e26bef,Wassim,Bensalem,wassim.bensalem@capgemini.com,+21699699083,Acheteur IT,11,True,True,2026-01-10 10:49:10.442522+00:00,2026-04-02 23:34:28.663108+00:00
+6a1ea467-ea53-40e2-9b4e-81c03e3120f5,Siwar,Hamdi,siwar.hamdi@capgemini.com,+21698383787,Quality assurance manager,8,True,True,2025-04-30 15:09:56.433524+00:00,2026-01-25 21:25:04.915586+00:00
+c30e3c38-9098-40b2-9aed-839d9ad0eeb8,Rahma,Baccouche,rahma.baccouche@capgemini.com,+21621645730,Data analyst,1,True,True,2025-08-23 00:55:36.276343+00:00,2025-12-21 21:01:46.883829+00:00
+81b81c2a-9798-487a-8560-c1caab2911c0,Foued,Mejri,foued.mejri@capgemini.com,+21696515089,Conseiller client,5,True,True,2024-08-01 04:47:21.539306+00:00,2025-09-07 14:47:28.242831+00:00
+f93fc94f-b705-49f5-954a-4683273857f4,Chaker,Mathlouthi,chaker.mathlouthi@capgemini.com,+21620101720,Technicien électronique,7,True,True,2025-03-05 06:38:12.008582+00:00,2025-12-11 10:22:39.179279+00:00
+2b134e66-aa36-4660-912b-882d78802486,Lina,Jlassi,lina.jlassi@capgemini.com,+21691144958,Responsable RH,2,False,False,2025-02-06 08:29:10.603330+00:00,2025-12-16 14:25:25.759059+00:00
+71c79692-c503-4f92-9e3b-427e5c06bcf3,Hend,Bagga,hend.bagga@capgemini.com,+21651392502,SEO specialist,4,True,True,2026-02-09 11:04:08.856551+00:00,2026-02-25 02:10:26.389592+00:00
+40bd5505-6dbf-49ae-817e-6ca216a5630f,Liam,Lefebvre,liam.lefebvre@capgemini.com,+21691463450,Responsable communication interne,12,True,True,2024-02-19 11:14:04.122890+00:00,2025-02-22 03:29:56.703066+00:00
+6531a0f2-47b9-4582-85c5-5d1479aedfd0,Emma,Lopez,emma.lopez@capgemini.com,+21697372239,Talent acquisition specialist,2,True,True,2026-02-10 11:04:36.151820+00:00,2026-04-16 17:19:51.113418+00:00
+62f0f942-5b08-4351-9bfb-920a9b2364ec,Khaled,Bouslama,khaled.bouslama@capgemini.com,+21691349185,Délégué protection des données,10,True,True,2026-02-06 04:16:58.656084+00:00,2026-04-24 10:44:28.883449+00:00
+3ac1ba84-55fd-4197-b49a-908c9d1588e9,Olfa,Chebbi,olfa.chebbi@capgemini.com,+21629007708,Assistant RH,2,True,True,2025-06-12 03:46:42.373699+00:00,2026-01-08 14:10:09.165766+00:00
+b057de9e-a51c-4939-80d0-72389ecd5d46,Walid,Jaziri,walid.jaziri@capgemini.com,+21652903696,DevOps engineer,1,False,True,2025-08-27 09:08:46.320377+00:00,2025-10-19 10:23:46.997600+00:00
+cb9bfc83-d69e-4da2-b15e-b524df16c0e3,Noah,Schneider,noah.schneider@capgemini.com,+21690852577,Manager IT,1,True,True,2024-06-03 16:09:03.829787+00:00,2026-04-12 20:27:48.255621+00:00
+f3ee8d81-bce1-4705-a1dd-180f42249038,Diego,Hoffmann,diego.hoffmann@capgemini.com,+21652484523,Responsable formation,2,True,True,2024-02-25 15:18:47.606888+00:00,2025-05-02 11:40:53.905871+00:00
+6bd3493e-fd88-4531-b028-16a597e8c121,Sonia,Khemiri,sonia.khemiri@capgemini.com,+21650055174,Business analyst,6,True,True,2025-03-27 11:33:16.455412+00:00,2025-11-27 22:42:00.938954+00:00
+66254aec-711c-4731-ad1b-12358695cff5,Carlos,Fischer,carlos.fischer@capgemini.com,+21652936872,Coordinateur amélioration continue,8,True,True,2025-01-08 11:02:51.104187+00:00,2025-09-26 06:14:31.897412+00:00
+f594c6ae-fae0-4ba8-8668-199181bbdd68,Amel,Bouhlel,amel.bouhlel@capgemini.com,+21699237132,Auditeur interne,3,True,True,2023-02-20 12:45:18.437456+00:00,2023-06-24 06:45:26.053514+00:00
+d3a11e22-80f0-4ba2-bbb9-8e0549c5deb0,Daniel,Petit,daniel.petit@capgemini.com,+21625528897,Technicien support applicatif,9,True,True,2025-02-28 23:26:02.625763+00:00,2025-06-15 20:55:18.347319+00:00
+3f41bf71-321e-42aa-9bc9-08d233bda92b,Emily,Fischer,emily.fischer@capgemini.com,+21691017428,Développeur embarqué,7,True,True,2024-12-29 20:56:37.925744+00:00,2026-02-28 14:32:08.163499+00:00
+d8f6a1f6-2bba-4d6b-8516-7202830f5ffb,Hend,Bennour,hend.bennour@capgemini.com,+21699607378,Community manager,4,True,True,2023-01-09 15:47:09.445670+00:00,2024-04-22 00:04:44.699520+00:00
+ee85ed55-5fb4-47a4-8a52-97b44ea7f18e,Henry,Clark,henry.clark@capgemini.com,+21626397226,Content manager,4,True,True,2024-08-27 03:51:19.974519+00:00,2025-07-19 03:32:44.495811+00:00
+85d69c98-5b99-4368-9470-a023a0faaa39,Mourad,Abidi,mourad.abidi@capgemini.com,+21697451094,Quality assurance manager,8,True,True,2026-03-02 15:36:06.277978+00:00,2026-04-17 08:12:28.051055+00:00
+83591bb5-b0a5-432a-9670-a236e11cbb0b,Salma,Sassi,salma.sassi@capgemini.com,+21653569080,Chargé d’études marketing,4,True,True,2023-04-29 10:34:02.952135+00:00,2025-12-24 17:37:56.542201+00:00
+b4288a6b-52f0-44ab-821f-5bb760918a76,Thomas,Laurent,thomas.laurent@capgemini.com,+21623945443,Ingénieur IoT,7,True,True,2024-11-19 04:37:49.805504+00:00,2026-03-08 04:17:48.840132+00:00
+6f1c92a2-1730-457e-af80-22ceee52065e,Houda,Hamdi,houda.hamdi@capgemini.com,+21692372298,Responsable financier,3,True,True,2023-05-15 01:12:15.195991+00:00,2023-12-29 00:53:09.295914+00:00
+28420bae-c1b4-43d6-b2f8-1a33a7162d5e,Rami,Sassi,rami.sassi@capgemini.com,+21696625782,Community manager,4,False,True,2025-09-27 16:53:08.711760+00:00,2025-10-08 06:49:29.674393+00:00
+124d31c9-67e3-4463-a3dc-e5d31d3560a1,Ines,Ghariani,ines.ghariani@capgemini.com,+21691794956,Compliance officer,10,True,True,2026-04-14 02:17:51.097088+00:00,2026-04-16 17:41:42.245628+00:00
+ea31e60e-7c45-4d0d-a72a-9b1bff423649,Walid,Sellami,walid.sellami@capgemini.com,+21640019325,Développeur full-stack,1,True,True,2024-11-02 01:30:44.488272+00:00,2024-11-18 04:51:10.394936+00:00
+73c05dc0-70ad-4a8b-a6d0-3dfd6c54d1a1,Aicha,Mabrouk,aicha.mabrouk@capgemini.com,+21692861467,Talent acquisition specialist,2,True,True,2026-03-16 15:03:47.308535+00:00,2026-05-01 03:56:48.701081+00:00
+ae0998f5-ac8d-41f3-ac2d-777a7f7ca079,Lotfi,Hammami,lotfi.hammami@capgemini.com,+21692111928,DevOps engineer,1,True,True,2024-02-14 21:34:02.836854+00:00,2024-09-28 12:04:46.172279+00:00
+eacc44aa-5528-442f-bf03-d93b3123467d,William,Weber,william.weber@capgemini.com,+21699590020,Responsable financier,3,True,True,2025-01-22 17:45:25.095161+00:00,2025-08-16 04:04:31.706576+00:00
+3b6ac1b8-60cb-45ad-8f33-24086fa4d575,Mouna,Brahmi,mouna.brahmi@capgemini.com,+21624261793,Auditeur interne,3,True,True,2025-09-06 19:34:08.039479+00:00,2026-03-16 06:46:53.641697+00:00
+57ba55cf-425f-48e2-9ed7-0fc2e1c80530,Adel,Bagga,adel.bagga@capgemini.com,+21625624841,Ingénieur qualité,8,True,True,2023-01-11 01:16:57.994330+00:00,2024-02-05 15:10:06.055967+00:00
+4284538a-2eb5-4ac7-9e74-d9148261af39,Elise,Michel,elise.michel@capgemini.com,+21624941465,Chargé des contrats,10,True,True,2025-02-09 06:56:32.717372+00:00,2025-11-14 14:34:42.650889+00:00
+f0113aec-0313-48b0-883d-51e4f32687a4,Rania,Cherif,rania.cherif@capgemini.com,+21620572237,Chargé de recrutement,2,True,True,2025-11-04 16:57:53.103883+00:00,2026-03-15 10:56:06.987401+00:00
+2b1a62e7-f4c9-4a41-b2af-ca2285e01546,Hana,Saidi,hana.saidi@capgemini.com,+21691056277,Growth marketer,4,True,True,2023-12-18 23:10:02.286987+00:00,2025-07-18 15:59:16.023338+00:00
+aea65023-ce55-417a-a93c-d43c8afc615f,Anna,Fischer,anna.fischer@capgemini.com,+21628373074,Customer success manager,9,True,True,2025-12-18 01:43:06.207616+00:00,2026-02-08 04:45:24.540641+00:00
+20ce269e-2582-410c-94a7-4694b2562699,Sonia,Guesmi,sonia.guesmi@capgemini.com,+21690820884,Business analyst,6,True,True,2025-05-16 10:26:30.897750+00:00,2026-02-19 02:32:18.903709+00:00
+b1873d56-50de-46f2-a6c2-a907abb54442,Hana,Makni,hana.makni@capgemini.com,+21625931833,Conseiller support niveau 2,9,True,True,2025-02-09 07:49:27.666952+00:00,2025-09-11 06:06:38.479679+00:00
+ea36f8c9-4d00-4fba-b63b-acf0a7b24913,Tarek,Charfi,tarek.charfi@capgemini.com,+21620804686,Administrateur systèmes,1,True,True,2026-01-15 16:12:45.339350+00:00,2026-01-27 21:56:01.123893+00:00
+9b0ab4d7-fb2d-49c3-8d03-3d1bed5d58d8,Chaima,Makni,chaima.makni@capgemini.com,+21697327786,Ingénieur capteurs,7,True,True,2025-04-14 00:29:45.227957+00:00,2026-04-18 19:11:21.453537+00:00
+c024ae2f-747f-4e78-b09d-430b0eca3860,George,Sanchez,george.sanchez@capgemini.com,+21699851480,Test lead,8,True,True,2024-10-12 16:29:06.154869+00:00,2025-06-02 09:57:18.762755+00:00
+767e0eaf-7303-4417-832c-a8e02100fe09,Manon,Morel,manon.morel@capgemini.com,+21625760221,Test lead,8,True,False,2023-02-13 08:40:30.399739+00:00,2024-12-12 01:12:37.670449+00:00
+11a37724-d4a2-4571-9734-d56b460e4a73,Emily,Torres,emily.torres@capgemini.com,+21653518464,Responsable communication interne,12,True,True,2023-09-12 17:28:21.505220+00:00,2025-10-30 22:46:43.283366+00:00
+64d309e9-1dd7-4572-9479-4d2164c080b8,Mohamed,Sghaier,mohamed.sghaier@capgemini.com,+21696590569,Architecte IoT,7,True,True,2023-09-01 23:04:20.931557+00:00,2025-11-30 02:46:01.634091+00:00
+a92d0de1-8406-42f3-a47a-eba53cfc918d,Eya,Ben Ahmed,eya.ben.ahmed@capgemini.com,+21697361827,Firmware engineer,7,True,True,2024-09-23 19:25:16.975572+00:00,2025-03-03 06:16:07.389865+00:00
+9500eed0-ba6a-4e02-904a-16af00d46e3e,Kenza,Guetat,kenza.guetat@capgemini.com,+21694199020,Responsable financier,3,True,True,2023-02-28 22:58:37.756890+00:00,2024-05-29 04:36:29.406377+00:00
+4fd7b80e-d72e-42b6-8127-2b77a2ab3795,Antoine,Hoffmann,antoine.hoffmann@capgemini.com,+21650939312,Auditeur interne,3,True,True,2025-10-22 21:52:09.644001+00:00,2026-04-28 21:07:05.881170+00:00
+1afa7fed-df03-44c8-b7f4-59e0d64bbaad,Lea,Mercier,lea.mercier@capgemini.com,+21656660687,Développeur back-end,1,True,True,2023-10-31 09:42:33.918188+00:00,2025-07-11 10:24:17.527042+00:00
+03d3af4e-4ead-4742-b182-a0cc364ee704,Hana,Mansouri,hana.mansouri@capgemini.com,+21621132671,Coordinateur projet,6,True,True,2025-07-02 22:49:53.874864+00:00,2025-11-15 13:13:00.768527+00:00
+0f332dc1-8d8c-4d07-9e8e-61e2d0086221,Nour,Bouhlel,nour.bouhlel@capgemini.com,+21692954806,Gestionnaire paie,2,True,True,2026-04-14 01:46:01.897639+00:00,2026-04-21 10:37:17.898993+00:00
+d0420627-79ac-4ec0-b46a-b70a49edb1d8,Aymen,Mansour,aymen.mansour@capgemini.com,+21690814993,Chef de projet,6,True,True,2023-01-02 18:38:43.235189+00:00,2024-11-19 18:29:12.701403+00:00
+473aea92-b352-4816-84a6-998d6674e016,Marta,Lemoine,marta.lemoine@capgemini.com,+21699037784,Conseiller support niveau 2,9,True,True,2024-03-31 04:40:08.306557+00:00,2025-08-19 15:13:20.819931+00:00
+c061b807-bf13-4062-83a1-8560217e80d8,Maher,Mejri,maher.mejri@capgemini.com,+21627928386,HR Business Partner,2,True,True,2024-07-22 17:16:14.365355+00:00,2024-08-16 06:38:01.391821+00:00
+2d2ef5e3-a9fa-454f-9d27-96ad5903a226,Laura,Robert,laura.robert@capgemini.com,+21636911108,Quality assurance manager,8,True,True,2024-03-12 07:05:07.482652+00:00,2026-01-11 11:42:05.792705+00:00
+971f68c9-d724-4aeb-8be7-a6c87cae819c,James,Muller,james.muller@capgemini.com,+21625504025,Responsable formation,2,True,True,2025-07-19 17:50:24.513188+00:00,2026-04-02 21:21:25.124198+00:00
+671eb403-5ad4-4085-bf1b-c397caf5df96,Mourad,Saidi,mourad.saidi@capgemini.com,+21640536596,Chargé de reporting financier,3,True,True,2023-12-17 10:52:17.571873+00:00,2025-11-20 11:42:21.132798+00:00
+2b02df80-1d86-4eca-8b1a-02e41da4ddf4,Houssem,Khemiri,houssem.khemiri@capgemini.com,+21691928745,Administrateur systèmes,1,True,True,2025-10-20 19:24:22.695950+00:00,2025-12-22 01:42:57.519733+00:00
+8fe78534-8626-4ccb-8a11-1abeb3417110,Karim,Ferchichi,karim.ferchichi@capgemini.com,+21696432885,Conseiller client,5,True,True,2026-04-13 09:56:29.381277+00:00,2026-04-25 06:19:36.916404+00:00
+de28480c-d0d0-4780-9b2f-53c70c8b5ed5,Firas,Ferchichi,firas.ferchichi@capgemini.com,+21699568098,Développeur full-stack,1,True,False,2025-05-29 00:24:26.324208+00:00,2025-12-17 15:34:41.248778+00:00
+f5856cb1-16f0-45c5-83c8-8332602c0554,Wassim,Mabrouk,wassim.mabrouk@capgemini.com,+21650253893,Content manager,4,True,True,2026-04-02 16:21:40.643612+00:00,2026-04-03 23:52:17.151366+00:00
+ef1f441d-713b-4320-8698-2eecbf112a71,Louis,Leroy,louis.leroy@capgemini.com,+21692358306,Administrateur systèmes,1,True,True,2023-04-27 17:14:53.757318+00:00,2024-09-27 07:50:31.777695+00:00
+a04f5eda-a557-4705-92b5-88cc55ea6558,Lotfi,Tlili,lotfi.tlili@capgemini.com,+21699757539,Ingénieur qualité,8,True,True,2025-01-05 19:08:29.690388+00:00,2025-10-08 19:51:30.266371+00:00
+bec21b43-0b9a-4b14-aec4-4493b6192e37,Sabrine,Mathlouthi,sabrine.mathlouthi@capgemini.com,+21624152010,Technicien support applicatif,9,True,True,2023-05-06 13:06:23.725910+00:00,2023-07-12 17:03:32.092978+00:00
+5aa58bc0-b0f5-4658-982f-0167e1ddd6f1,Hugo,Lopez,hugo.lopez@capgemini.com,+21626339004,Assistant RH,2,True,True,2025-12-17 14:15:35.582403+00:00,2026-03-12 19:44:02.637201+00:00
+11a2e202-76be-4f8d-bbf8-518f599c8844,Salma,Hammami,salma.hammami@capgemini.com,+21655845990,Manager IT,1,False,False,2024-04-30 15:01:43.635331+00:00,2024-09-14 04:45:46.856635+00:00
+66817762-a6a5-4f4b-b499-fa8018b32205,Isabel,Lewis,isabel.lewis@capgemini.com,+21690468094,Ingénieur IoT,7,False,False,2025-06-30 01:11:03.188082+00:00,2025-07-14 07:42:04.208108+00:00
+47711962-da22-4bdd-bbff-0bab2bfb0355,Aya,Lahmar,aya.lahmar@capgemini.com,+21626324502,Product owner,6,True,True,2024-12-01 01:39:31.555612+00:00,2026-03-31 20:37:05.910072+00:00
+1bdd1aba-8056-4ec1-b09d-02acb85a9eab,Sofiane,Horchani,sofiane.horchani@capgemini.com,+21658286034,Coordinateur amélioration continue,8,True,True,2025-09-10 05:50:10.094287+00:00,2025-12-19 02:02:06.026681+00:00
+895f01a4-b0ea-4f55-add3-d7b281d0d86e,Louis,Smith,louis.smith@capgemini.com,+21658869011,Chargé de recrutement,2,True,True,2025-04-07 04:24:18.941600+00:00,2026-04-26 08:13:29.182656+00:00
+586058b9-99bc-4600-9f37-87111fcaf37e,Khaled,Hamdi,khaled.hamdi@capgemini.com,+21623230759,Consultant innovation,6,True,True,2026-02-23 08:42:06.259853+00:00,2026-03-24 14:07:07.781784+00:00
+f94cae4d-1651-4cf9-829f-4b10982ab3a1,Walid,Mrad,walid.mrad@capgemini.com,+21652636740,Chef de projet,6,True,True,2025-09-12 00:15:45.503729+00:00,2026-03-29 03:45:42.830166+00:00
+29e789b9-43d6-4d77-bba5-a8fe5bbec079,Houda,Sayadi,houda.sayadi@capgemini.com,+21655979730,Ingénieur logiciel,1,True,True,2024-02-05 17:07:50.296398+00:00,2024-07-26 04:04:03.684077+00:00
+09c9c2e9-4239-482d-891d-56063049a724,Wassim,Mansour,wassim.mansour@capgemini.com,+21621406018,Coordinateur projet,6,True,True,2023-04-17 00:42:41.384641+00:00,2023-10-27 14:31:14.395663+00:00
+578da049-e513-4249-a1cf-ad5d43e8fb14,Aziz,Ferchichi,aziz.ferchichi@capgemini.com,+21627753387,Assistant RH,2,True,True,2023-10-05 12:47:54.101949+00:00,2025-11-01 19:58:45.263669+00:00
+11e4bafe-f46f-4714-ae79-46782f98afcc,Nicolas,Hoffmann,nicolas.hoffmann@capgemini.com,+21695223164,Compliance officer,10,True,True,2024-06-04 11:58:56.345571+00:00,2024-08-07 02:14:04.166898+00:00
+e2d3c795-c4f6-4ea0-8574-a95fab68d0db,Zeineb,Ferchichi,zeineb.ferchichi@capgemini.com,+21620875895,Ingénieur capteurs,7,True,True,2025-11-19 11:13:31.205378+00:00,2026-01-14 13:14:51.669169+00:00
+405aedd0-cb27-4b4c-a93e-b03ba37f2948,Ahmed,Mokhtar,ahmed.mokhtar@capgemini.com,+21625373435,Responsable financier,3,True,True,2025-06-21 16:29:08.029337+00:00,2025-10-15 14:45:11.551255+00:00
+1a4b66de-c33c-49df-9b73-d52c3e699483,Lina,Miled,lina.miled@capgemini.com,+21627420600,Auditeur interne,3,True,True,2024-03-30 02:22:03.130365+00:00,2024-12-19 14:47:10.885165+00:00
+e6693802-b58f-4be6-8509-975c7975dc5b,Ethan,Blanc,ethan.blanc@capgemini.com,+21626594077,Architecte IoT,7,True,True,2024-11-05 05:33:56.302756+00:00,2025-02-14 15:05:56.560925+00:00
+b877de62-103a-4774-b161-65d240e35474,Firas,Zaier,firas.zaier@capgemini.com,+21699355475,HR Business Partner,2,True,True,2023-08-25 21:40:36.521383+00:00,2024-07-08 13:41:07.991714+00:00
+6898b9c8-16d4-46c4-a56c-4ce1865def90,Nourhene,Baccouche,nourhene.baccouche@capgemini.com,+21624889022,Gestionnaire paie,2,True,True,2025-07-04 06:49:42.585651+00:00,2025-09-26 19:39:26.628487+00:00
+66c8ea56-9614-4fab-9460-4b1502ac89ba,Sophie,Martin,sophie.martin@capgemini.com,+21698413667,Community manager interne,12,True,True,2025-06-13 10:50:08.698910+00:00,2025-11-19 09:55:17.860522+00:00
+68694506-5179-4288-8fa1-878fbaa48615,Adel,Ben Amor,adel.ben.amor@capgemini.com,+21691432824,Chargé de reporting financier,3,True,True,2024-07-02 21:53:10.205851+00:00,2024-08-02 03:02:44.955890+00:00
+722ee721-cbc4-48ea-afc1-2addf9bc9ffe,Hana,Louati,hana.louati@capgemini.com,+21655497495,Sales development representative,5,True,True,2023-07-29 12:37:41.201547+00:00,2025-06-03 02:36:02.634849+00:00
+3619dfe1-747a-4948-8c14-9a75c51a9710,Rahma,Makni,rahma.makni@capgemini.com,+21652331304,Data analyst,1,True,True,2026-04-22 13:41:55.522770+00:00,2026-04-25 12:23:08.012609+00:00
+3ce5d8ff-3af6-4183-83e3-d0fad13a6ef1,Aicha,Jaziri,aicha.jaziri@capgemini.com,+21627163730,Chargé des contrats,10,True,True,2023-11-15 06:00:20.447530+00:00,2024-05-27 15:17:13.568646+00:00
+320bb62b-bc55-479e-a685-a27deaf87f3a,Saber,Mrad,saber.mrad@capgemini.com,+21627030832,SEO specialist,4,True,True,2023-10-27 23:00:26.981441+00:00,2025-05-17 18:37:16.194755+00:00
+0aa6c832-d272-493b-af96-e53a16a8ba84,Nadia,Masmoudi,nadia.masmoudi@capgemini.com,+21654602851,Technicien support applicatif,9,True,True,2026-03-19 05:31:14.683326+00:00,2026-04-18 19:54:56.999398+00:00
+efe3f27d-9b61-4dcc-bdee-66d1ff6634b6,Chaima,Mhiri,chaima.mhiri@capgemini.com,+21696372322,Community manager interne,12,True,True,2025-07-12 06:22:51.888383+00:00,2025-07-22 17:09:46.180106+00:00
+767f6a60-4ed4-4d62-b89e-454933720617,Hend,Louati,hend.louati@capgemini.com,+21692881595,Manager IT,1,True,True,2023-03-07 12:37:55.526182+00:00,2024-05-28 02:17:21.383823+00:00
+83d4670d-ba55-4ec7-9348-24a2b2c1d40f,Amira,Maalej,amira.maalej@capgemini.com,+21640316578,Conseiller client,5,True,True,2023-08-02 23:50:53.662200+00:00,2024-04-06 13:33:06.395721+00:00
+3f6cb692-1581-4462-b260-3cad29f36489,Nesrine,Bouslama,nesrine.bouslama@capgemini.com,+21694206740,Chargé d’études marketing,4,True,True,2024-07-16 12:40:03.711829+00:00,2025-03-25 23:44:25.843144+00:00
+e1b1a83d-dc8c-4bf1-a264-f6eea0333568,Molka,Mhiri,molka.mhiri@capgemini.com,+21698315934,Chef de projet,6,True,True,2025-04-30 15:57:29.333401+00:00,2025-07-11 14:20:29.329662+00:00
+fbbaaa64-8cee-4669-9d6e-59242b284466,Amine,Ben Salah,amine.ben.salah@capgemini.com,+21627988011,HR Business Partner,2,True,True,2025-12-16 09:47:27.934818+00:00,2026-04-10 03:09:30.592426+00:00
+28ac5ef3-c8dc-4aa9-97a4-4bd90a55268b,Yosra,Dhaoui,yosra.dhaoui@capgemini.com,+21695058907,Responsable communication marketing,4,True,True,2025-02-22 14:05:31.049666+00:00,2025-12-21 07:29:00.211956+00:00
+256b281f-27a3-4756-9132-21f4a6f1d868,Marie,Lemoine,marie.lemoine@capgemini.com,+21653950304,Chargé support client,9,True,True,2023-07-12 01:00:40.452009+00:00,2023-12-04 19:39:03.308943+00:00
+67218b7a-eda7-4eed-b37b-939fba1ef9ce,Malek,Derbel,malek.derbel@capgemini.com,+21650657770,Chargé communication interne,12,True,True,2026-04-11 10:43:11.212748+00:00,2026-04-16 20:35:08.055906+00:00
+5783b7bc-8de7-40b5-b1e8-896921098bd2,Youssef,Hammami,youssef.hammami@capgemini.com,+21691584002,Architecte logiciel,1,True,True,2024-10-09 05:19:44.191928+00:00,2025-12-26 17:49:48.829499+00:00
+e8c415aa-cfd6-4935-9dbf-646291d2e9c0,Firas,Belaid,firas.belaid@capgemini.com,+21636178897,QA engineer,1,True,True,2023-01-19 21:14:44.355458+00:00,2023-08-27 20:18:13.911168+00:00
+b85064cb-2497-4073-9f57-26339c4d0da4,Nadia,Guesmi,nadia.guesmi@capgemini.com,+21652674903,Chargé de reporting financier,3,True,True,2024-07-15 07:47:34.042218+00:00,2024-07-19 06:11:53.680917+00:00
+9c6726f8-a791-4aaf-bb43-2ac925259d5c,Karim,Rahmani,karim.rahmani@capgemini.com,+21692557421,Auditeur interne,3,True,True,2025-11-03 23:35:23.736782+00:00,2025-11-24 11:06:45.929693+00:00
+cabfbbfa-d76d-4f74-a0ec-910dd89f4794,Seif,Khalfallah,seif.khalfallah@capgemini.com,+21627977992,Ingénieur qualité,8,True,True,2024-02-01 22:26:38.847567+00:00,2026-04-02 12:39:56.030517+00:00
+f5fabd31-c937-4924-a2a4-7cd151d87d06,Chloe,Rousseau,chloe.rousseau@capgemini.com,+21693640297,Ingénieur capteurs,7,True,True,2025-08-08 05:39:50.501218+00:00,2026-02-13 21:37:59.444161+00:00
+13376738-828d-4cdb-b40c-24d0da2a5573,Julia,Torres,julia.torres@capgemini.com,+21690413620,Procurement specialist,11,True,True,2024-03-30 12:40:35.482966+00:00,2024-06-02 22:24:14.583149+00:00
+ef6c19c9-41fb-4663-b095-fd6f807954ec,Mariem,Mrad,mariem.mrad@capgemini.com,+21655836192,Growth marketer,4,True,True,2023-05-14 02:43:02.040712+00:00,2024-02-27 10:50:35.640895+00:00
+99ce0eb9-db3b-4ba1-9d7e-a6e10271bb8c,Louis,Morel,louis.morel@capgemini.com,+21652659481,Compliance officer,10,True,True,2023-09-30 01:58:44.157399+00:00,2023-10-19 18:57:36.642407+00:00
+e63e4f83-e0ba-4644-a46a-7413de243920,Houda,Messaoudi,houda.messaoudi@capgemini.com,+21627176441,Test lead,8,True,True,2026-02-28 12:56:32.561215+00:00,2026-03-01 09:41:23.210244+00:00
+f4cd3bad-4dac-4e03-9295-0b1a528ef4eb,Omar,Chebbi,omar.chebbi@capgemini.com,+21697258766,Architecte logiciel,1,True,True,2024-03-08 10:08:41.529451+00:00,2024-03-21 09:24:58.651885+00:00
+566b3448-8c23-4e51-898b-60f56bfe4ff0,Isabel,Thomas,isabel.thomas@capgemini.com,+21653901266,Responsable RH,2,True,True,2024-03-11 01:38:00.286417+00:00,2025-08-22 11:59:38.500830+00:00
+0b8e3edc-e13f-433c-bcda-bf4510acface,Salma,Elloumi,salma.elloumi@capgemini.com,+21655540029,Firmware engineer,7,True,True,2023-07-04 23:13:59.691784+00:00,2025-01-22 23:13:03.736672+00:00
+a4227edf-b1ca-4211-8668-7f5fc27b3661,Ahmed,Guesmi,ahmed.guesmi@capgemini.com,+21693727798,Développeur front-end,1,True,True,2026-01-15 22:25:53.987502+00:00,2026-04-11 10:31:43.062384+00:00
+b441076d-638e-411c-acb3-a82826ad41d8,Samia,Gharbi,samia.gharbi@capgemini.com,+21690303342,Responsable communication interne,12,True,True,2023-11-10 14:52:02.126683+00:00,2024-03-24 15:59:42.699085+00:00
+97810494-626f-45ab-bb4d-e0c09e642c34,Mariem,Brahmi,mariem.brahmi@capgemini.com,+21620385264,QA engineer,1,True,True,2023-02-21 03:07:05.764626+00:00,2026-03-25 08:06:10.865460+00:00
+ddf3e419-1b94-4594-a39d-89115b54e666,Ahmed,Bagga,ahmed.bagga@capgemini.com,+21654441022,Trésorier,3,True,True,2024-04-29 12:04:57.732000+00:00,2025-12-05 17:03:52.526094+00:00
+c58f7dbd-9a6d-4c3f-bed8-75f484e20259,Aya,Derbel,aya.derbel@capgemini.com,+21629081575,Chargé marketing,4,True,True,2024-07-23 09:45:25.331325+00:00,2026-01-01 20:08:41.893616+00:00
+6a1bffb9-024c-43fe-b7f7-ba36c4355ad0,Meriem,Miled,meriem.miled@capgemini.com,+21625840481,Administrateur systèmes,1,False,False,2023-09-01 10:55:40.155513+00:00,2023-09-01 17:59:31.066858+00:00
+f653f156-dd8f-4bb2-977b-79810e01781b,Chaima,Bouzid,chaima.bouzid@capgemini.com,+21626656481,Développeur back-end,1,True,True,2024-05-26 08:42:44.468685+00:00,2025-05-31 17:50:07.895098+00:00
+b945f48a-ccc4-43f6-928b-e2c1f46146b6,Lotfi,Lahmar,lotfi.lahmar@capgemini.com,+21652992309,Support operations analyst,9,True,True,2023-08-21 03:48:45.689373+00:00,2025-07-03 00:52:20.664599+00:00
+0441628f-8ff9-482b-8f9a-9c8d29f29c36,Amine,Guermazi,amine.guermazi@capgemini.com,+21698194320,Ingénieur IoT,7,False,False,2025-07-03 19:48:35.463807+00:00,2025-09-10 01:02:15.173013+00:00
+12f5d09b-3a9f-46b1-98f3-f1fcb7df3201,Zeineb,Mhiri,zeineb.mhiri@capgemini.com,+21624990121,Développeur front-end,1,True,True,2023-12-02 05:07:55.919690+00:00,2025-03-06 05:48:44.270680+00:00
+1282a9e9-9325-4f3d-94ee-887a13d79265,Eya,Guetat,eya.guetat@capgemini.com,+21654092901,Développeur embarqué,7,True,True,2026-03-01 11:58:09.718951+00:00,2026-03-16 13:47:39.822927+00:00
+0737a7a1-e7e6-43a8-ade5-027ff9fba167,Rahma,Bensalem,rahma.bensalem@capgemini.com,+21653390083,Scrum master,6,True,True,2024-09-10 13:47:53.573055+00:00,2026-04-13 00:08:45.663082+00:00
+61175dd3-69f9-4b64-8fa2-09b08ee9b450,Lotfi,Guetat,lotfi.guetat@capgemini.com,+21695545668,Développeur front-end,1,True,False,2025-10-21 14:57:23.720898+00:00,2025-12-23 04:20:40.941768+00:00
+1265fdd8-49bb-4b65-8420-9820ac749a6a,Samia,Belaid,samia.belaid@capgemini.com,+21656922606,Comptable,3,True,True,2024-05-03 09:12:55.224087+00:00,2024-06-08 06:13:50.420416+00:00
+8fb6c560-14f4-4ef9-bab1-bda6ae55864c,Mohamed,Zaier,mohamed.zaier@capgemini.com,+21636238552,Talent acquisition specialist,2,True,True,2025-05-05 04:47:03.991717+00:00,2025-12-29 17:57:28.100846+00:00
+7a896dbe-f0e6-49e6-be1b-41feb6e585a7,Dorrah,Kallel,dorrah.kallel@capgemini.com,+21690779874,Manager IT,1,True,True,2024-02-26 13:38:58.746873+00:00,2024-11-16 20:44:45.749708+00:00
+8f1b219c-c56a-41c1-88e4-b541304785b8,Fares,Belaid,fares.belaid@capgemini.com,+21692188505,Comptable,3,True,True,2024-05-27 14:44:35.402227+00:00,2024-11-27 18:12:26.717694+00:00
+53234d32-ce6e-4a41-989f-d1958715bab4,Daniel,Johnson,daniel.johnson@capgemini.com,+21627619770,Account manager,5,True,True,2024-06-01 10:20:12.190362+00:00,2024-06-18 03:18:38.615438+00:00
+c316d911-6157-4923-83d0-94e475c6acc5,Marwen,Bjaoui,marwen.bjaoui@capgemini.com,+21650222936,Architecte logiciel,1,True,True,2023-10-29 15:01:37.242254+00:00,2024-06-25 09:55:38.375471+00:00
+9630d3c5-3a6f-4cba-bd6b-09ef4505332e,Paul,Vincent,paul.vincent@capgemini.com,+21636483110,Legal counsel,10,True,True,2025-09-03 09:27:29.978562+00:00,2025-09-16 16:31:18.055078+00:00
+9af4b494-b502-4444-9cfd-9e6df7e6f022,Nesrine,Tlili,nesrine.tlili@capgemini.com,+21654277701,Développeur back-end,1,True,True,2023-03-12 07:07:48.341430+00:00,2025-08-07 07:06:45.628392+00:00
+ab0db0d8-c159-4585-9035-caac34ef75a4,Maria,Romero,maria.romero@capgemini.com,+21699088860,QA engineer,1,True,True,2023-03-17 06:36:03.764851+00:00,2024-03-12 11:27:16.921044+00:00
+a3befb78-1e74-4bd2-88bc-ea49d60ed7d7,Sofiane,Rekik,sofiane.rekik@capgemini.com,+21652497298,Test lead,8,True,True,2023-03-23 04:35:25.327914+00:00,2024-03-02 20:03:57.679805+00:00
+c3f44d1a-e988-4b73-a7f1-9fe2fbfeaaca,Amira,Mejri,amira.mejri@capgemini.com,+21655406812,Technicien support applicatif,9,True,True,2025-08-25 22:36:49.962043+00:00,2026-01-19 21:53:20.302494+00:00
+6dc39d9c-e178-4f38-874c-f4d9d30d1b2e,Tarek,Kallel,tarek.kallel@capgemini.com,+21636886127,Gestionnaire paie,2,True,True,2024-10-20 06:56:38.869729+00:00,2025-11-07 08:59:41.717400+00:00
+76a9bda7-4fee-4da7-a23d-97f4c3bfc3a1,Rami,Guermazi,rami.guermazi@capgemini.com,+21691042772,Product owner,6,True,False,2023-11-27 13:56:14.310566+00:00,2024-05-07 02:21:57.703430+00:00
+fc076384-0f92-412b-9cd2-b54ac7597f75,Karim,Sghaier,karim.sghaier@capgemini.com,+21650809390,Data analyst,1,True,True,2026-01-30 15:05:52.329573+00:00,2026-04-18 05:37:20.852443+00:00
+399ddb4e-8253-4685-9236-d599b6eef665,Chaima,Ghariani,chaima.ghariani@capgemini.com,+21651325538,Assistant RH,2,True,True,2023-08-15 16:05:41.047100+00:00,2024-09-01 11:09:22.944116+00:00
+82015a98-3b01-41dc-9cac-7c689d1a99b7,Wassim,Bennour,wassim.bennour@capgemini.com,+21697148603,Responsable conformité,10,True,True,2025-07-04 12:17:26.956623+00:00,2026-02-13 11:15:33.547551+00:00
+374bb2b1-7239-47b4-a7f3-42a9312229af,Khaled,Dhaoui,khaled.dhaoui@capgemini.com,+21636087900,Développeur embarqué,7,True,True,2024-03-16 22:20:23.903902+00:00,2026-04-11 00:16:55.603155+00:00
+171db798-037c-4b40-8b32-1ee7db84779a,Anna,Becker,anna.becker@capgemini.com,+21629421121,SEO specialist,4,False,False,2025-05-24 13:07:36.829884+00:00,2025-08-28 00:15:50.296432+00:00
+41a6c95e-1a40-4fc5-a34d-45dacb2f816f,Sabrine,Dhaoui,sabrine.dhaoui@capgemini.com,+21698695166,QA engineer,1,True,True,2025-11-16 16:55:16.409642+00:00,2026-01-23 21:18:32.345815+00:00
+549a7925-348b-43cd-a3b9-dd25c12212b3,Julia,Brown,julia.brown@capgemini.com,+21699633405,Ingénieur capteurs,7,True,True,2023-06-05 15:19:16.246173+00:00,2026-01-07 10:07:07.250960+00:00
+e6cbc23c-448f-475b-9d8d-a739cbc80407,Hichem,Mansouri,hichem.mansouri@capgemini.com,+21653429299,Responsable financier,3,True,True,2025-03-15 11:34:50.282226+00:00,2025-09-17 17:44:42.942466+00:00
+c3b0f176-69f0-4028-872a-0091128bf3a7,Lucas,Bernard,lucas.bernard@capgemini.com,+21695329601,SEO specialist,4,True,True,2024-03-04 00:53:23.220046+00:00,2024-05-22 06:25:26.407290+00:00
+8d973db4-761f-47fc-a137-ab4ad30532c7,Rania,Mansour,rania.mansour@capgemini.com,+21620732855,Chargé support client,9,True,True,2025-11-30 13:54:24.057242+00:00,2026-02-03 03:44:21.467947+00:00
+d432410f-620e-49df-9646-346e8457b3bf,Emma,Moreau,emma.moreau@capgemini.com,+21693564734,Quality assurance manager,8,True,True,2024-09-04 14:13:08.832767+00:00,2026-03-05 13:27:19.461490+00:00
+e707ec8d-700c-4a76-b105-331db986cdd6,Ella,Clark,ella.clark@capgemini.com,+21626244924,Data analyst,1,True,True,2024-09-11 06:54:31.631605+00:00,2024-09-26 09:52:33.819801+00:00
+495bd104-33c7-4b5a-9072-a2d144130630,Fares,Jaziri,fares.jaziri@capgemini.com,+21658182846,Développeur back-end,1,True,True,2023-03-18 04:42:52.362911+00:00,2024-10-15 17:52:30.654196+00:00
+4a9e86b6-080d-430e-bcb2-e2ee310d6672,Hend,Boughzela,hend.boughzela@capgemini.com,+21640993543,QA engineer,1,True,True,2023-05-16 19:26:16.205219+00:00,2025-05-06 20:34:37.233844+00:00
+60d3d345-0e8d-47d9-8016-5a0a66060125,Khaled,Ben Amor,khaled.ben.amor@capgemini.com,+21690898013,Auditeur interne,3,True,True,2025-08-24 02:28:13.202467+00:00,2025-11-28 13:38:46.915960+00:00
+d293ce30-027f-4bb3-ad26-f2dfc118d0c4,Laura,Laurent,laura.laurent@capgemini.com,+21623079630,Chargé de recrutement,2,True,False,2023-09-02 12:24:45.513878+00:00,2026-01-07 08:11:22.176869+00:00
+8c98e8b0-861d-4d8c-9844-76deb537a1db,Ala,Masmoudi,ala.masmoudi@capgemini.com,+21693621170,Data analyst,1,True,True,2024-02-05 10:41:14.351713+00:00,2024-10-21 18:59:41.397698+00:00
+c7e688a0-9d9d-4d3f-9e2e-62a547733a58,Fatma,Ferjani,fatma.ferjani@capgemini.com,+21627256161,Développeur full-stack,1,True,True,2025-08-02 02:15:18.800003+00:00,2025-12-25 08:06:02.648583+00:00
+432c2cf9-dd95-45fd-9867-4bb233d84a2f,Sami,Bouhlel,sami.bouhlel@capgemini.com,+21651465673,Growth marketer,4,True,True,2024-01-22 22:32:56.889556+00:00,2024-11-22 05:35:11.733491+00:00
+a267cd55-dae7-4edb-9cd9-1ac6f46d89a0,Ikram,Guetat,ikram.guetat@capgemini.com,+21628670117,Responsable RH,2,True,True,2024-01-12 20:58:05.003839+00:00,2024-02-23 00:15:15.153216+00:00
+bc82679b-60ac-4cb8-a2c8-90cf85491d9f,Amel,Abidi,amel.abidi@capgemini.com,+21691274526,Responsable formation,2,True,True,2024-01-03 00:53:13.823080+00:00,2026-03-25 14:22:12.726389+00:00
+e9bcf6db-9a70-402b-96e0-5fad1e21ca31,Karim,Belhaj,karim.belhaj@capgemini.com,+21694564804,Ingénieur IoT,7,True,True,2026-03-10 10:26:47.226969+00:00,2026-04-06 12:50:47.404126+00:00
+27e57f44-3711-4937-96be-d80bcf09b05d,Wassim,Ben Amor,wassim.ben.amor@capgemini.com,+21627500316,Commercial B2B,5,True,True,2024-09-21 16:51:17.711000+00:00,2025-12-01 13:36:05.941931+00:00
+99af7d44-61e4-4858-ab38-26d8bb855d58,Dorrah,Ben Amor,dorrah.ben.amor@capgemini.com,+21624781206,Développeur front-end,1,True,True,2023-02-04 14:29:58.376773+00:00,2023-10-16 00:46:33.005741+00:00
+1cf69dca-1008-4088-ab2d-72f1112b1abb,Omar,Zouari,omar.zouari@capgemini.com,+21694034337,Data analyst,1,True,True,2023-11-03 07:05:09.399787+00:00,2024-06-09 01:43:29.144596+00:00
+32b25946-4e38-41dc-be6e-68aa7a85c5b4,David,Lopez,david.lopez@capgemini.com,+21655148927,Business developer,5,True,True,2026-03-12 17:44:06.036319+00:00,2026-04-12 00:39:33.511856+00:00
+c2c17b8a-e8e3-4734-8a5d-558dcb795104,Laura,Rousseau,laura.rousseau@capgemini.com,+21624060870,Responsable RH,2,True,True,2023-12-08 03:29:00.687051+00:00,2024-09-21 12:02:59.776202+00:00
+d39a524e-7c94-4fbb-ae92-88b5fbdeaeb8,Grace,Leroy,grace.leroy@capgemini.com,+21626217883,Growth marketer,4,True,True,2025-03-27 04:23:58.792728+00:00,2025-11-10 15:47:06.164071+00:00
+7679b948-fa41-435b-ac00-5921da3101ce,Sonia,Maalej,sonia.maalej@capgemini.com,+21691887989,Chargé communication interne,12,False,True,2023-11-20 18:38:14.119778+00:00,2024-06-09 02:11:12.004877+00:00
+8d156397-31ce-4b22-917d-ddbd85670e15,Lucia,Wilson,lucia.wilson@capgemini.com,+21627354248,Content manager,4,True,True,2024-03-09 05:17:17.202004+00:00,2025-11-30 21:49:28.697022+00:00
+b108c01c-8d8b-44d9-b7b4-c8ff2f95bdfa,Grace,Girard,grace.girard@capgemini.com,+21694543519,Comptable,3,True,True,2024-02-17 12:55:09.310816+00:00,2025-12-22 11:14:57.735408+00:00
+15422187-1dc9-46d5-8bf2-867217ee9f44,Sarah,Rousseau,sarah.rousseau@capgemini.com,+21626423506,Conseiller support niveau 2,9,True,True,2025-02-23 18:06:24.973387+00:00,2025-10-26 15:02:18.154806+00:00
+2d1d0a12-4b10-45f0-b7dc-0403ac89b5a1,Nizar,Masmoudi,nizar.masmoudi@capgemini.com,+21620669310,Product owner,6,True,True,2024-05-23 15:26:19.922285+00:00,2025-08-14 22:48:42.378813+00:00
+77eda781-2f0d-483f-8875-14af3485c071,Elise,Andre,elise.andre@capgemini.com,+21636794537,Ingénieur avant-vente,5,True,True,2023-12-21 18:37:56.688400+00:00,2026-02-19 17:26:18.530428+00:00
+f5f20910-dacc-43c4-b464-91f0ea54dd03,Rania,Ghariani,rania.ghariani@capgemini.com,+21629463682,Architecte IoT,7,False,True,2024-05-02 13:27:43.440251+00:00,2024-05-15 21:07:10.484484+00:00
+d3db882a-0f69-4757-86d7-7684ed050599,Salma,Guetat,salma.guetat@capgemini.com,+21655545736,DevOps engineer,1,True,True,2023-04-29 20:02:48.790361+00:00,2026-04-20 21:03:55.527420+00:00
+4d667ed7-ec6b-4add-aae1-3807ff1a161c,Kenza,Sellami,kenza.sellami@capgemini.com,+21625501589,Ingénieur qualité,8,True,True,2024-01-10 23:59:04.244398+00:00,2025-02-01 07:58:18.101957+00:00
+82262980-bc3c-49fb-a210-28daa74d1ba3,Rania,Ben Ahmed,rania.ben.ahmed@capgemini.com,+21628722974,Gestionnaire fournisseurs,11,True,True,2024-09-20 02:30:17.089408+00:00,2025-01-13 21:06:29.344918+00:00
+6e55651b-8ed1-4671-be45-9df63f4dbdb6,Asma,Hammami,asma.hammami@capgemini.com,+21622038955,HR Business Partner,2,True,True,2025-03-16 17:56:09.874222+00:00,2025-12-12 18:55:54.151556+00:00
+7b5a28c5-3946-4a3b-ad59-fc33a2e44d00,Eya,Najjar,eya.najjar@capgemini.com,+21624048039,Comptable,3,True,True,2023-03-20 08:37:24.949076+00:00,2024-01-01 19:37:24.120466+00:00
+4732e98c-1b0b-4a04-9010-a3ac17db092b,Amel,Jlassi,amel.jlassi@capgemini.com,+21656110262,Analyste financier,3,True,True,2024-03-05 00:46:58.239658+00:00,2024-12-29 05:01:25.828015+00:00
+af9d7f38-32f1-49e9-974f-0bb83155d6eb,Sabrine,Gharbi,sabrine.gharbi@capgemini.com,+21690117214,QA engineer,1,True,True,2024-12-23 01:13:54.093035+00:00,2025-12-16 04:15:31.482505+00:00
+cba90a11-1840-4896-baf9-ad4c1723a01f,Manon,Lewis,manon.lewis@capgemini.com,+21620899998,Responsable ventes,5,True,True,2025-10-17 06:35:22.925069+00:00,2026-04-20 06:36:10.223963+00:00
+0e1e47d1-e0f8-4547-aa65-ac319dba27f6,Saber,Cherif,saber.cherif@capgemini.com,+21696117153,Ingénieur logiciel,1,True,True,2025-12-24 23:58:24.157931+00:00,2026-04-23 11:04:22.157801+00:00
+3784474d-e825-475d-9698-3cd025b65f95,Amine,Dridi,amine.dridi@capgemini.com,+21696837270,Responsable qualité,8,True,True,2024-07-11 12:47:32.229895+00:00,2025-06-07 22:44:58.788019+00:00
+786ba2a2-fd55-4c3c-82a9-6ab4566b3717,Ala,Bouzid,ala.bouzid@capgemini.com,+21693275571,Architecte IoT,7,True,True,2025-02-16 20:06:22.739158+00:00,2025-07-04 13:00:16.848527+00:00
+edff2c41-0933-4e95-aa63-ea67ea877576,Lucas,Lefebvre,lucas.lefebvre@capgemini.com,+21690929495,Administrateur systèmes,1,True,True,2025-09-28 06:27:53.113949+00:00,2025-10-14 19:39:12.622166+00:00
+f5ccc467-2763-4435-88f8-0c697c5bc756,Anna,Smith,anna.smith@capgemini.com,+21622670804,Responsable ventes,5,True,True,2024-10-13 19:43:07.005938+00:00,2025-04-23 01:00:29.077647+00:00
+5671894a-5a48-444a-8a73-5462d0f8e451,Mariem,Haddad,mariem.haddad@capgemini.com,+21698896072,Chargé d’études marketing,4,True,True,2024-12-31 17:49:12.810617+00:00,2025-05-08 01:23:17.110927+00:00
+c1e9f1c5-3a1d-407e-9767-7cb7c9089296,Nabil,Guetat,nabil.guetat@capgemini.com,+21627661274,Data engineer IoT,7,True,True,2024-01-24 18:12:36.445905+00:00,2025-09-22 06:27:46.215431+00:00
+05c492af-d761-4387-82ef-5279befcf02d,Leila,Mansouri,leila.mansouri@capgemini.com,+21629549840,Account manager,5,True,True,2026-02-26 04:01:07.260733+00:00,2026-03-02 16:40:51.303358+00:00
+38f134e4-e62f-4bb9-a0f5-99a23ed433c7,Salma,Zouari,salma.zouari@capgemini.com,+21691325533,Chargé d’études marketing,4,True,True,2023-02-26 18:18:17.118507+00:00,2025-12-05 09:03:30.180820+00:00
+ebe1cbd3-513d-4852-b31c-67c8b1dbeca9,Noah,Fournier,noah.fournier@capgemini.com,+21623516128,Ingénieur avant-vente,5,True,True,2023-05-20 07:55:55.071509+00:00,2024-02-12 06:44:24.852893+00:00
+9246a4a8-fa4c-48db-84c1-bcec80300b95,Ella,Torres,ella.torres@capgemini.com,+21626233184,Coordinateur engagement collaborateurs,12,True,True,2023-03-24 14:32:53.409636+00:00,2025-08-25 10:12:05.772761+00:00
+cb17d7d1-9663-46f6-8a78-677490248001,Asma,Chebbi,asma.chebbi@capgemini.com,+21694572381,Architecte logiciel,1,True,True,2025-06-01 16:17:40.190011+00:00,2026-02-26 00:09:44.829178+00:00
+bc70bf9e-59c4-4c98-a89c-92f271b748cc,Skander,Zaier,skander.zaier@capgemini.com,+21696662114,Responsable développement,6,True,True,2023-05-27 06:26:24.143899+00:00,2026-02-23 06:23:54.778480+00:00
+f74bfc4f-83da-466c-9090-774178a81831,Ahmed,Sghaier,ahmed.sghaier@capgemini.com,+21697544388,Chargé de recrutement,2,True,True,2024-02-26 23:36:45.413161+00:00,2025-02-25 23:27:20.281031+00:00
+41417e3e-4fd4-4942-a396-ba652bde8364,Oliver,Andre,oliver.andre@capgemini.com,+21651869225,Responsable formation,2,True,True,2026-01-28 06:49:56.642670+00:00,2026-02-18 22:14:27.878023+00:00
+2ddc0de1-b086-459e-8934-d9b7c1771d9d,Ikram,Ksouri,ikram.ksouri@capgemini.com,+21629715428,Acheteur projets,11,True,True,2024-10-06 21:30:44.208197+00:00,2025-03-10 01:02:00.402921+00:00
+484f3068-59db-4d25-966c-e9f0cdc078db,Mariem,Ben Othmen,mariem.ben.othmen@capgemini.com,+21622490749,Développeur full-stack,1,False,False,2025-04-12 01:42:53.550101+00:00,2025-07-03 06:52:27.515225+00:00
+7ff2c490-b386-436c-86c2-79a11610b881,Lina,Bouhlel,lina.bouhlel@capgemini.com,+21692730488,QA engineer,1,True,True,2026-03-15 17:24:57.288051+00:00,2026-03-19 06:28:32.931821+00:00
+dadc6b32-cbe4-4de4-a808-13de29ec16d0,Chloe,Blanc,chloe.blanc@capgemini.com,+21653974716,Scrum master,6,True,True,2025-03-17 21:08:20.005544+00:00,2025-08-07 17:56:10.226500+00:00
+1601dd67-4724-4d1d-a0bc-461e96081aed,Saber,Bjaoui,saber.bjaoui@capgemini.com,+21655429670,DevOps engineer,1,True,True,2025-07-11 02:43:34.850449+00:00,2025-08-19 16:25:28.531867+00:00
+5f646712-930f-479c-89c6-657ca0f5634c,Ala,Miled,ala.miled@capgemini.com,+21650520905,Architecte logiciel,1,True,True,2023-04-13 08:43:18.460979+00:00,2025-05-19 16:26:02.716544+00:00
+dafc105e-50d6-45fc-881b-f8c7648a1d01,Ala,Charfi,ala.charfi@capgemini.com,+21697095317,Responsable support,9,True,True,2023-01-23 13:02:01.456444+00:00,2023-08-06 06:50:22.876158+00:00
+b03521e4-0ebe-4648-ac5a-5daa0bee8b89,Aziz,Kallel,aziz.kallel@capgemini.com,+21627937278,Growth marketer,4,True,True,2025-04-30 21:48:04.189689+00:00,2026-01-28 22:09:34.685231+00:00
+0b72711e-4f6c-4326-9ddc-3f48887a46f7,Julie,Gonzalez,julie.gonzalez@capgemini.com,+21692787539,Analyste financier,3,True,True,2024-11-16 07:42:46.176896+00:00,2026-03-03 06:02:36.303000+00:00
+6151b758-ed55-4110-888e-d438d334a8e8,Houssem,Marzouk,houssem.marzouk@capgemini.com,+21696505852,Ingénieur logiciel,1,True,True,2023-07-25 15:38:05.887069+00:00,2025-04-10 02:14:08.942167+00:00
+78413987-8929-435c-b7e0-5a3fd9449489,Mouna,Jaziri,mouna.jaziri@capgemini.com,+21622420274,Ingénieur logiciel,1,True,True,2023-11-07 15:39:53.379143+00:00,2024-09-28 20:38:23.427246+00:00
+c58bb0f6-4d0a-48af-8710-da23e9acd1d0,Ikram,Baccouche,ikram.baccouche@capgemini.com,+21622255825,Analyste financier,3,True,True,2023-11-14 15:26:05.431236+00:00,2024-03-07 23:16:04.032263+00:00
+5e3a8bbe-4747-4f6c-a52f-e982db7f63be,Skander,Mansouri,skander.mansouri@capgemini.com,+21629375879,Développeur embarqué,7,True,True,2023-01-27 04:02:21.739220+00:00,2024-02-23 19:49:39.005850+00:00
+c0278ba1-ce60-47e3-9f28-8dd3d2d45b37,Meriem,Mansour,meriem.mansour@capgemini.com,+21658780019,Développeur full-stack,1,True,True,2023-08-21 23:58:36.672419+00:00,2023-11-14 09:37:55.484667+00:00
+7c86415e-73e1-4452-b345-730bd15fcbcf,Malek,Messaoudi,malek.messaoudi@capgemini.com,+21636399292,Chargé de recrutement,2,True,True,2025-12-21 22:45:28.285012+00:00,2026-02-28 18:12:50.409923+00:00
+3890de82-3395-42e3-86ff-099140dc8353,Houssem,Elloumi,houssem.elloumi@capgemini.com,+21640793925,Account manager,5,True,True,2026-01-25 17:31:22.530144+00:00,2026-04-11 03:29:25.810333+00:00
+c0651ad3-8066-41be-bcae-d7c1a16aa7f5,Leila,Bouazizi,leila.bouazizi@capgemini.com,+21652847609,Développeur embarqué,7,True,True,2025-02-18 20:44:04.879588+00:00,2025-09-14 18:27:01.304101+00:00
+166df1e8-caee-4766-9016-af436f3aba44,Mohamed,Brahmi,mohamed.brahmi@capgemini.com,+21622647982,Consultant innovation,6,True,True,2025-01-11 16:28:27.142262+00:00,2026-04-08 07:47:25.319395+00:00
+9a6ea003-a666-4c29-8ae5-e7fa86361a43,Anna,Sanchez,anna.sanchez@capgemini.com,+21696552198,Technicien électronique,7,True,True,2025-08-22 13:15:14.020846+00:00,2026-01-22 23:33:55.558944+00:00
+5a279486-f19e-477b-ada8-50c908151f96,Zeineb,Ben Amor,zeineb.ben.amor@capgemini.com,+21622244596,Quality assurance manager,8,True,True,2024-12-22 13:13:13.358280+00:00,2026-04-19 16:40:36.779778+00:00
+ebabeeab-3d61-4de8-9cc1-9896c30de71c,Noah,Durand,noah.durand@capgemini.com,+21636673073,Chargé marketing,4,True,True,2023-04-03 01:44:49.329111+00:00,2024-09-09 11:02:43.037911+00:00
+d0461ae2-5c05-43f1-a230-208ef643b565,Julia,Lewis,julia.lewis@capgemini.com,+21628275697,Consultant innovation,6,True,True,2024-05-03 12:03:34.052144+00:00,2024-06-16 00:48:42.628903+00:00
+de4286de-b923-4053-93ef-12d2821eb39f,Sarra,Khalfallah,sarra.khalfallah@capgemini.com,+21691297186,Sales development representative,5,True,True,2023-08-16 20:59:28.523097+00:00,2025-11-03 11:01:07.342237+00:00
+51e00143-3f66-4030-bf3a-b154f7d7512a,Mariem,Mokhtar,mariem.mokhtar@capgemini.com,+21658751723,Support operations analyst,9,True,False,2023-03-04 19:48:27.390402+00:00,2023-11-22 04:24:03.907815+00:00
+a452b384-4d0e-4248-9c0c-37e9ddbfecde,Jean,Mercier,jean.mercier@capgemini.com,+21640057445,Chargé de recrutement,2,True,True,2026-01-25 23:50:06.525548+00:00,2026-03-24 03:44:26.695928+00:00
+e6b32c11-c369-4ced-9813-924c8e864732,Samia,Bennour,samia.bennour@capgemini.com,+21626145244,Assistant RH,2,True,True,2025-04-16 10:23:13.019938+00:00,2025-12-08 07:33:34.767949+00:00
+85480232-8d0c-45e2-bb3b-62ccdcf67029,Zied,Zaier,zied.zaier@capgemini.com,+21640666099,Architecte logiciel,1,True,True,2024-05-26 13:04:49.873045+00:00,2026-03-31 10:22:17.460967+00:00
+109b05da-c32d-498a-baf2-dece7d8c5d21,Fares,Makni,fares.makni@capgemini.com,+21627935711,Comptable,3,True,True,2023-07-20 18:08:28.596790+00:00,2025-01-04 17:14:23.517854+00:00
+50773668-ccfb-4603-bfcb-0f0535410c84,Bilel,Mokhtar,bilel.mokhtar@capgemini.com,+21621981086,Chargé support client,9,True,True,2023-01-21 02:49:43.560576+00:00,2025-02-15 20:18:54.092214+00:00
+33f7c853-3ff8-4418-bdb9-d83a6f30531c,Lucia,Roux,lucia.roux@capgemini.com,+21628811300,Auditeur interne,3,True,True,2025-06-05 01:47:22.931081+00:00,2025-08-07 04:47:30.463950+00:00
+8316ff5f-cf64-4d38-95c5-ca2d545ce3d2,Elise,Petit,elise.petit@capgemini.com,+21656299543,Chargé de recrutement,2,True,True,2025-04-10 10:03:24.309662+00:00,2025-07-13 10:22:06.440209+00:00
+054fbfd5-4987-4e74-981e-7720556bff7c,Haythem,Gharbi,haythem.gharbi@capgemini.com,+21696092972,Développeur front-end,1,True,True,2023-11-26 21:23:28.224548+00:00,2025-01-19 20:17:59.504088+00:00
+71268727-a2d2-427b-8f73-da355a63bc4e,Haythem,Jaziri,haythem.jaziri@capgemini.com,+21650284450,Développeur back-end,1,False,True,2025-03-19 21:35:38.937944+00:00,2025-07-15 14:48:02.409632+00:00
+79456f8d-6ac6-4880-873b-04763ea7326d,Mohamed,Miled,mohamed.miled@capgemini.com,+21691382451,Content manager,4,True,True,2023-10-01 22:57:15.360717+00:00,2024-06-16 07:49:44.947208+00:00
+c00e59b6-b053-47f6-ad5a-8582aee1788d,Kenza,Mhiri,kenza.mhiri@capgemini.com,+21698454284,Manager IT,1,False,True,2023-06-20 04:24:44.936252+00:00,2023-07-06 20:47:13.454922+00:00
+4cc0e55c-8eeb-4f90-96d2-dedd8a565e1b,Anis,Masmoudi,anis.masmoudi@capgemini.com,+21650427061,Délégué protection des données,10,True,True,2023-12-04 18:46:12.366417+00:00,2025-01-09 01:36:55.354054+00:00
+96c2c320-89b7-409d-a93a-aee004fcc338,Laura,Garnier,laura.garnier@capgemini.com,+21694736134,Chef de projet,6,True,True,2025-08-10 19:42:05.424717+00:00,2026-04-08 17:39:56.489964+00:00
+55c3339f-a045-4fde-a45d-4ab9ad1c313c,Firas,Frikha,firas.frikha@capgemini.com,+21627093522,Responsable qualité,8,False,True,2024-07-23 09:49:10.817544+00:00,2024-08-08 19:46:57.414691+00:00
+a4a42f9d-a91e-4fe8-9b5b-917d60ef0495,Rihab,Dhaoui,rihab.dhaoui@capgemini.com,+21636561379,Contrôleur de gestion,3,True,True,2024-10-26 19:15:31.115995+00:00,2026-04-03 20:34:46.331835+00:00
+770e95a3-7660-43c7-813b-e5d70b9b2ee1,Chaker,Marzouk,chaker.marzouk@capgemini.com,+21656113156,QA engineer,1,True,True,2025-11-25 02:52:17.241587+00:00,2025-12-04 18:53:07.482853+00:00
+8f21075b-8c2d-4291-98de-3f070ea2a227,Molka,Bouazizi,molka.bouazizi@capgemini.com,+21652264769,Account manager,5,True,True,2023-11-24 14:39:25.060210+00:00,2024-04-06 09:36:34.542230+00:00
+f5e363bc-4a27-4df0-8965-e69d3066efc6,Bilel,Elloumi,bilel.elloumi@capgemini.com,+21694568292,Responsable conformité,10,False,True,2025-07-08 23:28:50.061474+00:00,2026-02-28 03:12:23.837195+00:00
+efc9f989-2e92-4dbb-b001-56b7f766c6cd,Rihab,Bouzid,rihab.bouzid@capgemini.com,+21655163181,Développeur back-end,1,True,True,2023-04-11 08:56:22.694365+00:00,2026-01-18 18:59:36.394621+00:00
+52d16be2-1e29-40b8-8bcf-0168e069291b,Isabel,Romero,isabel.romero@capgemini.com,+21696368382,Consultant innovation,6,True,False,2026-03-20 01:16:38.270402+00:00,2026-04-16 17:55:07.082151+00:00
+320540a7-1daa-4726-b502-7fecc0270091,Chaker,Maalej,chaker.maalej@capgemini.com,+21651244050,Gestionnaire fournisseurs,11,True,True,2023-12-03 08:25:47.349744+00:00,2025-06-08 06:43:50.597831+00:00
+2eb00c7c-295a-455c-bc0f-0ef7c7a29401,Maher,Bouzaiene,maher.bouzaiene@capgemini.com,+21692718279,Comptable,3,False,True,2023-05-04 03:24:00.663133+00:00,2023-09-14 11:30:21.765132+00:00
+7df083a9-7340-4dac-917d-70552e3183a5,Amira,Mathlouthi,amira.mathlouthi@capgemini.com,+21627949958,QA engineer,1,True,True,2024-06-13 21:18:26.450528+00:00,2026-03-09 09:47:23.971569+00:00
+a6d83b47-4658-4d4e-833d-7ef6e7cf2e94,Pierre,Mercier,pierre.mercier@capgemini.com,+21655043791,Community manager,4,True,True,2023-11-14 10:56:33.514867+00:00,2024-07-31 17:48:17.975465+00:00
+9ac7d884-9c16-4fa3-b896-884afda9c096,Nabil,Saidi,nabil.saidi@capgemini.com,+21699973761,Legal counsel,10,True,True,2024-01-25 14:02:02.789426+00:00,2024-02-19 14:49:47.716433+00:00
+635c1a21-2ab2-422e-9d93-0fd35cde7fad,Malek,Gharbi,malek.gharbi@capgemini.com,+21650796566,Sales development representative,5,True,False,2025-09-19 15:48:47.905222+00:00,2025-11-02 06:13:56.348304+00:00
+cf29d572-baa2-4d38-804f-fd6f6cf8a890,Amira,Ayari,amira.ayari@capgemini.com,+21656513394,Analyste financier,3,True,True,2025-01-19 17:21:10.544603+00:00,2025-08-31 02:00:26.330439+00:00
+66cca95d-9fc9-4eb7-9ec6-1a35ddebfc83,Hend,Abidi,hend.abidi@capgemini.com,+21694283933,Gestionnaire paie,2,True,True,2023-04-18 03:14:05.211648+00:00,2024-06-02 12:14:10.857416+00:00
+7d15ce84-8e27-4d49-b5db-e0a53ce987cd,Rania,Sellami,rania.sellami@capgemini.com,+21654815697,Sales development representative,5,True,True,2023-10-05 12:39:28.886253+00:00,2024-07-30 18:05:22.970200+00:00
+f13df37c-d98f-46b6-94f2-685c946a87c1,Eya,Hadded,eya.hadded@capgemini.com,+21640065740,Support operations analyst,9,True,True,2023-04-27 20:29:10.463171+00:00,2023-08-14 05:47:58.093214+00:00
+b15efdd3-914e-4ae6-8521-c1aca1f1b04d,Houda,Boughzela,houda.boughzela@capgemini.com,+21636055505,Responsable RH,2,True,True,2025-02-16 23:33:30.551336+00:00,2025-12-03 16:12:27.778313+00:00
+070f1315-23db-4264-a087-d9f5634d6d48,Ines,Bennour,ines.bennour@capgemini.com,+21650173678,Chargé support client,9,True,True,2023-04-14 19:08:32.460637+00:00,2023-12-05 10:10:47.315801+00:00
+8954a352-4311-4f3c-a1bf-25bad61c44c0,Eya,Ayari,eya.ayari@capgemini.com,+21627031928,Consultant innovation,6,True,True,2024-10-26 14:03:00.296057+00:00,2026-01-30 16:35:49.311026+00:00
+2017d595-cb92-43c2-b6ad-78ccf95a782c,Olfa,Bagga,olfa.bagga@capgemini.com,+21622937652,Développeur back-end,1,True,True,2025-10-17 09:43:14.179833+00:00,2026-01-15 02:26:35.453437+00:00
+14d940d1-b6b9-46db-ad09-0f473052b4b5,Rahma,Bouzaiene,rahma.bouzaiene@capgemini.com,+21691587906,Account manager,5,True,True,2026-01-03 05:02:54.243637+00:00,2026-02-08 10:52:00.233662+00:00
+439cc260-49bc-40d7-a847-7ba6b2fc4f47,Skander,Guetat,skander.guetat@capgemini.com,+21629224640,Sales development representative,5,False,True,2023-05-08 13:04:10.294534+00:00,2023-08-11 18:01:23.520264+00:00
+0bbae24c-66cb-42bc-8f35-4e9d6e77ac24,Nicolas,Garcia,nicolas.garcia@capgemini.com,+21628745847,Comptable,3,True,True,2023-09-23 03:04:49.660361+00:00,2024-01-02 01:30:19.678672+00:00
+25764ce0-1d1e-4fd5-8ccb-bb0e652d2a41,Khaled,Makni,khaled.makni@capgemini.com,+21650935386,Data analyst,1,True,True,2024-12-13 23:58:03.706164+00:00,2026-01-05 03:17:10.547171+00:00
+10d5d40f-127e-4b4f-b286-d0a7efa50bd5,Marwa,Ayari,marwa.ayari@capgemini.com,+21622339429,Chargé des contrats,10,True,True,2023-04-05 00:02:08.998810+00:00,2023-04-16 05:54:15.992830+00:00
+5f776928-4b7a-41f4-a20d-06c3a6b003bf,Asma,Bouzid,asma.bouzid@capgemini.com,+21624916152,Coordinateur projet,6,True,True,2024-11-25 06:58:56.304281+00:00,2025-10-08 05:42:48.996044+00:00
+38cdd74c-b750-4e7c-89b5-9d66dac401b5,Rami,Miled,rami.miled@capgemini.com,+21625038626,Responsable RH,2,True,True,2025-05-17 20:08:32.112599+00:00,2026-01-29 15:55:29.760608+00:00
+78af47a7-ad8d-4faf-a4eb-52cb18a6a2cd,Manon,Garnier,manon.garnier@capgemini.com,+21697575604,Chef de projet,6,True,True,2025-09-21 23:00:17.233083+00:00,2026-02-28 14:46:44.621171+00:00
+b3d93062-a120-4b9f-8188-3421e21ae870,Asma,Bouslama,asma.bouslama@capgemini.com,+21696793817,Scrum master,6,True,True,2023-09-05 17:08:35.461589+00:00,2025-03-10 18:11:40.283731+00:00
+a8d3e377-0e26-45b7-bd86-63aae9be7dbb,Zied,Brahmi,zied.brahmi@capgemini.com,+21626677879,Chef de projet,6,True,False,2024-09-26 22:10:32.171773+00:00,2024-12-01 09:14:59.959420+00:00
+28ed3041-bf44-4e82-90cd-dbc09eec2534,Seif,Sayadi,seif.sayadi@capgemini.com,+21624141982,Responsable formation,2,True,True,2023-05-31 22:35:51.341821+00:00,2025-04-13 07:01:57.803530+00:00
+5553c5bf-a6be-43ce-99ca-71a0dd00c526,Fatma,Rekik,fatma.rekik@capgemini.com,+21651097714,Architecte IoT,7,True,True,2023-04-19 03:29:39.318039+00:00,2025-03-21 14:49:19.549423+00:00
+ea12320a-4a0d-419c-bf03-96d78e585918,Sophia,Wilson,sophia.wilson@capgemini.com,+21622991218,Responsable développement,6,True,True,2024-11-18 17:15:52.770186+00:00,2025-10-06 22:56:32.290708+00:00
+d55047e0-37be-40fb-a90b-d53653e77f3c,Pablo,Andre,pablo.andre@capgemini.com,+21690702773,Scrum master,6,True,True,2024-12-05 11:42:41.635885+00:00,2025-10-12 14:22:48.067219+00:00
+de60686f-1075-42f6-8d70-c65c29ff1620,Rania,Ferchichi,rania.ferchichi@capgemini.com,+21626195839,Content manager,4,True,True,2023-04-19 10:46:09.301806+00:00,2024-12-22 14:54:55.773986+00:00
+649114ae-3449-49ab-a8e8-f4c931409e3d,Lotfi,Brahmi,lotfi.brahmi@capgemini.com,+21690888362,Consultant innovation,6,True,True,2025-06-21 15:12:40.433272+00:00,2026-04-10 23:47:43.055297+00:00
+99deadaf-8a75-4075-aeaa-bf9ec069cd7a,Pierre,Torres,pierre.torres@capgemini.com,+21699665798,Analyste financier,3,True,True,2024-06-18 09:08:05.430618+00:00,2024-06-20 04:23:36.740390+00:00
+3dded13e-5120-43d0-a063-fb98185a8252,Nizar,Makni,nizar.makni@capgemini.com,+21623030268,Business analyst,6,True,True,2024-01-08 08:48:29.349256+00:00,2024-12-30 08:04:05.714887+00:00
+04ebe506-cbfc-450e-9f9f-21e8320c892b,Lucia,Rousseau,lucia.rousseau@capgemini.com,+21655628949,Growth marketer,4,True,True,2023-10-14 10:58:34.259433+00:00,2026-01-17 07:28:08.021962+00:00
+0ad2e8b9-a1e4-439b-82a6-7043befa8527,Saber,Miled,saber.miled@capgemini.com,+21654006515,Chargé support client,9,True,True,2023-12-22 00:52:50.337260+00:00,2025-03-22 15:18:14.295552+00:00
+56e09b90-5896-4653-a6d0-833a2aaf2380,Skander,Ben Othmen,skander.ben.othmen@capgemini.com,+21698937496,Responsable communication interne,12,True,True,2024-06-13 22:20:12.925530+00:00,2025-02-15 08:27:54.537083+00:00
+63f2b289-92ce-4991-81bd-1f30b50191dd,Mouna,Sellami,mouna.sellami@capgemini.com,+21696123379,Architecte IoT,7,True,True,2023-06-29 14:11:19.163223+00:00,2025-08-17 21:04:44.104172+00:00
+f43ba2e8-ea91-43b3-9232-e8fd777feb12,Manon,Rousseau,manon.rousseau@capgemini.com,+21653624755,Data engineer IoT,7,True,True,2023-01-13 23:19:10.743598+00:00,2023-03-28 19:04:08.909584+00:00
+02d05703-8118-4a42-95dc-668088d41fbb,Ikram,Chebbi,ikram.chebbi@capgemini.com,+21694909236,Coordinateur projet,6,False,True,2023-09-18 17:50:18.410960+00:00,2024-07-24 20:00:32.414999+00:00
+8d2bc111-e2d5-4410-8e67-899490f0e458,Omar,Ferchichi,omar.ferchichi@capgemini.com,+21694223272,Développeur back-end,1,True,True,2026-03-03 20:54:15.825535+00:00,2026-03-24 04:59:05.053857+00:00
+829eabd6-72af-4c4e-b91e-42647a56cf50,Marta,Faure,marta.faure@capgemini.com,+21650878706,Analyste financier,3,True,True,2026-01-06 08:53:19.871907+00:00,2026-02-20 17:39:48.436844+00:00
+ae8476f4-9a83-4f9f-a68f-08866cdec032,William,Schneider,william.schneider@capgemini.com,+21623343467,Content manager,4,True,True,2023-09-10 21:15:02.691271+00:00,2025-11-18 16:07:51.051269+00:00
+99be4c11-8624-4a8a-a33e-833f5dd5a1e5,Maria,Sanchez,maria.sanchez@capgemini.com,+21690432606,Test lead,8,True,True,2025-05-12 02:15:46.618966+00:00,2025-05-17 15:15:50.554284+00:00
+379b3d96-f5f6-46a4-8ab9-3c07e7638c44,Hugo,Leroy,hugo.leroy@capgemini.com,+21620727766,Gestionnaire paie,2,False,False,2025-09-09 05:46:56.774216+00:00,2026-02-03 23:36:25.901621+00:00
+b2d5b34b-d258-4bcf-8d4a-ef4e46a9dfff,Malek,Mathlouthi,malek.mathlouthi@capgemini.com,+21699603712,Auditeur interne,3,True,True,2026-04-16 08:55:40.698351+00:00,2026-04-30 22:09:01.438555+00:00
+b8586f4e-0b8d-4c49-99b4-58e4ac4db671,Foued,Zaier,foued.zaier@capgemini.com,+21692907148,Architecte IoT,7,True,True,2024-06-25 10:10:52.979172+00:00,2025-06-17 04:07:05.931129+00:00
+4c066895-d413-435c-a54a-7085ccebb310,Hana,Chouchane,hana.chouchane@capgemini.com,+21620993791,Développeur back-end,1,True,True,2025-07-26 17:30:41.450273+00:00,2025-08-08 23:58:59.075741+00:00
+b5fe5b9a-eaee-4b14-8a4b-ade6055198b0,Youssef,Dridi,youssef.dridi@capgemini.com,+21628105956,Assistant RH,2,True,True,2025-08-12 18:48:22.540163+00:00,2025-10-26 05:02:04.288879+00:00
+3cb20e66-1f63-4917-96a0-d76276f9e1ec,Dorrah,Mathlouthi,dorrah.mathlouthi@capgemini.com,+21695935484,Test lead,8,True,True,2026-03-15 22:25:39.909384+00:00,2026-04-21 18:40:44.098207+00:00
+500e7caa-bf0e-48e3-baf1-303ab0dbca43,Chaker,Cherif,chaker.cherif@capgemini.com,+21697340171,Manager IT,1,True,True,2024-06-05 16:40:44.927760+00:00,2026-01-02 11:57:40.751791+00:00
+ebf39313-cfca-46a7-a1ef-36e0bb511d9d,Fedi,Zaier,fedi.zaier@capgemini.com,+21650233669,Talent acquisition specialist,2,True,True,2025-01-23 01:30:41.152013+00:00,2026-02-03 00:44:53.403319+00:00
+2282676e-c8d8-45b4-8148-cb534f3e78bb,Aicha,Messaoudi,aicha.messaoudi@capgemini.com,+21627169458,Conseiller client,5,True,True,2025-05-24 01:41:04.226968+00:00,2025-07-08 15:38:15.859154+00:00
+78c254c8-e08c-423c-b031-4de7e4eb1f25,Siwar,Bouazizi,siwar.bouazizi@capgemini.com,+21653493733,Manager IT,1,True,True,2024-04-12 10:59:50.523201+00:00,2025-10-05 00:40:33.538596+00:00
+e51471b8-8541-4d90-8b64-727da5b9cb07,Marwa,Louati,marwa.louati@capgemini.com,+21692472230,Growth marketer,4,True,True,2025-06-08 22:54:01.249057+00:00,2025-09-07 06:41:07.285795+00:00
+ac70585c-869a-4f1d-97f0-bd11808c3625,Skander,Najjar,skander.najjar@capgemini.com,+21628331410,Coordinateur engagement collaborateurs,12,True,True,2024-08-04 00:27:12.883243+00:00,2024-10-02 00:40:46.644145+00:00
+33cc0235-e8ce-4838-80c3-1a8a3f670822,Ikram,Bjaoui,ikram.bjaoui@capgemini.com,+21654664384,Chargé de reporting financier,3,True,True,2023-10-18 09:56:49.157161+00:00,2026-02-06 04:42:08.504250+00:00
+1c000474-b3c9-4da0-aac9-d1ad3722caa2,Sarra,Ben Salah,sarra.ben.salah@capgemini.com,+21626439598,Chargé de recrutement,2,True,True,2023-02-22 05:26:29.241285+00:00,2023-08-26 14:19:12.547334+00:00
+d55887a6-ba09-4137-817b-136eca0eb8fe,Carlos,Smith,carlos.smith@capgemini.com,+21698762769,Community manager interne,12,True,True,2025-03-03 16:00:51.407584+00:00,2025-04-06 14:45:50.236754+00:00
+569ecf53-8fa2-437c-b040-27ed48d0b96f,Sami,Makni,sami.makni@capgemini.com,+21698065829,Consultant innovation,6,True,True,2025-05-21 06:32:26.777932+00:00,2025-06-13 03:45:25.099432+00:00
+e7809835-b2eb-469d-af70-252267401dcd,Hana,Mathlouthi,hana.mathlouthi@capgemini.com,+21622287449,Ingénieur qualité,8,True,True,2025-11-30 10:56:02.951127+00:00,2026-02-22 20:12:10.211998+00:00
+2529ad7b-3e69-4b87-9e44-0259ec755de2,Paul,Martin,paul.martin@capgemini.com,+21699745359,Responsable achats,11,True,True,2025-12-25 10:19:25.917100+00:00,2026-03-25 18:36:39.158951+00:00
+c0f17624-388d-4a76-833d-00a5d20ecc26,Zeineb,Abidi,zeineb.abidi@capgemini.com,+21654159391,Conseiller client,5,True,True,2026-01-03 08:34:26.353274+00:00,2026-02-02 13:19:26.364450+00:00
+53b3c1c0-71b8-4dde-9428-828a7583ed49,Marta,David,marta.david@capgemini.com,+21624627131,Auditeur interne,3,True,True,2026-04-24 05:35:41.753139+00:00,2026-04-25 03:10:34.094440+00:00
+2dc5ba3b-f5c8-4688-9af7-09fa7eee32bf,Omar,Hammami,omar.hammami@capgemini.com,+21696776841,DevOps engineer,1,False,False,2024-07-23 18:20:30.250672+00:00,2024-08-18 20:03:42.060077+00:00
+a41333e5-1570-46d3-b7f0-bef8202da882,Grace,Schneider,grace.schneider@capgemini.com,+21697690610,Comptable,3,True,True,2025-06-09 15:34:47.275494+00:00,2025-07-10 03:38:08.361944+00:00
+5ab7c5af-6bf1-4ff5-93a6-4bcc1ea926d5,Aymen,Charfi,aymen.charfi@capgemini.com,+21656999403,Ingénieur logiciel,1,True,True,2024-07-06 10:05:41.722991+00:00,2025-08-11 08:27:55.966946+00:00
+039ce623-075d-4c69-9235-d786fde3bf5a,Nesrine,Hammami,nesrine.hammami@capgemini.com,+21622525856,Content manager,4,True,True,2024-11-20 15:27:17.223430+00:00,2026-02-06 04:40:21.611676+00:00
+5360fd07-6411-454a-8bc8-066a979f5e68,Alice,Leroy,alice.leroy@capgemini.com,+21654705874,Administrateur systèmes,1,True,True,2023-10-26 02:52:01.072508+00:00,2024-10-03 07:09:09.074084+00:00
+96f88851-c0d4-41cf-be20-b08886bc6e6c,Youssef,Bouslama,youssef.bouslama@capgemini.com,+21651985297,Responsable communication marketing,4,True,True,2024-10-20 11:56:34.882059+00:00,2025-06-26 19:17:37.705385+00:00
+41bbe326-5123-4001-a1ca-3c7de3d60835,Walid,Messaoudi,walid.messaoudi@capgemini.com,+21693348794,Talent acquisition specialist,2,True,True,2024-09-07 20:22:01.301494+00:00,2025-01-31 19:43:53.818896+00:00
+fe585dc9-87c1-4767-acfc-0cb180014620,Sophie,Rousseau,sophie.rousseau@capgemini.com,+21651736582,Délégué protection des données,10,True,True,2026-04-20 23:09:16.251308+00:00,2026-04-30 05:14:38.708844+00:00
+8006d300-c0ae-4a0d-ba53-074804f86119,Khaled,Bouazizi,khaled.bouazizi@capgemini.com,+21696453483,DevOps engineer,1,True,True,2023-01-23 01:32:27.667206+00:00,2023-02-21 16:22:18.390701+00:00
+4b6514c1-383f-4056-9a6e-81fe0599fec3,Yosra,Mrad,yosra.mrad@capgemini.com,+21627511863,Chargé de recrutement,2,True,True,2025-06-02 12:42:05.138304+00:00,2025-07-31 00:22:01.233551+00:00
+91f76ca7-ada9-4b5b-87c9-c7b966228ec6,Salma,Cherif,salma.cherif@capgemini.com,+21696008718,Comptable,3,True,False,2023-05-09 00:05:53.040126+00:00,2025-12-09 20:56:54.262937+00:00
+bc157ecf-7954-494e-a055-311a276bf358,Nizar,Kallel,nizar.kallel@capgemini.com,+21694507301,Assistant RH,2,True,True,2025-01-05 11:46:12.162672+00:00,2026-04-11 03:17:19.146284+00:00
+2b2c1a3c-9712-41b8-86c7-afa44d9e0665,Rami,Ferjani,rami.ferjani@capgemini.com,+21690859474,Account manager,5,True,True,2025-08-06 00:24:35.902544+00:00,2025-09-29 11:57:35.627892+00:00
+f50ff8d2-296b-430d-bc2e-7a3ba13a75b7,Firas,Ben Ahmed,firas.ben.ahmed@capgemini.com,+21624726605,Business analyst,6,True,True,2023-10-19 22:19:45.469588+00:00,2025-07-02 19:46:50.487664+00:00
+2f9348fd-73c7-4bee-b63f-b880e839a3f8,Thomas,Michel,thomas.michel@capgemini.com,+21640750595,Conseiller client,5,True,True,2023-07-07 22:09:55.124176+00:00,2025-12-25 00:04:19.153041+00:00
+8af0b6c1-16c5-4b9d-9847-99701339c60b,Skander,Chebbi,skander.chebbi@capgemini.com,+21650319832,Scrum master,6,False,False,2024-12-11 09:22:44.363048+00:00,2025-07-06 06:35:18.512117+00:00
+79ecd19f-9a6a-4019-aeab-38a61af2036b,Ethan,Morel,ethan.morel@capgemini.com,+21625902223,Growth marketer,4,True,True,2025-09-30 10:23:52.568741+00:00,2025-12-10 19:02:40.904471+00:00
+206f3caa-e4f4-4c32-9bbe-a77b272bce88,Rahma,Marzouk,rahma.marzouk@capgemini.com,+21654126829,Assistant RH,2,True,True,2023-02-14 05:48:37.983992+00:00,2024-01-12 17:41:28.669929+00:00
+c7d4b081-bb87-4340-9a1f-0649f6113b13,Olfa,Ferjani,olfa.ferjani@capgemini.com,+21658946273,Support operations analyst,9,True,True,2023-11-19 00:44:33.992751+00:00,2024-09-13 11:10:45.818860+00:00
+3e8f245c-15c1-4831-9299-c0ac3087461f,Aziz,Tlili,aziz.tlili@capgemini.com,+21621091802,Ingénieur avant-vente,5,True,True,2024-06-19 07:36:46.992013+00:00,2026-04-29 17:19:12.839958+00:00
+a0f6c262-a0ec-4b15-804b-15a46fdd8632,Seif,Horchani,seif.horchani@capgemini.com,+21620756266,Développeur full-stack,1,True,True,2023-01-10 08:55:16.985087+00:00,2025-04-04 20:31:49.264968+00:00
+366fbf78-b250-4567-ac10-c3329e2bf0d1,Lina,Karray,lina.karray@capgemini.com,+21626203902,Responsable ventes,5,False,False,2024-08-04 00:13:38.650165+00:00,2024-10-29 19:42:27.540854+00:00
+43961ba3-19dc-4b35-a7d8-f70fec307809,Louis,Bernard,louis.bernard@capgemini.com,+21652007989,Contrôleur de gestion,3,True,True,2023-08-04 12:40:01.232888+00:00,2025-01-08 13:02:08.532240+00:00
+ad184e40-aa0e-44d2-bd36-24c1cc63cd67,Nesrine,Louati,nesrine.louati@capgemini.com,+21695823461,Manager IT,1,True,True,2024-07-21 11:33:45.216432+00:00,2024-12-16 14:47:59.348843+00:00
+9dd603d9-070f-421c-9578-652d098d33ae,Yosra,Kammoun,yosra.kammoun@capgemini.com,+21658678965,HR Business Partner,2,True,True,2026-04-21 09:05:27.081419+00:00,2026-04-27 03:32:58.703775+00:00
+00f7fbed-d7cd-4b53-9344-aa42ba92c94d,Samia,Kallel,samia.kallel@capgemini.com,+21640864658,Ingénieur avant-vente,5,True,True,2026-02-12 12:48:39.698421+00:00,2026-04-18 04:20:52.847801+00:00
+da7d8ca8-db94-48b0-87a9-6c6a4d12c1cb,Ala,Rahmani,ala.rahmani@capgemini.com,+21625816089,Conseiller client,5,True,True,2025-02-07 21:13:12.530266+00:00,2025-08-18 00:25:39.278099+00:00
+ad0019b6-763f-4495-9027-62286284764a,Amel,Mansour,amel.mansour@capgemini.com,+21624722348,Business analyst,6,True,True,2024-08-28 03:34:35.876468+00:00,2024-12-16 20:27:44.883179+00:00
+969f9cbb-d414-4484-aee9-fa12b5505b3e,Rania,Najjar,rania.najjar@capgemini.com,+21656683572,Firmware engineer,7,True,True,2024-01-16 20:09:07.773757+00:00,2026-01-16 10:32:05.293053+00:00
+6a808ecc-aa5f-46f7-9473-e17d132330cd,Elise,Durand,elise.durand@capgemini.com,+21624210960,Growth marketer,4,True,True,2024-07-20 19:01:47.572970+00:00,2025-09-16 02:43:53.785388+00:00
+02d451b1-b91e-4dde-aaba-83945a6ff820,Leila,Kammoun,leila.kammoun@capgemini.com,+21653237863,Administrateur systèmes,1,True,True,2025-11-21 20:36:41.226542+00:00,2026-02-21 08:11:49.356852+00:00
+72f72082-e3a0-420f-b136-9f6de5cc80a7,Molka,Maalej,molka.maalej@capgemini.com,+21691550373,Conseiller client,5,False,True,2023-10-08 04:43:24.651585+00:00,2023-11-24 08:45:55.088123+00:00
+8f774f8b-da2a-4c78-929b-0896a8c710b9,David,Andre,david.andre@capgemini.com,+21628022733,Technicien support applicatif,9,True,False,2023-10-05 07:03:49.751587+00:00,2023-12-18 10:24:56.362220+00:00
+1c17e3b7-1ace-4929-8a17-4b637e56b0b6,Mia,Brown,mia.brown@capgemini.com,+21622843875,Coordinateur amélioration continue,8,True,True,2025-09-18 05:14:49.924228+00:00,2026-01-08 05:42:21.474036+00:00
+16ccf3e6-fa82-4bed-936a-0c6725b2fd73,Salma,Bouhlel,salma.bouhlel@capgemini.com,+21624051950,Trésorier,3,True,False,2025-07-15 22:37:05.604138+00:00,2025-10-08 00:27:15.786173+00:00
+0f89f372-8f9b-4e37-a917-95d348270c77,Sonia,Bouazizi,sonia.bouazizi@capgemini.com,+21626409839,Technicien support applicatif,9,True,True,2023-11-07 11:16:39.303756+00:00,2025-03-24 06:21:28.832980+00:00
+449ac75e-578d-423f-8bc4-b4c90d6ac229,Omar,Frikha,omar.frikha@capgemini.com,+21692896958,Développeur embarqué,7,True,True,2023-03-08 17:07:44.546718+00:00,2023-07-28 07:45:41.057301+00:00
+d00211fe-b443-439e-afb4-0eaa14b471eb,Mourad,Ben Ahmed,mourad.ben.ahmed@capgemini.com,+21650330981,Coordinateur projet,6,True,True,2026-04-17 12:01:10.095057+00:00,2026-04-28 09:55:26.905934+00:00
+1b521727-2b9c-4bae-a8f2-c0b975bf998b,Maxime,Lefebvre,maxime.lefebvre@capgemini.com,+21624612143,Growth marketer,4,True,True,2023-11-05 08:58:46.322298+00:00,2025-08-09 13:10:22.601359+00:00
+54b43be3-84e0-4a95-9d97-8b3b30898bd6,Tarek,Kouki,tarek.kouki@capgemini.com,+21653157310,HR Business Partner,2,True,True,2024-06-14 20:49:23.341221+00:00,2024-09-01 07:54:08.572725+00:00
+f6a73420-1583-40dd-969e-dd8538e24dff,Mariem,Guermazi,mariem.guermazi@capgemini.com,+21699920340,Scrum master,6,True,True,2025-12-23 23:32:44.779433+00:00,2026-01-01 12:36:19.002566+00:00
+33a01618-4870-40e7-82ee-dd8ab9825756,Firas,Rahmani,firas.rahmani@capgemini.com,+21698274699,Sales development representative,5,True,True,2026-02-27 07:15:27.737662+00:00,2026-03-05 05:39:31.982530+00:00
+a40aa065-08ee-47e0-9fe4-04100a58e6f1,Mia,Simon,mia.simon@capgemini.com,+21623984361,Responsable communication marketing,4,True,True,2023-11-19 00:46:17.672408+00:00,2025-11-21 04:11:52.169241+00:00
+a89515f9-4488-4475-881f-f37f70224a3f,Emma,Faure,emma.faure@capgemini.com,+21652351368,Comptable,3,True,True,2023-04-02 20:45:52.806291+00:00,2024-08-13 07:20:45.228854+00:00
+80abf548-a0a7-49e7-a19d-90d89e4b2977,Marwen,Mathlouthi,marwen.mathlouthi@capgemini.com,+21626857711,Développeur full-stack,1,False,True,2025-11-07 17:30:10.587793+00:00,2026-03-23 23:54:00.101363+00:00
+35b84825-f888-46e4-90d7-f9a8cd6a7762,Siwar,Bjaoui,siwar.bjaoui@capgemini.com,+21621302250,Responsable formation,2,True,True,2023-07-08 13:23:30.264890+00:00,2025-04-27 12:46:51.272206+00:00
+92149006-a894-4f05-ab5d-36650644eb93,Maria,Navarro,maria.navarro@capgemini.com,+21623026155,Account manager,5,True,True,2026-03-04 20:12:10.081822+00:00,2026-04-20 21:06:58.864846+00:00
+746f9a16-167c-4335-ad48-53bd33464aae,Mouna,Kouki,mouna.kouki@capgemini.com,+21640257490,Architecte logiciel,1,True,True,2025-10-12 15:09:50.441971+00:00,2026-02-21 22:05:13.247998+00:00
+6c7cb4fb-9e6a-4fe0-b7fd-e2495b748576,Firas,Chouchane,firas.chouchane@capgemini.com,+21698868688,Architecte IoT,7,True,True,2025-01-11 02:33:37.050811+00:00,2026-01-13 12:56:41.687122+00:00
+777ef2bc-d3d2-4678-96a6-dd1a0255d70d,Rim,Bennour,rim.bennour@capgemini.com,+21692426333,Contrôleur de gestion,3,True,True,2024-02-07 10:55:51.262277+00:00,2025-05-17 18:50:55.592253+00:00
+0e9ff6d0-1673-43bf-b1d0-6d9e99f229b3,Bilel,Karray,bilel.karray@capgemini.com,+21636359196,Account manager,5,True,True,2024-05-20 23:17:22.780563+00:00,2025-08-18 08:41:55.229444+00:00
+293234f8-6b59-4c8c-b69f-e7044d6e9add,Molka,Rahmani,molka.rahmani@capgemini.com,+21655466970,Business developer,5,True,True,2024-04-12 17:39:10.250745+00:00,2024-07-20 12:08:37.580836+00:00
+f8d7dc0b-5a3b-44ee-98f3-b79e6f774b1e,Omar,Hamdi,omar.hamdi@capgemini.com,+21627369008,Conseiller support niveau 2,9,True,True,2025-02-26 18:29:30.522388+00:00,2025-07-04 18:32:07.190032+00:00
+3dd95e2a-5330-4b89-abcd-aecc3361f37d,Hend,Jaziri,hend.jaziri@capgemini.com,+21658678574,Responsable financier,3,True,True,2024-02-08 14:11:51.126306+00:00,2024-09-15 20:22:09.416293+00:00
+d1b2491c-d6e0-4961-a163-1cd855b2b145,Mohamed,Khemiri,mohamed.khemiri@capgemini.com,+21697313751,Chef de projet,6,True,True,2025-10-18 09:53:31.207402+00:00,2025-10-22 03:23:54.636859+00:00
+5e61724f-7287-442f-963a-0d5dd803249c,Sami,Ben Othmen,sami.ben.othmen@capgemini.com,+21695362030,Business analyst,6,True,True,2025-03-26 06:43:19.266812+00:00,2025-08-17 22:39:58.854393+00:00
+983b529a-36c4-402f-ba0c-6501375d9815,Mehdi,Hamdi,mehdi.hamdi@capgemini.com,+21629084074,Coordinateur projet,6,False,True,2023-07-02 11:57:52.763804+00:00,2024-03-30 14:12:31.750062+00:00
+a166e45a-4673-4033-bd08-6264c00ab024,Siwar,Jlassi,siwar.jlassi@capgemini.com,+21691414921,Coordinateur amélioration continue,8,True,True,2024-07-28 09:22:03.462472+00:00,2025-10-29 07:25:33.821527+00:00
+0642ecad-a158-4e54-85b7-a07bbaf1092f,Yosra,Trabelsi,yosra.trabelsi@capgemini.com,+21690351277,Sales development representative,5,True,True,2024-11-29 06:40:27.532914+00:00,2026-03-04 01:34:56.600637+00:00
+3fe14d18-0cfa-492c-9c98-5c09e18406f4,Lucia,Petit,lucia.petit@capgemini.com,+21628719218,Responsable support,9,True,True,2025-06-04 04:24:11.051575+00:00,2026-01-28 00:47:15.033112+00:00
+50b973db-8479-47e1-8c19-f51f4998a03c,Nour,Sellami,nour.sellami@capgemini.com,+21621795566,Legal counsel,10,True,True,2025-10-17 04:47:20.945987+00:00,2026-01-30 00:57:03.017713+00:00
+4c324c73-2dc1-425d-8e1b-f3224f6128ec,Mourad,Jaziri,mourad.jaziri@capgemini.com,+21696746362,Product owner,6,True,True,2023-12-21 19:02:40.682481+00:00,2024-03-08 04:00:37.460694+00:00
+9ae48ba1-0867-4c64-a244-f1510ff241c4,Khaled,Kammoun,khaled.kammoun@capgemini.com,+21626202987,Architecte logiciel,1,True,True,2024-06-24 10:39:49.656914+00:00,2024-09-27 11:01:49.325009+00:00
+af533c93-0a75-475d-b87d-b1decc84048b,Ines,Bouzid,ines.bouzid@capgemini.com,+21698183580,Customer success manager,9,True,True,2025-12-10 18:18:39.674644+00:00,2026-01-12 13:00:20.189439+00:00
+c5ec37ad-d7cc-4309-bff5-cff9fdf99c93,Dorrah,Sayadi,dorrah.sayadi@capgemini.com,+21620737461,Développeur front-end,1,True,True,2026-03-11 01:49:51.320351+00:00,2026-04-26 01:00:11.545225+00:00
+273af618-b029-48bf-9f93-07a654f545f4,Marwa,Dhaoui,marwa.dhaoui@capgemini.com,+21653636783,Technicien électronique,7,True,True,2023-01-29 14:00:49.188415+00:00,2025-12-24 04:44:06.314146+00:00
+d46bbc33-a6b9-4170-bdd9-62088f76392b,Emily,Leroy,emily.leroy@capgemini.com,+21655675707,Responsable conformité,10,True,True,2024-01-01 15:28:45.813249+00:00,2024-10-27 10:32:09.379559+00:00
+a0c7a012-db14-441b-8ebb-f9240c05a82e,Sonia,Ferjani,sonia.ferjani@capgemini.com,+21640664084,Coordinateur amélioration continue,8,False,True,2024-08-13 20:26:00.405271+00:00,2024-10-14 06:06:32.852808+00:00
+adf357bf-a6ea-435e-84dc-d92ef2f7cde4,Siwar,Guetat,siwar.guetat@capgemini.com,+21621198248,Responsable conformité,10,True,True,2023-09-29 04:53:37.308090+00:00,2024-11-01 13:37:46.034818+00:00
+817c01f8-a304-41cd-8bad-d3f1648b87d4,Emna,Jaziri,emna.jaziri@capgemini.com,+21652356359,Architecte IoT,7,False,True,2024-02-16 04:27:48.360357+00:00,2025-01-09 08:31:05.029093+00:00
+e398a652-95b8-4aab-9aa3-b991fef8f84c,Skander,Bensalem,skander.bensalem@capgemini.com,+21620672071,Développeur back-end,1,True,True,2026-01-06 13:46:44.327116+00:00,2026-01-17 07:05:07.352511+00:00
+ca7c15d4-b63c-43b9-a154-a9f6ec9bd46d,Fatma,Belaid,fatma.belaid@capgemini.com,+21695224268,Ingénieur qualité,8,True,True,2025-01-07 16:17:25.493009+00:00,2025-03-10 10:15:16.644492+00:00
+b6a8879c-3ed7-476d-8f1c-47f8f344f70d,Eya,Hamdi,eya.hamdi@capgemini.com,+21625760027,Responsable support,9,True,True,2023-01-15 12:29:38.920610+00:00,2025-08-31 06:52:24.083586+00:00
+0758c702-8abe-48eb-8498-0241319134d6,Ahmed,Lahmar,ahmed.lahmar@capgemini.com,+21627798396,Scrum master,6,True,True,2024-03-26 18:16:07.990682+00:00,2024-05-08 20:17:29.975006+00:00
+79813442-5e34-470e-ae19-fde9bd8d21e8,Mourad,Karray,mourad.karray@capgemini.com,+21653138443,Product owner,6,True,True,2026-04-11 04:31:57.625009+00:00,2026-04-16 19:32:08.031459+00:00
+06cf8ad7-4bdc-42e8-94e2-b0abe12a020b,Aziz,Jlassi,aziz.jlassi@capgemini.com,+21656104692,Event coordinator,12,True,True,2023-01-10 10:57:46.065449+00:00,2024-10-15 15:41:54.602072+00:00
+6a02ace1-ef25-49eb-9361-c0c9a567599d,Anis,Elloumi,anis.elloumi@capgemini.com,+21650131224,Consultant innovation,6,True,True,2025-08-29 09:36:54.458076+00:00,2026-04-15 00:48:30.693794+00:00
+938ad754-ae19-4622-bf35-e9b4fd3944cb,Asma,Chouchane,asma.chouchane@capgemini.com,+21628363297,Architecte logiciel,1,True,True,2024-02-21 17:07:33.889597+00:00,2024-03-30 20:23:41.099072+00:00
+11f3834e-b75c-47de-8f68-181c73c2203d,Saber,Elloumi,saber.elloumi@capgemini.com,+21658024197,Développeur back-end,1,True,True,2025-04-28 21:35:20.334133+00:00,2025-07-27 19:03:14.035189+00:00
+d35f769d-d320-4357-a8ad-0db3cd7e1bcf,Zied,Sassi,zied.sassi@capgemini.com,+21624689726,Product owner,6,True,True,2025-09-24 09:37:45.407455+00:00,2025-11-10 18:58:34.160797+00:00
+49f84812-c3fe-4a66-b400-497728964a71,Rami,Brahmi,rami.brahmi@capgemini.com,+21624528330,Développeur full-stack,1,True,True,2025-07-22 18:22:00.435158+00:00,2026-03-23 02:24:41.031272+00:00
+4aebd320-ccf1-472f-a813-521405bb8292,Aicha,Sellami,aicha.sellami@capgemini.com,+21652260380,DevOps engineer,1,True,True,2026-02-12 16:37:01.636704+00:00,2026-03-04 07:53:50.656992+00:00
+a1a5a881-54f7-465a-9473-7397b5bd6d3e,Emna,Guesmi,emna.guesmi@capgemini.com,+21626327655,Administrateur systèmes,1,True,True,2023-08-30 18:02:58.575875+00:00,2025-07-24 01:47:47.270591+00:00
+76d0d2a2-4118-4160-aa2f-d3e4e8396d50,Rania,Dridi,rania.dridi@capgemini.com,+21651995029,Chargé marketing,4,True,True,2023-02-28 01:08:20.258314+00:00,2024-10-17 21:22:55.430654+00:00
+284ef197-5fe6-404b-92da-1fd69387091d,Hend,Khemiri,hend.khemiri@capgemini.com,+21621539239,Responsable qualité,8,True,True,2023-08-18 16:55:25.703318+00:00,2024-02-22 20:13:05.796216+00:00
+44e180ab-f87f-4906-959a-d4208112dfeb,Aymen,Dhaoui,aymen.dhaoui@capgemini.com,+21691941179,Community manager,4,True,True,2024-11-22 22:10:34.719796+00:00,2025-01-30 18:19:20.771893+00:00
+c5722e37-67de-4703-9c3e-8bfefb98abe1,Lucia,Dubois,lucia.dubois@capgemini.com,+21697465373,Data analyst,1,True,True,2023-06-21 21:10:51.693178+00:00,2025-05-01 03:49:52.949406+00:00
+f5795f69-df1e-4f2e-83bf-13391fab37a3,Emma,Petit,emma.petit@capgemini.com,+21621064390,Gestionnaire paie,2,True,True,2024-06-17 15:05:04.376877+00:00,2025-05-16 14:49:54.202860+00:00
+066a8584-2f31-4a5b-81a3-bfcffb97ceb0,Hana,Dhaoui,hana.dhaoui@capgemini.com,+21640880118,Account manager,5,True,True,2023-11-15 04:22:32.079803+00:00,2025-04-23 20:06:57.310026+00:00
+23f999be-8f3a-4135-a109-48825f2b5ce3,Skander,Gharbi,skander.gharbi@capgemini.com,+21695017708,Responsable financier,3,True,True,2025-09-22 02:44:16.255236+00:00,2026-03-30 00:34:17.149054+00:00
+2a9d41e6-bbad-409a-9305-7d1453de3fff,Emna,Mhiri,emna.mhiri@capgemini.com,+21628511899,Ingénieur IoT,7,True,True,2024-03-27 13:13:55.842915+00:00,2024-06-28 22:02:03.607364+00:00
+ea6a2151-71d0-4a29-bdab-6b249f5466e9,Amine,Sayadi,amine.sayadi@capgemini.com,+21640208035,Coordinateur amélioration continue,8,True,False,2024-12-21 01:48:17.196092+00:00,2026-01-05 18:09:32.644172+00:00
+0255ba23-f10c-4e55-a632-f39545ad53f2,Chloe,Leroy,chloe.leroy@capgemini.com,+21654779688,Sales development representative,5,True,True,2025-08-02 02:46:57.546320+00:00,2026-01-03 20:54:33.976567+00:00
+26d51b07-49a9-4201-b13c-709dbf828241,Dorrah,Miled,dorrah.miled@capgemini.com,+21695133215,Développeur front-end,1,True,False,2023-12-08 12:34:40.087745+00:00,2025-09-18 17:40:41.924659+00:00
+a7019b71-bdec-45fd-aa1f-46c39d0046c3,Rami,Mathlouthi,rami.mathlouthi@capgemini.com,+21626087767,Quality assurance manager,8,True,True,2025-11-21 07:11:09.878741+00:00,2026-04-09 08:41:13.925421+00:00
+f6441207-59b2-4d0d-8e38-22e2061a049e,Molka,Bagga,molka.bagga@capgemini.com,+21652385346,Développeur back-end,1,True,True,2023-06-15 15:03:37.499568+00:00,2026-03-20 06:34:41.105783+00:00
+a1c5d618-8d96-458c-8e77-e2adbc9f6c23,Kenza,Bensalem,kenza.bensalem@capgemini.com,+21621093906,Délégué protection des données,10,True,True,2024-11-13 13:17:52.030266+00:00,2024-12-01 09:03:04.727368+00:00
+0cadd3b8-6e5a-4928-af7f-885b82902a53,Marwen,Kallel,marwen.kallel@capgemini.com,+21651315346,Administrateur systèmes,1,True,True,2024-05-23 21:41:29.237289+00:00,2024-09-27 18:28:31.276112+00:00
+e684e654-4778-457f-88f4-600f7b349c6a,Grace,Faure,grace.faure@capgemini.com,+21697980957,Support operations analyst,9,True,True,2026-01-30 19:09:39.930406+00:00,2026-02-15 10:31:49.201093+00:00
+4d542073-0c38-433f-a83d-9994032a1c56,Amel,Chouchane,amel.chouchane@capgemini.com,+21628613171,Firmware engineer,7,False,False,2025-08-24 22:07:35.992963+00:00,2025-10-23 17:18:52.051736+00:00
+f2adb223-abf2-4dde-8eb2-d0e031d07e62,Aymen,Khemiri,aymen.khemiri@capgemini.com,+21694432858,Compliance officer,10,True,True,2023-11-24 01:37:15.572179+00:00,2024-03-07 22:52:53.676734+00:00
+04bb8b7a-cd4c-4a01-91d4-4704fda80686,Rihab,Guetat,rihab.guetat@capgemini.com,+21628621055,Support operations analyst,9,True,True,2025-08-07 23:23:47.108320+00:00,2026-04-20 18:22:17.872103+00:00
+cb6d8e05-1472-47ff-b732-cb920eb596dd,Malek,Abidi,malek.abidi@capgemini.com,+21636967365,Responsable développement,6,True,True,2026-01-02 11:12:01.392756+00:00,2026-03-22 04:56:03.561573+00:00
+f2aba7e0-43cb-45a1-8ed2-80e2b36e4be9,Isabel,Roux,isabel.roux@capgemini.com,+21658892288,Conseiller client,5,True,True,2023-07-08 12:10:40.674818+00:00,2025-05-26 22:02:10.413145+00:00
+5b4a4141-7738-4083-ae9c-db997fb64b4a,Marwen,Bouzid,marwen.bouzid@capgemini.com,+21626672923,Auditeur interne,3,True,True,2024-04-06 21:01:35.947313+00:00,2024-05-04 23:08:02.945049+00:00
+85b757d0-f583-4082-88db-1422127834d3,Mohamed,Guermazi,mohamed.guermazi@capgemini.com,+21651787896,Coordinateur amélioration continue,8,True,True,2026-03-10 09:33:55.354796+00:00,2026-03-28 14:46:06.576152+00:00
+82682e93-7af6-4971-b751-acd09d094d2a,Aziz,Cherif,aziz.cherif@capgemini.com,+21651606636,Sales development representative,5,True,True,2025-02-21 20:35:52.929564+00:00,2025-03-20 07:40:37.128773+00:00
+7120f862-693b-4518-8e4c-e2bfe7963695,Wassim,Rekik,wassim.rekik@capgemini.com,+21622073674,Chargé support client,9,True,True,2023-05-17 18:14:52.373231+00:00,2026-01-30 17:04:05.399507+00:00
+5c5fb113-5843-4b29-8933-b0d016b33d25,Houda,Bouzaiene,houda.bouzaiene@capgemini.com,+21655463625,Technicien électronique,7,True,True,2024-03-01 23:14:22.167540+00:00,2024-09-05 16:45:26.959061+00:00
+ee1c4d3b-ec68-41f3-b7f1-58779c7a6bd9,Tarek,Frikha,tarek.frikha@capgemini.com,+21624202740,Firmware engineer,7,True,True,2024-07-20 21:16:33.540063+00:00,2024-09-18 08:05:03.693380+00:00
+c31a8997-aa4f-4fcd-af44-2a2e36479c4d,Alice,Sanchez,alice.sanchez@capgemini.com,+21627984474,Product owner,6,True,True,2023-03-15 15:41:02.016777+00:00,2024-08-15 19:49:36.925401+00:00
+bd2d8a8f-cc69-4d59-9057-8cac5815b213,Aziz,Baccouche,aziz.baccouche@capgemini.com,+21694811274,Comptable,3,True,True,2023-04-04 13:55:50.063489+00:00,2025-06-16 01:51:50.422054+00:00
+80773d69-c298-4c18-89cd-2c5d7b1186c9,Seif,Mhiri,seif.mhiri@capgemini.com,+21628959064,Comptable,3,True,True,2024-07-18 22:31:52.260731+00:00,2024-12-04 15:34:07.173820+00:00
+e405908c-8072-4c93-8cd7-6a0b541a50ee,Zeineb,Mansour,zeineb.mansour@capgemini.com,+21699871866,Architecte logiciel,1,True,True,2025-05-09 18:58:39.770890+00:00,2025-07-31 14:12:01.241660+00:00
+f2d45b59-75cd-44be-b428-acaecb458fb7,Mariem,Mhiri,mariem.mhiri@capgemini.com,+21629506390,Firmware engineer,7,True,True,2023-01-17 04:55:40.385792+00:00,2023-05-03 19:28:52.295791+00:00
+9f86355d-2a5a-4db1-aef6-a2b4d7d51a28,Anis,Sassi,anis.sassi@capgemini.com,+21655603675,Développeur full-stack,1,True,True,2023-10-04 04:29:46.613865+00:00,2024-07-21 11:57:54.815359+00:00
+4311ce77-f8c2-4006-914c-00bf45307cde,Mohamed,Bensalem,mohamed.bensalem@capgemini.com,+21697896547,Auditeur interne,3,True,True,2025-09-22 13:16:07.861006+00:00,2025-12-03 02:34:08.696162+00:00
+ef84d501-5809-42c6-811a-459fc59c8de1,Houssem,Makni,houssem.makni@capgemini.com,+21654385164,Développeur full-stack,1,True,True,2023-05-29 09:19:07.439380+00:00,2025-07-18 00:29:42.135298+00:00
+c12cd7d4-3770-47ae-9237-24b35609b70d,Jean,Roux,jean.roux@capgemini.com,+21623069807,Trésorier,3,True,True,2025-06-22 13:46:53.565957+00:00,2025-08-26 06:23:56.416847+00:00
+888502a0-6058-4702-88b8-adb03b807926,Aymen,Khalfallah,aymen.khalfallah@capgemini.com,+21636802662,Sales development representative,5,True,True,2023-03-19 19:31:03.733151+00:00,2023-07-21 14:18:26.670384+00:00
+692a8a6c-d41c-400a-a1eb-e5c04cf9e6df,Paul,Fischer,paul.fischer@capgemini.com,+21628178920,Account manager,5,True,True,2023-06-28 03:38:45.000259+00:00,2023-07-25 16:40:02.015428+00:00
+49a32bab-cd26-41b3-bd72-44b130c4f30f,Noah,Lefebvre,noah.lefebvre@capgemini.com,+21693904789,Ingénieur logiciel,1,True,True,2025-04-03 18:26:42.880476+00:00,2025-10-21 06:22:42.958580+00:00
+8ee4e6aa-49bf-4476-8827-7c43c8576b3a,Houssem,Maalej,houssem.maalej@capgemini.com,+21691142257,Assistant RH,2,True,True,2024-07-24 21:19:50.426675+00:00,2025-01-26 05:07:36.825790+00:00
+4b1a88ac-4167-4eac-a0d2-4e293ef8f000,Amira,Ferchichi,amira.ferchichi@capgemini.com,+21627341633,Sales development representative,5,True,True,2023-07-11 19:08:45.714606+00:00,2024-03-29 19:54:55.834467+00:00
+01803a15-0ee4-4416-9a44-f065aa0b82f0,Karim,Lahmar,karim.lahmar@capgemini.com,+21699096585,Développeur full-stack,1,True,True,2024-11-26 06:05:09.005902+00:00,2024-11-28 05:14:43.884105+00:00
+acbfcf92-50ae-44fd-b9a5-7c398170cfd5,Mohamed,Lahmar,mohamed.lahmar@capgemini.com,+21696408352,Trésorier,3,True,True,2023-11-10 10:48:50.008183+00:00,2024-01-11 19:56:56.518678+00:00
+dac9ce9c-3e17-44ed-ac45-a48a89ca4b8d,Lina,Khemiri,lina.khemiri@capgemini.com,+21628299556,Chef de projet,6,True,True,2023-11-12 16:59:38.361930+00:00,2025-06-30 23:04:13.296001+00:00
+3e5fe20d-95f7-4fea-a0b1-f764d3af1ede,Julien,Girard,julien.girard@capgemini.com,+21625635325,Architecte IoT,7,True,True,2024-03-09 10:09:52.755206+00:00,2025-11-21 10:22:37.038686+00:00
+38e6fcf7-6529-4aa2-8994-a3bd7449055c,Amel,Dridi,amel.dridi@capgemini.com,+21694722762,Contrôleur de gestion,3,True,True,2023-01-03 10:18:15.676018+00:00,2024-12-08 08:02:22.933912+00:00
+20272eee-ae06-4fca-93c0-854b118bb324,Rim,Frikha,rim.frikha@capgemini.com,+21694171698,Développeur embarqué,7,True,True,2023-11-20 08:35:44.348510+00:00,2024-10-20 22:19:01.804080+00:00
+e0b41b2a-0c7b-41b4-b605-9004a85a2f65,Bilel,Miled,bilel.miled@capgemini.com,+21694721467,Commercial B2B,5,True,True,2024-09-14 12:42:05.819682+00:00,2025-01-20 16:58:53.557583+00:00
+a9eb667c-0911-4e4e-955e-a556167a78c0,Adel,Bouzid,adel.bouzid@capgemini.com,+21621647797,Data engineer IoT,7,True,True,2023-03-22 19:29:47.366618+00:00,2024-04-02 07:46:26.516640+00:00
+bfe891b4-9403-4989-a44e-4cc7c30638a2,Eya,Gharbi,eya.gharbi@capgemini.com,+21624982624,Responsable financier,3,True,True,2023-07-10 18:43:22.380450+00:00,2025-06-17 11:10:40.007404+00:00
+2529da7b-fb90-40ba-8ca7-89dad877f668,Tarek,Gharbi,tarek.gharbi@capgemini.com,+21694023737,Analyste financier,3,False,True,2023-11-25 21:04:38.530790+00:00,2024-02-19 12:35:14.220678+00:00
+2b117fb4-0476-4220-9e19-f00fccae94a5,Mourad,Dhaoui,mourad.dhaoui@capgemini.com,+21694656395,Responsable formation,2,True,True,2023-11-01 03:11:58.489479+00:00,2025-10-20 05:44:53.016276+00:00
+8f481282-4da5-453a-8238-b0915c33bf1d,Mourad,Bennour,mourad.bennour@capgemini.com,+21623045697,DevOps engineer,1,True,True,2025-06-18 16:19:07.521524+00:00,2025-12-20 04:45:53.023439+00:00
+a0aa60fd-568a-4e6d-86f9-4d6b89c6e255,Sofiane,Jaziri,sofiane.jaziri@capgemini.com,+21693906539,Data analyst,1,True,True,2025-08-10 12:39:09.894799+00:00,2026-03-29 01:03:37.253164+00:00
+f5f28e61-f4ca-473a-8c02-7e708513646c,Aziz,Hammami,aziz.hammami@capgemini.com,+21658388139,Business developer,5,True,False,2025-02-12 05:21:16.280022+00:00,2025-10-03 11:51:21.458848+00:00
+608ced08-9e47-4568-b2c6-81b0a7fdf075,Ines,Boughzela,ines.boughzela@capgemini.com,+21622849518,Chargé de reporting financier,3,True,True,2025-02-17 02:45:39.737313+00:00,2026-03-03 22:23:35.417828+00:00
+80d67e75-1cd6-4308-ace2-c8929c58a1fc,Emily,Fournier,emily.fournier@capgemini.com,+21699599499,Responsable développement,6,True,True,2023-01-19 12:50:43.549277+00:00,2026-02-25 03:44:44.203139+00:00
+b5470472-a376-405f-b34f-b7e3e01322d5,Mourad,Ben Ali,mourad.ben.ali@capgemini.com,+21652785471,Ingénieur logiciel,1,True,True,2025-10-01 17:07:42.465922+00:00,2026-02-06 14:09:20.944282+00:00
+cdceb895-35d8-4e18-b3c1-c6e0cb902595,Hichem,Tlili,hichem.tlili@capgemini.com,+21697564162,Chargé sourcing,11,True,True,2024-05-28 00:09:50.173806+00:00,2024-10-23 10:12:55.923351+00:00
+930dc420-8dbd-403e-b761-f0469b5b0b63,Bilel,Bouslama,bilel.bouslama@capgemini.com,+21698480418,Commercial B2B,5,False,False,2023-02-05 10:00:56.923139+00:00,2023-12-10 07:56:46.611838+00:00
+8e39130a-e867-4106-91d8-13206ebbc96a,Sarra,Mabrouk,sarra.mabrouk@capgemini.com,+21656468737,Talent acquisition specialist,2,True,True,2023-12-04 11:54:26.614834+00:00,2025-12-30 10:29:24.443109+00:00
+02af81eb-661b-43df-96f9-ae3e16e670eb,Iyed,Belhaj,iyed.belhaj@capgemini.com,+21625839298,Growth marketer,4,True,True,2024-07-29 17:36:00.124676+00:00,2025-01-07 04:35:36.339282+00:00
+2fbcc1cb-3f24-49ae-8318-d9d8b3352464,Hana,Sassi,hana.sassi@capgemini.com,+21653055692,Développeur full-stack,1,True,True,2025-12-13 09:06:55.376947+00:00,2026-03-23 16:49:42.779302+00:00
+f2b06dee-e475-4ddf-9811-39467ec5c4b3,Haythem,Rekik,haythem.rekik@capgemini.com,+21658700441,DevOps engineer,1,True,True,2025-10-08 17:12:37.205141+00:00,2025-12-03 11:26:40.498995+00:00
+542706cb-ff1a-4d9a-9b3d-621e4e7fe4bb,Malek,Guermazi,malek.guermazi@capgemini.com,+21653394170,Chargé d’études marketing,4,True,True,2023-12-06 13:36:00.339642+00:00,2026-01-09 14:32:21.243117+00:00
+6ed2246c-0899-4390-bcd4-1c784aa4dcbf,Karim,Gharbi,karim.gharbi@capgemini.com,+21694296114,Data analyst,1,True,True,2024-03-10 04:36:01.482669+00:00,2025-04-20 17:33:57.471005+00:00
+985eaa3f-7b48-432c-980e-612cac39b2d6,Houssem,Bouhlel,houssem.bouhlel@capgemini.com,+21691274471,Analyste financier,3,True,True,2024-05-04 19:37:38.523784+00:00,2026-04-01 17:30:04.629620+00:00
+8de3a1bf-0867-4629-9291-42a74caf9008,Zeineb,Sellami,zeineb.sellami@capgemini.com,+21625451262,Growth marketer,4,True,True,2024-09-28 04:23:05.237339+00:00,2025-08-06 15:06:02.150420+00:00
+8a32d959-70a5-4d75-a21f-8a47260e0f27,Zeineb,Gharbi,zeineb.gharbi@capgemini.com,+21628711212,Assistant RH,2,True,True,2023-05-22 01:06:55.914828+00:00,2024-07-09 05:16:12.958061+00:00
+1be443c1-01cd-4768-b52a-7eb78db9af09,Bilel,Messaoudi,bilel.messaoudi@capgemini.com,+21651429411,Responsable conformité,10,False,True,2024-09-22 04:34:44.911912+00:00,2025-03-16 20:49:03.070384+00:00
+9fd6253e-a662-4cde-bf57-754afdda3595,Rahma,Bennour,rahma.bennour@capgemini.com,+21640545479,Test lead,8,True,True,2024-10-10 12:05:11.226896+00:00,2025-01-23 08:05:46.463195+00:00
+d7a3f62a-7276-4b1a-9abc-2110c1979b89,Nizar,Bensalem,nizar.bensalem@capgemini.com,+21656856615,Responsable développement,6,True,True,2025-08-10 23:58:44.380147+00:00,2026-02-02 23:55:32.623322+00:00
+e50d8d05-5cc4-4343-b6bc-1df1b3f3d22f,Olfa,Sellami,olfa.sellami@capgemini.com,+21622449357,Développeur back-end,1,True,True,2025-06-15 07:04:46.636197+00:00,2026-04-26 12:34:10.629421+00:00
+c4e9879e-05ab-498a-920f-58381490c89b,David,Hoffmann,david.hoffmann@capgemini.com,+21650673725,Responsable RH,2,True,True,2025-01-02 09:05:39.383333+00:00,2026-03-13 04:53:59.478806+00:00
+c95d510a-3346-4f36-be97-770bde6ccec1,Fares,Belhaj,fares.belhaj@capgemini.com,+21625721135,Auditeur qualité,8,True,False,2025-01-15 08:48:02.599071+00:00,2025-07-01 12:31:46.382541+00:00
+eb004ec6-6884-44b6-8aae-0caf60444601,Zeineb,Belhaj,zeineb.belhaj@capgemini.com,+21624596115,Content manager,4,True,True,2026-03-18 08:16:28.914721+00:00,2026-04-05 23:16:52.257231+00:00
+d04fc3d7-1126-4cb3-9932-981657c916cf,Nesrine,Ben Ali,nesrine.ben.ali@capgemini.com,+21622174688,Coordinateur engagement collaborateurs,12,True,True,2024-09-15 21:26:40.131015+00:00,2025-07-01 02:01:21.493484+00:00
+0d89d375-2da9-4e6e-bf17-55801c583b8e,Aziz,Abidi,aziz.abidi@capgemini.com,+21693676027,Test lead,8,True,True,2026-04-09 20:23:27.949310+00:00,2026-04-16 14:42:20.324486+00:00
+7dcdee17-8895-4c49-8c8b-2fe06574a692,Meriem,Haddad,meriem.haddad@capgemini.com,+21625276431,Coordinateur projet,6,True,True,2025-11-03 22:07:03.090730+00:00,2026-02-12 17:13:25.760681+00:00
+a682884e-7829-49ab-8494-57cf249e52b4,Houda,Bouzid,houda.bouzid@capgemini.com,+21651931845,Analyste financier,3,False,False,2024-05-18 19:21:23.321879+00:00,2024-06-07 12:12:29.412801+00:00
+f403a135-e2fa-4427-9cb5-9d55455f9b66,Nabil,Derbel,nabil.derbel@capgemini.com,+21628398000,Data analyst,1,True,True,2025-03-09 06:29:17.924348+00:00,2025-05-27 20:46:19.496430+00:00
+b0953e8e-335d-49b9-b394-fc0fe62b5e1e,Eya,Sayadi,eya.sayadi@capgemini.com,+21695812757,Développeur back-end,1,True,True,2025-07-22 19:32:25.027423+00:00,2026-03-05 17:26:34.528071+00:00
+9670db24-9fbd-4eae-8798-eee73b7f38b0,Maria,David,maria.david@capgemini.com,+21621169537,Responsable formation,2,True,True,2024-05-07 18:27:27.229202+00:00,2025-12-09 07:40:27.445195+00:00
+d14d3d68-bc4f-4869-b1ec-aa8b4936f3cf,Fedi,Jlassi,fedi.jlassi@capgemini.com,+21653615800,Manager IT,1,True,True,2025-07-26 05:33:20.216165+00:00,2025-10-07 11:44:27.811326+00:00
+3b4c8589-a29e-4f2a-9518-57ade939fcf8,Saber,Kallel,saber.kallel@capgemini.com,+21694216085,Responsable RH,2,True,True,2023-08-09 14:53:50.442319+00:00,2024-05-30 05:37:42.613553+00:00
+03eeb36f-1602-4d94-af8d-fa5e5db432b8,Skander,Khalfallah,skander.khalfallah@capgemini.com,+21695048354,Ingénieur qualité,8,True,True,2023-09-10 06:01:08.379182+00:00,2025-10-01 19:12:05.674869+00:00
+4fd46ebc-f590-48ab-9c20-b28ac7350ca8,Siwar,Bouhlel,siwar.bouhlel@capgemini.com,+21640789663,Sales development representative,5,True,True,2024-09-05 08:00:10.364971+00:00,2025-04-30 08:45:02.004788+00:00
+fd980494-269c-489f-be6e-0159fbcec461,Zied,Bjaoui,zied.bjaoui@capgemini.com,+21693863304,Talent acquisition specialist,2,True,True,2024-04-16 23:08:39.003411+00:00,2025-07-09 23:56:18.319712+00:00
+510ae9dd-0fef-4647-ab59-c05d2f715afe,Nabil,Bouzid,nabil.bouzid@capgemini.com,+21629826027,Technicien électronique,7,True,True,2023-01-14 10:41:16.488588+00:00,2025-12-25 21:13:03.070076+00:00
+09d2cf11-ac8c-461a-94a4-50153a860768,Mia,Johnson,mia.johnson@capgemini.com,+21628537250,Responsable financier,3,True,True,2024-05-03 14:22:51.090318+00:00,2025-01-05 10:59:49.983567+00:00
+0f5dcdfd-9397-4997-853c-278f6e224fe8,Sarra,Miled,sarra.miled@capgemini.com,+21620483630,QA engineer,1,True,True,2024-02-20 09:59:55.940060+00:00,2024-07-06 03:40:18.562626+00:00
+392c8fe6-5cad-4071-b5ed-e8677d946e7b,Hichem,Bouhlel,hichem.bouhlel@capgemini.com,+21691250502,Business analyst,6,False,True,2025-12-20 02:42:51.282387+00:00,2026-02-24 18:51:39.942434+00:00
+876555c2-25f1-4f17-a598-ae5ea4457ee0,Skander,Ferjani,skander.ferjani@capgemini.com,+21622549316,Account manager,5,True,True,2024-05-24 08:15:10.617428+00:00,2024-06-17 19:23:46.202275+00:00
+1a7b75b9-6dfb-43ac-8df5-e9d9c7ef26d8,Mohamed,Bennour,mohamed.bennour@capgemini.com,+21651402162,Ingénieur avant-vente,5,True,True,2023-06-28 02:46:53.424341+00:00,2024-03-11 18:18:07.205671+00:00
+f6e7d21d-ffa2-40da-a777-6cd561fc7ca2,Molka,Ben Salah,molka.ben.salah@capgemini.com,+21650512941,Architecte IoT,7,True,True,2023-06-01 15:11:46.282160+00:00,2023-12-17 00:11:31.809722+00:00
+9851c669-90b3-4bba-a904-e07bff44c7cb,Fatma,Mrad,fatma.mrad@capgemini.com,+21654224834,HR Business Partner,2,True,True,2024-09-21 22:37:02.553986+00:00,2025-07-14 20:02:58.238091+00:00
+794fc94e-96be-40c8-8451-4a63913e6c27,Nour,Gharbi,nour.gharbi@capgemini.com,+21695543794,Ingénieur logiciel,1,True,True,2025-06-06 02:33:51.015678+00:00,2025-07-18 22:43:18.198788+00:00
+3d995ed0-a816-4b0a-8bb4-eaf99e325783,Ines,Abidi,ines.abidi@capgemini.com,+21654730393,Gestionnaire paie,2,True,True,2024-09-11 20:38:09.462146+00:00,2024-12-02 17:33:07.002608+00:00
+90d25913-0003-4280-8814-c15e3a6cc928,Pablo,Weber,pablo.weber@capgemini.com,+21658788005,Business analyst,6,False,False,2024-02-17 06:02:51.713377+00:00,2024-07-14 01:33:27.965038+00:00
+1edf11bf-caeb-49fc-8f55-69e63e815dae,Lina,Dridi,lina.dridi@capgemini.com,+21698095712,Architecte logiciel,1,True,True,2024-03-07 10:00:14.786170+00:00,2025-04-24 11:44:39.595049+00:00
+1d232fca-e41e-4733-addc-7d23e43a1a37,Adel,Ferchichi,adel.ferchichi@capgemini.com,+21654404439,Analyste financier,3,True,True,2024-06-15 19:46:59.467042+00:00,2026-04-13 20:45:56.390593+00:00
+6f1f4dc0-4b42-4147-b573-37a2915f8a50,Firas,Derbel,firas.derbel@capgemini.com,+21653944510,Architecte IoT,7,True,True,2023-07-30 10:21:49.722622+00:00,2024-04-10 16:10:57.510098+00:00
+94df617c-7422-4cee-8fff-551c271661f6,Mourad,Ben Amor,mourad.ben.amor@capgemini.com,+21626788415,Ingénieur capteurs,7,True,True,2025-07-28 23:19:42.728918+00:00,2025-11-17 22:59:06.684610+00:00
+b1b3abf0-bf40-43df-bd09-1bd861e99e17,David,Blanc,david.blanc@capgemini.com,+21654910011,Coordinateur engagement collaborateurs,12,True,True,2025-03-30 18:16:46.911930+00:00,2025-10-22 20:57:39.708591+00:00
+ebc876d8-1628-4ff4-afd4-eea254a75a3c,Wassim,Khalfallah,wassim.khalfallah@capgemini.com,+21692201544,Architecte logiciel,1,True,True,2024-05-21 20:31:52.892823+00:00,2024-08-20 18:45:06.410277+00:00
+542134d1-b226-400c-8d7c-4e24b1a088a6,Salma,Kouki,salma.kouki@capgemini.com,+21623551830,Coordinateur amélioration continue,8,True,True,2024-05-29 13:06:57.522187+00:00,2026-02-10 19:32:37.808175+00:00
+f2a1a80b-ee11-4d4d-934b-4728eb24d690,Sonia,Mokhtar,sonia.mokhtar@capgemini.com,+21693024154,Test lead,8,True,True,2025-04-02 18:15:49.026120+00:00,2025-07-01 15:06:14.814775+00:00
+f2ea42b1-7f53-4ca2-8107-27de52bb697a,Ana,Lefebvre,ana.lefebvre@capgemini.com,+21621020005,Conseiller client,5,False,False,2024-05-27 09:39:53.354214+00:00,2024-06-11 12:01:38.614685+00:00
+368b0c1f-2b18-45ae-8c55-7445a2e631bc,Aicha,Ghariani,aicha.ghariani@capgemini.com,+21699645443,Conseiller support niveau 2,9,True,True,2023-11-02 00:28:50.700868+00:00,2023-11-25 19:02:47.134732+00:00
+b312e220-ae63-4cad-98df-940d573360df,Saber,Makni,saber.makni@capgemini.com,+21696517954,Responsable communication interne,12,True,True,2025-12-19 05:40:56.848649+00:00,2026-03-06 23:10:19.647535+00:00
+23cf3644-a5e7-4b7a-848c-b3c4ffc0d526,Aya,Hamdi,aya.hamdi@capgemini.com,+21651819913,Data engineer IoT,7,True,True,2026-04-03 11:24:38.612540+00:00,2026-04-09 05:23:14.206638+00:00
+d4bea928-8cc6-40c1-ad6c-85ba2f32c3ca,Zeineb,Horchani,zeineb.horchani@capgemini.com,+21651412823,Administrateur systèmes,1,True,True,2024-12-14 12:09:56.608834+00:00,2025-06-23 18:24:45.869251+00:00
+5268065e-db45-4ebe-8c7d-af94ecc0d672,Zied,Kouki,zied.kouki@capgemini.com,+21693619417,Administrateur systèmes,1,True,True,2025-04-20 19:58:06.011240+00:00,2025-11-11 16:02:11.223146+00:00
+3828eac9-779d-4dee-8a85-97444f82ce68,Zeineb,Guetat,zeineb.guetat@capgemini.com,+21625101382,Auditeur interne,3,True,True,2025-07-22 12:30:44.908645+00:00,2026-03-01 21:15:00.884858+00:00
+c31aaa51-862f-454c-afdf-06d1d6ea07fa,Eya,Mansouri,eya.mansouri@capgemini.com,+21652755724,Chargé de reporting financier,3,True,True,2023-06-27 04:27:51.796929+00:00,2024-04-04 20:54:59.613322+00:00
+65f45148-d34d-4ca8-b231-ff27af7e1083,Rim,Mrad,rim.mrad@capgemini.com,+21655304272,Assistant RH,2,True,True,2024-09-15 06:47:07.390596+00:00,2025-03-19 06:58:49.958767+00:00
+d264ec2d-d6b4-4a68-a16e-2ce4e95ca174,Houda,Ayari,houda.ayari@capgemini.com,+21621490712,Délégué protection des données,10,True,True,2023-01-20 04:59:19.133882+00:00,2025-07-28 01:13:19.592547+00:00
+aaf51b3f-54ec-45c3-8487-c08aaa05d8c7,Pierre,Michel,pierre.michel@capgemini.com,+21629973557,Acheteur IT,11,True,True,2023-11-17 10:33:34.416665+00:00,2025-03-29 15:19:18.188119+00:00
+b4b6c65f-6664-4d76-b394-e61f1c8f8ec1,Tarek,Elloumi,tarek.elloumi@capgemini.com,+21696218537,Commercial B2B,5,True,True,2024-01-13 17:13:54.187880+00:00,2025-08-16 02:24:31.527808+00:00
+76cbf7c4-1a28-4125-bb2c-8e192a892807,Maher,Sayadi,maher.sayadi@capgemini.com,+21696362235,Chargé marketing,4,True,True,2025-12-02 10:58:02.374786+00:00,2026-03-02 14:46:11.311115+00:00
+c98070f7-ea93-464b-9719-8e5817cb346a,Houssem,Guesmi,houssem.guesmi@capgemini.com,+21622412981,Chargé support client,9,True,True,2023-02-28 01:51:51.362248+00:00,2025-07-01 09:27:54.015815+00:00
+c21e317f-9f79-44d5-b20a-71aa31f20d74,Zied,Gharbi,zied.gharbi@capgemini.com,+21652398135,Développeur back-end,1,True,True,2024-06-07 21:32:26.191862+00:00,2025-10-01 01:04:18.172815+00:00
+5974ae31-04b8-4503-9dea-54b6eb4c5696,Ahmed,Ferjani,ahmed.ferjani@capgemini.com,+21628441394,Chargé de recrutement,2,True,True,2024-10-26 18:44:35.889471+00:00,2024-12-03 05:48:53.607655+00:00
+7497f43c-158d-489b-b70c-fe3b4c138821,Nourhene,Hadded,nourhene.hadded@capgemini.com,+21698471518,Technicien électronique,7,True,True,2023-02-14 21:52:41.564140+00:00,2024-01-16 06:31:37.356452+00:00
+3f24b106-d0fe-4f00-822d-c9d256babef7,Sami,Frikha,sami.frikha@capgemini.com,+21628604768,Contrôleur de gestion,3,True,True,2025-05-15 00:56:23.657616+00:00,2025-05-16 10:34:53.725588+00:00
+d03f66d8-d99b-4671-a0db-107d9ed5e8e4,Sarah,Lopez,sarah.lopez@capgemini.com,+21620819292,Manager IT,1,True,True,2023-07-31 02:48:01.592870+00:00,2025-12-22 22:40:35.613839+00:00
+33611d4a-b72d-4868-8862-37dc6da35c82,Marwa,Hammami,marwa.hammami@capgemini.com,+21640752119,Business developer,5,True,True,2023-10-15 20:14:06.701011+00:00,2026-03-18 09:53:28.579681+00:00
+c590c49a-6aa2-4b9e-b7ef-8de08d64a34f,Siwar,Bouzid,siwar.bouzid@capgemini.com,+21697906812,Chargé d’études marketing,4,True,True,2023-01-20 17:38:20.264461+00:00,2025-04-02 18:41:45.994610+00:00
+4738d738-cc35-4349-9f89-e96e0a7c3f71,Mohamed,Mejri,mohamed.mejri@capgemini.com,+21622060205,Responsable RH,2,True,True,2025-12-19 00:44:39.297411+00:00,2026-03-01 13:37:43.513029+00:00
+1b3c57a9-ab30-45ef-ba0c-1208f9580bcc,Kenza,Brahmi,kenza.brahmi@capgemini.com,+21636029320,Développeur back-end,1,False,True,2024-12-04 22:14:39.539848+00:00,2024-12-20 21:17:09.561860+00:00
+a05fb95c-ba9f-4e27-a689-3cf5fc1b5a26,Claire,Smith,claire.smith@capgemini.com,+21653948392,Event coordinator,12,True,True,2025-09-15 20:50:48.793126+00:00,2025-10-16 23:48:17.730657+00:00
+dea563e5-75d4-4009-859c-5370f9952466,Firas,Sghaier,firas.sghaier@capgemini.com,+21695673958,Data engineer IoT,7,True,True,2025-09-22 19:08:42.460292+00:00,2025-10-31 13:24:13.233718+00:00
+85fcc4be-726c-4bcd-9bc6-c969daa3cd3e,Marwa,Ben Othmen,marwa.ben.othmen@capgemini.com,+21698771833,Legal counsel,10,True,True,2023-10-23 21:59:25.348347+00:00,2026-01-13 04:33:52.069137+00:00
+385f81d4-6aef-41cb-a04f-f1dc4b4c392c,Saber,Baccouche,saber.baccouche@capgemini.com,+21693171453,Développeur back-end,1,True,True,2023-11-07 03:22:57.927138+00:00,2024-05-26 08:07:07.184350+00:00
+1c8aea5a-7709-44a0-898c-a882a974318f,Mouna,Chebbi,mouna.chebbi@capgemini.com,+21692857583,Responsable formation,2,True,True,2024-10-16 08:12:04.826676+00:00,2026-01-29 20:50:39.789813+00:00
+724c4395-7ea9-4d83-8121-d2861a23f625,Mourad,Elloumi,mourad.elloumi@capgemini.com,+21696489111,Chef de projet,6,False,False,2026-03-06 23:59:52.831085+00:00,2026-04-01 17:45:17.599723+00:00
+50e23573-ed49-4a5a-a274-62ac3d92fa00,Sarra,Mhiri,sarra.mhiri@capgemini.com,+21693763131,Commercial B2B,5,True,True,2025-10-31 01:04:46.890578+00:00,2026-01-27 16:40:04.675369+00:00
+fbabdc2f-0b0f-4905-8305-434bbbdaeebf,Emily,Rousseau,emily.rousseau@capgemini.com,+21655206683,Manager IT,1,True,True,2023-05-02 06:57:21.132321+00:00,2024-05-03 23:12:02.618109+00:00
+0ed95bd1-0f78-425f-bb15-de63420dce41,Sophie,Garcia,sophie.garcia@capgemini.com,+21654325544,QA engineer,1,True,True,2024-05-08 22:38:33.328544+00:00,2025-04-21 05:54:48.279772+00:00
+d46a3b65-b3c2-4019-9b15-047e249159c1,Marie,Garcia,marie.garcia@capgemini.com,+21640222088,Firmware engineer,7,True,True,2025-10-16 04:41:18.053593+00:00,2025-10-23 04:31:02.339276+00:00
+1139ba1c-108d-408a-bcce-dc297a47ae0b,James,Vincent,james.vincent@capgemini.com,+21653455402,Conseiller client,5,True,True,2026-03-18 07:59:34.340719+00:00,2026-04-12 04:09:43.594142+00:00
+966251e0-21da-4b33-8c4f-5acafc653771,Chaker,Boughzela,chaker.boughzela@capgemini.com,+21653078909,Gestionnaire paie,2,True,True,2025-11-02 17:55:58.723498+00:00,2026-04-23 11:43:38.997379+00:00
+ad077160-525d-4c40-8102-623ecef44a68,Mariem,Ben Ahmed,mariem.ben.ahmed@capgemini.com,+21696678197,Juriste d’entreprise,10,True,True,2025-04-22 14:39:31.450914+00:00,2025-09-05 16:44:53.489890+00:00
+869f5770-ffbd-42b1-9908-f61f8fbbc8ea,Fatma,Dridi,fatma.dridi@capgemini.com,+21640768778,Responsable développement,6,True,True,2026-04-16 05:47:53.152977+00:00,2026-04-19 12:43:43.306230+00:00
+17f812f6-c3b4-4bc7-a54b-f1133fe132f8,Zeineb,Dhaoui,zeineb.dhaoui@capgemini.com,+21621953051,Chargé communication interne,12,True,True,2025-07-18 17:52:06.501120+00:00,2026-01-03 00:50:49.253822+00:00
+44bd7edf-b40c-4e70-80b5-06cef76b4c8c,Nourhene,Bagga,nourhene.bagga@capgemini.com,+21654941948,Développeur front-end,1,True,True,2023-03-28 18:52:54.431154+00:00,2023-11-24 17:44:01.899679+00:00
+2a5fc018-eeb8-406f-83fc-1862252f93b0,Lotfi,Belaid,lotfi.belaid@capgemini.com,+21627200459,SEO specialist,4,True,True,2025-10-01 10:25:17.239845+00:00,2026-02-10 07:35:42.334258+00:00
+48330897-124f-4e58-aa9c-5880e8a51283,Bilel,Marzouk,bilel.marzouk@capgemini.com,+21640684429,Trésorier,3,True,True,2025-08-04 03:09:27.234038+00:00,2025-10-24 19:25:22.991507+00:00
+0b0392ac-a14f-455e-86b0-ae00fdfdf1f6,Saber,Najjar,saber.najjar@capgemini.com,+21640984899,Responsable financier,3,True,True,2023-08-06 12:06:59.075424+00:00,2023-12-28 16:10:35.750405+00:00
+9d77bbdb-a7c6-48dc-8333-69d2a53bae58,Siwar,Guermazi,siwar.guermazi@capgemini.com,+21690332204,Support operations analyst,9,True,True,2025-03-29 20:10:00.895961+00:00,2025-07-08 03:16:45.524835+00:00
+eaaf4ff9-389b-4404-8570-7d2997f37220,Fares,Derbel,fares.derbel@capgemini.com,+21692619313,Conseiller support niveau 2,9,True,True,2026-02-24 20:01:23.638377+00:00,2026-04-05 23:52:35.913270+00:00
+8e755df7-d353-4b98-b399-336164ee4a93,Firas,Kammoun,firas.kammoun@capgemini.com,+21691857605,Développeur back-end,1,True,True,2023-12-01 22:32:39.046504+00:00,2025-04-28 05:17:37.759779+00:00
+915de5a6-4e56-45a3-9ec0-f304a3b83653,Khaled,Ferchichi,khaled.ferchichi@capgemini.com,+21653026802,Compliance officer,10,True,True,2023-12-15 06:39:11.141593+00:00,2025-11-10 14:24:13.904447+00:00
+233057b7-c1c0-40c2-9d82-b5af2946ba7d,Julia,Moreau,julia.moreau@capgemini.com,+21652279992,Architecte logiciel,1,True,True,2023-03-20 06:45:16.531422+00:00,2025-06-26 09:59:52.141096+00:00
+62668eb7-8a70-4916-8f73-9d676777f177,Marwa,Mokhtar,marwa.mokhtar@capgemini.com,+21650222308,Responsable développement,6,True,True,2023-01-29 14:45:41.525309+00:00,2025-07-03 05:12:41.139184+00:00
+14982b70-3b85-4fff-9449-0f42ce2dd336,Maher,Mansouri,maher.mansouri@capgemini.com,+21655421050,HR Business Partner,2,True,True,2024-09-02 04:18:36.988491+00:00,2025-02-25 13:09:28.323419+00:00
+ce175c8f-1175-4928-bf29-79fe69406339,Tarek,Guesmi,tarek.guesmi@capgemini.com,+21629120243,Manager IT,1,True,True,2025-01-09 00:53:46.628924+00:00,2026-02-10 09:52:57.499810+00:00
+3188176c-9dd0-4d53-96d8-70927d80f0d8,Emna,Ben Othmen,emna.ben.othmen@capgemini.com,+21693409192,Chargé support client,9,False,True,2024-12-29 01:21:47.791994+00:00,2025-04-26 15:23:54.921940+00:00
+f6be51eb-5ff8-4a8e-a90d-11214c8c8539,Lucas,Mercier,lucas.mercier@capgemini.com,+21658756785,Manager IT,1,True,False,2024-12-26 03:02:16.944167+00:00,2025-05-17 20:21:51.687169+00:00
+c8179126-6db5-4378-878a-06984c582910,Aymen,Ben Ali,aymen.ben.ali@capgemini.com,+21695017679,Data engineer IoT,7,True,True,2025-09-11 14:39:36.636736+00:00,2025-09-26 14:51:58.913304+00:00
+830b26e2-0a20-44ba-bebb-2eb0e55eb5eb,Daniel,Wagner,daniel.wagner@capgemini.com,+21624748609,Coordinateur amélioration continue,8,True,False,2023-10-29 09:00:38.662397+00:00,2026-04-16 10:40:06.134513+00:00
+c65f1d0c-7e5f-4fdb-a7f7-440f48fa79fc,Hichem,Lahmar,hichem.lahmar@capgemini.com,+21692492948,Procurement specialist,11,False,False,2025-09-24 05:56:14.245675+00:00,2025-12-16 02:24:34.123696+00:00
+7f1597a7-81b9-4a2c-9123-eee64ca91f04,Amine,Elloumi,amine.elloumi@capgemini.com,+21658167645,Analyste financier,3,True,True,2025-10-16 18:21:49.292308+00:00,2026-01-24 07:29:48.823168+00:00
+ce737a66-340f-45b5-b53a-c9066f05836b,Rahma,Sellami,rahma.sellami@capgemini.com,+21690003373,Conseiller client,5,True,True,2025-11-08 18:25:06.568826+00:00,2026-01-08 01:58:21.797361+00:00
+7127262b-87e0-4b93-baf5-21b9e0364a29,Youssef,Bagga,youssef.bagga@capgemini.com,+21629945400,Ingénieur capteurs,7,False,False,2025-02-01 13:54:17.387487+00:00,2025-06-13 22:02:52.451906+00:00
+57b45e22-215a-4f53-8bf0-2a6895527cf0,Mouna,Mrad,mouna.mrad@capgemini.com,+21694120309,Chef de projet,6,True,True,2025-03-11 10:39:39.547158+00:00,2025-09-03 18:09:04.968003+00:00
+3ed1a5be-d9c3-4c39-9e85-87c9b144f119,Julia,Lefebvre,julia.lefebvre@capgemini.com,+21625509426,Sales development representative,5,True,True,2023-11-15 00:12:51.253606+00:00,2026-01-13 17:43:52.018177+00:00
+ed50e871-1708-4f88-8eff-4450af6fd5de,Mouna,Mansouri,mouna.mansouri@capgemini.com,+21694254153,Responsable développement,6,True,True,2025-02-26 17:47:13.228161+00:00,2025-12-12 09:11:30.660946+00:00
+c33a2e16-11ad-42aa-86ff-912411bdea48,Nabil,Frikha,nabil.frikha@capgemini.com,+21628925950,Architecte IoT,7,True,True,2025-08-16 00:25:44.251237+00:00,2026-04-13 10:30:14.275346+00:00
+d0f4fbc4-456a-46ec-83cb-fa4972235dcc,Rami,Bouazizi,rami.bouazizi@capgemini.com,+21640086746,Ingénieur avant-vente,5,True,True,2024-03-12 11:13:13.844009+00:00,2025-09-04 20:09:57.070331+00:00
+3929fc4e-362b-4007-861c-0f8355b34314,Nour,Elloumi,nour.elloumi@capgemini.com,+21624182054,Ingénieur logiciel,1,True,True,2024-12-10 15:32:34.117646+00:00,2026-01-03 03:09:08.285501+00:00
+2283e00e-d82e-4663-8d50-14ece1f3a41c,Anna,Laurent,anna.laurent@capgemini.com,+21699909958,Coordinateur projet,6,True,True,2023-06-22 01:06:20.429119+00:00,2025-11-02 14:49:41.586910+00:00
+4939d78a-0c57-4ce5-bee3-d1fe244be125,Anna,Navarro,anna.navarro@capgemini.com,+21696714926,Community manager interne,12,True,True,2024-04-06 13:38:34.891623+00:00,2025-10-14 07:40:50.556843+00:00
+63c7f6a6-1fb9-467e-a32c-b7f7fbd263d6,Omar,Guermazi,omar.guermazi@capgemini.com,+21651021115,Community manager,4,True,True,2026-03-08 07:12:15.132312+00:00,2026-04-25 13:41:53.240232+00:00
+16027d3d-1f20-426f-a1bf-3b8acac085b6,Julie,Bernard,julie.bernard@capgemini.com,+21650785499,Firmware engineer,7,True,True,2023-06-17 09:10:51.499216+00:00,2024-08-30 00:51:08.010962+00:00
+272d5f97-d155-49de-84ae-ec5809dee4db,Carlos,Wilson,carlos.wilson@capgemini.com,+21627176745,Trésorier,3,False,False,2024-05-15 07:58:47.465561+00:00,2024-12-08 03:05:40.449310+00:00
+de793784-3e9c-4a5b-a50b-5e1a0437bd90,Yosra,Ferjani,yosra.ferjani@capgemini.com,+21690191703,Responsable achats,11,True,True,2025-02-21 14:19:34.366382+00:00,2025-09-11 00:41:54.772009+00:00
+91e9323a-e856-492f-b6b6-379bc6570add,Marie,Smith,marie.smith@capgemini.com,+21627763861,Responsable support,9,True,True,2024-12-10 05:00:00.642689+00:00,2025-02-03 17:58:07.897043+00:00
+f4ff8b53-48fb-46e8-9ea0-bc7c51ea9fee,Adel,Frikha,adel.frikha@capgemini.com,+21636858318,Ingénieur avant-vente,5,True,True,2023-05-28 03:02:48.848470+00:00,2025-08-09 04:37:02.406830+00:00
+1f9f1987-7506-4d70-81a9-f58c2de19219,Rahma,Rahmani,rahma.rahmani@capgemini.com,+21652722955,Community manager interne,12,True,True,2025-02-26 21:04:10.923019+00:00,2025-11-09 00:28:21.036512+00:00
+bebe014f-7c1c-4d4c-93b4-536cb5e45af9,Aya,Mabrouk,aya.mabrouk@capgemini.com,+21653226610,Développeur front-end,1,True,True,2023-05-13 22:05:42.510848+00:00,2025-06-22 21:41:28.269852+00:00
+702b5919-6fb5-46fa-8a5a-e0c7f8f37c74,Nour,Charfi,nour.charfi@capgemini.com,+21628248662,Chargé d’études marketing,4,True,True,2023-07-09 11:38:26.706695+00:00,2024-06-14 19:24:05.926156+00:00
+dc305b07-816b-4ee2-869d-98231db9d646,Nour,Guesmi,nour.guesmi@capgemini.com,+21620344626,Développeur back-end,1,True,True,2023-09-08 04:05:44.785741+00:00,2023-11-07 19:33:36.989608+00:00
+5179d5b9-4f1e-4e23-9bd1-90c1af18e263,Ahmed,Chouchane,ahmed.chouchane@capgemini.com,+21628507943,Manager IT,1,True,True,2023-02-03 09:14:35.277649+00:00,2023-07-19 00:10:59.334232+00:00
+a238e74e-e02f-42de-9a99-a0638146ebd0,Emna,Mokhtar,emna.mokhtar@capgemini.com,+21691327298,Content manager,4,False,False,2024-03-16 12:05:29.258799+00:00,2024-05-21 16:18:11.118405+00:00
+1bf756ca-dbef-4935-bac3-a3b692010a75,Haythem,Sassi,haythem.sassi@capgemini.com,+21636739371,Coordinateur engagement collaborateurs,12,True,True,2025-11-18 14:34:32.415237+00:00,2026-04-01 17:23:14.706292+00:00
+342b5161-320b-428c-a3a4-897f848e1286,Pierre,Hoffmann,pierre.hoffmann@capgemini.com,+21692945539,Firmware engineer,7,True,True,2023-11-06 15:15:42.244543+00:00,2025-08-02 17:51:21.316877+00:00
+b03b0bea-37b9-4c1f-81bd-ca801d8ef25b,Sarra,Ben Ali,sarra.ben.ali@capgemini.com,+21640544197,Coordinateur amélioration continue,8,False,True,2023-02-06 16:12:32.226296+00:00,2023-08-07 15:18:26.175488+00:00
+53691fc5-65db-4948-a53d-05eb7c9cbafd,Bilel,Hadded,bilel.hadded@capgemini.com,+21622942176,Développeur front-end,1,True,False,2024-11-17 18:21:27.485204+00:00,2025-09-09 22:42:37.226040+00:00
+0f921b9c-f5ad-48fc-a6b4-eba7430c551c,Julia,Romero,julia.romero@capgemini.com,+21652232891,Sales development representative,5,True,True,2025-01-03 02:49:27.538446+00:00,2025-02-10 19:18:25.285974+00:00
+4af8a9f8-a799-4d85-8744-9a55c94c2bd7,Kenza,Derbel,kenza.derbel@capgemini.com,+21624852498,Procurement specialist,11,False,False,2024-11-22 09:28:31.894422+00:00,2025-05-13 14:56:24.613598+00:00
+6d282e57-ae58-47d1-b0b0-71588701cd4b,Houda,Abidi,houda.abidi@capgemini.com,+21691492297,Chargé sourcing,11,True,True,2025-07-22 08:43:02.584893+00:00,2026-04-29 14:19:20.070572+00:00
+e035811f-10c5-4bfc-a7c0-7eae45940633,Houssem,Karray,houssem.karray@capgemini.com,+21698027199,Développeur embarqué,7,True,True,2024-02-15 12:24:36.696647+00:00,2025-07-05 08:44:29.090865+00:00
+bab3b9b7-1720-4ec8-bb46-1e879b6cb5ff,Hugo,Robert,hugo.robert@capgemini.com,+21698368783,Responsable financier,3,True,True,2025-08-29 18:31:35.164398+00:00,2026-04-05 01:23:05.319571+00:00
+f11017f7-2d00-4f17-9c8e-53b9e06a8ca4,Mehdi,Charfi,mehdi.charfi@capgemini.com,+21652977103,Responsable support,9,True,True,2023-07-08 16:36:24.820158+00:00,2024-01-27 05:06:03.467154+00:00
+c6c4c07d-3b41-4f86-8ba6-5dee77d99dd6,Nesrine,Trabelsi,nesrine.trabelsi@capgemini.com,+21693762312,Manager IT,1,True,True,2023-01-14 06:11:04.609365+00:00,2024-12-23 05:47:48.968881+00:00
+9164ed25-60b7-490a-8cd1-097fbea158ab,Diego,Anderson,diego.anderson@capgemini.com,+21640443265,Assistant RH,2,True,True,2025-08-16 22:56:17.974306+00:00,2025-10-09 16:16:22.277282+00:00
+0a7c3f39-db01-4c8d-b560-eb1abdfe5054,Daniel,Martinez,daniel.martinez@capgemini.com,+21622873993,Product owner,6,True,True,2023-09-10 00:31:59.800262+00:00,2024-11-08 19:05:23.922147+00:00
+4d294b5a-0c54-442e-997e-8a8190b5f36e,Aymen,Sassi,aymen.sassi@capgemini.com,+21656279248,Ingénieur logiciel,1,True,True,2025-08-09 09:32:57.097876+00:00,2025-10-09 03:59:18.571158+00:00
+e9259942-8396-473b-9057-48dcaca6a4b8,Ala,Kallel,ala.kallel@capgemini.com,+21653031004,Ingénieur IoT,7,True,True,2023-01-04 21:09:12.217034+00:00,2024-06-09 15:28:03.563283+00:00
+e5ccee59-74ad-4614-9ebb-e2b31cd8f624,Sonia,Abidi,sonia.abidi@capgemini.com,+21622508003,Trésorier,3,True,True,2025-06-29 00:38:33.249153+00:00,2025-07-13 19:22:04.673946+00:00
+9f553eb2-43ed-4c97-9e01-f1efa2b58866,Sophia,Lefebvre,sophia.lefebvre@capgemini.com,+21653114194,Responsable support,9,True,False,2023-10-04 20:16:46.097321+00:00,2024-08-17 10:21:00.716409+00:00
+f0e0881e-5be2-4c7e-9a12-6c8d41853e5b,Sonia,Boughzela,sonia.boughzela@capgemini.com,+21653733240,Chef de projet,6,True,False,2025-10-14 06:58:50.422212+00:00,2026-04-23 05:39:47.077377+00:00
+cf9f5ab5-6ae6-4db6-8170-d49e940f8408,Rahma,Karray,rahma.karray@capgemini.com,+21624155474,Scrum master,6,False,False,2026-01-26 21:43:07.873319+00:00,2026-02-06 19:41:22.205890+00:00
+175a4d5b-a9b8-482f-bb16-09ead09c462d,Asma,Kallel,asma.kallel@capgemini.com,+21691963898,Ingénieur capteurs,7,True,True,2023-05-03 05:21:59.865937+00:00,2024-04-22 02:16:33.593748+00:00
+8a85cbcb-c372-4854-9d56-ead45338499f,Salma,Hamdi,salma.hamdi@capgemini.com,+21621116425,Scrum master,6,True,True,2025-06-09 08:02:30.892105+00:00,2025-08-12 00:18:34.339218+00:00
+8f30d88b-449d-4b4a-8d70-907a78ca75cb,Lina,Kouki,lina.kouki@capgemini.com,+21624557228,Analyste financier,3,True,True,2024-02-27 06:31:08.048379+00:00,2024-09-14 15:17:03.129954+00:00
+a2b814f9-d1cb-4bde-bac9-f01b969f7a6c,Fatma,Khalfallah,fatma.khalfallah@capgemini.com,+21620767880,Développeur back-end,1,True,True,2025-06-16 12:25:27.906285+00:00,2025-12-16 22:05:35.184362+00:00
+cd89616a-bb20-4989-b720-04dac27a609b,Saber,Charfi,saber.charfi@capgemini.com,+21697098496,Chargé support client,9,True,True,2025-02-02 05:54:39.281767+00:00,2025-09-18 14:10:50.985041+00:00
+a7450ed8-f67b-4a15-a99a-a9fa649b6fd6,Seif,Saidi,seif.saidi@capgemini.com,+21627637193,SEO specialist,4,True,True,2023-07-06 19:26:17.590646+00:00,2025-08-05 15:05:41.954171+00:00
+0deea514-779a-4aa2-b500-353e426c4bb8,Eya,Khemiri,eya.khemiri@capgemini.com,+21693008737,Ingénieur avant-vente,5,True,True,2025-03-25 19:07:35.904502+00:00,2026-04-09 01:36:14.100020+00:00
+3b146662-5da3-44f9-a3a2-be2e8ab5f602,Nadia,Derbel,nadia.derbel@capgemini.com,+21694723318,Gestionnaire paie,2,True,True,2023-07-29 03:27:12.609037+00:00,2024-02-14 18:33:55.552758+00:00
+2e9d92cc-1557-4431-b4a2-2d32a46b5340,Rihab,Marzouk,rihab.marzouk@capgemini.com,+21693227720,Comptable,3,False,True,2024-01-07 16:52:17.468694+00:00,2024-04-11 15:05:24.859180+00:00
+82adceda-344c-469a-a34d-6c5d0776f855,Wassim,Ben Ahmed,wassim.ben.ahmed@capgemini.com,+21651411454,Analyste financier,3,True,True,2024-06-02 03:00:12.029050+00:00,2025-12-27 21:33:33.936888+00:00
+97fc9842-4aa8-4e8a-984d-00e4ebae786f,Yosra,Sghaier,yosra.sghaier@capgemini.com,+21658278447,Sales development representative,5,True,True,2025-06-04 23:14:10.418656+00:00,2025-10-23 04:10:37.515787+00:00
+67ef2ce8-8158-4061-b39f-1648161b988a,Antoine,Bertrand,antoine.bertrand@capgemini.com,+21626362450,Scrum master,6,True,True,2026-02-16 19:09:31.026768+00:00,2026-04-25 09:20:49.190133+00:00
+33c2a0a3-edc7-43d3-8124-cd893c2c777a,Mohamed,Maalej,mohamed.maalej@capgemini.com,+21620249836,Auditeur interne,3,True,True,2023-02-21 17:30:01.071825+00:00,2024-04-02 12:50:17.521346+00:00
+db865006-8f7f-49f3-a2b6-c29e656c8004,Foued,Mrad,foued.mrad@capgemini.com,+21698616745,Conseiller client,5,True,True,2023-04-08 00:12:04.906249+00:00,2025-02-16 06:49:50.683549+00:00
+5d703c5b-8047-4ae3-8d64-bd4389210efb,Emily,Navarro,emily.navarro@capgemini.com,+21695286093,Développeur embarqué,7,True,True,2026-02-10 07:27:47.687971+00:00,2026-03-07 05:40:22.560793+00:00
+b47acf12-a3eb-4e7e-b774-7fd911ef71bd,Wassim,Ayari,wassim.ayari@capgemini.com,+21650173547,Coordinateur projet,6,True,True,2023-01-14 15:28:58.387937+00:00,2024-12-02 10:59:31.829396+00:00
+074ac71d-aafc-47a0-9056-0c48ad4084ce,Olfa,Boughzela,olfa.boughzela@capgemini.com,+21692371033,Coordinateur projet,6,True,True,2025-02-08 12:28:41.381954+00:00,2025-06-20 08:48:46.889683+00:00
+13d27dae-abb6-45aa-8a42-aabcca05524a,Aicha,Belaid,aicha.belaid@capgemini.com,+21651710057,Coordinateur amélioration continue,8,True,True,2024-10-27 10:41:55.124563+00:00,2025-05-05 00:19:54.097886+00:00
+4169b80d-0f44-4692-a9e4-5a0ff1391e96,Pablo,Anderson,pablo.anderson@capgemini.com,+21620271309,Business developer,5,True,True,2023-02-16 22:21:48.883360+00:00,2023-02-23 23:33:12.107184+00:00
+dd9df6aa-658b-4a83-a5f1-25bf41aa21bd,Leila,Messaoudi,leila.messaoudi@capgemini.com,+21627634150,DevOps engineer,1,True,True,2023-03-16 18:50:25.665260+00:00,2025-09-11 01:55:11.852853+00:00
+f32fdb6b-d074-4fe9-9c58-dafa738bada1,Siwar,Ben Amor,siwar.ben.amor@capgemini.com,+21621977180,Développeur full-stack,1,True,True,2024-08-24 09:52:32.339566+00:00,2024-11-19 21:40:26.998997+00:00
+15faaccb-2bbf-40c2-8ccd-d84e51bfe1a3,Mouna,Gharbi,mouna.gharbi@capgemini.com,+21653099465,Responsable qualité,8,True,True,2024-11-28 07:09:33.642396+00:00,2026-03-03 06:02:32.430264+00:00
+07f0e359-3ca2-4c08-b113-4b4f9ace8bfe,Ines,Lahmar,ines.lahmar@capgemini.com,+21652870209,Développeur back-end,1,True,True,2024-10-11 11:08:31.627987+00:00,2025-08-04 14:24:46.393275+00:00
+099e1b0f-acb5-4a7d-829c-134345792106,Iyed,Chouchane,iyed.chouchane@capgemini.com,+21696577771,Architecte IoT,7,True,True,2026-04-04 02:37:17.243102+00:00,2026-04-20 08:09:58.421618+00:00
+dd44faee-f20f-47e5-94ff-6945e2284b01,Amira,Guetat,amira.guetat@capgemini.com,+21654188283,DevOps engineer,1,True,True,2023-11-05 13:10:41.663041+00:00,2025-01-27 10:03:19.829061+00:00
+de3055d4-4360-4203-a8f8-a1dab9fcf241,Hichem,Chouchane,hichem.chouchane@capgemini.com,+21636426249,Comptable,3,True,True,2023-10-30 06:21:28.477165+00:00,2023-11-18 20:06:20.399324+00:00
+a3444dae-ba25-43f7-a745-f3f89b273e2c,Skander,Mhiri,skander.mhiri@capgemini.com,+21691730579,Développeur front-end,1,True,True,2025-09-21 17:50:12.480800+00:00,2025-12-08 20:56:35.217211+00:00
+93104829-8594-400a-b598-aff286b49018,Fatma,Ghariani,fatma.ghariani@capgemini.com,+21621277362,DevOps engineer,1,True,True,2024-05-26 20:03:39.708409+00:00,2025-04-22 18:34:32.002795+00:00
+e9d2ff70-2c2b-4bd5-ba0f-ea608ddccc9a,Mouna,Ferjani,mouna.ferjani@capgemini.com,+21695894063,Technicien électronique,7,True,True,2026-01-19 06:08:45.512325+00:00,2026-04-26 15:17:32.490263+00:00
+181e7e03-af2a-43ee-9324-840d14c267d3,Ines,Belhaj,ines.belhaj@capgemini.com,+21658247176,Responsable RH,2,True,True,2025-04-10 17:10:52.754531+00:00,2025-08-08 23:58:52.992445+00:00
+27450660-9126-425f-8a4c-ee13055c3619,Henry,Smith,henry.smith@capgemini.com,+21653624573,Chargé marketing,4,True,True,2024-09-03 15:50:52.771370+00:00,2025-01-11 05:36:57.183554+00:00
+e24ef779-8a19-45dc-82da-af12648144c1,Aymen,Najjar,aymen.najjar@capgemini.com,+21698620670,Chargé d’études marketing,4,True,True,2023-04-18 16:50:08.920415+00:00,2025-01-09 00:37:10.414751+00:00
+5147885c-e8a5-473d-88c2-92f1ac8aaab2,Anna,Gonzalez,anna.gonzalez@capgemini.com,+21694920447,Manager IT,1,True,False,2026-01-15 01:23:00.312137+00:00,2026-02-14 04:44:31.521708+00:00
+61a0e073-e937-4bac-ada2-d1c10bf8a9ed,Aymen,Ghariani,aymen.ghariani@capgemini.com,+21620313256,Business developer,5,True,True,2023-06-16 09:24:30.494417+00:00,2023-09-03 14:42:16.978432+00:00
+fdaa0ab3-4f74-427f-8610-07c992b50bf5,Youssef,Ben Ali,youssef.ben.ali@capgemini.com,+21625992010,HR Business Partner,2,True,True,2023-02-08 05:49:55.905941+00:00,2025-02-09 12:55:22.431631+00:00
+6ee92483-e78b-46ce-baa0-0aac70b7049e,Hana,Abidi,hana.abidi@capgemini.com,+21627521412,Event coordinator,12,True,True,2023-03-03 12:02:59.949394+00:00,2023-07-08 08:03:27.339111+00:00
+d453c27e-c5d4-48c9-a7d2-c69d9e32bc85,Leila,Ayari,leila.ayari@capgemini.com,+21640239831,Data engineer IoT,7,True,True,2023-11-03 09:40:54.649308+00:00,2024-07-29 00:47:43.069313+00:00
+e16c3db1-857a-45dd-965f-8d024423e97d,Antoine,Michel,antoine.michel@capgemini.com,+21698887936,Auditeur interne,3,False,False,2023-12-10 21:48:30.169758+00:00,2024-02-15 00:32:12.884653+00:00
+21bcc6ee-e804-4d2e-be58-d741e6310d5e,Rahma,Zouari,rahma.zouari@capgemini.com,+21623708808,Administrateur systèmes,1,True,False,2025-05-01 00:37:55.014874+00:00,2026-02-14 00:48:27.077378+00:00
+99c5d90c-a8d4-4f31-8abd-cc6d6cbad26b,Paul,Schneider,paul.schneider@capgemini.com,+21694652837,Business developer,5,True,True,2023-05-08 01:30:52.739385+00:00,2023-11-08 08:21:59.992128+00:00
+4597622b-a50f-4a08-82d3-b202eb23c08b,Olfa,Mrad,olfa.mrad@capgemini.com,+21695163681,Chargé d’études marketing,4,True,True,2026-01-27 01:29:38.778112+00:00,2026-04-09 06:02:21.188378+00:00
+e7db6264-dd86-411f-b6ac-0f14ca8fdeef,Mouna,Sayadi,mouna.sayadi@capgemini.com,+21656610174,DevOps engineer,1,True,True,2024-11-19 10:19:58.868986+00:00,2025-05-28 16:24:13.316778+00:00
+7f5ff8e9-537d-4aa6-b713-4dfdab32e67a,Nadia,Ferchichi,nadia.ferchichi@capgemini.com,+21699060660,Responsable communication marketing,4,True,True,2023-11-15 15:02:29.397025+00:00,2025-05-19 01:25:43.552845+00:00
+7891d958-2cae-4067-b4bf-4df236fff02f,Dorrah,Maalej,dorrah.maalej@capgemini.com,+21636548983,Ingénieur capteurs,7,True,True,2025-01-05 00:50:24.616396+00:00,2025-06-03 03:55:41.388673+00:00
+8d88e517-90c5-4bdc-ab37-50e7d4be7387,Amira,Hammami,amira.hammami@capgemini.com,+21656346935,Architecte logiciel,1,True,True,2024-08-07 19:27:44.065728+00:00,2025-09-13 16:50:51.492171+00:00
+1ba29722-dcc2-4239-905a-c56c23d4a6fb,Sonia,Kouki,sonia.kouki@capgemini.com,+21694601216,Business analyst,6,True,True,2024-04-04 03:16:13.841674+00:00,2026-01-16 23:09:07.090690+00:00
+38adb4ef-c093-482a-8067-65d85424ebf8,Walid,Frikha,walid.frikha@capgemini.com,+21696678366,Sales development representative,5,True,True,2025-05-20 13:48:17.064619+00:00,2026-02-04 07:00:50.924328+00:00
+21a65452-8f2b-441f-9424-c8af856a9d7a,Pablo,Sanchez,pablo.sanchez@capgemini.com,+21626713563,Développeur front-end,1,False,False,2024-03-09 21:10:34.386278+00:00,2024-08-07 10:38:46.490717+00:00
+32093958-cbbd-4c22-a8c5-3659bb18aae5,Bilel,Derbel,bilel.derbel@capgemini.com,+21691519070,Data analyst,1,True,True,2026-04-06 03:57:49.760635+00:00,2026-04-20 06:41:31.495507+00:00
+42f9818a-eb8c-4ed6-9a9f-a9f7bd4e55ca,Marwa,Cherif,marwa.cherif@capgemini.com,+21626535448,Ingénieur capteurs,7,False,True,2024-05-27 00:08:42.068865+00:00,2024-07-23 05:25:38.522124+00:00
+36a7aa14-d53e-4d7a-9df0-346370185c99,Rania,Rahmani,rania.rahmani@capgemini.com,+21624111241,Chargé d’études marketing,4,True,True,2025-03-17 08:58:36.556853+00:00,2025-07-17 13:15:49.297914+00:00

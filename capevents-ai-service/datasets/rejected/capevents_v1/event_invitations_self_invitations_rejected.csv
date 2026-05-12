@@ -1,0 +1,17 @@
+id,event_id,user_id,invited_by,target_type,status,message,sent_at,rsvp_response
+1310,a7992941-ac5b-4923-985f-b8be3e23a195,04ae859c-0c10-43f9-b75f-3eda713debdb,04ae859c-0c10-43f9-b75f-3eda713debdb,GLOBAL,PENDING,Invitation générale à un événement interne,2026-04-17 22:27:29.603756+00:00,
+1615,123c1477-ac3f-4a08-83d2-eef0b42660c3,64d309e9-1dd7-4572-9479-4d2164c080b8,64d309e9-1dd7-4572-9479-4d2164c080b8,INDIVIDUAL,EXPIRED,Invitation personnalisée selon votre profil,2026-01-27 18:42:55.338497+00:00,
+1800,40d54d79-34d4-4d11-86bb-c5d5bda886db,3153eaad-facb-4e77-bf73-9a19018c032d,3153eaad-facb-4e77-bf73-9a19018c032d,INDIVIDUAL,PENDING,Invitation ciblée pour cet événement,2026-02-08 00:09:50.445969+00:00,
+1847,7dd6c375-bc30-4b54-9918-bfaebbc54d99,3cb20e66-1f63-4917-96a0-d76276f9e1ec,3cb20e66-1f63-4917-96a0-d76276f9e1ec,DEPARTMENT,EXPIRED,Invitation destinée à votre département,2026-03-08 00:03:57.248329+00:00,
+1946,9fc7b5d4-8851-4edd-8273-8dc057e5f51a,de793784-3e9c-4a5b-a50b-5e1a0437bd90,de793784-3e9c-4a5b-a50b-5e1a0437bd90,DEPARTMENT,RESPONDED,Événement recommandé pour votre équipe,2026-03-25 18:50:34.073436+00:00,NO
+1948,00005856-d581-4a6c-ad7e-865016e38865,c79bf178-2ad7-46c5-a8bc-69d76f5a35b2,c79bf178-2ad7-46c5-a8bc-69d76f5a35b2,GLOBAL,EXPIRED,Événement ouvert à toute l’entreprise,2026-03-30 05:37:11.503725+00:00,
+2058,bb3fee61-4630-42c2-a8eb-2e5e48a281d7,06cf8ad7-4bdc-42e8-94e2-b0abe12a020b,06cf8ad7-4bdc-42e8-94e2-b0abe12a020b,INDIVIDUAL,PENDING,Votre participation serait appréciée,2026-04-03 21:01:29.140993+00:00,
+2234,0005ee17-1dd8-4096-b9bc-0a21a242ebd5,0b259536-155f-4e39-9154-32d25e0d2eca,0b259536-155f-4e39-9154-32d25e0d2eca,DEPARTMENT,PENDING,Invitation départementale liée à vos activités,2026-04-15 17:19:10.982734+00:00,
+2317,64b272c0-bda4-494b-9a70-7a23111a5e82,e1146103-3e33-4ed7-9a4c-3426f5922da9,e1146103-3e33-4ed7-9a4c-3426f5922da9,DEPARTMENT,PENDING,Invitation départementale liée à vos activités,2026-04-03 08:47:45.467320+00:00,
+3325,8e14ff41-e0cb-4323-9272-959b4f468143,9f62bec9-e71d-4e58-8eb0-f51c0c93bd4e,9f62bec9-e71d-4e58-8eb0-f51c0c93bd4e,DEPARTMENT,RESPONDED,Événement recommandé pour votre équipe,2026-04-26 00:57:39.788703+00:00,YES
+4825,a3185a6b-943f-48d6-89b9-715ad7f75b33,aa4e1ebb-5f2c-431e-b14c-49099924347c,aa4e1ebb-5f2c-431e-b14c-49099924347c,DEPARTMENT,PENDING,Invitation départementale liée à vos activités,2026-03-13 18:54:09.029515+00:00,
+5122,42f6a4f7-4af9-4075-8332-364855051345,e63e4f83-e0ba-4644-a46a-7413de243920,e63e4f83-e0ba-4644-a46a-7413de243920,INDIVIDUAL,PENDING,Votre participation serait appréciée,2026-03-26 10:57:54.101464+00:00,
+6270,e936975b-d0ad-4bd9-93b2-974d424a5a1b,ad184e40-aa0e-44d2-bd36-24c1cc63cd67,ad184e40-aa0e-44d2-bd36-24c1cc63cd67,INDIVIDUAL,EXPIRED,Invitation ciblée pour cet événement,2026-02-16 00:26:01.957984+00:00,
+6698,4a26effb-f346-4dbb-b52c-7e82e826ecda,9d9f828f-6d17-4846-b840-5c49524aebe1,9d9f828f-6d17-4846-b840-5c49524aebe1,GLOBAL,PENDING,Événement ouvert à toute l’entreprise,2026-04-21 17:16:19.764887+00:00,
+6718,ca296d96-1efb-403a-af11-a5133143c991,b8b374dd-9fa4-4bbd-9bb0-e00bf90d665f,b8b374dd-9fa4-4bbd-9bb0-e00bf90d665f,INDIVIDUAL,RESPONDED,Invitation ciblée pour cet événement,2026-02-02 07:20:39.810871+00:00,NO
+7052,fad3782b-2313-45bf-ab09-068cf2c2854e,895f01a4-b0ea-4f55-add3-d7b281d0d86e,895f01a4-b0ea-4f55-add3-d7b281d0d86e,DEPARTMENT,RESPONDED,Invitation départementale liée à vos activités,2026-04-19 23:35:19.642580+00:00,MAYBE

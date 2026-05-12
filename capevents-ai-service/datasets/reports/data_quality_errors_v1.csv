@@ -1,0 +1,71 @@
+table,row,severity,code,message,key
+users,5,WARNING,MISSING_JOB_TITLE,Poste manquant,9d09832f-ff19-4c77-9c05-12881b06c117
+users,6,WARNING,MISSING_JOB_TITLE,Poste manquant,ada33a22-047d-41f7-9001-c78a46d52ecc
+users,7,WARNING,MISSING_JOB_TITLE,Poste manquant,49df03d0-fa40-4cdf-b3df-abf37a14050b
+users,9,WARNING,MISSING_DEPARTMENT,Utilisateur sans département,33730d91-9a14-4721-aec1-1f1aaa89bb40
+users,10,WARNING,MISSING_JOB_TITLE,Poste manquant,c96c33b2-deb4-4624-905a-4bb4eba9b66b
+users,11,WARNING,MISSING_JOB_TITLE,Poste manquant,aa4e1ebb-5f2c-431e-b14c-49099924347c
+users,12,WARNING,MISSING_JOB_TITLE,Poste manquant,d5d7156b-757a-4b4f-9950-c3a38b7b858d
+users,16,WARNING,MISSING_DEPARTMENT,Utilisateur sans département,c79bf178-2ad7-46c5-a8bc-69d76f5a35b2
+users,18,WARNING,INVALID_PHONE,Téléphone non standard: +2164837763,e94c386e-8464-4a22-be9a-6beb0e5d7a7b
+users,19,WARNING,INVALID_PHONE,Téléphone non standard: +2164837763,d420025c-f809-4d32-9066-98749e88aeb9
+users,23,WARNING,INVALID_PHONE,Téléphone non standard: +2165632568,04d1e3f4-5420-4b71-a3a5-85f2ed790744
+users,23,WARNING,MISSING_JOB_TITLE,Poste manquant,04d1e3f4-5420-4b71-a3a5-85f2ed790744
+users,26,WARNING,MISSING_DEPARTMENT,Utilisateur sans département,ae62feb9-2fe5-4f14-9abc-6d3de60551e9
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,514d1d62-3100-4b79-9ace-199ed15abd30
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,e8dda1ab-4e22-4b44-b642-16d429b530e6
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,53bc19ae-6115-4448-91c2-079f930260b9
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,f85deb38-8a7f-46fd-aa7f-0c9d18401a70
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,6ff3f4c3-324c-4f23-9667-106f6600724b
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,35b57b10-e7d8-43bd-9022-13bcd6044d36
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,0198bc4b-8443-4754-8317-49b56f81ecea
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,29a2042e-69ee-471d-ad13-086615962ccf
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,8109e1d3-64d6-452e-8d2d-8f0129c10b07
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,912a90c4-9c49-4b06-b8aa-4363306047bd
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,cd925f76-6a4a-4b65-b4d7-839f7aa778fc
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,82acf793-5875-4b86-a2c7-7bfc77ca1687
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,2ef6e49e-2db4-4aba-9300-2be6b73234f7
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,3827f77d-c5b6-4965-a25c-b6482d583783
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,16ce6d70-5405-478a-a25a-cc332ef4b47c
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,b84486da-21ec-4b82-bf29-a0ba711862f5
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,592aac8f-3efc-40e6-8749-bea31258b4be
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,a0cca5a6-1adb-48cd-8eb4-3ddd051a194a
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,1b030e36-9144-4f9e-b30f-599f3b124204
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,b78c727b-e0cf-4632-95c8-6d754d1b626c
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,eb85b268-bb88-4119-939d-492d2322518f
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,57ba55cf-425f-48e2-9ed7-0fc2e1c80530
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,aea65023-ce55-417a-a93c-d43c8afc615f
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,29e789b9-43d6-4d77-bba5-a8fe5bbec079
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,09c9c2e9-4239-482d-891d-56063049a724
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,171db798-037c-4b40-8b32-1ee7db84779a
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,c3b0f176-69f0-4028-872a-0091128bf3a7
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,f5f20910-dacc-43c4-b464-91f0ea54dd03
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,c1e9f1c5-3a1d-407e-9767-7cb7c9089296
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,1601dd67-4724-4d1d-a0bc-461e96081aed
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,0b72711e-4f6c-4326-9ddc-3f48887a46f7
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,85480232-8d0c-45e2-bb3b-62ccdcf67029
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,a6d83b47-4658-4d4e-833d-7ef6e7cf2e94
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,bc157ecf-7954-494e-a055-311a276bf358
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,8af0b6c1-16c5-4b9d-9847-99701339c60b
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,1b521727-2b9c-4bae-a8f2-c0b975bf998b
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,80abf548-a0a7-49e7-a19d-90d89e4b2977
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,50b973db-8479-47e1-8c19-f51f4998a03c
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,adf357bf-a6ea-435e-84dc-d92ef2f7cde4
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,817c01f8-a304-41cd-8bad-d3f1648b87d4
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,11f3834e-b75c-47de-8f68-181c73c2203d
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,ea6a2151-71d0-4a29-bdab-6b249f5466e9
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,5b4a4141-7738-4083-ae9c-db997fb64b4a
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,9f86355d-2a5a-4db1-aef6-a2b4d7d51a28
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,c12cd7d4-3770-47ae-9237-24b35609b70d
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,692a8a6c-d41c-400a-a1eb-e5c04cf9e6df
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,c95d510a-3346-4f36-be97-770bde6ccec1
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,876555c2-25f1-4f17-a598-ae5ea4457ee0
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,c98070f7-ea93-464b-9719-8e5817cb346a
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,7497f43c-158d-489b-b70c-fe3b4c138821
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,8e755df7-d353-4b98-b399-336164ee4a93
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,c33a2e16-11ad-42aa-86ff-912411bdea48
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,dc305b07-816b-4ee2-869d-98231db9d646
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,67ef2ce8-8158-4061-b39f-1648161b988a
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,dd9df6aa-658b-4a83-a5f1-25bf41aa21bd
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,21bcc6ee-e804-4d2e-be58-d741e6310d5e
+user_interests,0,WARNING,TOO_MANY_INTERESTS,Utilisateur avec plus de 6 intérêts: 7,1ba29722-dcc2-4239-905a-c56c23d4a6fb
