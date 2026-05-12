@@ -1,0 +1,87 @@
+{
+  "version": "clean_v1",
+  "generated_at": "2026-05-12T21:53:30.377682+00:00",
+  "source": "datasets/raw/capevents",
+  "clean_target": "datasets/clean/capevents_v1",
+  "mode": "non_destructive",
+  "database_modified": false,
+  "datasets": [
+    {
+      "dataset": "departments",
+      "status": "CLEANED",
+      "rows": 12,
+      "path": "datasets/clean/capevents_v1/departments.csv",
+      "sha256": "acbfe009eb9f40e03ea69a71294a691060a03f09114017fb8861be696ada90df"
+    },
+    {
+      "dataset": "users",
+      "status": "CLEANED",
+      "rows": 1000,
+      "path": "datasets/clean/capevents_v1/users.csv",
+      "sha256": "90129825be17a025d74fc4a864b9b641b223e0d03e5e4e1b04722900773975f2"
+    },
+    {
+      "dataset": "events",
+      "status": "CLEANED",
+      "rows": 1000,
+      "path": "datasets/clean/capevents_v1/events.csv",
+      "sha256": "3ebeb858558d8512771646f32504542beaf1c5270a6e54731b44332b008c0ab5"
+    },
+    {
+      "dataset": "event_registrations",
+      "status": "CLEANED",
+      "rows": 6000,
+      "path": "datasets/clean/capevents_v1/event_registrations.csv",
+      "sha256": "72f4d19e4fd532c23acaddd2f95f8b9603867edc783abd3853570a94cac96d57"
+    },
+    {
+      "dataset": "event_invitations",
+      "status": "CLEANED",
+      "rows": 8484,
+      "path": "datasets/clean/capevents_v1/event_invitations.csv",
+      "sha256": "cd29f58b09812753a0f9d5313d7fbdc287b7629c9db058a9b575247de74402ac"
+    },
+    {
+      "dataset": "event_invitation_reminders",
+      "status": "CLEANED",
+      "rows": 40,
+      "path": "datasets/clean/capevents_v1/event_invitation_reminders.csv",
+      "sha256": "f6d97bc98eef803c87c542e27ccb347e0e41528f8d89893553e654b2c80bca67"
+    },
+    {
+      "dataset": "event_feedbacks",
+      "status": "CLEANED",
+      "rows": 1161,
+      "path": "datasets/clean/capevents_v1/event_feedbacks.csv",
+      "sha256": "2acf9fed1b71731ed976198e6bd49394b55d7ff5e69620d775c4904709e7c049"
+    },
+    {
+      "dataset": "interests",
+      "status": "CLEANED",
+      "rows": 20,
+      "path": "datasets/clean/capevents_v1/interests.csv",
+      "sha256": "dfec6379574d0c9cd06375752539402a29e427705cc401fa4e2b13be8a4b5c78"
+    },
+    {
+      "dataset": "user_interests",
+      "status": "CLEANED",
+      "rows": 4503,
+      "path": "datasets/clean/capevents_v1/user_interests.csv",
+      "sha256": "c65f3909a9d138d8d0826545c7078ec0bce18352c4da138e17541eabdd73aa6c"
+    },
+    {
+      "dataset": "points_transactions",
+      "status": "CLEANED",
+      "rows": 10410,
+      "path": "datasets/clean/capevents_v1/points_transactions.csv",
+      "sha256": "1d9631a5b9e59d1866d2fd47906aae9c2729bf78e6e40b7d793cd737dcd564fd"
+    },
+    {
+      "dataset": "user_badges",
+      "status": "CLEANED",
+      "rows": 2717,
+      "path": "datasets/clean/capevents_v1/user_badges.csv",
+      "sha256": "e5fe7aff6d2be89bf6afb9dd8a23852263f7c2b746e38cc7a2f30c2b1d07760b"
+    }
+  ]
+}
