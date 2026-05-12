@@ -19,12 +19,12 @@ Mode: non destructif. Aucun CSV n'a été modifié.
 ## Résumé
 
 - Erreurs bloquantes : 0
-- Warnings : 3
-- Total anomalies : 3
+- Warnings : 0
+- Total anomalies : 0
 
 ## Anomalies par table
 
-- `users` : 3
+Aucune anomalie détectée.
 
 ## Prochaine étape
 

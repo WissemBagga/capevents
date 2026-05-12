@@ -1,4 +1,1 @@
 table,row,severity,code,message,key
-users,18,WARNING,INVALID_PHONE,Téléphone non standard: +2164837763,e94c386e-8464-4a22-be9a-6beb0e5d7a7b
-users,19,WARNING,INVALID_PHONE,Téléphone non standard: +2164837763,d420025c-f809-4d32-9066-98749e88aeb9
-users,23,WARNING,INVALID_PHONE,Téléphone non standard: +2165632568,04d1e3f4-5420-4b71-a3a5-85f2ed790744
