@@ -1,0 +1,3744 @@
+﻿===== app/api/planning.py =====
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends
+
+from app.core.security import verify_ai_service_key
+from app.schemas.planning import (
+    PlanningSuggestionRequest,
+    PlanningSuggestionResponse,
+    PlanningEventProposalRequest,
+    PlanningEventProposalResponse,
+    PlanningMonitoringSummaryResponse,
+    PlanningUsageLogRequest,
+    PlanningUsageLogResponse,
+    PlanningIdeationDebugRequest,
+    PlanningIdeationDebugResponse
+)
+from app.services.planning_service import PlanningService
+from app.services.planning_monitoring_service import get_planning_monitoring_summary
+from app.services.prediction_logger import PredictionLogger
+
+router = APIRouter(
+    prefix="/ai/planning",
+    tags=["AI Planning Intelligent"]
+)
+
+planning_service = PlanningService()
+planning_logger = PredictionLogger()
+
+
+
+@router.post("/suggestions", response_model=PlanningSuggestionResponse)
+def suggest_planning_slots(
+    payload: PlanningSuggestionRequest,
+    _: bool = Depends(verify_ai_service_key)
+):
+    return planning_service.suggest_slots(payload)
+
+@router.post("/event-proposals", response_model=PlanningEventProposalResponse)
+def propose_events(
+    payload: PlanningEventProposalRequest,
+    _: bool = Depends(verify_ai_service_key)
+):
+    return planning_service.propose_events(payload)
+
+
+@router.get("/monitoring/summary", response_model=PlanningMonitoringSummaryResponse)
+def get_planning_monitoring_summary_endpoint(
+    days: int = 30,
+    target_department_id: int | None = None,
+    _: bool = Depends(verify_ai_service_key)
+):
+    return get_planning_monitoring_summary(
+        days=days,
+        target_department_id=target_department_id
+    )
+
+@router.post("/usage", response_model=PlanningUsageLogResponse)
+def log_planning_usage(
+    payload: PlanningUsageLogRequest,
+    _: bool = Depends(verify_ai_service_key)
+):
+    logged_at = datetime.now(timezone.utc).isoformat()
+
+    planning_logger.log_planning(
+        event_type="PROPOSAL_USAGE",
+        request_id=payload.request_id,
+        action=payload.action,
+        proposal_rank=payload.proposal_rank,
+        proposal_title=payload.proposal_title,
+        category=payload.category,
+        target_department_id=payload.target_department_id,
+        selected_slot_start_at=payload.selected_slot_start_at,
+        selected_slot_score=payload.selected_slot_score,
+        created_event_id=payload.created_event_id,
+        created_event_status=payload.created_event_status,
+        source=payload.source
+    )
+
+    return PlanningUsageLogResponse(
+        status="logged",
+        logged_at=logged_at
+    )
+
+@router.post("/ideation/debug", response_model=PlanningIdeationDebugResponse)
+def debug_planning_ideation(
+    payload: PlanningIdeationDebugRequest,
+    _: bool = Depends(verify_ai_service_key)
+):
+    return planning_service.debug_ideation(payload)
+===== app/services/planning_service.py =====
+from collections import Counter
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+from uuid import uuid4
+
+import json
+import pandas as pd
+from catboost import CatBoostRegressor
+
+from app.schemas.planning import (
+    PlanningSuggestionRequest,
+    PlanningSuggestionResponse,
+    PlanningSlotSuggestion,
+    PlanningEventProposalRequest,
+    PlanningEventProposalResponse,
+    PlanningEventProposal
+)
+
+from app.data.runtime_loader import (
+    load_runtime_events,
+    load_runtime_users,
+    load_runtime_registrations,
+    load_runtime_feedbacks,
+    load_runtime_invitations
+)
+
+from app.core.model_registry import (
+    get_active_model_metadata,
+    resolve_registry_path
+)
+
+from app.services.prediction_logger import PredictionLogger
+from app.services.planning_ideation_service import PlanningIdeationService
+
+
+DATASET_PATH = Path("datasets/processed/planning_train.csv")
+
+CANDIDATE_HOURS = [9, 10, 11, 14, 15, 16, 18]
+WORKING_DAYS = {0, 1, 2, 3, 4}
+
+CANCELLED_REGISTRATION_VALUES = {
+    "CANCELLED",
+    "UNREGISTERED"
+}
+
+PRESENT_ATTENDANCE_VALUES = {
+    "PRESENT",
+    "ATTENDED",
+    "CONFIRMED_PRESENT"
+}
+
+planning_logger = PredictionLogger()
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def safe_numeric(value: Any, default: float = 0.0) -> float:
+    try:
+        if pd.isna(value):
+            return default
+        return float(value)
+    except Exception:
+        return default
+
+
+def parse_start_date(value: str | None) -> datetime:
+    if not value:
+        return utc_now() + timedelta(days=1)
+
+    parsed = pd.to_datetime(value, errors="coerce", utc=True)
+
+    if pd.isna(parsed):
+        return utc_now() + timedelta(days=1)
+
+    return parsed.to_pydatetime()
+
+def parse_candidate_start_date(value: str | None) -> datetime:
+    min_start = utc_now() + timedelta(days=1)
+
+    if not value:
+        return min_start
+
+    parsed = pd.to_datetime(value, errors="coerce", utc=True)
+
+    if pd.isna(parsed):
+        return min_start
+
+    parsed_dt = parsed.to_pydatetime()
+
+    if parsed_dt < min_start:
+        return min_start
+
+    return parsed_dt
+
+
+def clamp_score(value: float) -> float:
+    return max(0.0, min(1.0, value))
+
+
+class PlanningService:
+    def __init__(self) -> None:
+        self.dataset = self._load_dataset()
+        self.planning_model = None
+        self.planning_features_payload = None
+        self.planning_model_metadata = None
+        self.ideation_service = PlanningIdeationService()
+        self._load_planning_model()
+
+    def _load_dataset(self) -> pd.DataFrame:
+        if not DATASET_PATH.exists():
+            return pd.DataFrame()
+
+        df = pd.read_csv(DATASET_PATH)
+
+        for column in [
+            "registration_rate",
+            "attendance_rate",
+            "success_score",
+            "historical_category_registration_rate",
+            "historical_category_attendance_rate",
+            "historical_department_participation_rate",
+            "historical_hour_registration_rate",
+            "historical_day_registration_rate"
+        ]:
+            if column in df.columns:
+                df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+        return df
+
+    def suggest_slots(self, payload: PlanningSuggestionRequest) -> PlanningSuggestionResponse:
+        request_id = str(uuid4())
+        generated_at = utc_now().isoformat()
+
+        candidates = self._generate_candidate_slots(payload)
+        candidates = self._calibrate_candidate_scores(candidates)
+
+        ranked = self._select_diverse_slots(candidates, payload.limit)
+
+        items = [
+            PlanningSlotSuggestion(
+                rank=index,
+                start_at=item["start_at"],
+                end_at=item["end_at"],
+                day_of_week=item["day_of_week"],
+                hour=item["hour"],
+                score=round(item["score"], 4),
+                confidence=item["confidence"],
+                reasons=item["reasons"],
+                metrics=item["metrics"]
+            )
+            for index, item in enumerate(ranked, start=1)
+        ]
+
+        response = PlanningSuggestionResponse(
+            request_id=request_id,
+            generated_at=generated_at,
+            total_candidates=len(candidates),
+            items=items,
+            model_info={
+                "module": "IA 4 Planning Intelligent",
+                "version": (
+                    self.planning_model_metadata.get("version")
+                    if self.planning_model_metadata
+                    else "planning-hybrid-v0.3"
+                ),
+                "strategy": (
+                    "catboost_regressor_plus_business_rules"
+                    if self.planning_model is not None
+                    else "historical_statistics_plus_business_rules"
+                ),
+                "trained_model_used": self.planning_model is not None,
+                "dataset_path": str(DATASET_PATH)
+            }
+        )
+
+        try:
+            planning_logger.log_planning(
+                event_type="SLOT_SUGGESTIONS_GENERATED",
+                request_id=request_id,
+                category=payload.category,
+                target_department_id=payload.target_department_id,
+                total_candidates=response.total_candidates,
+                returned_items=len(response.items),
+                model_info=response.model_info,
+                source="fastapi_planning_service",
+                payload={
+                    "audience": payload.audience,
+                    "location_type": payload.location_type,
+                    "duration_minutes": payload.duration_minutes,
+                    "capacity": payload.capacity,
+                    "from_date": payload.from_date,
+                    "days_horizon": payload.days_horizon,
+                    "limit": payload.limit
+                }
+            )
+        except Exception:
+            pass
+
+        return response
+
+    def _generate_candidate_slots(self, payload: PlanningSuggestionRequest) -> list[dict]:
+        start_date = parse_candidate_start_date(payload.from_date)
+        runtime_events = self._load_runtime_events_safe()
+
+        candidates: list[dict] = []
+
+        for day_offset in range(payload.days_horizon):
+            current_day = start_date + timedelta(days=day_offset)
+
+            if current_day.weekday() not in WORKING_DAYS:
+                continue
+
+            for hour in CANDIDATE_HOURS:
+                slot_start = current_day.replace(hour=hour, minute=0, second=0, microsecond=0)
+                slot_end = slot_start + timedelta(minutes=payload.duration_minutes)
+
+                score_payload = self._score_slot(
+                    payload=payload,
+                    slot_start=slot_start,
+                    slot_end=slot_end,
+                    runtime_events=runtime_events
+                )
+
+                candidates.append({
+                    "start_at": slot_start.isoformat(),
+                    "end_at": slot_end.isoformat(),
+                    "day_of_week": slot_start.weekday(),
+                    "hour": hour,
+                    **score_payload
+                })
+
+        return candidates
+
+    def _load_runtime_events_safe(self) -> pd.DataFrame:
+        try:
+            events = load_runtime_events()
+        except Exception:
+            return pd.DataFrame()
+
+        if events.empty:
+            return events
+
+        events = events.copy()
+        events["start_at_dt"] = pd.to_datetime(events["start_at"], errors="coerce", utc=True)
+        events["duration_minutes"] = pd.to_numeric(
+            events["duration_minutes"],
+            errors="coerce"
+        ).fillna(60)
+        events["end_at_dt"] = events["start_at_dt"] + pd.to_timedelta(
+            events["duration_minutes"],
+            unit="m"
+        )
+        events["target_department_id"] = pd.to_numeric(
+            events["target_department_id"],
+            errors="coerce"
+        ).fillna(0).astype(int)
+
+        return events
+
+    def _score_slot(
+        self,
+        payload: PlanningSuggestionRequest,
+        slot_start: datetime,
+        slot_end: datetime,
+        runtime_events: pd.DataFrame
+    ) -> dict:
+        day_of_week = slot_start.weekday()
+        hour = slot_start.hour
+
+        history = self._historical_metrics(
+            category=payload.category,
+            target_department_id=payload.target_department_id,
+            day_of_week=day_of_week,
+            hour=hour
+        )
+
+        conflicts = self._conflict_metrics(
+            runtime_events=runtime_events,
+            slot_start=slot_start,
+            slot_end=slot_end,
+            target_department_id=payload.target_department_id
+        )
+
+        model_prediction = self._predict_slot_success_score(
+            payload=payload,
+            slot_start=slot_start,
+            runtime_events=runtime_events,
+            history=history,
+            conflicts=conflicts
+        )
+
+        category_hour_score = self._category_hour_score(
+            category=payload.category,
+            hour=hour
+        )
+
+        day_preference_score = self._day_preference_score(day_of_week)
+
+        horizon_score = self._horizon_score(slot_start)
+
+        base_score = (
+            0.18 * history["category_registration_rate"]
+            + 0.14 * history["category_attendance_rate"]
+            + 0.14 * history["hour_registration_rate"]
+            + 0.10 * history["day_registration_rate"]
+            + 0.12 * history["department_participation_rate"]
+            + 0.14 * self._time_preference_score(hour)
+            + 0.12 * category_hour_score
+            + 0.08 * day_preference_score
+            + 0.08 * horizon_score
+        )
+
+        conflict_penalty = min(0.30, 0.08 * conflicts["events_same_day_count"])
+        department_conflict_penalty = min(0.25, 0.10 * conflicts["department_overlap_count"])
+
+        duration_penalty = 0.0
+        if payload.duration_minutes > 180:
+            duration_penalty = 0.05
+
+        raw_score = clamp_score(
+            base_score
+            - conflict_penalty
+            - department_conflict_penalty
+            - duration_penalty
+        )
+
+        # Calibration UX : le score affichÃ© reprÃ©sente un potentiel relatif,
+        # pas une probabilitÃ© stricte de participation.
+        score = clamp_score(0.35 + 0.65 * raw_score)
+
+        hybrid_score = clamp_score(0.35 + 0.65 * raw_score)
+
+        if model_prediction is not None:
+            model_score = clamp_score(0.35 + 0.65 * model_prediction)
+
+            score = clamp_score(
+                0.70 * model_score
+                + 0.30 * hybrid_score
+            )
+
+            trained_model_used = True
+        else:
+            score = hybrid_score
+            trained_model_used = False
+
+        return {
+            "score": score,
+            "confidence": self._confidence_label(history),
+            "reasons": self._build_reasons(
+                hour=hour,
+                history=history,
+                conflicts=conflicts,
+                score=score
+            ),
+            "metrics": {
+                **history,
+                **conflicts,
+                "base_score": round(base_score, 4),
+                "conflict_penalty": round(conflict_penalty, 4),
+                "department_conflict_penalty": round(department_conflict_penalty, 4),
+                "duration_penalty": round(duration_penalty, 4),
+                "category_hour_score": round(category_hour_score, 4),
+                "day_preference_score": round(day_preference_score, 4),
+                "horizon_score": round(horizon_score, 4),
+                "trained_model_used": trained_model_used,
+                "model_prediction": round(model_prediction, 4) if model_prediction is not None else None,
+                "hybrid_score": round(hybrid_score, 4),
+            }
+        }
+
+    def _historical_metrics(
+        self,
+        category: str,
+        target_department_id: int | None,
+        day_of_week: int,
+        hour: int
+    ) -> dict:
+        if self.dataset.empty:
+            return {
+                "category_registration_rate": 0.35,
+                "category_attendance_rate": 0.50,
+                "department_participation_rate": 0.45,
+                "hour_registration_rate": 0.35,
+                "day_registration_rate": 0.35,
+                "history_rows": 0
+            }
+
+        df = self.dataset.copy()
+
+        available = df[df.get("outcome_available", 1) == 1].copy()
+        if available.empty:
+            available = df
+
+        global_reg = float(available["registration_rate"].mean()) if "registration_rate" in available else 0.35
+        global_att = float(available["attendance_rate"].mean()) if "attendance_rate" in available else 0.50
+
+        category_rows = available[available["event_category"].astype(str) == str(category)]
+        day_rows = available[available["day_of_week"] == day_of_week]
+        hour_rows = available[available["hour"] == hour]
+
+        if target_department_id is not None:
+            dept_rows = available[
+                pd.to_numeric(
+                    available["target_department_id"],
+                    errors="coerce"
+                ).fillna(0).astype(int) == int(target_department_id)
+            ]
+        else:
+            dept_rows = pd.DataFrame()
+
+        return {
+            "category_registration_rate": self._mean_or_fallback(
+                category_rows,
+                "registration_rate",
+                global_reg
+            ),
+            "category_attendance_rate": self._mean_or_fallback(
+                category_rows,
+                "attendance_rate",
+                global_att
+            ),
+            "department_participation_rate": self._mean_or_fallback(
+                dept_rows,
+                "attendance_rate",
+                global_att
+            ),
+            "hour_registration_rate": self._mean_or_fallback(
+                hour_rows,
+                "registration_rate",
+                global_reg
+            ),
+            "day_registration_rate": self._mean_or_fallback(
+                day_rows,
+                "registration_rate",
+                global_reg
+            ),
+            "history_rows": int(len(available))
+        }
+
+    def _mean_or_fallback(self, df: pd.DataFrame, column: str, fallback: float) -> float:
+        if df.empty or column not in df.columns:
+            return float(fallback)
+
+        value = pd.to_numeric(df[column], errors="coerce").dropna()
+
+        if value.empty:
+            return float(fallback)
+
+        return float(value.mean())
+
+    def _conflict_metrics(
+        self,
+        runtime_events: pd.DataFrame,
+        slot_start: datetime,
+        slot_end: datetime,
+        target_department_id: int | None
+    ) -> dict:
+        if runtime_events.empty:
+            return {
+                "events_same_day_count": 0,
+                "overlap_count": 0,
+                "department_overlap_count": 0
+            }
+
+        events = runtime_events.copy()
+        events = events[events["start_at_dt"].notna()].copy()
+
+        slot_date = slot_start.date()
+
+        same_day = events[
+            events["start_at_dt"].dt.date == slot_date
+        ]
+
+        overlapping = events[
+            (events["start_at_dt"] < slot_end)
+            & (events["end_at_dt"] > slot_start)
+        ]
+
+        department_overlap_count = 0
+
+        if target_department_id is not None and int(target_department_id) > 0:
+            department_overlap_count = int(
+                len(
+                    overlapping[
+                        overlapping["target_department_id"] == int(target_department_id)
+                    ]
+                )
+            )
+
+        return {
+            "events_same_day_count": int(len(same_day)),
+            "overlap_count": int(len(overlapping)),
+            "department_overlap_count": department_overlap_count
+        }
+
+    def _time_preference_score(self, hour: int) -> float:
+        if hour in [10, 11, 14, 15]:
+            return 0.75
+
+        if hour in [9, 16]:
+            return 0.55
+
+        if hour >= 18:
+            return 0.45
+
+        return 0.35
+
+    def _confidence_label(self, history: dict) -> str:
+        rows = int(history.get("history_rows", 0))
+
+        if rows >= 500:
+            return "MEDIUM"
+
+        if rows >= 100:
+            return "LOW"
+
+        return "VERY_LOW"
+
+    def _build_reasons(
+        self,
+        hour: int,
+        history: dict,
+        conflicts: dict,
+        score: float
+    ) -> list[str]:
+        reasons: list[str] = []
+
+        if history["hour_registration_rate"] >= history["day_registration_rate"]:
+            reasons.append("CrÃ©neau historiquement favorable en taux dâ€™inscription.")
+
+        if history["category_attendance_rate"] >= 0.50:
+            reasons.append("La catÃ©gorie prÃ©sente un historique de prÃ©sence correct.")
+
+        if conflicts["overlap_count"] == 0:
+            reasons.append("Aucun Ã©vÃ©nement en conflit direct sur ce crÃ©neau.")
+        else:
+            reasons.append("CrÃ©neau pÃ©nalisÃ© par des Ã©vÃ©nements en chevauchement.")
+
+        if conflicts["department_overlap_count"] == 0:
+            reasons.append("Aucun conflit dÃ©tectÃ© pour le dÃ©partement ciblÃ©.")
+
+        if hour in [10, 11, 14, 15]:
+            reasons.append("Horaire adaptÃ© aux habitudes professionnelles.")
+
+        if score >= 0.65:
+            reasons.append("Score global Ã©levÃ© selon les rÃ¨gles de planification.")
+
+        if not reasons:
+            reasons.append("CrÃ©neau acceptable selon les donnÃ©es historiques disponibles.")
+
+        return reasons[:4]
+    
+
+    def propose_events(
+        self,
+        payload: PlanningEventProposalRequest
+    ) -> PlanningEventProposalResponse:
+        request_id = str(uuid4())
+        generated_at = utc_now().isoformat()
+
+        week_start, week_end = self._previous_week_range(payload.reference_date)
+
+        users = load_runtime_users()
+        events = load_runtime_events()
+        registrations = load_runtime_registrations()
+        feedbacks = load_runtime_feedbacks()
+        invitations = load_runtime_invitations()
+
+        weekly_events = self._filter_events_between(events, week_start, week_end)
+
+        weekly_events = self._filter_events_for_planning_scope(
+            events=weekly_events,
+            target_department_id=payload.target_department_id
+        )
+
+        weekly_metrics = self._build_weekly_event_metrics(
+            weekly_events=weekly_events,
+            registrations=registrations,
+            feedbacks=feedbacks,
+            invitations=invitations
+        )
+
+        raw_proposals = self.ideation_service.generate_event_concepts(
+            weekly_metrics=weekly_metrics,
+            users=users,
+            target_department_id=payload.target_department_id,
+            limit=payload.limit
+        )
+
+        raw_proposals = self._rank_llm_generated_proposals(
+            proposals=raw_proposals,
+            weekly_metrics=weekly_metrics,
+            limit=payload.limit
+        )
+
+        data_window_source = "previous_week"
+
+        if weekly_metrics.empty:
+            data_window_source = "previous_week_no_department_data"
+
+        final_items: list[PlanningEventProposal] = []
+
+        for rank, proposal in enumerate(raw_proposals[:payload.limit], start=1):
+            slot_payload = PlanningSuggestionRequest(
+                category=proposal["category"],
+                audience=proposal["audience"],
+                location_type=proposal["location_type"],
+                target_department_id=proposal["target_department_id"],
+                duration_minutes=proposal["duration_minutes"],
+                capacity=proposal["capacity"],
+                from_date=week_end.isoformat(),
+                days_horizon=payload.days_horizon,
+                limit=payload.slot_limit
+            )
+
+            slot_response = self.suggest_slots(slot_payload)
+
+            final_items.append(
+                PlanningEventProposal(
+                    rank=rank,
+                    title=proposal["title"],
+                    category=proposal["category"],
+                    audience=proposal["audience"],
+                    location_type=proposal["location_type"],
+                    target_department_id=proposal["target_department_id"],
+                    duration_minutes=proposal["duration_minutes"],
+                    capacity=proposal["capacity"],
+                    objective=proposal["objective"],
+                    rationale=proposal["rationale"],
+                    suggested_slots=slot_response.items,
+                    metrics=proposal["metrics"]
+                )
+            )
+
+        response = PlanningEventProposalResponse(
+            request_id=request_id,
+            generated_at=generated_at,
+            analysis_period={
+                "from": week_start.isoformat(),
+                "to": week_end.isoformat(),
+                "source": data_window_source
+            },
+            total_proposals=len(final_items),
+            items=final_items,
+            model_info={
+                "module": "Planning Intelligent",
+                "version": (
+                    self.planning_model_metadata.get("version")
+                    if self.planning_model_metadata
+                    else "planning-proposal-hybrid-v0.3"
+                ),
+                "strategy": (
+                    "llm_ideation_plus_catboost_slot_scoring"
+                    if self.planning_model is not None
+                    else "llm_ideation_plus_hybrid_slot_scoring"
+                ),
+                "trained_model_used": self.planning_model is not None,
+                "ideation": self.ideation_service.model_info()
+            }
+        )
+
+        try:
+            planning_logger.log_planning(
+                event_type="EVENT_PROPOSALS_GENERATED",
+                request_id=request_id,
+                target_department_id=payload.target_department_id,
+                total_proposals=response.total_proposals,
+                model_info=response.model_info,
+                source="fastapi_planning_service",
+                payload={
+                    "limit": payload.limit,
+                    "slot_limit": payload.slot_limit,
+                    "days_horizon": payload.days_horizon,
+                    "generated_titles": [
+                        {
+                            "rank": item.rank,
+                            "title": item.title,
+                            "category": item.category,
+                            "source": item.metrics.get("source"),
+                            "ranking_source": item.metrics.get("ranking_source")
+                        }
+                        for item in response.items
+                    ]
+                }
+            )
+        except Exception:
+            pass
+
+        return response
+
+
+    def _previous_week_range(self, reference_date: str | None) -> tuple[datetime, datetime]:
+        reference = parse_start_date(reference_date) if reference_date else utc_now()
+
+        start_of_current_week = reference - timedelta(days=reference.weekday())
+        start_of_current_week = start_of_current_week.replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0
+        )
+
+        week_start = start_of_current_week - timedelta(days=7)
+        week_end = start_of_current_week
+
+        return week_start, week_end
+
+
+    def _filter_events_between(
+        self,
+        events: pd.DataFrame,
+        week_start: datetime,
+        week_end: datetime
+    ) -> pd.DataFrame:
+        if events.empty:
+            return events
+
+        events = events.copy()
+        events["start_at_dt"] = pd.to_datetime(events["start_at"], errors="coerce", utc=True)
+
+        return events[
+            events["start_at_dt"].notna()
+            & (events["start_at_dt"] >= week_start)
+            & (events["start_at_dt"] < week_end)
+        ].copy()
+
+
+    def _build_weekly_event_metrics(
+        self,
+        weekly_events: pd.DataFrame,
+        registrations: pd.DataFrame,
+        feedbacks: pd.DataFrame,
+        invitations: pd.DataFrame
+    ) -> pd.DataFrame:
+        if weekly_events.empty:
+            return pd.DataFrame()
+
+        events = weekly_events.copy()
+        events["event_id"] = events["id"].astype(str)
+
+        reg_agg = pd.DataFrame(columns=["event_id", "registered_count", "present_count"])
+        if not registrations.empty:
+            regs = registrations.copy()
+            regs["event_id"] = regs["event_id"].astype(str)
+            if "status" not in regs.columns:
+                regs["status"] = ""
+
+            if "attendance_status" not in regs.columns:
+                regs["attendance_status"] = ""
+
+            regs["status"] = regs["status"].fillna("").astype(str).str.upper()
+            regs["attendance_status"] = regs["attendance_status"].fillna("").astype(str).str.upper()
+
+            active_regs = regs[~regs["status"].isin(CANCELLED_REGISTRATION_VALUES)].copy()
+            active_regs["is_present"] = active_regs["attendance_status"].isin(
+                PRESENT_ATTENDANCE_VALUES
+            ).astype(int)
+
+            reg_agg = active_regs.groupby("event_id").agg(
+                registered_count=("event_id", "count"),
+                present_count=("is_present", "sum")
+            ).reset_index()
+
+        feedback_agg = pd.DataFrame(columns=["event_id", "feedback_count", "average_rating"])
+        if not feedbacks.empty:
+            fbs = feedbacks.copy()
+            fbs["event_id"] = fbs["event_id"].astype(str)
+            fbs["rating"] = pd.to_numeric(fbs["rating"], errors="coerce").fillna(0)
+
+            feedback_agg = fbs.groupby("event_id").agg(
+                feedback_count=("rating", "count"),
+                average_rating=("rating", "mean")
+            ).reset_index()
+
+        invitation_agg = pd.DataFrame(columns=["event_id", "invitation_count"])
+        if not invitations.empty:
+            invs = invitations.copy()
+            invs["event_id"] = invs["event_id"].astype(str)
+
+            invitation_agg = invs.groupby("event_id").size().reset_index(
+                name="invitation_count"
+            )
+
+        dataset = events.merge(reg_agg, on="event_id", how="left")
+        dataset = dataset.merge(feedback_agg, on="event_id", how="left")
+        dataset = dataset.merge(invitation_agg, on="event_id", how="left")
+
+        for column in [
+            "registered_count",
+            "present_count",
+            "feedback_count",
+            "average_rating",
+            "invitation_count"
+        ]:
+            dataset[column] = pd.to_numeric(dataset[column], errors="coerce").fillna(0)
+
+        dataset["capacity"] = pd.to_numeric(dataset["capacity"], errors="coerce").fillna(0)
+
+        dataset["registration_rate"] = (
+            dataset["registered_count"] / dataset["capacity"].replace(0, pd.NA)
+        ).fillna(0).clip(0, 1)
+
+        dataset["attendance_rate"] = (
+            dataset["present_count"] / dataset["registered_count"].replace(0, pd.NA)
+        ).fillna(0).clip(0, 1)
+
+        return dataset
+    
+
+    
+    
+    
+
+    
+    
+    def _select_diverse_slots(self, candidates: list[dict], limit: int) -> list[dict]:
+        sorted_candidates = sorted(
+            candidates,
+            key=lambda item: item["score"],
+            reverse=True
+        )
+
+        selected: list[dict] = []
+        used_dates: set[str] = set()
+        used_hours: set[int] = set()
+
+        for item in sorted_candidates:
+            date_key = item["start_at"][:10]
+            hour = int(item["hour"])
+
+            if date_key in used_dates:
+                continue
+
+            if len(selected) >= 2 and hour in used_hours:
+                continue
+
+            selected.append(item)
+            used_dates.add(date_key)
+            used_hours.add(hour)
+
+            if len(selected) >= limit:
+                return selected
+
+        for item in sorted_candidates:
+            if item not in selected:
+                selected.append(item)
+
+            if len(selected) >= limit:
+                break
+
+        return selected
+    
+    def _default_capacity(self, users: pd.DataFrame, target_department_id: int | None) -> int:
+        if users.empty:
+            return 30
+
+        if target_department_id is None:
+            return 40
+
+        if "department_id" not in users.columns:
+            return 30
+
+        data = users.copy()
+        data["department_id"] = pd.to_numeric(data["department_id"], errors="coerce").fillna(0).astype(int)
+
+        if "is_active" in data.columns:
+            active = data["is_active"].fillna("").astype(str).str.lower()
+            data = data[active.isin(["true", "1", "yes", "y"])].copy()
+
+        department_size = len(data[data["department_id"] == int(target_department_id)])
+
+        if department_size <= 0:
+            return 30
+
+        return int(max(15, min(80, round(department_size * 0.35))))
+
+
+    def _preferred_location_for_category(self, category: str) -> str:
+        online_categories = {
+            "Webinaire",
+            "Formation",
+            "ConfÃ©rence"
+        }
+
+        onsite_categories = {
+            "Team building",
+            "Sport",
+            "Bien-Ãªtre",
+            "Afterwork",
+            "Networking",
+            "Culture dâ€™entreprise"
+        }
+
+        if category in online_categories:
+            return "ONLINE"
+
+        if category in onsite_categories:
+            return "ONSITE"
+
+        return "ONSITE"
+
+
+    def _build_proposal_rationale(
+        self,
+        category: str,
+        events_count: int,
+        avg_registration_rate: float,
+        avg_attendance_rate: float,
+        avg_rating: float,
+        data_confidence: str
+    ) -> list[str]:
+        reasons: list[str] = []
+
+        if data_confidence == "LOW":
+            reasons.append(
+                f"La catÃ©gorie {category} dispose dâ€™un signal rÃ©cent limitÃ© ; la proposition doit Ãªtre validÃ©e par le RH."
+            )
+        else:
+            reasons.append(
+                f"La catÃ©gorie {category} apparaÃ®t suffisamment dans lâ€™historique rÃ©cent pour guider une proposition."
+            )
+
+        if avg_registration_rate < 0.30:
+            reasons.append(
+                "Le taux dâ€™inscription rÃ©cent est faible : un format plus ciblÃ© peut aider Ã  amÃ©liorer lâ€™engagement."
+            )
+        elif avg_registration_rate < 0.60:
+            reasons.append(
+                "Le taux dâ€™inscription rÃ©cent est moyen : une nouvelle session mieux positionnÃ©e peut amÃ©liorer la participation."
+            )
+        else:
+            reasons.append(
+                "Le taux dâ€™inscription rÃ©cent est encourageant : la catÃ©gorie peut Ãªtre rÃ©utilisÃ©e avec un bon crÃ©neau."
+            )
+
+        if avg_attendance_rate < 0.50:
+            reasons.append(
+                "Le taux de prÃ©sence suggÃ¨re de privilÃ©gier un format court, clair et facile Ã  intÃ©grer dans lâ€™agenda."
+            )
+        else:
+            reasons.append(
+                "Le taux de prÃ©sence observÃ© indique un intÃ©rÃªt rÃ©el lorsque le crÃ©neau est adaptÃ©."
+            )
+
+        if avg_rating >= 4:
+            reasons.append(
+                "Les notes de satisfaction sont bonnes, ce qui renforce lâ€™intÃ©rÃªt de proposer un Ã©vÃ©nement similaire."
+            )
+        elif avg_rating > 0:
+            reasons.append(
+                "Les retours de satisfaction restent perfectibles : lâ€™Ã©vÃ©nement doit avoir un objectif clair et opÃ©rationnel."
+            )
+
+        return reasons[:4]
+    
+    
+
+    def _category_hour_score(self, category: str, hour: int) -> float:
+        category_normalized = str(category or "").lower()
+
+        if "formation" in category_normalized or "webinaire" in category_normalized:
+            if hour in [10, 11, 14]:
+                return 0.85
+            if hour in [9, 15]:
+                return 0.65
+            return 0.45
+
+        if "team" in category_normalized or "sport" in category_normalized or "bien" in category_normalized:
+            if hour in [12, 16, 17]:
+                return 0.85
+            if hour in [15, 18]:
+                return 0.70
+            return 0.45
+
+        if "afterwork" in category_normalized or "networking" in category_normalized:
+            if hour in [16, 17, 18]:
+                return 0.90
+            if hour in [15]:
+                return 0.65
+            return 0.35
+
+        if "innovation" in category_normalized or "atelier" in category_normalized:
+            if hour in [10, 14, 15]:
+                return 0.80
+            if hour in [11, 16]:
+                return 0.65
+            return 0.45
+
+        if hour in [10, 14, 15]:
+            return 0.70
+
+        return 0.50
+
+
+    def _day_preference_score(self, day_of_week: int) -> float:
+        # 0 lundi, 1 mardi, 2 mercredi, 3 jeudi, 4 vendredi
+        if day_of_week in [1, 2, 3]:
+            return 0.80
+
+        if day_of_week == 0:
+            return 0.60
+
+        if day_of_week == 4:
+            return 0.45
+
+        return 0.30
+
+
+    def _horizon_score(self, slot_start: datetime) -> float:
+        days_until = (slot_start - utc_now()).days
+
+        if 7 <= days_until <= 21:
+            return 0.85
+
+        if 22 <= days_until <= 45:
+            return 0.70
+
+        if 3 <= days_until < 7:
+            return 0.55
+
+        return 0.40
+    
+    def _load_planning_model(self) -> None:
+        try:
+            metadata = get_active_model_metadata("planning")
+
+            model_path = resolve_registry_path(
+                metadata.get("artifact_path"),
+                required=True
+            )
+
+            features_path = resolve_registry_path(
+                metadata.get("features_path"),
+                required=True
+            )
+
+            model = CatBoostRegressor()
+            model.load_model(str(model_path))
+
+            with features_path.open("r", encoding="utf-8") as file:
+                features_payload = json.load(file)
+
+            self.planning_model = model
+            self.planning_features_payload = features_payload
+            self.planning_model_metadata = metadata
+
+        except Exception:
+            self.planning_model = None
+            self.planning_features_payload = None
+            self.planning_model_metadata = None
+
+    def _predict_slot_success_score(
+        self,
+        payload: PlanningSuggestionRequest,
+        slot_start: datetime,
+        runtime_events: pd.DataFrame,
+        history: dict,
+        conflicts: dict
+    ) -> float | None:
+        if self.planning_model is None or self.planning_features_payload is None:
+            return None
+
+        try:
+            features = self.planning_features_payload["features"]
+            categorical_features = self.planning_features_payload.get("categorical_features", [])
+
+            row = {
+                "event_category": payload.category,
+                "event_audience": payload.audience,
+                "event_location_type": payload.location_type if hasattr(payload, "location_type") else payload.location_type,
+                "target_department_id": payload.target_department_id or 0,
+                "capacity": payload.capacity,
+                "duration_minutes": payload.duration_minutes,
+                "day_of_week": slot_start.weekday(),
+                "hour": slot_start.hour,
+                "month": slot_start.month,
+                "is_morning": int(8 <= slot_start.hour <= 11),
+                "is_afternoon": int(12 <= slot_start.hour <= 17),
+                "is_afterwork": int(slot_start.hour >= 18),
+                "department_size": self._estimate_department_size(payload.target_department_id),
+                "events_same_day_count": conflicts.get("events_same_day_count", 0),
+                "events_same_department_same_week_count": conflicts.get("department_overlap_count", 0),
+                "historical_category_registration_rate": history.get("category_registration_rate", 0),
+                "historical_category_attendance_rate": history.get("category_attendance_rate", 0),
+                "historical_department_participation_rate": history.get("department_participation_rate", 0),
+                "historical_hour_registration_rate": history.get("hour_registration_rate", 0),
+                "historical_day_registration_rate": history.get("day_registration_rate", 0)
+            }
+
+            df = pd.DataFrame([row])
+
+            for column in features:
+                if column not in df.columns:
+                    df[column] = "UNKNOWN" if column in categorical_features else 0
+
+            for column in categorical_features:
+                df[column] = df[column].fillna("UNKNOWN").astype(str)
+
+            for column in features:
+                if column not in categorical_features:
+                    df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+            prediction = float(self.planning_model.predict(df[features])[0])
+
+            return clamp_score(prediction)
+
+        except Exception:
+            return None
+        
+    def _estimate_department_size(self, target_department_id: int | None) -> int:
+        if self.dataset.empty:
+            return 0
+
+        if target_department_id is None:
+            return int(pd.to_numeric(self.dataset.get("department_size", 0), errors="coerce").fillna(0).mean())
+
+        rows = self.dataset[
+            pd.to_numeric(
+                self.dataset.get("target_department_id", 0),
+                errors="coerce"
+            ).fillna(0).astype(int) == int(target_department_id)
+        ]
+
+        if rows.empty or "department_size" not in rows.columns:
+            return 0
+
+        return int(pd.to_numeric(rows["department_size"], errors="coerce").fillna(0).mean())
+    
+    def _calibrate_candidate_scores(self, candidates: list[dict]) -> list[dict]:
+        if not candidates:
+            return candidates
+
+        model_values = []
+        hybrid_values = []
+
+        for item in candidates:
+            metrics = item.get("metrics", {})
+
+            model_prediction = metrics.get("model_prediction")
+            hybrid_score = metrics.get("hybrid_score", item.get("score", 0))
+
+            if model_prediction is not None:
+                model_values.append(float(model_prediction))
+
+            hybrid_values.append(float(hybrid_score or 0))
+
+        for item in candidates:
+            metrics = item.setdefault("metrics", {})
+
+            model_prediction = metrics.get("model_prediction")
+            hybrid_score = float(metrics.get("hybrid_score", item.get("score", 0)) or 0)
+
+            if model_prediction is not None and model_values:
+                model_rank_score = self._rank_normalized_value(
+                    float(model_prediction),
+                    model_values
+                )
+            else:
+                model_rank_score = 0.5
+
+            hybrid_rank_score = self._rank_normalized_value(
+                hybrid_score,
+                hybrid_values
+            )
+
+            business_score = self._business_slot_score(metrics)
+
+            overlap_count = int(metrics.get("overlap_count", 0) or 0)
+            department_overlap_count = int(metrics.get("department_overlap_count", 0) or 0)
+
+            conflict_penalty = min(0.18, 0.04 * overlap_count)
+            department_penalty = min(0.18, 0.06 * department_overlap_count)
+
+            relative_score = (
+                0.55 * model_rank_score
+                + 0.25 * hybrid_rank_score
+                + 0.20 * business_score
+            )
+
+            display_score = clamp_score(
+                0.35
+                + 0.60 * relative_score
+                - conflict_penalty
+                - department_penalty
+            )
+
+            item["score"] = round(display_score, 4)
+
+            metrics["score_type"] = "relative_ai_potential_score"
+            metrics["model_prediction_raw"] = round(float(model_prediction), 4) if model_prediction is not None else None
+            metrics["model_rank_score"] = round(model_rank_score, 4)
+            metrics["hybrid_rank_score"] = round(hybrid_rank_score, 4)
+            metrics["business_slot_score"] = round(business_score, 4)
+            metrics["display_score"] = round(display_score, 4)
+
+        return candidates
+    
+    def _rank_normalized_value(self, value: float, values: list[float]) -> float:
+        valid_values = [
+            float(item)
+            for item in values
+            if item is not None
+        ]
+
+        if len(valid_values) <= 1:
+            return 0.5
+
+        min_value = min(valid_values)
+        max_value = max(valid_values)
+
+        if abs(max_value - min_value) < 1e-9:
+            return 0.5
+
+        return clamp_score((value - min_value) / (max_value - min_value))
+
+
+    def _business_slot_score(self, metrics: dict) -> float:
+        category_hour_score = float(metrics.get("category_hour_score", 0.5) or 0.5)
+        day_preference_score = float(metrics.get("day_preference_score", 0.5) or 0.5)
+        horizon_score = float(metrics.get("horizon_score", 0.5) or 0.5)
+
+        return clamp_score(
+            0.45 * category_hour_score
+            + 0.30 * day_preference_score
+            + 0.25 * horizon_score
+        )
+    
+    def _rank_llm_generated_proposals(
+        self,
+        proposals: list[dict],
+        weekly_metrics: pd.DataFrame,
+        limit: int
+    ) -> list[dict]:
+        if not proposals:
+            return []
+
+        category_stats = self._category_stats_from_weekly_metrics(weekly_metrics)
+        title_counts, category_counts = self._recent_planning_usage_counters(days=30)
+
+        scored: list[tuple[float, dict]] = []
+
+        for proposal in proposals:
+            category = str(proposal.get("category", ""))
+            title = str(proposal.get("title", ""))
+
+            stats = category_stats.get(category, {})
+
+            registration_rate = self._safe_metric_float(
+                stats.get("registration_rate"),
+                0.35
+            )
+            attendance_rate = self._safe_metric_float(
+                stats.get("attendance_rate"),
+                0.50
+            )
+            rating = self._safe_metric_float(
+                stats.get("rating"),
+                0.0
+            )
+            events_count = self._safe_metric_float(
+                stats.get("events_count"),
+                0.0
+            )
+
+            engagement_gap = 1 - min(1, registration_rate)
+            attendance_signal = min(1, attendance_rate)
+            rating_signal = min(1, rating / 5) if rating > 0 else 0.45
+            data_confidence = min(1, events_count / 5)
+
+            novelty_penalty = min(0.30, 0.10 * title_counts.get(title, 0))
+            category_repetition_penalty = min(0.20, 0.05 * category_counts.get(category, 0))
+
+            score = (
+                0.30 * engagement_gap
+                + 0.25 * attendance_signal
+                + 0.20 * rating_signal
+                + 0.15 * data_confidence
+                + 0.10 * self._proposal_completeness_score(proposal)
+                - novelty_penalty
+                - category_repetition_penalty
+            )
+
+            score = clamp_score(score)
+
+            proposal.setdefault("metrics", {})
+            proposal["metrics"].update({
+                "ranking_score": round(score, 4),
+                "ranking_source": "dynamic_data_score_plus_novelty",
+                "category_registration_rate": round(registration_rate, 4),
+                "category_attendance_rate": round(attendance_rate, 4),
+                "category_rating": round(rating, 4),
+                "recent_title_count": int(title_counts.get(title, 0)),
+                "recent_category_count": int(category_counts.get(category, 0))
+            })
+
+            scored.append((score, proposal))
+
+        scored.sort(key=lambda item: item[0], reverse=True)
+
+        selected: list[dict] = []
+        used_categories: set[str] = set()
+
+        # PremiÃ¨re passe : diversifier les catÃ©gories.
+        for _, proposal in scored:
+            category = str(proposal.get("category", ""))
+
+            if category in used_categories:
+                continue
+
+            selected.append(proposal)
+            used_categories.add(category)
+
+            if len(selected) >= limit:
+                return selected
+
+        # DeuxiÃ¨me passe : complÃ©ter si le LLM a gÃ©nÃ©rÃ© plusieurs propositions de mÃªme catÃ©gorie.
+        for _, proposal in scored:
+            if proposal not in selected:
+                selected.append(proposal)
+
+            if len(selected) >= limit:
+                break
+
+        return selected
+    
+
+    def _category_stats_from_weekly_metrics(self, weekly_metrics: pd.DataFrame) -> dict[str, dict]:
+        if weekly_metrics is None or weekly_metrics.empty:
+            return {}
+
+        df = weekly_metrics.copy()
+
+        if "category" not in df.columns:
+            return {}
+
+        df["category"] = df["category"].fillna("Autre").astype(str)
+
+        for column in [
+            "registration_rate",
+            "attendance_rate",
+            "average_rating"
+        ]:
+            if column not in df.columns:
+                df[column] = 0
+
+            df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+        if "event_id" not in df.columns:
+            df["event_id"] = df.index.astype(str)
+
+        grouped = df.groupby("category").agg(
+            events_count=("event_id", "count"),
+            registration_rate=("registration_rate", "mean"),
+            attendance_rate=("attendance_rate", "mean"),
+            rating=("average_rating", "mean")
+        ).reset_index()
+
+        result: dict[str, dict] = {}
+
+        for _, row in grouped.iterrows():
+            category = str(row["category"])
+
+            result[category] = {
+                "events_count": self._safe_metric_float(row.get("events_count"), 0),
+                "registration_rate": self._safe_metric_float(row.get("registration_rate"), 0.35),
+                "attendance_rate": self._safe_metric_float(row.get("attendance_rate"), 0.50),
+                "rating": self._safe_metric_float(row.get("rating"), 0)
+            }
+
+        return result
+
+
+    def _proposal_completeness_score(self, proposal: dict) -> float:
+        score = 0.0
+
+        if proposal.get("title"):
+            score += 0.25
+
+        if proposal.get("objective"):
+            score += 0.25
+
+        if proposal.get("rationale") and len(proposal.get("rationale", [])) >= 2:
+            score += 0.25
+
+        if proposal.get("category") and proposal.get("duration_minutes") and proposal.get("capacity"):
+            score += 0.25
+
+        return min(1.0, score)
+
+
+    def _recent_planning_usage_counters(self, days: int = 30) -> tuple[Counter, Counter]:
+        log_dir = Path("logs/predictions")
+        start_date = utc_now() - timedelta(days=days)
+
+        title_counts: Counter = Counter()
+        category_counts: Counter = Counter()
+
+        if not log_dir.exists():
+            return title_counts, category_counts
+
+        for path in log_dir.glob("planning-*.jsonl"):
+            try:
+                with path.open("r", encoding="utf-8") as file:
+                    for line in file:
+                        line = line.strip()
+
+                        if not line:
+                            continue
+
+                        try:
+                            record = json.loads(line)
+                        except Exception:
+                            continue
+
+                        logged_at_raw = record.get("logged_at")
+                        if not logged_at_raw:
+                            continue
+
+                        try:
+                            logged_at = datetime.fromisoformat(
+                                str(logged_at_raw).replace("Z", "+00:00")
+                            )
+                        except Exception:
+                            continue
+
+                        if logged_at < start_date:
+                            continue
+
+                        if record.get("proposal_title"):
+                            title_counts[str(record["proposal_title"])] += 1
+
+                        if record.get("category"):
+                            category_counts[str(record["category"])] += 1
+
+            except Exception:
+                continue
+
+        return title_counts, category_counts
+    
+
+    def debug_ideation(
+        self,
+        payload
+    ):
+        generated_at = utc_now().isoformat()
+
+        week_start, week_end = self._previous_week_range(payload.reference_date)
+
+        users = load_runtime_users()
+        events = load_runtime_events()
+        registrations = load_runtime_registrations()
+        feedbacks = load_runtime_feedbacks()
+        invitations = load_runtime_invitations()
+
+        weekly_events = self._filter_events_between(events, week_start, week_end)
+
+        weekly_events = self._filter_events_for_planning_scope(
+            events=weekly_events,
+            target_department_id=payload.target_department_id
+        )
+
+        weekly_metrics = self._build_weekly_event_metrics(
+            weekly_events=weekly_events,
+            registrations=registrations,
+            feedbacks=feedbacks,
+            invitations=invitations
+        )
+
+        concepts = self.ideation_service.generate_event_concepts(
+            weekly_metrics=weekly_metrics,
+            users=users,
+            target_department_id=payload.target_department_id,
+            limit=payload.limit
+        )
+
+        concepts = self._rank_llm_generated_proposals(
+            proposals=concepts,
+            weekly_metrics=weekly_metrics,
+            limit=payload.limit
+        )
+
+        return {
+            "generated_at": generated_at,
+            "analysis_period": {
+                "from": week_start.isoformat(),
+                "to": week_end.isoformat(),
+                "source": "previous_week"
+            },
+            "total_concepts": len(concepts),
+            "items": concepts,
+            "model_info": {
+                "module": "IA 4 Planning Intelligent",
+                "stage": "ideation_debug",
+                "ideation_strategy": "llm_generated_concepts_plus_dynamic_ranking",
+                "llm": self.ideation_service.model_info()
+            }
+        }
+
+    def _filter_events_for_planning_scope(
+        self,
+        events: pd.DataFrame,
+        target_department_id: int | None
+    ) -> pd.DataFrame:
+        if events is None or events.empty:
+            return pd.DataFrame()
+
+        if target_department_id is None:
+            return events.copy()
+
+        df = events.copy()
+
+        if "audience" not in df.columns:
+            df["audience"] = ""
+
+        if "target_department_id" not in df.columns:
+            df["target_department_id"] = 0
+
+        df["audience"] = df["audience"].fillna("").astype(str).str.upper()
+        df["target_department_id"] = pd.to_numeric(
+            df["target_department_id"],
+            errors="coerce"
+        ).fillna(0).astype(int)
+
+        return df[
+            (df["target_department_id"] == int(target_department_id))
+            | (df["audience"] == "GLOBAL")
+        ].copy()
+    
+    def _safe_metric_float(self, value: Any, default: float = 0.0) -> float:
+        try:
+            if value is None:
+                return default
+
+            numeric_value = float(value)
+
+            if pd.isna(numeric_value):
+                return default
+
+            if numeric_value == float("inf") or numeric_value == float("-inf"):
+                return default
+
+            return numeric_value
+        except Exception:
+            return default
+===== app/services/planning_ideation_service.py =====
+import json
+from typing import Any
+
+import pandas as pd
+
+from app.services.planning_llm_client import PlanningLlmClient, PlanningLlmError
+
+
+ALLOWED_LOCATION_TYPES = {"ONSITE", "ONLINE", "EXTERNAL"}
+ALLOWED_AUDIENCES = {"GLOBAL", "DEPARTMENT"}
+
+ALLOWED_CATEGORIES = {
+    "Formation",
+    "ConfÃ©rence",
+    "Atelier",
+    "Webinaire",
+    "Team building",
+    "Culture dâ€™entreprise",
+    "Bien-Ãªtre",
+    "Innovation",
+    "Networking",
+    "Afterwork",
+    "RSE",
+    "Sport"
+}
+
+CATEGORY_ALIASES = {
+    "FORMATION": "Formation",
+    "CONFERENCE": "ConfÃ©rence",
+    "CONFÃ‰RENCE": "ConfÃ©rence",
+    "CONFÃ‰REMENT": "ConfÃ©rence",
+    "CONFÃ‰RENCEMENT": "ConfÃ©rence",
+    "ATELIER": "Atelier",
+    "WORKSHOP": "Atelier",
+    "WEBINAIRE": "Webinaire",
+    "WEBINAR": "Webinaire",
+    "LIVE": "Webinaire",
+    "TEAM BUILDING": "Team building",
+    "TEAMBUILDING": "Team building",
+    "CULTURE": "Culture dâ€™entreprise",
+    "CULTURE Dâ€™ENTREPRISE": "Culture dâ€™entreprise",
+    "CULTURE D'ENTREPRISE": "Culture dâ€™entreprise",
+    "BIEN-ÃŠTRE": "Bien-Ãªtre",
+    "BIEN ETRE": "Bien-Ãªtre",
+    "BIEN-ETRE": "Bien-Ãªtre",
+    "INNOVATION": "Innovation",
+    "NETWORKING": "Networking",
+    "RESEAU": "Networking",
+    "RÃ‰SEAU": "Networking",
+    "AFTERWORK": "Afterwork",
+    "RSE": "RSE",
+    "SPORT": "Sport"
+}
+
+FORBIDDEN_TITLE_TERMS = {
+    "concours",
+    "football",
+    "tennis",
+    "match",
+    "tournoi scolaire",
+    "sciences"
+}
+
+GENERIC_TEXT_VALUES = {
+    "partage",
+    "collaboration",
+    "confÃ©rence",
+    "sport",
+    "formation",
+    "atelier",
+    "partage et collaboration",
+    "collaboration et partage",
+    "confÃ©rence et sport"
+}
+
+GENERIC_SIGNAL_VALUES = {
+    "signal",
+    "signal-1",
+    "signal-2",
+    "signal de donnÃ©es",
+    "signal de donnÃ©es 1",
+    "signal de donnÃ©es 2",
+    "donnÃ©e 1",
+    "donnÃ©e 2",
+    "data signal",
+    "data signal 1",
+    "signaux positifs",
+    "participer",
+    "participation",
+    "collaboration",
+    "partage"
+}
+
+
+class PlanningIdeationService:
+    def __init__(self) -> None:
+        self.llm_client = PlanningLlmClient()
+        self.last_error: str | None = None
+
+    def model_info(self) -> dict[str, Any]:
+        info = self.llm_client.model_info()
+        info["last_ideation_error"] = self.last_error
+        return info
+
+    def generate_event_concepts(
+        self,
+        weekly_metrics: pd.DataFrame,
+        users: pd.DataFrame,
+        target_department_id: int | None,
+        limit: int
+    ) -> list[dict[str, Any]]:
+        self.last_error = None
+
+        context = self._build_context(
+            weekly_metrics=weekly_metrics,
+            users=users,
+            target_department_id=target_department_id
+        )
+
+        concept_count = min(max(limit, 3), 5)
+
+        try:
+            response = self.llm_client.generate_json(
+                system_prompt=self._system_prompt(),
+                user_prompt=self._user_prompt(
+                    context=context,
+                    limit=concept_count
+                )
+            )
+
+            concepts = response.get("concepts", [])
+
+            clean = self._validate_concepts(
+                concepts=concepts,
+                target_department_id=target_department_id,
+                users=users
+            )
+
+            minimum_required = min(max(limit, 3), 5)
+
+            if len(clean) < minimum_required:
+                retry_response = self.llm_client.generate_json(
+                    system_prompt=self._system_prompt(),
+                    user_prompt=self._user_prompt(
+                        context={
+                            **context,
+                            "quality_instruction": (
+                                "La gÃ©nÃ©ration prÃ©cÃ©dente contient trop peu de concepts valides. "
+                                "GÃ©nÃ¨re uniquement des Ã©vÃ©nements RH internes professionnels, "
+                                "avec des titres prÃ©cis, des catÃ©gories autorisÃ©es et des objectifs exploitables."
+                            )
+                        },
+                        limit=minimum_required
+                    )
+                )
+
+                retry_concepts = retry_response.get("concepts", [])
+
+                retry_clean = self._validate_concepts(
+                    concepts=retry_concepts,
+                    target_department_id=target_department_id,
+                    users=users
+                )
+
+                existing_titles = {item["title"].lower() for item in clean}
+
+                for item in retry_clean:
+                    title_key = item["title"].lower()
+
+                    if title_key not in existing_titles:
+                        clean.append(item)
+                        existing_titles.add(title_key)
+
+                    if len(clean) >= minimum_required:
+                        break
+
+            if len(clean) < minimum_required:
+                clean = self._supplement_missing_concepts(
+                    concepts=clean,
+                    target_department_id=target_department_id,
+                    users=users,
+                    required_count=minimum_required,
+                    reason="llm_returned_less_valid_concepts_than_requested"
+                )
+
+            if len(clean) == 0:
+                clean = self._supplement_missing_concepts(
+                    concepts=[],
+                    target_department_id=target_department_id,
+                    users=users,
+                    required_count=minimum_required,
+                    reason="llm_returned_no_valid_concept"
+                )
+
+            return clean[:minimum_required]
+
+            return clean[:minimum_required]
+
+        except Exception as exception:
+            self.last_error = str(exception)
+
+            required_count = min(max(limit, 3), 5)
+
+            return self._supplement_missing_concepts(
+                concepts=[],
+                target_department_id=target_department_id,
+                users=users,
+                required_count=required_count,
+                reason=f"llm_generation_failed: {self.last_error}"
+            )
+
+    def _system_prompt(self) -> str:
+        return """
+/no_think
+Tu es un assistant IA RH pour CapEvents.
+
+RÃ©ponds uniquement avec un JSON valide.
+Aucun texte hors JSON.
+Aucune explication.
+Aucune balise markdown.
+Aucun lien.
+Aucune adresse.
+Aucune salle.
+
+Les propositions doivent Ãªtre professionnelles, internes, RH, exploitables et adaptÃ©es Ã  une entreprise.
+"""
+
+    def _user_prompt(self, context: dict[str, Any], limit: int) -> str:
+        compact_context = {
+            "scope": context.get("scope"),
+            "data_quality": context.get("data_quality"),
+            "observed_categories": context.get("observed_categories", [])[:6],
+            "category_summary": context.get("category_summary", [])[:5],
+            "category_diversity_pool": [
+                "Formation",
+                "ConfÃ©rence",
+                "Atelier",
+                "Webinaire",
+                "Team building",
+                "Culture dâ€™entreprise",
+                "Bien-Ãªtre",
+                "Innovation",
+                "Networking",
+                "Afterwork",
+                "RSE",
+                "Sport"
+            ],
+            "quality_instruction": context.get("quality_instruction")
+        }
+
+        return f"""
+/no_think
+GÃ©nÃ¨re exactement {limit} idÃ©es dâ€™Ã©vÃ©nements internes RH.
+
+RÃ©ponds uniquement avec ce format JSON compact :
+{{
+  "concepts": [
+    {{
+      "t": "titre professionnel prÃ©cis",
+      "c": "catÃ©gorie autorisÃ©e",
+      "a": "GLOBAL",
+      "l": "ONSITE",
+      "d": 60,
+      "cap": 30,
+      "o": "objectif professionnel clair",
+      "r": ["raison mÃ©tier 1", "raison mÃ©tier 2"],
+      "s": ["signal de donnÃ©es 1"]
+    }}
+  ]
+}}
+
+CatÃ©gories autorisÃ©es exactement :
+Formation, ConfÃ©rence, Atelier, Webinaire, Team building, Culture dâ€™entreprise, Bien-Ãªtre, Innovation, Networking, Afterwork, RSE, Sport.
+
+Contraintes :
+- t maximum 55 caractÃ¨res.
+- t doit Ãªtre professionnel et spÃ©cifique.
+- o maximum 140 caractÃ¨res.
+- r contient exactement 2 raisons professionnelles.
+- s contient maximum 2 signaux concrets.
+- a vaut GLOBAL ou DEPARTMENT.
+- l vaut ONSITE, ONLINE ou EXTERNAL.
+- Webinaire doit Ãªtre ONLINE.
+- Pas de concours, football, tennis, match, sciences ou activitÃ© scolaire.
+- Pas de lien.
+- Pas dâ€™adresse.
+- Pas de salle.
+- Pas de texte hors JSON.
+
+Exemples de style attendu :
+- "Atelier amÃ©lioration continue inter-Ã©quipes"
+- "Webinaire pratiques digitales et collaboration"
+- "Table ronde retours terrain et bonnes pratiques"
+- "Session innovation opÃ©rationnelle et idÃ©es terrain"
+
+Contexte :
+{json.dumps(compact_context, ensure_ascii=False)}
+"""
+
+    def _build_context(
+        self,
+        weekly_metrics: pd.DataFrame,
+        users: pd.DataFrame,
+        target_department_id: int | None
+    ) -> dict[str, Any]:
+        context: dict[str, Any] = {
+            "target_department_id": target_department_id,
+            "scope": "DEPARTMENT" if target_department_id else "GLOBAL",
+            "active_users_count": int(len(users)) if users is not None else 0,
+            "data_quality": "LOW",
+            "observed_categories": [],
+            "recent_events": [],
+            "category_summary": []
+        }
+
+        if weekly_metrics is None or weekly_metrics.empty:
+            context["note"] = "Aucun Ã©vÃ©nement rÃ©cent exploitable sur la semaine analysÃ©e."
+            return context
+
+        df = weekly_metrics.copy()
+
+        if "category" not in df.columns:
+            df["category"] = "Autre"
+
+        if "title" not in df.columns:
+            df["title"] = ""
+
+        df["category"] = df["category"].fillna("Autre").astype(str)
+        df["title"] = df["title"].fillna("").astype(str)
+
+        for column in [
+            "registration_rate",
+            "attendance_rate",
+            "average_rating",
+            "capacity",
+            "duration_minutes",
+            "invitation_count"
+        ]:
+            if column not in df.columns:
+                df[column] = 0
+
+            df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+        if "event_id" not in df.columns:
+            df["event_id"] = df.index.astype(str)
+
+        context["data_quality"] = "MEDIUM" if len(df) >= 5 else "LOW"
+        context["observed_categories"] = sorted(df["category"].dropna().unique().tolist())
+
+        recent_cols = [
+            "title",
+            "category",
+            "audience",
+            "location_type",
+            "duration_minutes",
+            "capacity",
+            "registration_rate",
+            "attendance_rate",
+            "average_rating",
+            "invitation_count"
+        ]
+
+        available_cols = [column for column in recent_cols if column in df.columns]
+
+        context["recent_events"] = (
+            df[available_cols]
+            .head(5)
+            .round(4)
+            .to_dict(orient="records")
+        )
+
+        summary = df.groupby("category").agg(
+            events_count=("event_id", "count"),
+            avg_registration_rate=("registration_rate", "mean"),
+            avg_attendance_rate=("attendance_rate", "mean"),
+            avg_rating=("average_rating", "mean"),
+            avg_capacity=("capacity", "mean"),
+            avg_duration=("duration_minutes", "mean"),
+            total_invitations=("invitation_count", "sum")
+        ).reset_index()
+
+        context["category_summary"] = (
+            summary.sort_values(["events_count", "total_invitations"], ascending=False)
+            .head(6)
+            .round(4)
+            .to_dict(orient="records")
+        )
+
+        return context
+
+    def _validate_concepts(
+        self,
+        concepts: list[dict[str, Any]],
+        target_department_id: int | None,
+        users: pd.DataFrame
+    ) -> list[dict[str, Any]]:
+        clean: list[dict[str, Any]] = []
+        seen_titles: set[str] = set()
+
+        for item in concepts:
+            if not isinstance(item, dict):
+                continue
+
+            title = str(item.get("title") or item.get("t") or "").strip()
+
+            raw_category = str(item.get("category") or item.get("c") or "").strip()
+            category = self._normalize_category(raw_category)
+
+            if category is None:
+                continue
+
+            category = self._infer_category_from_title(
+                title=title,
+                current_category=category
+            )
+
+            if not self._is_professional_title(title):
+                continue
+
+            title_key = title.lower()
+
+            if title_key in seen_titles:
+                continue
+
+            seen_titles.add(title_key)
+
+            audience = str(
+                item.get("audience")
+                or item.get("a")
+                or ("DEPARTMENT" if target_department_id else "GLOBAL")
+            ).upper()
+
+            if target_department_id is not None:
+                audience = "DEPARTMENT"
+
+            if audience not in ALLOWED_AUDIENCES:
+                audience = "GLOBAL"
+
+            location_type = str(
+                item.get("location_type")
+                or item.get("l")
+                or "ONSITE"
+            ).upper()
+
+            if location_type not in ALLOWED_LOCATION_TYPES:
+                location_type = "ONSITE"
+
+            location_type = self._preferred_location_for_category(
+                category=category,
+                current_location=location_type
+            )
+
+            duration = self._safe_int(
+                item.get("duration_minutes") or item.get("d"),
+                60
+            )
+            duration = max(30, min(180, duration))
+
+            capacity = self._safe_int(
+                item.get("capacity") or item.get("cap"),
+                self._default_capacity(users, target_department_id)
+            )
+            capacity = max(10, min(150, capacity))
+
+            rationale = item.get("rationale") or item.get("r") or []
+            if not isinstance(rationale, list):
+                rationale = [str(rationale)]
+
+            data_signals = item.get("data_signals") or item.get("s") or []
+            if not isinstance(data_signals, list):
+                data_signals = [str(data_signals)]
+
+            data_signals = self._clean_data_signals(data_signals)
+
+            objective = self._normalize_objective(
+                objective=str(item.get("objective") or item.get("o") or "").strip(),
+                title=title,
+                category=category
+            )
+
+            normalized_rationale = self._normalize_rationale(
+                rationale=rationale,
+                category=category,
+                data_signals=data_signals
+            )
+
+            clean.append({
+                "title": title[:120],
+                "category": category,
+                "audience": audience,
+                "location_type": location_type,
+                "target_department_id": target_department_id,
+                "duration_minutes": duration,
+                "capacity": capacity,
+                "objective": objective[:500],
+                "rationale": normalized_rationale,
+                "metrics": {
+                    "source": "llm_generated_concept",
+                    "data_confidence": "LLM_ASSISTED",
+                    "data_signals": data_signals
+                }
+            })
+
+        return clean
+
+    def _normalize_category(self, value: str) -> str | None:
+        raw = str(value or "").strip()
+
+        if not raw:
+            return None
+
+        if raw in ALLOWED_CATEGORIES:
+            return raw
+
+        upper = raw.upper().strip()
+
+        if upper in CATEGORY_ALIASES:
+            return CATEGORY_ALIASES[upper]
+
+        normalized = (
+            upper
+            .replace("Ã‰", "E")
+            .replace("Ãˆ", "E")
+            .replace("ÃŠ", "E")
+            .replace("Ã€", "A")
+            .replace("â€™", "'")
+        )
+
+        for key, category in CATEGORY_ALIASES.items():
+            key_normalized = (
+                key.upper()
+                .replace("Ã‰", "E")
+                .replace("Ãˆ", "E")
+                .replace("ÃŠ", "E")
+                .replace("Ã€", "A")
+                .replace("â€™", "'")
+            )
+
+            if normalized == key_normalized:
+                return category
+
+        return None
+
+    def _infer_category_from_title(
+        self,
+        title: str,
+        current_category: str
+    ) -> str:
+        text = str(title or "").lower()
+
+        if "webinaire" in text or "webinar" in text or text.startswith("live "):
+            return "Webinaire"
+
+        if "bien-Ãªtre" in text or "bien etre" in text or "stress" in text or "santÃ© mentale" in text:
+            return "Bien-Ãªtre"
+
+        if "team building" in text or "cohÃ©sion" in text:
+            return "Team building"
+
+        if "innovation" in text or "idÃ©ation" in text or "crÃ©ativitÃ©" in text:
+            return "Innovation"
+
+        if "networking" in text or "rÃ©seau" in text:
+            return "Networking"
+
+        if "afterwork" in text:
+            return "Afterwork"
+
+        if "rse" in text or "responsabilitÃ©" in text:
+            return "RSE"
+
+        if "formation" in text or "apprentissage" in text:
+            return "Formation"
+
+        if "confÃ©rence" in text or "table ronde" in text:
+            return "ConfÃ©rence"
+
+        if "atelier" in text or "workshop" in text:
+            return "Atelier"
+
+        return current_category
+
+    def _preferred_location_for_category(
+        self,
+        category: str,
+        current_location: str
+    ) -> str:
+        normalized = str(category or "").strip().lower()
+
+        if normalized == "webinaire":
+            return "ONLINE"
+
+        if normalized in {"afterwork", "team building", "sport", "bien-Ãªtre", "culture dâ€™entreprise"}:
+            return "ONSITE"
+
+        if normalized in {"formation", "confÃ©rence"}:
+            return current_location if current_location in {"ONLINE", "ONSITE"} else "ONSITE"
+
+        return current_location if current_location in ALLOWED_LOCATION_TYPES else "ONSITE"
+
+    def _is_professional_title(self, title: str) -> bool:
+        text = str(title or "").strip()
+
+        if self._is_low_quality_text(text, min_words=3):
+            return False
+
+        if len(text) < 12:
+            return False
+
+        if self._has_forbidden_title_terms(text):
+            return False
+
+        return True
+
+    def _has_forbidden_title_terms(self, title: str) -> bool:
+        text = str(title or "").strip().lower()
+
+        return any(term in text for term in FORBIDDEN_TITLE_TERMS)
+
+    def _is_low_quality_text(self, value: str, min_words: int = 4) -> bool:
+        text = str(value or "").strip().lower()
+
+        if not text:
+            return True
+
+        words = [
+            word
+            for word in text.replace("-", " ").split()
+            if word.strip()
+        ]
+
+        if len(words) < min_words:
+            return True
+
+        return text in GENERIC_TEXT_VALUES
+
+    def _normalize_objective(
+        self,
+        objective: str,
+        title: str,
+        category: str
+    ) -> str:
+        if not self._is_low_quality_text(objective, min_words=7):
+            return objective.strip()
+
+        return (
+            f"Organiser un Ã©vÃ©nement interne de type {category.lower()} autour de Â« {title} Â» "
+            "afin de renforcer lâ€™engagement, le partage de connaissances et la collaboration entre collaborateurs."
+        )
+
+    def _normalize_rationale(
+        self,
+        rationale: list,
+        category: str,
+        data_signals: list
+    ) -> list[str]:
+        clean = [
+            str(item).strip()
+            for item in rationale
+            if not self._is_low_quality_text(str(item), min_words=4)
+        ]
+
+        if len(clean) >= 2:
+            return clean[:4]
+
+        if data_signals:
+            signal_text = ", ".join(str(signal) for signal in data_signals[:2])
+        else:
+            signal_text = "les donnÃ©es rÃ©centes disponibles"
+
+        return [
+            f"La catÃ©gorie {category} ressort comme une piste exploitable Ã  partir de {signal_text}.",
+            "Le format proposÃ© reste Ã  valider par le RH ou le manager avant publication.",
+            "Le crÃ©neau sera ensuite optimisÃ© par le modÃ¨le de planning et les contraintes calendrier."
+        ]
+
+    def _clean_data_signals(self, data_signals: list) -> list[str]:
+        clean: list[str] = []
+
+        for signal in data_signals:
+            value = str(signal or "").strip()
+            value_lower = value.lower()
+
+            if not value:
+                continue
+
+            if value_lower in GENERIC_SIGNAL_VALUES:
+                continue
+
+            if value_lower.startswith("signal de donnÃ©es"):
+                continue
+
+            if value_lower.startswith("signal-"):
+                continue
+
+            if len(value.split()) < 3:
+                continue
+
+            clean.append(value)
+
+        return clean[:5]
+
+    def _default_capacity(
+        self,
+        users: pd.DataFrame,
+        target_department_id: int | None
+    ) -> int:
+        if users is None or users.empty:
+            return 30
+
+        if target_department_id is None or "department_id" not in users.columns:
+            return min(60, max(20, int(len(users) * 0.15)))
+
+        data = users.copy()
+        data["department_id"] = pd.to_numeric(
+            data["department_id"],
+            errors="coerce"
+        ).fillna(0).astype(int)
+
+        department_size = len(
+            data[data["department_id"] == int(target_department_id)]
+        )
+
+        if department_size <= 0:
+            return 30
+
+        return min(80, max(15, int(department_size * 0.35)))
+
+    def _safe_minimal_fallback(
+        self,
+        target_department_id: int | None,
+        users: pd.DataFrame,
+        error_message: str | None = None
+    ) -> list[dict[str, Any]]:
+        audience = "DEPARTMENT" if target_department_id else "GLOBAL"
+        capacity = self._default_capacity(users, target_department_id)
+
+        return [
+            {
+                "title": "Atelier collaboratif prioritÃ©s Ã©quipe",
+                "category": "Atelier",
+                "audience": audience,
+                "location_type": "ONSITE",
+                "target_department_id": target_department_id,
+                "duration_minutes": 60,
+                "capacity": capacity,
+                "objective": "Identifier des prioritÃ©s concrÃ¨tes et mobiliser les collaborateurs autour dâ€™actions utiles.",
+                "rationale": [
+                    "Le gÃ©nÃ©rateur LLM nâ€™a pas pu Ãªtre utilisÃ©.",
+                    "Une proposition de secours est utilisÃ©e pour garantir la continuitÃ© du service.",
+                    "La proposition doit Ãªtre validÃ©e par le RH ou le manager."
+                ],
+                "metrics": {
+                    "source": "fallback_llm_unavailable",
+                    "data_confidence": "LOW",
+                    "llm_error": error_message
+                }
+            }
+        ]
+
+    def _safe_int(self, value: Any, default: int) -> int:
+        try:
+            return int(value)
+        except Exception:
+            return default
+
+    def _supplement_missing_concepts(
+        self,
+        concepts: list[dict[str, Any]],
+        target_department_id: int | None,
+        users: pd.DataFrame,
+        required_count: int,
+        reason: str
+    ) -> list[dict[str, Any]]:
+        existing_titles = {
+            str(item.get("title", "")).lower()
+            for item in concepts
+        }
+
+        existing_categories = {
+            str(item.get("category", "")).lower()
+            for item in concepts
+        }
+
+        audience = "DEPARTMENT" if target_department_id else "GLOBAL"
+        capacity = self._default_capacity(users, target_department_id)
+
+        fallback_candidates = [
+            {
+                "title": "Atelier amÃ©lioration continue inter-Ã©quipes",
+                "category": "Atelier",
+                "location_type": "ONSITE",
+                "objective": "Identifier des pistes dâ€™amÃ©lioration concrÃ¨tes et renforcer la collaboration entre Ã©quipes.",
+                "rationale": [
+                    "Le format atelier permet dâ€™exploiter les retours rÃ©cents mÃªme lorsque les donnÃ©es sont limitÃ©es.",
+                    "La proposition reste Ã  valider par le RH ou le manager avant publication."
+                ]
+            },
+            {
+                "title": "Webinaire pratiques digitales et collaboration",
+                "category": "Webinaire",
+                "location_type": "ONLINE",
+                "objective": "Partager des pratiques digitales utiles pour amÃ©liorer la collaboration et lâ€™efficacitÃ© professionnelle.",
+                "rationale": [
+                    "Le format en ligne facilite la participation des collaborateurs de plusieurs pÃ©rimÃ¨tres.",
+                    "Le crÃ©neau sera optimisÃ© par le modÃ¨le de planning selon les disponibilitÃ©s futures."
+                ]
+            },
+            {
+                "title": "Session innovation opÃ©rationnelle et idÃ©es terrain",
+                "category": "Innovation",
+                "location_type": "ONSITE",
+                "objective": "Faire Ã©merger des idÃ©es concrÃ¨tes Ã  partir des besoins terrain et des signaux rÃ©cents.",
+                "rationale": [
+                    "Lâ€™innovation collaborative permet de transformer les retours des Ã©quipes en actions utiles.",
+                    "La proposition doit Ãªtre validÃ©e avant publication pour garantir son alignement mÃ©tier."
+                ]
+            },
+            {
+                "title": "Rencontre culture interne et engagement",
+                "category": "Culture dâ€™entreprise",
+                "location_type": "ONSITE",
+                "objective": "Renforcer lâ€™engagement des collaborateurs autour des valeurs et pratiques internes.",
+                "rationale": [
+                    "Le format favorise lâ€™adhÃ©sion et la comprÃ©hension des prioritÃ©s internes.",
+                    "Cette proposition complÃ¨te les recommandations issues de la semaine prÃ©cÃ©dente."
+                ]
+            },
+            {
+                "title": "Atelier bien-Ãªtre et Ã©quilibre professionnel",
+                "category": "Bien-Ãªtre",
+                "location_type": "ONSITE",
+                "objective": "Soutenir le bien-Ãªtre des collaborateurs avec un format court, accessible et participatif.",
+                "rationale": [
+                    "Le bien-Ãªtre peut soutenir lâ€™engagement et la disponibilitÃ© des collaborateurs.",
+                    "Le crÃ©neau sera sÃ©lectionnÃ© selon les contraintes calendrier et les signaux historiques."
+                ]
+            },
+            {
+                "title": "Table ronde retours terrain et bonnes pratiques",
+                "category": "ConfÃ©rence",
+                "location_type": "ONSITE",
+                "objective": "Capitaliser sur les expÃ©riences rÃ©centes et partager des bonnes pratiques entre collaborateurs.",
+                "rationale": [
+                    "Les retours terrain permettent dâ€™orienter les prochains Ã©vÃ©nements vers des besoins concrets.",
+                    "La validation RH ou manager reste nÃ©cessaire avant publication."
+                ]
+            },
+            {
+                "title": "Formation gestion du changement",
+                "category": "Formation",
+                "location_type": "ONSITE",
+                "objective": "Accompagner les collaborateurs dans lâ€™adaptation aux changements organisationnels.",
+                "rationale": [
+                    "La formation permet de rÃ©pondre Ã  un besoin professionnel transversal.",
+                    "Le modÃ¨le de planning proposera ensuite les crÃ©neaux les plus adaptÃ©s."
+                ]
+            }
+        ]
+
+        for candidate in fallback_candidates:
+            title_key = candidate["title"].lower()
+            category_key = candidate["category"].lower()
+
+            if title_key in existing_titles:
+                continue
+
+            # On essaie d'abord de diversifier les catÃ©gories.
+            if category_key in existing_categories and len(concepts) < required_count - 1:
+                continue
+
+            concepts.append({
+                "title": candidate["title"],
+                "category": candidate["category"],
+                "audience": audience,
+                "location_type": candidate["location_type"],
+                "target_department_id": target_department_id,
+                "duration_minutes": 60,
+                "capacity": capacity,
+                "objective": candidate["objective"],
+                "rationale": candidate["rationale"],
+                "metrics": {
+                    "source": "data_guardrail_supplement",
+                    "data_confidence": "LOW",
+                    "supplement_reason": reason
+                }
+            })
+
+            existing_titles.add(title_key)
+            existing_categories.add(category_key)
+
+            if len(concepts) >= required_count:
+                break
+
+        return concepts[:required_count]
+===== app/services/planning_llm_client.py =====
+import json
+import os
+import re
+import urllib.request
+from typing import Any
+
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
+class PlanningLlmError(RuntimeError):
+    pass
+
+
+class PlanningLlmClient:
+    def __init__(self) -> None:
+        self.enabled = self._bool_env("PLANNING_LLM_ENABLED", False)
+        self.provider = os.getenv("PLANNING_LLM_PROVIDER", "ollama").strip().lower()
+
+        self.base_url = (
+            os.getenv("PLANNING_LLM_BASE_URL")
+            or os.getenv("OLLAMA_BASE_URL")
+            or "http://127.0.0.1:11434"
+        ).rstrip("/")
+
+        self.model = (
+            os.getenv("PLANNING_LLM_MODEL")
+            or os.getenv("OLLAMA_MODEL")
+            or "qwen3:0.6b"
+        ).strip()
+
+        self.timeout = int(os.getenv("PLANNING_LLM_TIMEOUT_SECONDS", "90"))
+        self.last_error: str | None = None
+
+    def model_info(self) -> dict[str, Any]:
+        return {
+            "enabled": self.enabled,
+            "provider": self.provider,
+            "base_url": self.base_url,
+            "model": self.model,
+            "timeout_seconds": self.timeout,
+            "last_error": self.last_error
+        }
+
+    def generate_json(self, system_prompt: str, user_prompt: str) -> dict[str, Any]:
+        self.last_error = None
+
+        if not self.enabled:
+            self.last_error = "PLANNING_LLM_ENABLED=false ou variable absente dans .env."
+            raise PlanningLlmError(self.last_error)
+
+        if self.provider != "ollama":
+            self.last_error = f"Provider non supportÃ© : {self.provider}"
+            raise PlanningLlmError(self.last_error)
+
+        payload = {
+            "model": self.model,
+            "stream": False,
+            "format": "json",
+            "messages": [
+                {
+                    "role": "system",
+                    "content": system_prompt.strip()
+                },
+                {
+                    "role": "user",
+                    "content": user_prompt.strip()
+                }
+            ],
+            "options": {
+                "temperature": 0.2,
+                "top_p": 0.8,
+                "num_predict": 700,
+                "num_ctx": 2048
+            }
+        }
+
+        request = urllib.request.Request(
+            url=f"{self.base_url}/api/chat",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                raw = response.read().decode("utf-8")
+                data = json.loads(raw)
+        except Exception as exception:
+            self.last_error = f"Erreur appel Ollama : {exception}"
+            raise PlanningLlmError(self.last_error) from exception
+
+        content = (
+            data.get("message", {}).get("content")
+            or data.get("response")
+            or ""
+        )
+
+        if not content.strip():
+            self.last_error = f"RÃ©ponse Ollama vide. RÃ©ponse brute : {str(data)[:300]}"
+            raise PlanningLlmError(self.last_error)
+
+        try:
+            parsed = self._parse_json_content(content)
+        except Exception as exception:
+            self.last_error = f"RÃ©ponse LLM non JSON valide : {content[:500]}"
+            raise PlanningLlmError(self.last_error) from exception
+
+        return parsed
+
+    def _parse_json_content(self, content: str) -> dict[str, Any]:
+        cleaned = content.strip()
+
+        cleaned = re.sub(
+            r"<think>.*?</think>",
+            "",
+            cleaned,
+            flags=re.DOTALL | re.IGNORECASE
+        ).strip()
+
+        cleaned = cleaned.replace("```json", "").replace("```", "").strip()
+
+        try:
+            parsed = json.loads(cleaned)
+            return self._normalize_payload(parsed)
+        except json.JSONDecodeError:
+            pass
+
+        start_candidates = [
+            index for index in [
+                cleaned.find("{"),
+                cleaned.find("[")
+            ]
+            if index >= 0
+        ]
+
+        if not start_candidates:
+            raise ValueError("Aucun JSON dÃ©tectÃ© dans la rÃ©ponse LLM.")
+
+        start = min(start_candidates)
+
+        end_object = cleaned.rfind("}")
+        end_array = cleaned.rfind("]")
+        end = max(end_object, end_array)
+
+        if end <= start:
+            raise ValueError("JSON incomplet dans la rÃ©ponse LLM.")
+
+        extracted = cleaned[start:end + 1]
+        parsed = json.loads(extracted)
+
+        return self._normalize_payload(parsed)
+
+    def _normalize_payload(self, parsed: Any) -> dict[str, Any]:
+        if isinstance(parsed, list):
+            return {"concepts": parsed}
+
+        if isinstance(parsed, dict):
+            if "concepts" in parsed and isinstance(parsed["concepts"], list):
+                return parsed
+
+            if "items" in parsed and isinstance(parsed["items"], list):
+                return {"concepts": parsed["items"]}
+
+            if "events" in parsed and isinstance(parsed["events"], list):
+                return {"concepts": parsed["events"]}
+
+        raise ValueError("Le JSON LLM doit contenir une liste 'concepts'.")
+
+    def _bool_env(self, name: str, default: bool) -> bool:
+        value = os.getenv(name)
+
+        if value is None:
+            return default
+
+        return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+===== app/services/planning_monitoring_service.py =====
+import json
+from collections import Counter
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+
+
+LOG_DIR = Path("logs/predictions")
+
+
+def parse_datetime(value: str | None) -> datetime | None:
+    if not value:
+        return None
+
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except Exception:
+        return None
+
+
+def read_planning_logs(days: int) -> list[dict[str, Any]]:
+    if not LOG_DIR.exists():
+        return []
+
+    now = datetime.now(timezone.utc)
+    start_date = now - timedelta(days=days)
+
+    items: list[dict[str, Any]] = []
+
+    for path in LOG_DIR.glob("planning-*.jsonl"):
+        with path.open("r", encoding="utf-8") as file:
+            for line in file:
+                line = line.strip()
+
+                if not line:
+                    continue
+
+                try:
+                    record = json.loads(line)
+                except Exception:
+                    continue
+
+                logged_at = parse_datetime(record.get("logged_at"))
+
+                if logged_at and logged_at >= start_date:
+                    items.append(record)
+
+    return items
+
+
+def get_planning_monitoring_summary(
+    days: int = 30,
+    target_department_id: int | None = None
+) -> dict[str, Any]:
+    logs = read_planning_logs(days)
+
+    if target_department_id is not None:
+        logs = [
+            item for item in logs
+            if item.get("target_department_id") in [target_department_id, str(target_department_id)]
+        ]
+
+    generations = [
+        item for item in logs
+        if item.get("event_type") == "EVENT_PROPOSALS_GENERATED"
+    ]
+
+    usages = [
+        item for item in logs
+        if item.get("event_type") == "PROPOSAL_USAGE"
+    ]
+
+    copied = [
+        item for item in usages
+        if item.get("action") == "COPIED"
+    ]
+
+    used_to_prefill = [
+        item for item in usages
+        if item.get("action") == "USED_TO_PREFILL"
+    ]
+
+    created_from_ai = [
+        item for item in usages
+        if item.get("action") == "EVENT_CREATED_FROM_AI_PROPOSAL"
+    ]
+
+    categories = Counter(
+        item.get("category")
+        for item in usages
+        if item.get("category")
+    )
+
+    proposal_titles = Counter(
+        item.get("proposal_title")
+        for item in usages
+        if item.get("proposal_title")
+    )
+
+    model_versions = Counter()
+
+    for item in generations:
+        model_info = item.get("model_info") or {}
+        version = model_info.get("version")
+
+        if version:
+            model_versions[version] += 1
+
+    latest_events = sorted(
+        logs,
+        key=lambda item: item.get("logged_at", ""),
+        reverse=True
+    )[:10]
+
+    total_generations = len(generations)
+    total_used = len(used_to_prefill)
+
+    usage_rate = 0.0
+    if total_generations > 0:
+        usage_rate = total_used / total_generations
+
+    return {
+        "period_days": days,
+        "target_department_id": target_department_id,
+        "total_generations": total_generations,
+        "total_usage_events": len(usages),
+        "copied_count": len(copied),
+        "used_to_prefill_count": total_used,
+        "created_from_ai_count": len(created_from_ai),
+        "usage_rate": round(usage_rate, 4),
+        "top_categories": [
+            {"category": category, "count": count}
+            for category, count in categories.most_common(5)
+        ],
+        "top_proposals": [
+            {"title": title, "count": count}
+            for title, count in proposal_titles.most_common(5)
+        ],
+        "model_versions": [
+            {"version": version, "count": count}
+            for version, count in model_versions.most_common()
+        ],
+        "latest_events": latest_events
+    }
+===== app/schemas/planning.py =====
+from pydantic import BaseModel, Field
+
+
+class PlanningSuggestionRequest(BaseModel):
+    category: str = Field(min_length=1)
+    audience: str = "GLOBAL"
+    location_type: str = "ONSITE"
+    target_department_id: int | None = None
+    duration_minutes: int = Field(default=60, ge=15, le=480)
+    capacity: int = Field(default=30, ge=1)
+    from_date: str | None = None
+    days_horizon: int = Field(default=30, ge=1, le=120)
+    limit: int = Field(default=5, ge=1, le=20)
+
+
+class PlanningSlotSuggestion(BaseModel):
+    rank: int
+    start_at: str
+    end_at: str
+    day_of_week: int
+    hour: int
+    score: float
+    confidence: str
+    reasons: list[str]
+    metrics: dict
+
+
+class PlanningSuggestionResponse(BaseModel):
+    request_id: str
+    generated_at: str
+    total_candidates: int
+    items: list[PlanningSlotSuggestion]
+    model_info: dict
+
+class PlanningEventProposalRequest(BaseModel):
+    reference_date: str | None = None
+    target_department_id: int | None = None
+    limit: int = Field(default=3, ge=1, le=5)
+    slot_limit: int = Field(default=3, ge=1, le=5)
+    days_horizon: int = Field(default=30, ge=7, le=50)
+
+
+class PlanningEventProposal(BaseModel):
+    rank: int
+    title: str
+    category: str
+    audience: str
+    location_type: str
+    target_department_id: int | None = None
+    duration_minutes: int
+    capacity: int
+    objective: str
+    rationale: list[str]
+    suggested_slots: list[PlanningSlotSuggestion]
+    metrics: dict
+
+
+class PlanningEventProposalResponse(BaseModel):
+    request_id: str
+    generated_at: str
+    analysis_period: dict
+    total_proposals: int
+    items: list[PlanningEventProposal]
+    model_info: dict
+
+
+class PlanningMonitoringTopCategory(BaseModel):
+    category: str
+    count: int
+
+
+class PlanningMonitoringTopProposal(BaseModel):
+    title: str
+    count: int
+
+
+class PlanningMonitoringModelVersion(BaseModel):
+    version: str
+    count: int
+
+
+class PlanningMonitoringSummaryResponse(BaseModel):
+    period_days: int
+    target_department_id: int | None = None
+    total_generations: int
+    total_usage_events: int
+    copied_count: int
+    used_to_prefill_count: int
+    created_from_ai_count: int = 0
+    usage_rate: float
+    top_categories: list[PlanningMonitoringTopCategory]
+    top_proposals: list[PlanningMonitoringTopProposal]
+    model_versions: list[PlanningMonitoringModelVersion]
+    latest_events: list[dict]
+
+class PlanningUsageLogRequest(BaseModel):
+    request_id: str | None = None
+    action: str = "USED_TO_PREFILL"
+    proposal_rank: int | None = None
+    proposal_title: str | None = None
+    category: str | None = None
+    target_department_id: int | None = None
+    selected_slot_start_at: str | None = None
+    selected_slot_score: float | None = None
+    created_event_id: str | None = None
+    created_event_status: str | None = None
+    source: str = "angular_admin_dashboard"
+
+
+class PlanningUsageLogResponse(BaseModel):
+    status: str
+    logged_at: str
+
+class PlanningIdeationDebugRequest(BaseModel):
+    reference_date: str | None = None
+    target_department_id: int | None = None
+    limit: int = Field(default=10, ge=1, le=30)
+
+
+class PlanningIdeationConcept(BaseModel):
+    title: str
+    category: str
+    audience: str
+    location_type: str
+    target_department_id: int | None = None
+    duration_minutes: int
+    capacity: int
+    objective: str
+    rationale: list[str]
+    metrics: dict
+
+
+class PlanningIdeationDebugResponse(BaseModel):
+    generated_at: str
+    analysis_period: dict
+    total_concepts: int
+    items: list[PlanningIdeationConcept]
+    model_info: dict
+===== training/train_planning_regressor.py =====
+import argparse
+import json
+from pathlib import Path
+
+import pandas as pd
+from catboost import CatBoostRegressor, Pool
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+from training.model_registry import register_model_version, model_version_exists
+
+
+DATASET_PATH = Path("datasets/processed/planning_train.csv")
+CONFIG_PATH = Path("configs/planning_model_config.json")
+ARTIFACTS_ROOT = Path("models_artifacts/planning/versions")
+
+
+def load_config() -> dict:
+    with CONFIG_PATH.open("r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+def prepare_dataset(df: pd.DataFrame, features: list[str], categorical_features: list[str], target: str) -> pd.DataFrame:
+    df = df.copy()
+
+    if "outcome_available" in df.columns:
+        df = df[df["outcome_available"] == 1].copy()
+
+    for column in features:
+        if column not in df.columns:
+            df[column] = "UNKNOWN" if column in categorical_features else 0
+
+    for column in categorical_features:
+        df[column] = df[column].fillna("UNKNOWN").astype(str)
+
+    for column in features:
+        if column not in categorical_features:
+            df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+    df[target] = pd.to_numeric(df[target], errors="coerce").fillna(0).clip(0, 1)
+
+    return df
+
+
+def time_split(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    if "event_start_at" in df.columns:
+        df = df.copy()
+        df["event_start_at_dt"] = pd.to_datetime(df["event_start_at"], errors="coerce", utc=True)
+        df = df.sort_values("event_start_at_dt").reset_index(drop=True)
+    else:
+        df = df.reset_index(drop=True)
+
+    split_index = int(len(df) * 0.8)
+
+    train_df = df.iloc[:split_index].copy()
+    valid_df = df.iloc[split_index:].copy()
+
+    return train_df, valid_df
+
+
+def write_model_card(path: Path, version: str, metrics: dict) -> None:
+    metrics_text = json.dumps(metrics, ensure_ascii=False, indent=2)
+
+    path.write_text(
+        f"""# Model Card â€” Planning Regressor {version}
+
+## ModÃ¨le
+
+CatBoostRegressor pour IA 4 Planning Intelligent.
+
+## Objectif
+
+PrÃ©dire un score de succÃ¨s attendu pour un crÃ©neau dâ€™Ã©vÃ©nement.
+
+## Target
+
+success_score
+
+Le score combine principalement :
+
+- taux dâ€™inscription ;
+- taux de prÃ©sence ;
+- satisfaction moyenne.
+
+## DonnÃ©es utilisÃ©es
+
+Dataset : datasets/processed/planning_train.csv
+
+## Statut
+
+Version candidate.
+
+Elle ne doit Ãªtre promue en production quâ€™aprÃ¨s validation des mÃ©triques.
+
+## MÃ©triques
+
+{metrics_text}
+
+## Limites
+
+- Dataset encore enrichi/synthÃ©tique.
+- Les signaux HIGH sont rares.
+- Le modÃ¨le prÃ©dit un potentiel, il ne crÃ©e pas automatiquement lâ€™Ã©vÃ©nement.
+- Le score final doit rester validÃ© par un RH ou un manager.
+""",
+        encoding="utf-8"
+    )
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="EntraÃ®ner le modÃ¨le IA 4 Planning Intelligent."
+    )
+
+    parser.add_argument(
+        "--version",
+        required=True,
+        help="Exemple : planning-regressor-v1.0.0"
+    )
+
+    args = parser.parse_args()
+    version = args.version
+
+    if model_version_exists("planning", version):
+        raise ValueError(f"La version existe dÃ©jÃ  : {version}")
+
+    if not DATASET_PATH.exists():
+        raise FileNotFoundError(f"Dataset introuvable : {DATASET_PATH}")
+
+    config = load_config()
+
+    features = config["features"]
+    categorical_features = config["categorical_features"]
+    target = config["target"]
+
+    df = pd.read_csv(DATASET_PATH)
+    df = prepare_dataset(df, features, categorical_features, target)
+
+    if len(df) < 100:
+        raise RuntimeError("Dataset planning trop petit pour entraÃ®ner un modÃ¨le fiable.")
+
+    train_df, valid_df = time_split(df)
+
+    cat_feature_indexes = [
+        features.index(column)
+        for column in categorical_features
+        if column in features
+    ]
+
+    train_pool = Pool(
+        train_df[features],
+        train_df[target],
+        cat_features=cat_feature_indexes
+    )
+
+    valid_pool = Pool(
+        valid_df[features],
+        valid_df[target],
+        cat_features=cat_feature_indexes
+    )
+
+    model = CatBoostRegressor(
+        iterations=700,
+        depth=6,
+        learning_rate=0.04,
+        loss_function="RMSE",
+        eval_metric="RMSE",
+        random_seed=42,
+        verbose=100
+    )
+
+    model.fit(
+        train_pool,
+        eval_set=valid_pool,
+        use_best_model=True
+    )
+
+    predictions = model.predict(valid_df[features])
+    y_true = valid_df[target]
+
+    mse = mean_squared_error(y_true, predictions)
+
+    metrics = {
+        "train_rows": int(len(train_df)),
+        "valid_rows": int(len(valid_df)),
+        "mae": float(mean_absolute_error(y_true, predictions)),
+        "mse": float(mse),
+        "rmse": float(mse ** 0.5),
+        "r2": float(r2_score(y_true, predictions))
+    }
+
+    version_dir = ARTIFACTS_ROOT / version
+    version_dir.mkdir(parents=True, exist_ok=True)
+
+    model_path = version_dir / "planning_regressor.cbm"
+    features_path = version_dir / "features.json"
+    metrics_path = version_dir / "metrics.json"
+    model_card_path = version_dir / "model_card.md"
+
+    model.save_model(str(model_path))
+
+    features_payload = {
+        "target": target,
+        "features": features,
+        "categorical_features": categorical_features,
+        "model_type": "CatBoostRegressor"
+    }
+
+    with features_path.open("w", encoding="utf-8") as file:
+        json.dump(features_payload, file, ensure_ascii=False, indent=2)
+
+    with metrics_path.open("w", encoding="utf-8") as file:
+        json.dump(metrics, file, ensure_ascii=False, indent=2)
+
+    write_model_card(model_card_path, version, metrics)
+
+    register_model_version(
+        task="planning",
+        version=version,
+        model_name="CatBoostRegressor",
+        artifact_path=str(model_path),
+        features_path=str(features_path),
+        metrics_path=str(metrics_path),
+        model_card_path=str(model_card_path),
+        training_data_source="datasets/processed/planning_train.csv",
+        metrics=metrics,
+        status="candidate"
+    )
+
+    print("\n=== Planning Regressor trained ===")
+    print(f"Version: {version}")
+    print(f"Model: {model_path}")
+    print(f"Metrics: {json.dumps(metrics, ensure_ascii=False, indent=2)}")
+
+
+if __name__ == "__main__":
+    main()
+===== training/build_planning_dataset.py =====
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+import pandas as pd
+
+
+INPUT_DIR = Path("datasets/raw/capevents")
+OUTPUT_FILE = Path("datasets/processed/planning_train.csv")
+
+
+CANCELLED_REGISTRATION_VALUES = {
+    "CANCELLED",
+    "UNREGISTERED"
+}
+
+PRESENT_ATTENDANCE_VALUES = {
+    "PRESENT",
+    "ATTENDED",
+    "CONFIRMED_PRESENT"
+}
+
+
+def read_csv_if_exists(path: Path) -> pd.DataFrame:
+    if not path.exists():
+        print(f"[WARN] Fichier introuvable : {path}")
+        return pd.DataFrame()
+
+    return pd.read_csv(path)
+
+
+def read_first_existing(paths: list[Path]) -> pd.DataFrame:
+    for path in paths:
+        if path.exists():
+            return pd.read_csv(path)
+
+    print(f"[WARN] Aucun fichier trouvÃ© parmi : {paths}")
+    return pd.DataFrame()
+
+
+def normalize_id(value: Any) -> str:
+    if pd.isna(value):
+        return ""
+    return str(value).strip()
+
+
+def safe_numeric(series: pd.Series, default: float = 0.0) -> pd.Series:
+    return pd.to_numeric(series, errors="coerce").fillna(default)
+
+
+def parse_datetime(series: pd.Series) -> pd.Series:
+    return pd.to_datetime(series, errors="coerce", utc=True)
+
+
+def prepare_events(events: pd.DataFrame) -> pd.DataFrame:
+    events = events.copy()
+
+    events["event_id"] = events["id"].apply(normalize_id)
+    events["event_title"] = events["title"].fillna("").astype(str)
+    events["event_category"] = events["category"].fillna("Autre").astype(str)
+    events["event_audience"] = events["audience"].fillna("UNKNOWN").astype(str)
+    events["event_location_type"] = events["location_type"].fillna("UNKNOWN").astype(str)
+    events["event_status"] = events["status"].fillna("UNKNOWN").astype(str).str.upper()
+
+    events["start_at_dt"] = parse_datetime(events["start_at"])
+    events["event_start_at"] = events["start_at"].fillna("").astype(str)
+
+    events["target_department_id"] = safe_numeric(
+        events.get("target_department_id", pd.Series([0] * len(events))),
+        default=0
+    ).astype(int)
+
+    events["capacity"] = safe_numeric(events["capacity"], default=0)
+    events["duration_minutes"] = safe_numeric(events["duration_minutes"], default=0)
+
+    events["day_of_week"] = events["start_at_dt"].dt.dayofweek.fillna(-1).astype(int)
+    events["hour"] = events["start_at_dt"].dt.hour.fillna(-1).astype(int)
+    events["month"] = events["start_at_dt"].dt.month.fillna(-1).astype(int)
+
+    events["is_morning"] = events["hour"].between(8, 11).astype(int)
+    events["is_afternoon"] = events["hour"].between(12, 17).astype(int)
+    events["is_afterwork"] = (events["hour"] >= 18).astype(int)
+
+    events["event_date"] = events["start_at_dt"].dt.date.astype(str)
+    iso_calendar = events["start_at_dt"].dt.isocalendar()
+    events["event_week"] = iso_calendar.week.fillna(0).astype(int)
+    events["event_year"] = events["start_at_dt"].dt.year.fillna(0).astype(int)
+
+    return events
+
+
+def build_registration_aggregates(registrations: pd.DataFrame) -> pd.DataFrame:
+    if registrations.empty:
+        return pd.DataFrame(columns=[
+            "event_id",
+            "registered_count",
+            "present_count"
+        ])
+
+    registrations = registrations.copy()
+    registrations["event_id"] = registrations["event_id"].apply(normalize_id)
+    registrations["status"] = registrations["status"].fillna("").astype(str).str.upper()
+    registrations["attendance_status"] = registrations["attendance_status"].fillna("").astype(str).str.upper()
+
+    active_regs = registrations[
+        ~registrations["status"].isin(CANCELLED_REGISTRATION_VALUES)
+    ].copy()
+
+    active_regs["is_present"] = active_regs["attendance_status"].isin(
+        PRESENT_ATTENDANCE_VALUES
+    ).astype(int)
+
+    return active_regs.groupby("event_id").agg(
+        registered_count=("event_id", "count"),
+        present_count=("is_present", "sum")
+    ).reset_index()
+
+
+def build_feedback_aggregates(feedbacks: pd.DataFrame) -> pd.DataFrame:
+    if feedbacks.empty:
+        return pd.DataFrame(columns=[
+            "event_id",
+            "feedback_count",
+            "average_rating"
+        ])
+
+    feedbacks = feedbacks.copy()
+    feedbacks["event_id"] = feedbacks["event_id"].apply(normalize_id)
+    feedbacks["rating"] = safe_numeric(feedbacks["rating"], default=0)
+
+    return feedbacks.groupby("event_id").agg(
+        feedback_count=("rating", "count"),
+        average_rating=("rating", "mean")
+    ).reset_index()
+
+
+def build_invitation_aggregates(invitations: pd.DataFrame) -> pd.DataFrame:
+    if invitations.empty:
+        return pd.DataFrame(columns=[
+            "event_id",
+            "invitation_count",
+            "rsvp_yes_count",
+            "rsvp_maybe_count",
+            "rsvp_no_count"
+        ])
+
+    invitations = invitations.copy()
+    invitations["event_id"] = invitations["event_id"].apply(normalize_id)
+    invitations["rsvp_response"] = invitations["rsvp_response"].fillna("").astype(str).str.upper()
+
+    invitations["rsvp_yes"] = (invitations["rsvp_response"] == "YES").astype(int)
+    invitations["rsvp_maybe"] = (invitations["rsvp_response"] == "MAYBE").astype(int)
+    invitations["rsvp_no"] = (invitations["rsvp_response"] == "NO").astype(int)
+
+    return invitations.groupby("event_id").agg(
+        invitation_count=("event_id", "count"),
+        rsvp_yes_count=("rsvp_yes", "sum"),
+        rsvp_maybe_count=("rsvp_maybe", "sum"),
+        rsvp_no_count=("rsvp_no", "sum")
+    ).reset_index()
+
+
+def build_department_sizes(users: pd.DataFrame) -> pd.DataFrame:
+    if users.empty or "department_id" not in users.columns:
+        return pd.DataFrame(columns=[
+            "target_department_id",
+            "department_size"
+        ])
+
+    users = users.copy()
+    users["department_id"] = safe_numeric(users["department_id"], default=0).astype(int)
+
+    if "is_active" in users.columns:
+        users["is_active_str"] = users["is_active"].fillna("").astype(str).str.lower()
+        users = users[
+            users["is_active_str"].isin(["true", "1", "yes", "y"])
+        ].copy()
+
+    return users.groupby("department_id").size().reset_index(name="department_size").rename(
+        columns={"department_id": "target_department_id"}
+    )
+
+
+def add_conflict_features(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    same_day_counts = df.groupby("event_date").size().rename("events_same_day_count")
+    df = df.merge(same_day_counts, on="event_date", how="left")
+    df["events_same_day_count"] = (df["events_same_day_count"] - 1).clip(lower=0)
+
+    dept_week_counts = df.groupby([
+        "target_department_id",
+        "event_year",
+        "event_week"
+    ]).size().rename("events_same_department_same_week_count")
+
+    df = df.merge(
+        dept_week_counts,
+        on=["target_department_id", "event_year", "event_week"],
+        how="left"
+    )
+
+    df["events_same_department_same_week_count"] = (
+        df["events_same_department_same_week_count"] - 1
+    ).clip(lower=0)
+
+    df.loc[
+        df["target_department_id"] <= 0,
+        "events_same_department_same_week_count"
+    ] = 0
+
+    return df
+
+
+def add_targets(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    df["registration_rate"] = (
+        df["registered_count"] / df["capacity"].replace(0, np.nan)
+    ).fillna(0).clip(0, 1)
+
+    df["attendance_rate"] = (
+        df["present_count"] / df["registered_count"].replace(0, np.nan)
+    ).fillna(0).clip(0, 1)
+
+    df["rsvp_yes_rate"] = (
+        df["rsvp_yes_count"] / df["invitation_count"].replace(0, np.nan)
+    ).fillna(0).clip(0, 1)
+
+    df["rsvp_no_rate"] = (
+        df["rsvp_no_count"] / df["invitation_count"].replace(0, np.nan)
+    ).fillna(0).clip(0, 1)
+
+    df["success_score"] = (
+        0.60 * df["registration_rate"]
+        + 0.30 * df["attendance_rate"]
+        + 0.10 * (df["average_rating"].fillna(0) / 5).clip(0, 1)
+    ).clip(0, 1)
+
+    conditions = [
+        df["success_score"] >= 0.70,
+        df["success_score"] >= 0.40
+    ]
+
+    choices = [
+        "HIGH",
+        "MEDIUM"
+    ]
+
+    df["success_label"] = np.select(
+        conditions,
+        choices,
+        default="LOW"
+    )
+
+    df["outcome_available"] = (
+        (df["capacity"] > 0)
+        & (
+            (df["registered_count"] > 0)
+            | (df["invitation_count"] > 0)
+            | (df["feedback_count"] > 0)
+        )
+    ).astype(int)
+
+    return df
+
+
+def historical_mean(
+    previous: pd.DataFrame,
+    filter_column: str,
+    filter_value: Any,
+    target_column: str,
+    fallback: float
+) -> float:
+    if previous.empty or filter_column not in previous.columns:
+        return fallback
+
+    rows = previous[previous[filter_column] == filter_value]
+
+    if rows.empty:
+        return fallback
+
+    return float(rows[target_column].mean())
+
+
+def add_historical_features(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    df = df.sort_values("start_at_dt").reset_index(drop=True)
+
+    historical_columns = [
+        "historical_category_registration_rate",
+        "historical_category_attendance_rate",
+        "historical_department_participation_rate",
+        "historical_hour_registration_rate",
+        "historical_day_registration_rate"
+    ]
+
+    for column in historical_columns:
+        df[column] = 0.0
+
+    for index in range(len(df)):
+        previous = df.iloc[:index]
+
+        if previous.empty:
+            continue
+
+        global_registration_rate = float(previous["registration_rate"].mean())
+        global_attendance_rate = float(previous["attendance_rate"].mean())
+
+        row = df.iloc[index]
+
+        df.at[index, "historical_category_registration_rate"] = historical_mean(
+            previous,
+            "event_category",
+            row["event_category"],
+            "registration_rate",
+            global_registration_rate
+        )
+
+        df.at[index, "historical_category_attendance_rate"] = historical_mean(
+            previous,
+            "event_category",
+            row["event_category"],
+            "attendance_rate",
+            global_attendance_rate
+        )
+
+        df.at[index, "historical_department_participation_rate"] = historical_mean(
+            previous,
+            "target_department_id",
+            row["target_department_id"],
+            "attendance_rate",
+            global_attendance_rate
+        )
+
+        df.at[index, "historical_hour_registration_rate"] = historical_mean(
+            previous,
+            "hour",
+            row["hour"],
+            "registration_rate",
+            global_registration_rate
+        )
+
+        df.at[index, "historical_day_registration_rate"] = historical_mean(
+            previous,
+            "day_of_week",
+            row["day_of_week"],
+            "registration_rate",
+            global_registration_rate
+        )
+
+    return df
+
+
+def main() -> None:
+    users = read_csv_if_exists(INPUT_DIR / "users.csv")
+    departments = read_first_existing([
+        INPUT_DIR / "departments.csv",
+        INPUT_DIR / "departement.csv"
+    ])
+    events = read_csv_if_exists(INPUT_DIR / "events.csv")
+    registrations = read_csv_if_exists(INPUT_DIR / "event_registrations.csv")
+    feedbacks = read_csv_if_exists(INPUT_DIR / "event_feedbacks.csv")
+    invitations = read_csv_if_exists(INPUT_DIR / "event_invitations.csv")
+
+    if events.empty:
+        raise RuntimeError("events.csv est obligatoire pour construire le dataset planning.")
+
+    events = prepare_events(events)
+
+    reg_agg = build_registration_aggregates(registrations)
+    feedback_agg = build_feedback_aggregates(feedbacks)
+    invitation_agg = build_invitation_aggregates(invitations)
+    department_sizes = build_department_sizes(users)
+
+    dataset = events.merge(reg_agg, on="event_id", how="left")
+    dataset = dataset.merge(feedback_agg, on="event_id", how="left")
+    dataset = dataset.merge(invitation_agg, on="event_id", how="left")
+    dataset = dataset.merge(department_sizes, on="target_department_id", how="left")
+
+    for column in [
+        "registered_count",
+        "present_count",
+        "feedback_count",
+        "average_rating",
+        "invitation_count",
+        "rsvp_yes_count",
+        "rsvp_maybe_count",
+        "rsvp_no_count",
+        "department_size"
+    ]:
+        if column not in dataset.columns:
+            dataset[column] = 0
+        dataset[column] = safe_numeric(dataset[column], default=0)
+
+    dataset = add_conflict_features(dataset)
+    dataset = add_targets(dataset)
+    dataset = add_historical_features(dataset)
+
+    output_columns = [
+        "event_id",
+        "event_title",
+        "event_start_at",
+        "event_status",
+
+        "event_category",
+        "event_audience",
+        "event_location_type",
+        "target_department_id",
+        "capacity",
+        "duration_minutes",
+
+        "day_of_week",
+        "hour",
+        "month",
+        "is_morning",
+        "is_afternoon",
+        "is_afterwork",
+
+        "department_size",
+        "events_same_day_count",
+        "events_same_department_same_week_count",
+
+        "historical_category_registration_rate",
+        "historical_category_attendance_rate",
+        "historical_department_participation_rate",
+        "historical_hour_registration_rate",
+        "historical_day_registration_rate",
+
+        "registered_count",
+        "present_count",
+        "invitation_count",
+        "rsvp_yes_count",
+        "rsvp_maybe_count",
+        "rsvp_no_count",
+        "feedback_count",
+        "average_rating",
+
+        "registration_rate",
+        "attendance_rate",
+        "rsvp_yes_rate",
+        "rsvp_no_rate",
+        "success_score",
+        "success_label",
+        "outcome_available"
+    ]
+
+    for column in output_columns:
+        if column not in dataset.columns:
+            dataset[column] = 0
+
+    final_dataset = dataset[output_columns].copy()
+
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    final_dataset.to_csv(OUTPUT_FILE, index=False, encoding="utf-8")
+
+    print("\n=== Planning dataset created ===")
+    print(f"Output: {OUTPUT_FILE}")
+    print(f"Rows: {len(final_dataset)}")
+    print(f"Events: {final_dataset['event_id'].nunique()}")
+    print("\nSuccess label distribution:")
+    print(final_dataset["success_label"].value_counts())
+    print("\nOutcome availability:")
+    print(final_dataset["outcome_available"].value_counts())
+
+
+if __name__ == "__main__":
+    main()
+===== models_artifacts/planning/README.md =====
+# Planning Intelligent Artifacts
+
+Ce dossier contiendra les artefacts du module IA 4 Planning Intelligent.
+
+Artefacts prÃ©vus :
+
+- planning_regressor.cbm ;
+- planning_classifier.cbm ;
+- features.json ;
+- metrics.json ;
+- model_card.md.
+
+La premiÃ¨re version utilisera dâ€™abord un scoring hybride avant entraÃ®nement dâ€™un modÃ¨le CatBoost.
+===== docs/ai/planning-intelligent.md =====
+# IA 4 â€” Planning Intelligent
+
+## 1. Objectif
+
+Le module Planning Intelligent aide les RH Ã  choisir les meilleurs crÃ©neaux pour organiser un Ã©vÃ©nement interne.
+
+Il analyse lâ€™historique CapEvents afin dâ€™estimer les crÃ©neaux les plus favorables selon :
+
+- la catÃ©gorie ;
+- le dÃ©partement ciblÃ© ;
+- le jour ;
+- lâ€™heure ;
+- la durÃ©e ;
+- le format ;
+- la capacitÃ© ;
+- lâ€™historique de participation ;
+- les conflits avec dâ€™autres Ã©vÃ©nements.
+
+## 2. Principe
+
+Le module ne crÃ©e pas automatiquement lâ€™Ã©vÃ©nement.
+
+Il propose des crÃ©neaux classÃ©s, puis le RH choisit.
+
+```txt
+IA propose
+RH valide
+Spring Boot crÃ©e ou modifie lâ€™Ã©vÃ©nement
