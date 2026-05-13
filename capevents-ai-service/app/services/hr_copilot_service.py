@@ -70,13 +70,18 @@ class HrCopilotService:
                 message="Suggestions du Copilote RH générées avec succès."
             )
 
-            return HrCopilotResponse(
-                request_id=request_id,
-                generated_at=generated_at,
-                suggestions=final_suggestions,
-                qwen_used=qwen_used_any,
-                summary_source=source
-            )
+            response_payload = {
+                "request_id": request_id,
+                "generated_at": generated_at,
+                "suggestions": [
+                    sanitize_payload(item.model_dump())
+                    for item in final_suggestions
+                ],
+                "qwen_used": qwen_used_any,
+                "summary_source": source,
+            }
+
+            return HrCopilotResponse(**response_payload)
 
         except Exception as exc:
             self.copilot_logger.log_hr_copilot(
