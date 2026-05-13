@@ -807,47 +807,47 @@ class RecommendationService:
         self.features = features
         self.categorical_features = categorical_features
 
-def _get_invitation_reminder_features(self, user_id: str, event_id: str) -> dict:
-    result = {
-        "was_reminded": 0,
-        "pair_reminder_count": 0,
-        "days_since_last_reminder": 999,
-        "user_total_reminders_received": 0,
-        "event_total_reminders_sent": 0
-    }
+    def _get_invitation_reminder_features(self, user_id: str, event_id: str) -> dict:
+        result = {
+            "was_reminded": 0,
+            "pair_reminder_count": 0,
+            "days_since_last_reminder": 999,
+            "user_total_reminders_received": 0,
+            "event_total_reminders_sent": 0
+        }
 
-    if not hasattr(self, "invitation_reminders") or self.invitation_reminders.empty:
+        if not hasattr(self, "invitation_reminders") or self.invitation_reminders.empty:
+            return result
+
+        sent_reminders = self.invitation_reminders[
+            self.invitation_reminders["status"] == "SENT"
+        ].copy()
+
+        if sent_reminders.empty:
+            return result
+
+        pair_rows = sent_reminders[
+            (sent_reminders["user_id"].astype(str) == user_id)
+            &
+            (sent_reminders["event_id"].astype(str) == event_id)
+        ]
+
+        user_rows = sent_reminders[
+            sent_reminders["user_id"].astype(str) == user_id
+        ]
+
+        event_rows = sent_reminders[
+            sent_reminders["event_id"].astype(str) == event_id
+        ]
+
+        result["pair_reminder_count"] = int(len(pair_rows))
+        result["was_reminded"] = int(len(pair_rows) > 0)
+        result["user_total_reminders_received"] = int(len(user_rows))
+        result["event_total_reminders_sent"] = int(len(event_rows))
+
+        if not pair_rows.empty and pair_rows["sent_at"].notna().any():
+            last_sent_at = pair_rows["sent_at"].max()
+            now = pd.Timestamp.now(tz="UTC")
+            result["days_since_last_reminder"] = int((now - last_sent_at).days)
+
         return result
-
-    sent_reminders = self.invitation_reminders[
-        self.invitation_reminders["status"] == "SENT"
-    ].copy()
-
-    if sent_reminders.empty:
-        return result
-
-    pair_rows = sent_reminders[
-        (sent_reminders["user_id"].astype(str) == user_id)
-        &
-        (sent_reminders["event_id"].astype(str) == event_id)
-    ]
-
-    user_rows = sent_reminders[
-        sent_reminders["user_id"].astype(str) == user_id
-    ]
-
-    event_rows = sent_reminders[
-        sent_reminders["event_id"].astype(str) == event_id
-    ]
-
-    result["pair_reminder_count"] = int(len(pair_rows))
-    result["was_reminded"] = int(len(pair_rows) > 0)
-    result["user_total_reminders_received"] = int(len(user_rows))
-    result["event_total_reminders_sent"] = int(len(event_rows))
-
-    if not pair_rows.empty and pair_rows["sent_at"].notna().any():
-        last_sent_at = pair_rows["sent_at"].max()
-        now = pd.Timestamp.now(tz="UTC")
-        result["days_since_last_reminder"] = int((now - last_sent_at).days)
-
-    return result
