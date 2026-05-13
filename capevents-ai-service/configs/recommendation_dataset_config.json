@@ -1,8 +1,8 @@
 {
-  "input_dir": "datasets/raw/capevents",
+  "input_dir": "datasets/clean/capevents_v1",
   "output_file": "datasets/processed/recommendation_train.csv",
-  "reference_date": "2026-01-01",
-  "negative_sample_ratio": 3,
-  "min_negative_samples_per_user": 5,
+  "reference_date": "2026-05-13",
+  "negative_sample_ratio": 4,
+  "min_negative_samples_per_user": 8,
   "random_state": 42
 }
