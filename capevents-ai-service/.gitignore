@@ -5,6 +5,9 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 
+# Temporary cleanup backups
+tmp/
+
 # Local secrets
 .env
 
@@ -21,6 +24,4 @@ mlruns/
 datasets/clean/_backup_before_fix_remaining_warnings_v1/
 datasets/clean/_backup_before_fix_self_invitations/
 datasets/clean/_backup_before_fix_warnings_v1/
-
-# Temporary cleanup backups
-tmp/
+app/services/_backup_before_recommendation_fix_v1/
