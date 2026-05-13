@@ -1,11 +1,11 @@
 # Audit Markdown français — CapEvents AI
 
-Généré le : 2026-05-13T10:59:25.673965+00:00
+Généré le : 2026-05-13T11:16:23.140241+00:00
 
 ## Résumé
 
-- Fichiers Markdown analysés : 15
-- Fichiers OK : 7
+- Fichiers Markdown analysés : 16
+- Fichiers OK : 8
 - Fichiers à corriger : 8
 
 ## Détail
@@ -85,9 +85,17 @@ Statut : **À corriger**
 
 ### `README.md`
 
+Statut : **OK**
+
+- Aucun problème détecté.
+
+### `reports/markdown_french_audit_v1.md`
+
 Statut : **À corriger**
 
-- Fichier vide
+- Contenu anglais détecté : `Model Card`
+- Contenu anglais détecté : `Training rows`
+- Contenu anglais détecté : `Validation rows`
 
 ### `reports/planning_model_selection_v1.md`
 
