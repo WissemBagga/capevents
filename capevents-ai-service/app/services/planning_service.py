@@ -99,6 +99,56 @@ def clamp_score(value: float) -> float:
     return max(0.0, min(1.0, value))
 
 
+MOJIBAKE_REPLACEMENTS = {
+    "Ã©": "é",
+    "Ã¨": "è",
+    "Ãª": "ê",
+    "Ã ": "à",
+    "Ã´": "ô",
+    "Ã®": "î",
+    "Ã§": "ç",
+    "Ã‰": "É",
+    "â€™": "’",
+    "Â«": "«",
+    "Â»": "»",
+    "ConfÃ©rence": "Conférence",
+    "Bien-Ãªtre": "Bien-être",
+    "Culture dâ€™entreprise": "Culture d’entreprise",
+    "Ãchanger": "Échanger",
+    "matiÃ¨re": "matière",
+    "amÃ©lioration": "amélioration",
+    "AmÃ©liorer": "Améliorer",
+    "Ã©quipe": "équipe",
+    "Ã©quipes": "équipes",
+    "inter-Ã©quipes": "inter-équipes",
+    "compÃ©tences": "compétences",
+    "qualitÃ©": "qualité",
+    "numÃ©riques": "numériques",
+    "stratÃ©gique": "stratégique",
+}
+
+
+def clean_text(value: Any) -> str:
+    text = str(value or "").strip()
+
+    if any(marker in text for marker in ["Ã", "â", "Â"]):
+        try:
+            text = text.encode("cp1252").decode("utf-8")
+        except Exception:
+            pass
+
+    for old, new in MOJIBAKE_REPLACEMENTS.items():
+        text = text.replace(old, new)
+
+    return text.strip()
+
+
+def clean_list(values: Any) -> list[str]:
+    if not isinstance(values, list):
+        values = [values]
+
+    return [clean_text(item) for item in values if clean_text(item)]
+
 class PlanningService:
     def __init__(self) -> None:
         self.dataset = self._load_dataset()
@@ -620,17 +670,17 @@ class PlanningService:
             final_items.append(
                 PlanningEventProposal(
                     rank=rank,
-                    title=proposal["title"],
-                    category=proposal["category"],
-                    audience=proposal["audience"],
-                    location_type=proposal["location_type"],
+                    title=clean_text(proposal["title"]),
+                    category=clean_text(proposal["category"]),
+                    audience=clean_text(proposal["audience"]),
+                    location_type=clean_text(proposal["location_type"]),
                     target_department_id=proposal["target_department_id"],
                     duration_minutes=proposal["duration_minutes"],
                     capacity=proposal["capacity"],
-                    objective=proposal["objective"],
-                    rationale=proposal["rationale"],
+                    objective=clean_text(proposal["objective"]),
+                    rationale=clean_list(proposal["rationale"]),
                     suggested_slots=slot_response.items,
-                    metrics=proposal["metrics"]
+                    metrics=proposal["metrics"],
                 )
             )
 
