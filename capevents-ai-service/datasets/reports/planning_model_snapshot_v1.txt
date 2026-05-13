@@ -1,0 +1,718 @@
+﻿===== models_artifacts/model_registry.json =====
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-05-13T09:11:14.135534+00:00",
+  "models": {
+    "recommendation": {
+      "active_version": "recommendation-v1.0.0",
+      "versions": {
+        "recommendation-v1.0.0": {
+          "task": "recommendation",
+          "version": "recommendation-v1.0.0",
+          "model_name": "CatBoostRanker",
+          "artifact_path": "models_artifacts/recommendation/catboost_recommender.cbm",
+          "features_path": "models_artifacts/recommendation/features.json",
+          "metrics_path": "models_artifacts/recommendation/metrics.json",
+          "model_card_path": "models_artifacts/recommendation/model_card.md",
+          "training_data_source": "CapEvents PostgreSQL + synthetic/Kaggle curated initial dataset",
+          "metrics": {
+            "model_type": "CatBoostRanker",
+            "input_file": "datasets\\processed\\recommendation_train.csv",
+            "rows_total": 24489,
+            "rows_train": 19570,
+            "rows_validation": 4919,
+            "users_train": 800,
+            "users_validation": 200,
+            "events_total": 1000,
+            "features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status",
+              "event_capacity",
+              "event_duration_minutes",
+              "event_day_of_week",
+              "event_hour",
+              "days_until_event",
+              "event_registered_count",
+              "event_present_count",
+              "event_fill_rate",
+              "event_avg_rating",
+              "event_feedback_count",
+              "same_department",
+              "is_global_event",
+              "interest_match",
+              "user_total_registrations",
+              "user_total_attendances",
+              "user_attendance_rate",
+              "user_avg_rating",
+              "user_category_registrations",
+              "user_category_attendances",
+              "user_category_attendance_rate",
+              "points_total",
+              "points_events_count",
+              "badges_count",
+              "was_invited",
+              "rsvp_yes",
+              "rsvp_maybe",
+              "rsvp_no"
+            ],
+            "categorical_features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status"
+            ],
+            "metrics": {
+              "precision_at_5": 0.7290000000000001,
+              "ndcg_at_5": 0.8623343011144843,
+              "evaluated_users": 200,
+              "evaluated_rows": 4919
+            },
+            "catboost_best_score": {}
+          },
+          "status": "production",
+          "created_at": "2026-05-07T13:01:06.772314+00:00",
+          "promoted_at": "2026-05-07T14:02:51.933662+00:00"
+        },
+        "recommendation-v1.1.0": {
+          "task": "recommendation",
+          "version": "recommendation-v1.1.0",
+          "model_name": "CatBoostRanker",
+          "artifact_path": "models_artifacts/recommendation/versions/recommendation-v1.1.0/catboost_recommender.cbm",
+          "features_path": "models_artifacts/recommendation/versions/recommendation-v1.1.0/features.json",
+          "metrics_path": "models_artifacts/recommendation/versions/recommendation-v1.1.0/metrics.json",
+          "model_card_path": "models_artifacts/recommendation/versions/recommendation-v1.1.0/model_card.md",
+          "training_data_source": "CapEvents PostgreSQL runtime dataset",
+          "metrics": {
+            "version": "recommendation-v1.1.0",
+            "model_type": "CatBoostRanker",
+            "status": "candidate",
+            "input_file": "datasets\\processed\\recommendation_train.csv",
+            "rows_total": 24489,
+            "rows_train": 19570,
+            "rows_validation": 4919,
+            "users_train": 800,
+            "users_validation": 200,
+            "events_total": 1000,
+            "features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status",
+              "event_capacity",
+              "event_duration_minutes",
+              "event_day_of_week",
+              "event_hour",
+              "days_until_event",
+              "event_registered_count",
+              "event_present_count",
+              "event_fill_rate",
+              "event_avg_rating",
+              "event_feedback_count",
+              "same_department",
+              "is_global_event",
+              "interest_match",
+              "user_total_registrations",
+              "user_total_attendances",
+              "user_attendance_rate",
+              "user_avg_rating",
+              "user_category_registrations",
+              "user_category_attendances",
+              "user_category_attendance_rate",
+              "points_total",
+              "points_events_count",
+              "badges_count",
+              "was_invited",
+              "rsvp_yes",
+              "rsvp_maybe",
+              "rsvp_no"
+            ],
+            "categorical_features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status"
+            ],
+            "metrics": {
+              "precision_at_5": 0.7290000000000001,
+              "ndcg_at_5": 0.8623343011144843,
+              "evaluated_users": 200,
+              "evaluated_rows": 4919
+            },
+            "catboost_best_score": {}
+          },
+          "status": "candidate",
+          "created_at": "2026-05-07T13:23:12.442103+00:00"
+        },
+        "recommendation-v1.2.0": {
+          "task": "recommendation",
+          "version": "recommendation-v1.2.0",
+          "model_name": "CatBoostRanker",
+          "artifact_path": "models_artifacts/recommendation/versions/recommendation-v1.2.0/catboost_recommender.cbm",
+          "features_path": "models_artifacts/recommendation/versions/recommendation-v1.2.0/features.json",
+          "metrics_path": "models_artifacts/recommendation/versions/recommendation-v1.2.0/metrics.json",
+          "model_card_path": "models_artifacts/recommendation/versions/recommendation-v1.2.0/model_card.md",
+          "training_data_source": "CapEvents PostgreSQL runtime dataset",
+          "metrics": {
+            "version": "recommendation-v1.2.0",
+            "model_type": "CatBoostRanker",
+            "status": "candidate",
+            "input_file": "datasets\\processed\\recommendation_train.csv",
+            "rows_total": 24489,
+            "rows_train": 19570,
+            "rows_validation": 4919,
+            "users_train": 800,
+            "users_validation": 200,
+            "events_total": 1000,
+            "features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status",
+              "event_capacity",
+              "event_duration_minutes",
+              "event_day_of_week",
+              "event_hour",
+              "days_until_event",
+              "event_registered_count",
+              "event_present_count",
+              "event_fill_rate",
+              "event_avg_rating",
+              "event_feedback_count",
+              "same_department",
+              "is_global_event",
+              "interest_match",
+              "user_total_registrations",
+              "user_total_attendances",
+              "user_attendance_rate",
+              "user_avg_rating",
+              "user_category_registrations",
+              "user_category_attendances",
+              "user_category_attendance_rate",
+              "points_total",
+              "points_events_count",
+              "badges_count",
+              "was_invited",
+              "rsvp_yes",
+              "rsvp_maybe",
+              "rsvp_no"
+            ],
+            "categorical_features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status"
+            ],
+            "metrics": {
+              "precision_at_5": 0.7290000000000001,
+              "ndcg_at_5": 0.8623343011144843,
+              "evaluated_users": 200,
+              "evaluated_rows": 4919
+            },
+            "catboost_best_score": {}
+          },
+          "status": "rejected",
+          "created_at": "2026-05-07T13:48:11.157047+00:00",
+          "promoted_at": "2026-05-07T13:48:40.059408+00:00",
+          "status_updated_at": "2026-05-07T14:03:04.761433+00:00",
+          "status_reason": "MÃ©triques identiques Ã  la production, aucune amÃ©lioration."
+        },
+        "recommendation-v1.3.0": {
+          "task": "recommendation",
+          "version": "recommendation-v1.3.0",
+          "model_name": "CatBoostRanker",
+          "artifact_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.3.0\\catboost_recommender.cbm",
+          "features_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.3.0\\features.json",
+          "metrics_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.3.0\\metrics.json",
+          "model_card_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.3.0\\model_card.md",
+          "training_data_source": "Dataset processed/recommendation_train.csv (exports CapEvents enrichis + donnÃ©es synthÃ©tiques/externes curated selon snapshot)",
+          "metrics": {
+            "version": "recommendation-v1.3.0",
+            "model_type": "CatBoostRanker",
+            "status": "candidate",
+            "input_file": "datasets\\processed\\recommendation_train.csv",
+            "rows_total": 30804,
+            "rows_train": 24651,
+            "rows_validation": 6153,
+            "users_train": 800,
+            "users_validation": 200,
+            "events_total": 1000,
+            "features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status",
+              "event_capacity",
+              "event_duration_minutes",
+              "event_day_of_week",
+              "event_hour",
+              "days_until_event",
+              "event_registered_count",
+              "event_present_count",
+              "event_fill_rate",
+              "event_avg_rating",
+              "event_feedback_count",
+              "same_department",
+              "is_global_event",
+              "interest_match",
+              "user_total_registrations",
+              "user_total_attendances",
+              "user_attendance_rate",
+              "user_avg_rating",
+              "user_category_registrations",
+              "user_category_attendances",
+              "user_category_attendance_rate",
+              "points_total",
+              "points_events_count",
+              "badges_count",
+              "was_invited",
+              "rsvp_yes",
+              "rsvp_maybe",
+              "rsvp_no",
+              "was_reminded",
+              "pair_reminder_count",
+              "days_since_last_reminder",
+              "user_total_reminders_received",
+              "event_total_reminders_sent"
+            ],
+            "categorical_features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status"
+            ],
+            "metrics": {
+              "precision_at_5": 0.7210000000000001,
+              "recall_at_5": 0.7233243178390236,
+              "ndcg_at_5": 0.8563996058225204,
+              "evaluated_users": 200,
+              "evaluated_rows": 6153
+            },
+            "catboost_best_score": {}
+          },
+          "status": "candidate",
+          "created_at": "2026-05-13T08:34:24.906389+00:00"
+        },
+        "recommendation-v1.4.0": {
+          "task": "recommendation",
+          "version": "recommendation-v1.4.0",
+          "model_name": "CatBoostRanker",
+          "artifact_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.4.0\\catboost_recommender.cbm",
+          "features_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.4.0\\features.json",
+          "metrics_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.4.0\\metrics.json",
+          "model_card_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.4.0\\model_card.md",
+          "training_data_source": "Dataset processed/recommendation_train.csv (exports CapEvents enrichis + donnÃ©es synthÃ©tiques/externes curated selon snapshot)",
+          "metrics": {
+            "version": "recommendation-v1.4.0",
+            "model_type": "CatBoostRanker",
+            "status": "candidate",
+            "input_file": "datasets\\processed\\recommendation_train.csv",
+            "rows_total": 24603,
+            "rows_train": 19897,
+            "rows_validation": 4706,
+            "users_train": 800,
+            "users_validation": 200,
+            "events_total": 1000,
+            "features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status",
+              "event_capacity",
+              "event_duration_minutes",
+              "event_day_of_week",
+              "event_hour",
+              "days_until_event",
+              "event_registered_count",
+              "event_present_count",
+              "event_fill_rate",
+              "event_avg_rating",
+              "event_feedback_count",
+              "same_department",
+              "is_global_event",
+              "interest_match",
+              "user_total_registrations",
+              "user_total_attendances",
+              "user_attendance_rate",
+              "user_avg_rating",
+              "user_category_registrations",
+              "user_category_attendances",
+              "user_category_attendance_rate",
+              "points_total",
+              "points_events_count",
+              "badges_count",
+              "was_invited",
+              "rsvp_yes",
+              "rsvp_maybe",
+              "rsvp_no",
+              "was_reminded",
+              "pair_reminder_count",
+              "days_since_last_reminder",
+              "user_total_reminders_received",
+              "event_total_reminders_sent"
+            ],
+            "categorical_features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status"
+            ],
+            "metrics": {
+              "precision_at_5": 0.685,
+              "recall_at_5": 0.7084922985511222,
+              "ndcg_at_5": 0.8236941648384943,
+              "evaluated_users": 200,
+              "evaluated_rows": 4706
+            },
+            "catboost_best_score": {}
+          },
+          "status": "candidate",
+          "created_at": "2026-05-13T08:51:50.917499+00:00"
+        },
+        "recommendation-v1.5.0": {
+          "task": "recommendation",
+          "version": "recommendation-v1.5.0",
+          "model_name": "CatBoostRanker",
+          "artifact_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.5.0\\catboost_recommender.cbm",
+          "features_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.5.0\\features.json",
+          "metrics_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.5.0\\metrics.json",
+          "model_card_path": "models_artifacts\\recommendation\\versions\\recommendation-v1.5.0\\model_card.md",
+          "training_data_source": "Dataset processed/recommendation_train.csv (exports CapEvents enrichis + donnÃ©es synthÃ©tiques/externes curated selon snapshot)",
+          "metrics": {
+            "version": "recommendation-v1.5.0",
+            "model_type": "CatBoostRanker",
+            "status": "candidate",
+            "input_file": "datasets\\processed\\recommendation_train_hard_negatives.csv",
+            "rows_total": 34854,
+            "rows_train": 28081,
+            "rows_validation": 6773,
+            "users_train": 800,
+            "users_validation": 200,
+            "events_total": 1000,
+            "features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status",
+              "event_capacity",
+              "event_duration_minutes",
+              "event_day_of_week",
+              "event_hour",
+              "days_until_event",
+              "event_registered_count",
+              "event_present_count",
+              "event_fill_rate",
+              "event_avg_rating",
+              "event_feedback_count",
+              "same_department",
+              "is_global_event",
+              "interest_match",
+              "user_total_registrations",
+              "user_total_attendances",
+              "user_attendance_rate",
+              "user_avg_rating",
+              "user_category_registrations",
+              "user_category_attendances",
+              "user_category_attendance_rate",
+              "points_total",
+              "points_events_count",
+              "badges_count",
+              "was_invited",
+              "rsvp_yes",
+              "rsvp_maybe",
+              "rsvp_no",
+              "was_reminded",
+              "pair_reminder_count",
+              "days_since_last_reminder",
+              "user_total_reminders_received",
+              "event_total_reminders_sent"
+            ],
+            "categorical_features": [
+              "event_category",
+              "event_audience",
+              "event_location_type",
+              "event_status"
+            ],
+            "metrics": {
+              "precision_at_5": 0.698,
+              "recall_at_5": 0.7087002164502164,
+              "ndcg_at_5": 0.8309408390642868,
+              "evaluated_users": 200,
+              "evaluated_rows": 6773
+            },
+            "catboost_best_score": {}
+          },
+          "status": "candidate",
+          "created_at": "2026-05-13T09:11:14.135341+00:00"
+        }
+      }
+    },
+    "planning": {
+      "active_version": "planning-regressor-v1.0.0",
+      "versions": {
+        "planning-regressor-v1.0.0": {
+          "task": "planning",
+          "version": "planning-regressor-v1.0.0",
+          "model_name": "CatBoostRegressor",
+          "artifact_path": "models_artifacts\\planning\\versions\\planning-regressor-v1.0.0\\planning_regressor.cbm",
+          "features_path": "models_artifacts\\planning\\versions\\planning-regressor-v1.0.0\\features.json",
+          "metrics_path": "models_artifacts\\planning\\versions\\planning-regressor-v1.0.0\\metrics.json",
+          "model_card_path": "models_artifacts\\planning\\versions\\planning-regressor-v1.0.0\\model_card.md",
+          "training_data_source": "datasets/processed/planning_train.csv",
+          "metrics": {
+            "train_rows": 547,
+            "valid_rows": 137,
+            "mae": 0.0788105062465858,
+            "mse": 0.01122908151431812,
+            "rmse": 0.10596736060843509,
+            "r2": 0.03444210720464991
+          },
+          "status": "production",
+          "created_at": "2026-05-08T18:37:53.341415+00:00",
+          "promoted_at": "2026-05-08T18:49:27.857202+00:00"
+        }
+      }
+    }
+  }
+}
+===== models_artifacts/planning/versions/planning-regressor-v1.0.0/metrics.json =====
+{
+  "train_rows": 547,
+  "valid_rows": 137,
+  "mae": 0.0788105062465858,
+  "mse": 0.01122908151431812,
+  "rmse": 0.10596736060843509,
+  "r2": 0.03444210720464991
+}
+===== models_artifacts/planning/versions/planning-regressor-v1.0.0/evaluation_report.json =====
+{
+  "model_version": "planning-regressor-v1.0.0",
+  "train_rows": 547,
+  "valid_rows": 137,
+  "catboost": {
+    "mae": 0.0788105062465858,
+    "mse": 0.01122908151431812,
+    "rmse": 0.10596736060843509,
+    "r2": 0.03444210720464991
+  },
+  "mean_baseline": {
+    "mae": 0.10127044442214658,
+    "mse": 0.01269352431979726,
+    "rmse": 0.11266554184752878,
+    "r2": -0.09148130937886689
+  },
+  "category_baseline": {
+    "mae": 0.09985766080790326,
+    "mse": 0.012872876153391359,
+    "rmse": 0.11345869800676966,
+    "r2": -0.10690328118424475
+  },
+  "decision": "CATBOOST_BETTER_THAN_BASELINE"
+}
+===== models_artifacts/planning/versions/planning-regressor-v1.0.0/features.json =====
+{
+  "target": "success_score",
+  "features": [
+    "event_category",
+    "event_audience",
+    "event_location_type",
+    "target_department_id",
+    "capacity",
+    "duration_minutes",
+    "day_of_week",
+    "hour",
+    "month",
+    "is_morning",
+    "is_afternoon",
+    "is_afterwork",
+    "department_size",
+    "events_same_day_count",
+    "events_same_department_same_week_count",
+    "historical_category_registration_rate",
+    "historical_category_attendance_rate",
+    "historical_department_participation_rate",
+    "historical_hour_registration_rate",
+    "historical_day_registration_rate"
+  ],
+  "categorical_features": [
+    "event_category",
+    "event_audience",
+    "event_location_type",
+    "target_department_id"
+  ],
+  "model_type": "CatBoostRegressor"
+}
+===== models_artifacts/planning/versions/planning-regressor-v1.0.0/model_card.md =====
+# Model Card â€” Planning Regressor planning-regressor-v1.0.0
+
+## ModÃ¨le
+
+CatBoostRegressor pour IA 4 Planning Intelligent.
+
+## Objectif
+
+PrÃ©dire un score de succÃ¨s attendu pour un crÃ©neau dâ€™Ã©vÃ©nement.
+
+## Target
+
+success_score
+
+Le score combine principalement :
+
+- taux dâ€™inscription ;
+- taux de prÃ©sence ;
+- satisfaction moyenne.
+
+## DonnÃ©es utilisÃ©es
+
+Dataset : datasets/processed/planning_train.csv
+
+## Statut
+
+Version candidate.
+
+Elle ne doit Ãªtre promue en production quâ€™aprÃ¨s validation des mÃ©triques.
+
+## MÃ©triques
+
+{
+  "train_rows": 547,
+  "valid_rows": 137,
+  "mae": 0.0788105062465858,
+  "mse": 0.01122908151431812,
+  "rmse": 0.10596736060843509,
+  "r2": 0.03444210720464991
+}
+
+## Limites
+
+- Dataset encore enrichi/synthÃ©tique.
+- Les signaux HIGH sont rares.
+- Le modÃ¨le prÃ©dit un potentiel, il ne crÃ©e pas automatiquement lâ€™Ã©vÃ©nement.
+- Le score final doit rester validÃ© par un RH ou un manager.
+===== reports/planning_dataset_audit.json =====
+{
+  "generated_at": "2026-05-07T22:02:08.386821+00:00",
+  "dataset_path": "datasets\\processed\\planning_train.csv",
+  "rows_total": 1000,
+  "columns_total": 39,
+  "events": 1000,
+  "outcome_available_distribution": {
+    "1": 684,
+    "0": 316
+  },
+  "trainable_rows": 684,
+  "success_label_distribution_all": {
+    "LOW": 948,
+    "MEDIUM": 44,
+    "HIGH": 8
+  },
+  "success_label_distribution_trainable": {
+    "LOW": 632,
+    "MEDIUM": 44,
+    "HIGH": 8
+  },
+  "missing_required_columns": [],
+  "numeric_summaries": {
+    "capacity": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 6.0,
+      "max": 498.0,
+      "mean": 102.199,
+      "non_zero_count": 1000
+    },
+    "duration_minutes": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 30.0,
+      "max": 240.0,
+      "mean": 97.545,
+      "non_zero_count": 1000
+    },
+    "department_size": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 2.0,
+      "max": 194.0,
+      "mean": 47.237,
+      "non_zero_count": 1000
+    },
+    "registration_rate": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 0.0,
+      "max": 0.9333333333333332,
+      "mean": 0.07255693552638667,
+      "non_zero_count": 226
+    },
+    "attendance_rate": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.05209615864539362,
+      "non_zero_count": 62
+    },
+    "success_score": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 0.0,
+      "max": 0.877142857142857,
+      "mean": 0.06293022555835956,
+      "non_zero_count": 226
+    },
+    "events_same_day_count": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 0.0,
+      "max": 8.0,
+      "mean": 3.234,
+      "non_zero_count": 959
+    },
+    "events_same_department_same_week_count": {
+      "exists": true,
+      "missing_count": 0,
+      "min": 0.0,
+      "max": 4.0,
+      "mean": 0.684,
+      "non_zero_count": 417
+    }
+  },
+  "decision": "NOT_READY_FOR_CLASSIFIER",
+  "regression_ready": true,
+  "decision_explanation": "Le dataset est utilisable pour un premier modÃ¨le de rÃ©gression ou un scoring hybride, mais la classification HIGH/MEDIUM/LOW est trop dÃ©sÃ©quilibrÃ©e si HIGH et MEDIUM sont trop rares."
+}
+===== configs/planning_model_config.json =====
+{
+  "target": "success_score",
+  "features": [
+    "event_category",
+    "event_audience",
+    "event_location_type",
+    "target_department_id",
+    "capacity",
+    "duration_minutes",
+    "day_of_week",
+    "hour",
+    "month",
+    "is_morning",
+    "is_afternoon",
+    "is_afterwork",
+    "department_size",
+    "events_same_day_count",
+    "events_same_department_same_week_count",
+    "historical_category_registration_rate",
+    "historical_category_attendance_rate",
+    "historical_department_participation_rate",
+    "historical_hour_registration_rate",
+    "historical_day_registration_rate"
+  ],
+  "categorical_features": [
+    "event_category",
+    "event_audience",
+    "event_location_type",
+    "target_department_id"
+  ]
+}
