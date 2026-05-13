@@ -92,6 +92,61 @@ GENERIC_SIGNAL_VALUES = {
 }
 
 
+MOJIBAKE_REPLACEMENTS = {
+    "Ã©": "é",
+    "Ã¨": "è",
+    "Ãª": "ê",
+    "Ã ": "à",
+    "Ã´": "ô",
+    "Ã®": "î",
+    "Ã§": "ç",
+    "Ã‰": "É",
+    "â€™": "’",
+    "Â«": "«",
+    "Â»": "»",
+    "ConfÃ©rence": "Conférence",
+    "Bien-Ãªtre": "Bien-être",
+    "Culture dâ€™entreprise": "Culture d’entreprise",
+    "amÃ©lioration": "amélioration",
+    "Ã©quipes": "équipes",
+    "inter-Ã©quipes": "inter-équipes",
+    "matiÃ¨re": "matière",
+    "qualitÃ©": "qualité",
+    "numÃ©riques": "numériques",
+    "rÃ©el": "réel",
+    "compÃ©tences": "compétences",
+}
+
+
+def clean_generated_text(value: object) -> str:
+    text = str(value or "").strip()
+
+    if not text:
+        return ""
+
+    if any(marker in text for marker in ["Ã", "â", "Â"]):
+        try:
+            text = text.encode("cp1252").decode("utf-8")
+        except Exception:
+            pass
+
+    for old, new in MOJIBAKE_REPLACEMENTS.items():
+        text = text.replace(old, new)
+
+    return text.strip()
+
+
+def clean_generated_list(values: object) -> list[str]:
+    if not isinstance(values, list):
+        values = [values]
+
+    return [
+        cleaned
+        for item in values
+        if (cleaned := clean_generated_text(item))
+    ]
+
+
 class PlanningIdeationService:
     def __init__(self) -> None:
         self.llm_client = PlanningLlmClient()
@@ -401,9 +456,9 @@ Contexte :
             if not isinstance(item, dict):
                 continue
 
-            title = str(item.get("title") or item.get("t") or "").strip()
+            title = clean_generated_text(item.get("title") or item.get("t") or "")
 
-            raw_category = str(item.get("category") or item.get("c") or "").strip()
+            raw_category = clean_generated_text(item.get("category") or item.get("c") or "")
             category = self._normalize_category(raw_category)
 
             if category is None:
@@ -462,18 +517,14 @@ Contexte :
             )
             capacity = max(10, min(150, capacity))
 
-            rationale = item.get("rationale") or item.get("r") or []
-            if not isinstance(rationale, list):
-                rationale = [str(rationale)]
+            rationale = clean_generated_list(item.get("rationale") or item.get("r") or [])
 
-            data_signals = item.get("data_signals") or item.get("s") or []
-            if not isinstance(data_signals, list):
-                data_signals = [str(data_signals)]
+            data_signals = clean_generated_list(item.get("data_signals") or item.get("s") or [])
 
             data_signals = self._clean_data_signals(data_signals)
 
             objective = self._normalize_objective(
-                objective=str(item.get("objective") or item.get("o") or "").strip(),
+                objective=clean_generated_text(item.get("objective") or item.get("o") or ""),
                 title=title,
                 category=category
             )
