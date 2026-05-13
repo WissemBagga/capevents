@@ -1,4 +1,4 @@
-@'
+﻿@'
 # Décision du modèle Planning Intelligent — CapEvents AI
 
 ## Décision
@@ -22,8 +22,8 @@ Il est utilisé dans une approche hybride :
 | MAE | 0.0788 |
 | RMSE | 0.1060 |
 | R² | 0.0344 |
-| Train rows | 547 |
-| Validation rows | 137 |
+| Lignes d'entraînement | 547 |
+| Lignes de validation | 137 |
 
 ## Comparaison aux baselines
 

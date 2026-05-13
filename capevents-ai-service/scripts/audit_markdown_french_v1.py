@@ -7,6 +7,7 @@ REPORT_PATH = BASE_DIR / "reports" / "markdown_french_audit_v1.md"
 
 IGNORED_PARTS = {
     ".git",
+    "training/_backup_before_encoding_fix_v1",
     ".venv",
     "__pycache__",
     ".pytest_cache",
@@ -45,6 +46,10 @@ def should_ignore(path: Path) -> bool:
     return any(part in IGNORED_PARTS for part in path.parts)
 
 
+def should_ignore_report_itself(path: Path) -> bool:
+    relative = str(path.relative_to(BASE_DIR)).replace("\\", "/")
+    return relative == "reports/markdown_french_audit_v1.md"
+
 def detect_issues(path: Path) -> list[str]:
     issues = []
 
@@ -71,7 +76,7 @@ def main() -> None:
     md_files = sorted(
         path
         for path in BASE_DIR.rglob("*.md")
-        if not should_ignore(path)
+        if not should_ignore(path) and not should_ignore_report_itself(path)
     )
 
     rows = []

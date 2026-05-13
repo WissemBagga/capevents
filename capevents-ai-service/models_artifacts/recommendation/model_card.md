@@ -1,4 +1,4 @@
-# Model Card — Recommendation v1.0.0
+﻿# Fiche modèle — Recommendation v1.0.0
 
 ## Modèle
 
@@ -33,3 +33,4 @@ PostgreSQL CapEvents.
 ## Statut
 
 Version initiale enregistrée comme modèle production.
+

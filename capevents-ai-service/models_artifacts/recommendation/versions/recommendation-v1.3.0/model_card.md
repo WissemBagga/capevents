@@ -1,4 +1,4 @@
-# Model Card — recommendation-v1.3.0
+﻿# Fiche modèle — recommendation-v1.3.0
 
 ## Modèle
 
@@ -20,8 +20,8 @@ Source runtime : PostgreSQL CapEvents.
 
 ## Taille dataset
 
-- Training rows : 24651
-- Validation rows : 6153
+- Lignes d'entraînement : 24651
+- Lignes de validation : 6153
 
 ## Métriques
 
@@ -101,3 +101,4 @@ python -m training.promote_model --task recommendation --version recommendation-
 - Les performances dépendent de la qualité des historiques d’inscription, présence, invitation et feedback.
 - Le cold-start reste possible pour les nouveaux utilisateurs.
 - Le modèle ne remplace pas les règles métier de disponibilité, capacité et deadline.
+

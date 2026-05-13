@@ -1,12 +1,12 @@
 # Audit Markdown français — CapEvents AI
 
-Généré le : 2026-05-13T11:16:23.140241+00:00
+Généré le : 2026-05-13T11:23:22.557521+00:00
 
 ## Résumé
 
-- Fichiers Markdown analysés : 16
-- Fichiers OK : 8
-- Fichiers à corriger : 8
+- Fichiers Markdown analysés : 14
+- Fichiers OK : 14
+- Fichiers à corriger : 0
 
 ## Détail
 
@@ -48,40 +48,33 @@ Statut : **OK**
 
 ### `models_artifacts/planning/versions/planning-regressor-v1.0.0/model_card.md`
 
-Statut : **À corriger**
+Statut : **OK**
 
-- Contenu anglais détecté : `Model Card`
-- Contenu anglais détecté : `Validation rows`
+- Aucun problème détecté.
 
 ### `models_artifacts/recommendation/model_card.md`
 
-Statut : **À corriger**
+Statut : **OK**
 
-- Contenu anglais détecté : `Model Card`
+- Aucun problème détecté.
 
 ### `models_artifacts/recommendation/versions/recommendation-v1.3.0/model_card.md`
 
-Statut : **À corriger**
+Statut : **OK**
 
-- Contenu anglais détecté : `Model Card`
-- Contenu anglais détecté : `Training rows`
-- Contenu anglais détecté : `Validation rows`
+- Aucun problème détecté.
 
 ### `models_artifacts/recommendation/versions/recommendation-v1.4.0/model_card.md`
 
-Statut : **À corriger**
+Statut : **OK**
 
-- Contenu anglais détecté : `Model Card`
-- Contenu anglais détecté : `Training rows`
-- Contenu anglais détecté : `Validation rows`
+- Aucun problème détecté.
 
 ### `models_artifacts/recommendation/versions/recommendation-v1.5.0/model_card.md`
 
-Statut : **À corriger**
+Statut : **OK**
 
-- Contenu anglais détecté : `Model Card`
-- Contenu anglais détecté : `Training rows`
-- Contenu anglais détecté : `Validation rows`
+- Aucun problème détecté.
 
 ### `README.md`
 
@@ -89,29 +82,15 @@ Statut : **OK**
 
 - Aucun problème détecté.
 
-### `reports/markdown_french_audit_v1.md`
-
-Statut : **À corriger**
-
-- Contenu anglais détecté : `Model Card`
-- Contenu anglais détecté : `Training rows`
-- Contenu anglais détecté : `Validation rows`
-
 ### `reports/planning_model_selection_v1.md`
 
-Statut : **À corriger**
+Statut : **OK**
 
-- Contenu anglais détecté : `Validation rows`
+- Aucun problème détecté.
 
 ### `reports/recommendation/recommendation_model_selection_v1.md`
 
 Statut : **OK**
 
 - Aucun problème détecté.
-
-### `training/_backup_before_encoding_fix_v1/models_artifacts__recommendation__model_card.md`
-
-Statut : **À corriger**
-
-- Contenu anglais détecté : `Model Card`
 

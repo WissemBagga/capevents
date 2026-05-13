@@ -1,5 +1,5 @@
-@'
-# Model Card — Planning Intelligent v1.0.0
+﻿@'
+# Fiche modèle — Planning Intelligent v1.0.0
 
 ## Modèle
 
@@ -73,8 +73,8 @@ Le modèle utilise notamment :
 
 | Métrique | Valeur |
 |---|---:|
-| Train rows | 547 |
-| Validation rows | 137 |
+| Lignes d'entraînement | 547 |
+| Lignes de validation | 137 |
 | MAE | 0.0788 |
 | MSE | 0.0112 |
 | RMSE | 0.1060 |
