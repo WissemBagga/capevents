@@ -18,6 +18,15 @@
     "evaluated_rows": 6153
   },
   {
+    "version": "recommendation-v1.5.0",
+    "source": "models_artifacts\\recommendation\\versions\\recommendation-v1.5.0\\metrics.json",
+    "precision_at_5": 0.698,
+    "recall_at_5": 0.7087002164502164,
+    "ndcg_at_5": 0.8309408390642868,
+    "evaluated_users": 200,
+    "evaluated_rows": 6773
+  },
+  {
     "version": "recommendation-v1.4.0",
     "source": "models_artifacts\\recommendation\\versions\\recommendation-v1.4.0\\metrics.json",
     "precision_at_5": 0.685,
