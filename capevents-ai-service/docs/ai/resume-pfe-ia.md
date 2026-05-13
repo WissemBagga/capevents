@@ -1,155 +1,397 @@
-# Résumé de la partie IA — CapEvents
+# Résumé PFE — Partie Intelligence Artificielle CapEvents
 
-## Présentation générale
+## 1. Objectif général
 
-La partie intelligence artificielle de CapEvents vise à améliorer l’expérience des employés, des managers et des RH grâce à plusieurs modules intelligents intégrés au système.
+La partie intelligence artificielle du projet **CapEvents** a pour objectif d'améliorer la gestion des événements internes d'entreprise à travers plusieurs modules IA complémentaires.
 
-Le service IA est développé avec FastAPI et fonctionne comme un microservice séparé. Il est appelé par le backend Spring Boot, qui sert d’intermédiaire sécurisé entre l’interface Angular et les traitements IA.
+Elle permet notamment de :
+
+- recommander des événements personnalisés aux employés ;
+- aider les RH et managers à choisir les meilleurs créneaux ;
+- analyser les feedbacks des participants ;
+- proposer des actions RH via un copilote intelligent ;
+- suivre l'état des modèles et des prédictions via des endpoints de monitoring.
+
+L'objectif n'est pas de remplacer la décision humaine, mais de fournir une aide à la décision fiable, traçable et explicable.
+
+---
+
+## 2. Architecture générale
+
+Le service IA est développé comme un service indépendant basé sur **FastAPI**.
 
 Le flux applicatif retenu est :
 
 ```text
-Angular → Spring Boot → FastAPI IA → PostgreSQL / modèles IA
+Angular → Spring Boot → FastAPI IA → PostgreSQL / Modèles IA
 ```
 
-Cette architecture permet de séparer clairement l’interface utilisateur, la logique métier principale, les traitements IA, les modèles entraînés et les données utilisées pour l’entraînement ou le monitoring.
+Le frontend Angular ne communique pas directement avec FastAPI IA.  
+Le backend Spring Boot joue le rôle d'intermédiaire sécurisé.
 
-## Modules IA développés
+Le service IA utilise :
 
-La partie IA est organisée autour de quatre modules principaux :
+- PostgreSQL comme source de données runtime ;
+- des fichiers CSV pour la préparation et l'entraînement ;
+- des modèles CatBoost pour les modules de recommandation et de planning ;
+- Ollama avec Qwen pour certaines générations textuelles ;
+- des endpoints de diagnostic et de monitoring.
 
-- recommandation personnalisée d’événements ;
-- planning intelligent ;
-- feedback intelligence ;
-- HR Copilot.
+---
 
-## 1. Recommandation personnalisée d’événements
+## 3. Organisation des données
 
-Le module de recommandation propose à chaque employé une liste personnalisée d’événements.
+Les données sont organisées en plusieurs niveaux.
 
-Il utilise un modèle de ranking basé sur `CatBoostRanker`. Ce modèle classe les événements candidats selon leur pertinence pour un utilisateur donné.
+### Données brutes
 
-Les principaux signaux utilisés sont :
+Les données initiales sont stockées dans :
 
-- le profil de l’utilisateur ;
-- son département ;
-- ses centres d’intérêt ;
-- son historique d’inscription ;
-- son historique de présence ;
-- ses feedbacks ;
-- ses invitations ;
-- ses points et badges ;
+```text
+datasets/raw/capevents/
+```
+
+Elles représentent les exports d'origine depuis la base CapEvents.
+
+### Données nettoyées
+
+Les données nettoyées sont stockées dans :
+
+```text
+datasets/clean/capevents_v1/
+```
+
+Cette version est utilisée comme base propre pour les traitements IA.
+
+### Données rejetées
+
+Les lignes rejetées pendant le nettoyage sont conservées dans :
+
+```text
+datasets/rejected/capevents_v1/
+```
+
+Cela permet de garder une traçabilité complète du nettoyage.
+
+### Données préparées
+
+Les datasets prêts pour l'entraînement sont stockés dans :
+
+```text
+datasets/processed/
+```
+
+Exemples :
+
+- `recommendation_train.csv`
+- `recommendation_train_hard_negatives.csv`
+- `planning_train.csv`
+
+---
+
+## 4. Nettoyage et validation des données
+
+Un script de validation automatique a été mis en place :
+
+```bash
+python scripts/validate_clean_csv.py
+```
+
+Ce script vérifie notamment :
+
+- la présence des fichiers obligatoires ;
+- la cohérence des clés étrangères ;
+- les valeurs manquantes importantes ;
+- les auto-invitations interdites ;
+- les formats invalides ;
+- les relations entre utilisateurs, événements, inscriptions, feedbacks et invitations.
+
+Après nettoyage, le résultat final obtenu est :
+
+```text
+Erreurs : 0
+Warnings : 0
+```
+
+Le nettoyage a été réalisé de manière non destructive : les fichiers propres sont conservés dans `datasets/clean/`, et les lignes rejetées sont conservées dans `datasets/rejected/`.
+
+---
+
+## 5. Module IA 1 — Recommandation d'événements
+
+### Objectif
+
+Le module de recommandation propose à chaque employé une liste personnalisée d'événements.
+
+Il prend en compte :
+
+- le profil utilisateur ;
+- le département ;
+- les centres d'intérêt ;
+- l'historique d'inscription ;
+- les présences ;
+- les feedbacks ;
+- les points ;
+- les badges ;
+- les invitations et réponses RSVP ;
 - les caractéristiques des événements.
 
-La version actuellement retenue en production est :
+### Modèle utilisé
+
+Le modèle actif est :
 
 ```text
 recommendation-v1.0.0
 ```
 
-Cette version a été conservée car elle présente les meilleures performances parmi les versions testées. Les versions candidates `v1.3.0`, `v1.4.0` et `v1.5.0` ont été entraînées et comparées, mais elles n’ont pas dépassé la version de production.
+Type de modèle :
 
-## 2. Planning Intelligent
+```text
+CatBoostRanker
+```
 
-Le module Planning Intelligent aide les RH et les managers à choisir les meilleurs créneaux pour organiser des événements.
+Statut :
 
-Il utilise un modèle de régression basé sur `CatBoostRegressor`.
+```text
+Production
+```
 
-La version active est :
+### Métriques principales
+
+| Métrique | Valeur |
+|---|---:|
+| Precision@5 | 0.7290 |
+| NDCG@5 | 0.8623 |
+| Recall@5 | Non mesuré |
+
+`Recall@5` n'était pas calculé dans la première version du pipeline, donc la valeur n'a pas été inventée.
+
+### Versions testées
+
+Plusieurs candidates ont été entraînées :
+
+| Version | Precision@5 | Recall@5 | NDCG@5 | Décision |
+|---|---:|---:|---:|---|
+| recommendation-v1.0.0 | 0.7290 | Non mesuré | 0.8623 | Conservée en production |
+| recommendation-v1.3.0 | 0.7210 | 0.7233 | 0.8564 | Non promue |
+| recommendation-v1.4.0 | 0.6850 | 0.7085 | 0.8237 | Non promue |
+| recommendation-v1.5.0 | 0.6980 | 0.7087 | 0.8309 | Non promue |
+
+### Décision
+
+La version `recommendation-v1.0.0` reste en production, car elle conserve les meilleures performances sur les métriques principales `Precision@5` et `NDCG@5`.
+
+---
+
+## 6. Module IA 2 — Planning Intelligent
+
+### Objectif
+
+Le module Planning Intelligent aide les RH et managers à choisir les meilleurs créneaux pour organiser des événements internes.
+
+Il permet également de générer des propositions d'événements à partir des tendances observées.
+
+### Modèle utilisé
+
+Le modèle actif est :
 
 ```text
 planning-regressor-v1.0.0
 ```
 
-Ce modèle prédit un score de succès attendu pour un créneau d’événement. Le score final est utilisé dans une approche hybride :
+Type de modèle :
 
 ```text
-modèle IA + règles métier + contraintes calendrier + validation RH
+CatBoostRegressor
 ```
 
-Le modèle est meilleur que les baselines, mais son R² reste faible. Il est donc utilisé comme aide au classement et non comme décision automatique.
+Statut :
 
-## 3. Feedback Intelligence
+```text
+Production
+```
 
-Le module Feedback Intelligence analyse les retours utilisateurs après les événements.
+### Métriques principales
 
-Il permet de produire :
+| Métrique | Valeur |
+|---|---:|
+| MAE | 0.0788 |
+| RMSE | 0.1060 |
+| R² | 0.0344 |
+
+Le modèle est meilleur que les baselines, mais son R² reste faible.  
+Il est donc utilisé comme un composant de scoring hybride, et non comme un décideur automatique.
+
+### Approche hybride
+
+Le score final combine :
+
+- prédiction du modèle CatBoostRegressor ;
+- règles métier ;
+- contraintes de calendrier ;
+- historique de participation ;
+- pénalités de conflit ;
+- validation RH ou manager.
+
+---
+
+## 7. Module IA 3 — Feedback Intelligence
+
+### Objectif
+
+Le module Feedback Intelligence analyse les retours textuels des participants après les événements.
+
+Il produit :
 
 - un sentiment global ;
 - une distribution positive, neutre et négative ;
 - des thèmes principaux ;
 - des mots-clés ;
 - des points forts ;
-- des axes d’amélioration ;
+- des axes d'amélioration ;
 - un résumé RH.
 
-Ce module combine un modèle de sentiment multilingue, des embeddings avec `SentenceTransformer`, `BERTopic` pour l’extraction de thèmes, et Qwen via Ollama pour la génération du résumé final. Si le LLM n’est pas disponible, un résumé de secours est généré.
+### Techniques utilisées
 
-## 4. HR Copilot
+Le module utilise :
 
-Le Copilote RH propose automatiquement des actions opérationnelles aux responsables RH.
+- un modèle de sentiment multilingue ;
+- SentenceTransformer pour les embeddings ;
+- BERTopic pour l'extraction de thèmes ;
+- Qwen via Ollama pour générer un résumé ;
+- un fallback template si le LLM n'est pas disponible.
+
+### Sécurité du résumé
+
+Le résumé généré ne doit pas inventer de données.
+
+Il doit respecter :
+
+- le nombre exact de feedbacks ;
+- la note moyenne ;
+- la distribution des sentiments ;
+- les thèmes détectés ;
+- les points forts ;
+- les axes d'amélioration.
+
+---
+
+## 8. Module IA 4 — HR Copilot
+
+### Objectif
+
+Le Copilote RH propose automatiquement des actions opérationnelles aux RH.
 
 Il détecte notamment :
 
 - les invitations en attente ;
-- les événements avec faible taux d’inscription ;
+- les événements avec faible inscription ;
 - les événements avec feedback faible ;
 - les départements peu engagés ;
 - les frictions RSVP.
 
-Le module génère ensuite des suggestions RH avec un brouillon de message professionnel. Il utilise une approche hybride :
+### Fonctionnement
+
+Le module combine :
+
+- règles métier SQL ;
+- scoring de priorité ;
+- génération de brouillons RH avec Qwen ;
+- fallback sécurisé ;
+- journalisation des appels ;
+- monitoring d'usage.
+
+### Exemples d'actions proposées
+
+Le Copilote RH peut proposer de :
+
+- relancer les invités sans réponse ;
+- renforcer la visibilité d'un événement ;
+- analyser les feedbacks négatifs ;
+- proposer une action ciblée pour un département ;
+- comprendre les réponses négatives ou hésitantes.
+
+---
+
+## 9. Nettoyage des textes et encodage
+
+Un nettoyeur central a été ajouté :
 
 ```text
-règles SQL + logique métier + génération LLM + fallback sécurisé
+app/core/text_sanitizer.py
 ```
 
-## Données utilisées
+Il permet de corriger les problèmes d'encodage et de garantir des réponses propres dans :
 
-Les données IA sont organisées selon plusieurs niveaux :
+- Swagger ;
+- Angular ;
+- les réponses JSON ;
+- les logs ;
+- les textes générés par le LLM.
 
-- `datasets/raw/capevents/` : exports bruts ;
-- `datasets/clean/capevents_v1/` : données nettoyées ;
-- `datasets/processed/` : datasets utilisés pour l’entraînement ;
-- `datasets/rejected/capevents_v1/` : lignes rejetées pendant le nettoyage ;
-- `datasets/reports/` : rapports de validation et de qualité.
-
-Cette organisation permet de garder une traçabilité complète entre les données brutes, les données nettoyées, les datasets d’entraînement et les rapports produits.
-
-## Nettoyage des données
-
-Un nettoyage global des données a été réalisé avant l’entraînement et la validation des modèles.
-
-Les contrôles effectués incluent :
-
-- la présence des fichiers attendus ;
-- la cohérence des colonnes ;
-- la validation des relations entre tables ;
-- la suppression des auto-invitations ;
-- la correction des warnings ;
-- la génération de rapports de qualité ;
-- la conservation des lignes rejetées.
-
-Le script principal de validation est :
-
-```bash
-python scripts/validate_clean_csv.py
-```
-
-Le rapport de qualité est généré dans :
+Cela permet d'éviter les textes cassés de type :
 
 ```text
-datasets/reports/data_quality_report_v1.md
+Ã©vÃ©nement
+donnÃ©es
+rÃ©ponse
 ```
 
-## Suivi des modèles
+et de retourner correctement :
 
-Les modèles IA sont suivis dans un registre central :
+```text
+événement
+données
+réponse
+```
+
+---
+
+## 10. Sécurité
+
+Le service IA est protégé par une clé interne :
+
+```text
+x-ai-service-key
+```
+
+Cette clé doit être utilisée uniquement entre Spring Boot et FastAPI IA.
+
+Elle ne doit jamais être exposée dans Angular.
+
+---
+
+## 11. Monitoring et diagnostics
+
+Le service contient plusieurs endpoints de suivi :
+
+- diagnostic global du service ;
+- monitoring des recommandations ;
+- monitoring Planning ;
+- monitoring HR Copilot ;
+- logs JSONL locaux.
+
+Les logs runtime sont ignorés dans Git.
+
+---
+
+## 12. Model Registry
+
+Le fichier central de suivi des modèles est :
 
 ```text
 models_artifacts/model_registry.json
 ```
 
-Ce registre contient les versions des modèles, leur statut, les chemins des artefacts, les features utilisées, les métriques et la version active en production.
+Il contient :
+
+- les tâches IA ;
+- les versions ;
+- les chemins des modèles ;
+- les chemins des features ;
+- les métriques ;
+- le statut des versions ;
+- la version active en production.
 
 Les statuts utilisés sont :
 
@@ -158,79 +400,81 @@ Les statuts utilisés sont :
 - rejected ;
 - archived.
 
-## Sécurité
+---
 
-Le service IA est protégé par une clé interne transmise via l’en-tête :
+## 13. Validation finale
 
-```text
-x-ai-service-key
-```
-
-Cette clé est utilisée uniquement entre Spring Boot et FastAPI IA. Elle ne doit jamais être exposée dans Angular.
-
-## Monitoring
-
-Des mécanismes de monitoring permettent de suivre :
-
-- les prédictions ;
-- les suggestions du Planning Intelligent ;
-- les appels du Copilote RH ;
-- l’utilisation de Qwen ;
-- les feedbacks utilisateurs sur les suggestions.
-
-Les logs runtime sont stockés localement dans :
-
-- `logs/copilot/`
-- `logs/predictions/`
-
-Ces dossiers sont ignorés par Git.
-
-## Validation finale
-
-La validation finale de la partie IA repose sur plusieurs contrôles :
+Les validations finales utilisées sont :
 
 ```bash
+python -m compileall app scripts training
 python scripts/validate_clean_csv.py
 python scripts/audit_markdown_french_v1.py
-python -m compileall app scripts training
 ```
 
-Les résultats attendus sont :
+Résultats attendus :
 
-- zéro erreur bloquante dans les CSV ;
-- zéro fichier Markdown à corriger ;
 - aucune erreur de compilation Python ;
-- diagnostic FastAPI avec le statut `UP`.
+- erreurs CSV : 0 ;
+- warnings CSV : 0 ;
+- fichiers Markdown à corriger : 0.
 
-## Limites
+---
 
-Les principales limites actuelles sont :
+## 14. Nettoyage global du projet IA
 
-- les données historiques restent limitées ;
-- certains datasets sont encore partiellement démonstratifs ;
-- le cold-start est possible pour les nouveaux utilisateurs ;
-- la qualité des résultats dépend fortement des feedbacks disponibles ;
-- le Planning Intelligent reste une aide au scoring et non une décision automatique ;
-- les réponses générées par LLM doivent rester contrôlées.
+Le nettoyage global a permis de :
 
-## Améliorations futures
+- supprimer les scripts temporaires de correction ;
+- supprimer les snapshots et inventaires intermédiaires ;
+- ignorer les logs, backups temporaires et sorties CatBoost ;
+- garder les fichiers nécessaires à la reproductibilité ;
+- garder les rapports de décision modèle ;
+- garder les datasets raw, clean, rejected et processed ;
+- garder les artefacts modèles et le model registry.
+
+---
+
+## 15. Limites actuelles
+
+Les limites principales sont :
+
+- certaines données restent partiellement synthétiques ou démonstratives ;
+- les historiques réels sont encore limités ;
+- le cold-start utilisateur reste un défi ;
+- le Planning est un scoring hybride, pas une décision automatique ;
+- les performances dépendent fortement de la qualité des données ;
+- les résumés LLM doivent rester contrôlés.
+
+---
+
+## 16. Améliorations futures
 
 Les améliorations possibles sont :
 
-- collecter plus de données réelles ;
-- enrichir les historiques d’inscription et de présence ;
+- augmenter le volume de données réelles ;
 - améliorer les hard negatives pour la recommandation ;
 - ajouter une validation temporelle ;
 - comparer CatBoost avec LightGBM ;
-- ajouter des embeddings textuels ;
-- renforcer les tests automatisés ;
+- enrichir les descriptions d'événements avec des embeddings textuels ;
 - améliorer le cold-start ;
-- centraliser davantage les accès PostgreSQL via repositories.
+- ajouter plus de tests automatisés ;
+- centraliser davantage les accès PostgreSQL dans les repositories ;
+- documenter chaque endpoint avec des exemples Swagger.
 
-## Conclusion
+---
 
-La partie IA de CapEvents est structurée, modulaire et documentée.
+## 17. Conclusion
 
-Elle combine des modèles de machine learning, des règles métier, du NLP, un LLM local via Ollama, du monitoring, de la validation de données et une documentation technique.
+La partie IA de CapEvents est structurée autour de quatre modules :
 
-Cette approche permet d’obtenir une solution IA réaliste, explicable et adaptée au contexte d’un projet PFE.
+- Recommandation IA ;
+- Planning Intelligent ;
+- Feedback Intelligence ;
+- HR Copilot.
+
+Les modules Recommandation et Planning utilisent des modèles entraînés, versionnés et suivis dans le model registry.
+
+Les modules Feedback Intelligence et HR Copilot combinent NLP, règles métier, LLM et fallback sécurisé.
+
+L'ensemble forme une architecture IA modulaire, traçable, explicable et adaptée à un projet PFE propre.

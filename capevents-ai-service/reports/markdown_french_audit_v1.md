@@ -1,12 +1,12 @@
 # Audit Markdown français — CapEvents AI
 
-Généré le : 2026-05-13T14:37:57.081557+00:00
+Généré le : 2026-05-13T14:45:52.677981+00:00
 
 ## Résumé
 
-- Fichiers Markdown analysés : 17
+- Fichiers Markdown analysés : 18
 - Fichiers OK : 16
-- Fichiers à corriger : 1
+- Fichiers à corriger : 2
 
 ## Détail
 
@@ -49,9 +49,9 @@ Statut : **OK**
 
 ### `docs/ai/resume-pfe-ia.md`
 
-Statut : **OK**
+Statut : **À corriger**
 
-- Aucun problème détecté.
+- Encodage cassé détecté : `Ã`
 
 ### `models_artifacts/planning/README.md`
 
@@ -96,6 +96,12 @@ Statut : **OK**
 - Aucun problème détecté.
 
 ### `reports/ai_cleanup_candidates_v1.md`
+
+Statut : **OK**
+
+- Aucun problème détecté.
+
+### `reports/ai_final_file_inventory.md`
 
 Statut : **OK**
 
