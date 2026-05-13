@@ -1,5 +1,5 @@
 {
-  "input_file": "datasets/processed/recommendation_train.csv",
+  "input_file": "datasets/processed/recommendation_train_hard_negatives.csv",
   "artifact_dir": "models_artifacts/recommendation",
   "report_dir": "reports/recommendation",
 
