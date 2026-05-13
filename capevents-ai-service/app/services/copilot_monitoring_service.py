@@ -9,6 +9,8 @@ from app.schemas.copilot_monitoring import (
     HrCopilotMonitoringResponse
 )
 
+from app.core.text_sanitizer import clean_text
+
 
 LOG_DIR = Path("logs/copilot")
 
@@ -139,7 +141,7 @@ class CopilotMonitoringService:
             qwen_used=bool(item.get("qwen_used")),
             summary_source=str(item.get("summary_source") or ""),
             status=str(item.get("status") or "UNKNOWN"),
-            message=item.get("message")
+            message=clean_text(item.get("message")) if item.get("message") else None
         )
     
     def _read_feedback_records(self) -> list[dict[str, Any]]:

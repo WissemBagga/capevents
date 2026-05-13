@@ -13,6 +13,8 @@ from uuid import uuid4
 
 from app.services.copilot_logger import CopilotLogger
 
+from app.core.text_sanitizer import clean_text, sanitize_payload
+
 
 OLLAMA_CHAT_URL = "http://127.0.0.1:11434/api/chat"
 OLLAMA_MODEL = "qwen3:0.6b"
@@ -50,11 +52,13 @@ class HrCopilotService:
                 if qwen_used:
                     source = draft_source
 
+                clean_suggestion = sanitize_payload({
+                    **suggestion,
+                    "draft": clean_text(draft),
+                })
+
                 final_suggestions.append(
-                    HrCopilotSuggestion(
-                        **suggestion,
-                        draft=draft
-                    )
+                    HrCopilotSuggestion(**clean_suggestion)
                 )
 
             self.copilot_logger.log_hr_copilot(
@@ -495,7 +499,7 @@ class HrCopilotService:
             )
 
             if response.status_code != 200:
-                return fallback, False, f"fallback_ollama_status_{response.status_code}"
+                return clean_text(fallback), False, f"fallback_ollama_status_{response.status_code}"
 
             data = response.json()
             text_response = str(data.get("message", {}).get("content", "")).strip()
@@ -513,15 +517,15 @@ class HrCopilotService:
             ]
 
             if any(pattern in text_response.lower() for pattern in bad_patterns):
-                return fallback, False, "fallback_qwen_prompt_echo"
+                return clean_text(fallback), False, "fallback_qwen_prompt_echo"
 
             if not text_response:
-                return fallback, False, "fallback_empty_qwen_response"
+                return clean_text(fallback), False, "fallback_empty_qwen_response"
 
-            return text_response, True, "qwen3_ollama_chat"
+            return clean_text(text_response), True, "qwen3_ollama_chat"
 
         except Exception as exc:
-            return fallback, False, f"fallback_ollama_error_{type(exc).__name__}"
+            return clean_text(fallback), False, f"fallback_ollama_error_{type(exc).__name__}"
 
     def _build_fallback_draft(self, suggestion: dict) -> str:
         event_title = suggestion.get("related_event_title")
