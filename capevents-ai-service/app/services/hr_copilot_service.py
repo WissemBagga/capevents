@@ -63,7 +63,7 @@ class HrCopilotService:
                 qwen_used=qwen_used_any,
                 summary_source=source,
                 status="SUCCESS",
-                message="HR copilot suggestions generated successfully."
+                message="Suggestions du Copilote RH générées avec succès."
             )
 
             return HrCopilotResponse(

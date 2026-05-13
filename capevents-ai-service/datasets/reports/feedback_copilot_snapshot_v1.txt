@@ -1,0 +1,1634 @@
+﻿===== app/api/feedback_insights.py =====
+from fastapi import APIRouter, Depends
+
+from app.core.security import verify_ai_service_key
+from app.schemas.feedback_insights import FeedbackInsightResponse
+from app.services.feedback_insights_service import FeedbackInsightsService
+
+
+router = APIRouter(
+    prefix="/ai/feedback",
+    tags=["AI Feedback Intelligence"]
+)
+
+feedback_insights_service = FeedbackInsightsService()
+
+
+@router.get(
+    "/events/{event_id}/insights",
+    response_model=FeedbackInsightResponse
+)
+def get_event_feedback_insights(
+    event_id: str,
+    _: bool = Depends(verify_ai_service_key)
+):
+    return feedback_insights_service.get_event_feedback_insights(event_id)
+===== app/services/feedback_insights_service.py =====
+import re
+from collections import Counter
+from typing import Any
+
+import pandas as pd
+import requests
+from bertopic import BERTopic
+from sentence_transformers import SentenceTransformer
+from transformers import pipeline
+
+from app.schemas.feedback_insights import (
+    FeedbackInsightResponse,
+    FeedbackTopic,
+    SentimentDistribution
+)
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+from sqlalchemy import text
+
+from app.data.db import engine
+
+
+
+SENTIMENT_MODEL_NAME = "cardiffnlp/twitter-xlm-roberta-base-sentiment-multilingual"
+EMBEDDING_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+
+OLLAMA_CHAT_URL = "http://127.0.0.1:11434/api/chat"
+OLLAMA_MODEL = "qwen3:0.6b"
+OLLAMA_TIMEOUT_SECONDS = 60
+
+
+FRENCH_STOPWORDS = {
+    "le", "la", "les", "un", "une", "des", "du", "de", "d", "et", "ou",
+    "en", "au", "aux", "avec", "pour", "par", "dans", "sur", "ce", "cet",
+    "cette", "ces", "est", "sont", "Ã©tÃ©", "etre", "Ãªtre", "plus", "moins",
+    "trÃ¨s", "tres", "bien", "bon", "bonne", "mais", "donc", "comme",
+    "session", "Ã©vÃ©nement", "evenement", "catÃ©gorie", "categorie", "point",
+    "rÃ©fÃ©rence", "reference", "Ã©dition", "edition",
+
+    "trop", "peu", "sujet", "correctement", "directement", "davantage",
+    "souhaitÃ©s", "souhaites", "format", "utile", "correcte", "clair",
+    "claire", "excellente", "satisfaisante"
+}
+
+
+class FeedbackInsightsService:
+    def __init__(self) -> None:
+        self.sentiment_pipeline = None
+        self.embedding_model = None
+
+    def _get_event_from_database(self, event_id: str) -> dict | None:
+        query = text("""
+            SELECT
+                id::text AS id,
+                title
+            FROM events
+            WHERE id::text = :event_id
+            LIMIT 1
+        """)
+
+        with engine.connect() as connection:
+            row = connection.execute(
+                query,
+                {"event_id": event_id}
+            ).mappings().first()
+
+        return dict(row) if row else None
+
+
+    def _get_feedbacks_from_database(self, event_id: str) -> pd.DataFrame:
+        query = text("""
+            SELECT
+                id,
+                event_id::text AS event_id,
+                user_id::text AS user_id,
+                rating,
+                comment,
+                created_at
+            FROM event_feedbacks
+            WHERE event_id::text = :event_id
+            AND comment IS NOT NULL
+            AND btrim(comment) <> ''
+            ORDER BY created_at ASC
+        """)
+
+        return pd.read_sql_query(
+            query,
+            engine,
+            params={"event_id": event_id}
+        )
+    def _get_sentiment_pipeline(self):
+        if self.sentiment_pipeline is None:
+            self.sentiment_pipeline = pipeline(
+                "sentiment-analysis",
+                model=SENTIMENT_MODEL_NAME,
+                tokenizer=SENTIMENT_MODEL_NAME
+            )
+        return self.sentiment_pipeline
+
+    def _get_embedding_model(self):
+        if self.embedding_model is None:
+            self.embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
+        return self.embedding_model
+
+    def get_event_feedback_insights(self, event_id: str) -> FeedbackInsightResponse:
+        event_id = str(event_id).strip()
+
+        event = self._get_event_from_database(event_id)
+        event_title = event["title"] if event else None
+
+        if event is None:
+            return self._empty_response(
+                event_id,
+                None,
+                "Ã‰vÃ©nement introuvable dans la base CapEvents."
+            )
+
+        event_feedbacks = self._get_feedbacks_from_database(event_id)
+
+        if event_feedbacks.empty:
+            return self._empty_response(
+                event_id,
+                event_title,
+                "Aucun feedback textuel disponible pour cet Ã©vÃ©nement dans la base CapEvents."
+            )
+
+        event_feedbacks["comment"] = event_feedbacks["comment"].fillna("").astype(str)
+        event_feedbacks["rating"] = pd.to_numeric(
+            event_feedbacks["rating"],
+            errors="coerce"
+        ).fillna(0)
+
+        comments = event_feedbacks["comment"].astype(str).tolist()
+        ratings = event_feedbacks["rating"].tolist()
+        cleaned_comments = [self._clean_for_nlp(comment) for comment in comments]
+
+        sentiment_results = self._analyze_sentiments(cleaned_comments)
+        distribution = self._build_sentiment_distribution(sentiment_results)
+        global_sentiment, sentiment_score = self._compute_global_sentiment(distribution)
+
+        topics = self._extract_topics(cleaned_comments)
+        keywords = self._extract_keywords_from_topics(topics)
+
+        strengths = self._extract_strengths(event_feedbacks, sentiment_results)
+        improvements = self._extract_improvements(event_feedbacks, sentiment_results)
+
+        average_rating = float(pd.Series(ratings).mean()) if ratings else 0.0
+
+        template_summary = self._build_template_summary(
+            feedback_count=len(comments),
+            average_rating=average_rating,
+            global_sentiment=global_sentiment,
+            keywords=keywords,
+            strengths=strengths,
+            improvements=improvements
+        )
+
+        summary, qwen_used, summary_source = self._build_qwen_summary(
+            event_title=event_title,
+            feedback_count=len(comments),
+            average_rating=average_rating,
+            global_sentiment=global_sentiment,
+            distribution=distribution,
+            topics=topics,
+            strengths=strengths,
+            improvements=improvements,
+            fallback_summary=template_summary
+        )
+
+        return FeedbackInsightResponse(
+            event_id=event_id,
+            event_title=event_title,
+            feedback_count=len(comments),
+            average_rating=round(average_rating, 2),
+            global_sentiment=global_sentiment,
+            sentiment_score=round(sentiment_score, 3),
+            sentiment_distribution=SentimentDistribution(**distribution),
+            topics=topics,
+            keywords=keywords,
+            strengths=strengths,
+            improvements=improvements,
+            summary=summary,
+            qwen_used=qwen_used,
+            summary_source=summary_source,
+            model_info={
+                "sentiment": SENTIMENT_MODEL_NAME,
+                "topics": "BERTopic",
+                "embeddings": EMBEDDING_MODEL_NAME,
+                "summary": "qwen3:0.6b"
+            }
+        )
+
+    def _analyze_sentiments(self, comments: list[str]) -> list[dict[str, Any]]:
+        classifier = self._get_sentiment_pipeline()
+        truncated_comments = [self._truncate_text(comment) for comment in comments]
+
+        raw_results = classifier(truncated_comments, truncation=True)
+
+        results = []
+        for comment, result in zip(comments, raw_results):
+            label = str(result.get("label", "neutral"))
+            confidence = float(result.get("score", 0))
+            sentiment = self._map_sentiment_label(label)
+
+            results.append({
+                "comment": comment,
+                "label": label,
+                "sentiment": sentiment,
+                "confidence": confidence
+            })
+
+        return results
+
+    def _map_sentiment_label(self, label: str) -> str:
+        normalized = label.lower()
+
+        if "negative" in normalized or normalized == "label_0":
+            return "negative"
+
+        if "neutral" in normalized or normalized == "label_1":
+            return "neutral"
+
+        if "positive" in normalized or normalized == "label_2":
+            return "positive"
+
+        return "neutral"
+
+    def _build_sentiment_distribution(self, sentiment_results: list[dict[str, Any]]) -> dict[str, int]:
+        counter = Counter(item["sentiment"] for item in sentiment_results)
+
+        return {
+            "positive": int(counter.get("positive", 0)),
+            "neutral": int(counter.get("neutral", 0)),
+            "negative": int(counter.get("negative", 0))
+        }
+
+    def _compute_global_sentiment(self, distribution: dict[str, int]) -> tuple[str, float]:
+        positive = distribution["positive"]
+        neutral = distribution["neutral"]
+        negative = distribution["negative"]
+
+        total = positive + neutral + negative
+        if total == 0:
+            return "NEUTRAL", 0.0
+
+        score = (positive - negative) / total
+
+        if score >= 0.25:
+            return "POSITIVE", score
+
+        if score <= -0.25:
+            return "NEGATIVE", score
+
+        return "NEUTRAL", score
+
+    def _extract_topics(self, comments: list[str]) -> list[FeedbackTopic]:
+        valid_comments = [
+            comment for comment in comments
+            if comment and len(comment.split()) >= 3
+        ]
+
+        if len(valid_comments) < 3:
+            return self._fallback_topics(valid_comments)
+
+        try:
+            embedding_model = self._get_embedding_model()
+
+            vectorizer_model = CountVectorizer(
+                stop_words=list(FRENCH_STOPWORDS),
+                ngram_range=(1, 2),
+                min_df=1
+            )
+
+            topic_model = BERTopic(
+                embedding_model=embedding_model,
+                vectorizer_model=vectorizer_model,
+                language="multilingual",
+                calculate_probabilities=False,
+                verbose=False,
+                min_topic_size=2
+            )
+
+            topic_ids, _ = topic_model.fit_transform(valid_comments)
+            topic_info = topic_model.get_topic_info()
+
+            results: list[FeedbackTopic] = []
+
+            for _, row in topic_info.iterrows():
+                topic_id = int(row["Topic"])
+
+                if topic_id == -1:
+                    continue
+
+                count = int(row["Count"])
+                words = topic_model.get_topic(topic_id) or []
+                keywords = [word for word, _ in words[:5]]
+
+                label = ", ".join(keywords[:3]) if keywords else f"ThÃ¨me {topic_id}"
+
+                results.append(
+                    FeedbackTopic(
+                        topic_id=topic_id,
+                        label=label,
+                        count=count,
+                        keywords=keywords
+                    )
+                )
+
+            if not results:
+                return self._fallback_topics(valid_comments)
+
+            return results[:5]
+
+        except Exception:
+            return self._fallback_topics(valid_comments)
+
+    def _fallback_topics(self, comments: list[str]) -> list[FeedbackTopic]:
+        keywords = self._simple_keywords(comments, limit=5)
+
+        if not keywords:
+            return []
+
+        return [
+            FeedbackTopic(
+                topic_id=0,
+                label=", ".join(keywords[:3]),
+                count=len(comments),
+                keywords=keywords
+            )
+        ]
+
+    def _extract_keywords_from_topics(self, topics: list[FeedbackTopic], limit: int = 10) -> list[str]:
+        keywords: list[str] = []
+
+        for topic in topics:
+            for keyword in topic.keywords:
+                if keyword not in keywords:
+                    keywords.append(keyword)
+
+        return keywords[:limit]
+
+    def _simple_keywords(self, comments: list[str], limit: int = 8) -> list[str]:
+        words: list[str] = []
+
+        for comment in comments:
+            for word in re.findall(r"[a-zA-ZÃ€-Ã¿']+", comment.lower()):
+                if len(word) < 4:
+                    continue
+                if word in FRENCH_STOPWORDS:
+                    continue
+                words.append(word)
+
+        counter = Counter(words)
+        return [word for word, _ in counter.most_common(limit)]
+
+    def _extract_strengths(
+        self,
+        feedbacks: pd.DataFrame,
+        sentiment_results: list[dict[str, Any]],
+        limit: int = 3
+    ) -> list[str]:
+        rows = feedbacks.copy()
+        rows["sentiment"] = [item["sentiment"] for item in sentiment_results]
+
+        positive_rows = rows[
+            (rows["sentiment"] == "positive") | (rows["rating"] >= 4)
+        ]
+
+        comments = positive_rows["comment"].astype(str).tolist()
+        return self._summarize_comment_points(comments, limit=limit)
+
+    def _extract_improvements(
+        self,
+        feedbacks: pd.DataFrame,
+        sentiment_results: list[dict[str, Any]],
+        limit: int = 3
+    ) -> list[str]:
+        rows = feedbacks.copy()
+        rows["sentiment"] = [item["sentiment"] for item in sentiment_results]
+
+        negative_rows = rows[
+            (rows["sentiment"] == "negative") | (rows["rating"] <= 2)
+        ]
+
+        comments = negative_rows["comment"].astype(str).tolist()
+        return self._summarize_comment_points(comments, limit=limit)
+
+    def _summarize_comment_points(self, comments: list[str], limit: int = 3) -> list[str]:
+        points: list[str] = []
+
+        for comment in comments:
+            cleaned = self._remove_reference_parts(comment)
+            if not cleaned:
+                continue
+
+            sentence = cleaned.split(".")[0].strip()
+            if sentence and sentence not in points:
+                points.append(sentence)
+
+            if len(points) >= limit:
+                break
+
+        return points
+
+    def _build_template_summary(
+        self,
+        feedback_count: int,
+        average_rating: float,
+        global_sentiment: str,
+        keywords: list[str],
+        strengths: list[str],
+        improvements: list[str]
+    ) -> str:
+        sentiment_fr = {
+            "POSITIVE": "positif",
+            "NEUTRAL": "neutre",
+            "NEGATIVE": "nÃ©gatif"
+        }.get(global_sentiment, "neutre")
+
+        summary = (
+            f"Lâ€™analyse IA de {feedback_count} feedback(s) indique un sentiment global {sentiment_fr}, "
+            f"avec une note moyenne de {average_rating:.2f}/5."
+        )
+
+        if keywords:
+            summary += f" Les thÃ¨mes principaux sont : {', '.join(keywords[:5])}."
+
+        if strengths:
+            summary += f" Les points forts concernent : {', '.join(strengths[:2])}."
+
+        if improvements:
+            summary += f" Les axes dâ€™amÃ©lioration concernent : {', '.join(improvements[:2])}."
+
+        return summary
+
+    def _build_qwen_summary(
+        self,
+        event_title: str | None,
+        feedback_count: int,
+        average_rating: float,
+        global_sentiment: str,
+        distribution: dict[str, int],
+        topics: list[FeedbackTopic],
+        strengths: list[str],
+        improvements: list[str],
+        fallback_summary: str
+    ) -> tuple[str, bool, str]:
+        system_message = (
+            "Tu es un assistant RH pour CapEvents. "
+            "Tu rÃ©diges des rÃ©sumÃ©s courts, professionnels et en franÃ§ais. "
+            "Tu n'inventes aucune donnÃ©e. "
+            "Tu dois respecter exactement les chiffres fournis. "
+            "Ne dis jamais que tous les feedbacks sont positifs si la distribution contient des feedbacks nÃ©gatifs ou neutres. "
+            "Tu rÃ©ponds directement, sans raisonnement dÃ©taillÃ©."
+        )
+
+        positive_count = distribution.get("positive", 0)
+        neutral_count = distribution.get("neutral", 0)
+        negative_count = distribution.get("negative", 0)
+
+        topics_text = [
+            {
+                "label": topic.label,
+                "count": topic.count,
+                "keywords": topic.keywords[:3]
+            }
+            for topic in topics[:5]
+        ]
+
+        user_message = f"""
+        RÃ©dige un rÃ©sumÃ© RH en 3 phrases maximum.
+
+        DonnÃ©es exactes Ã  respecter :
+        - Ã‰vÃ©nement : {event_title or "Non prÃ©cisÃ©"}
+        - Nombre total de feedbacks analysÃ©s : {feedback_count}
+        - Note moyenne : {average_rating:.2f}/5
+        - Sentiment global calculÃ© : {global_sentiment}
+        - Feedbacks positifs : {positive_count}
+        - Feedbacks neutres : {neutral_count}
+        - Feedbacks nÃ©gatifs : {negative_count}
+
+        ThÃ¨mes dÃ©tectÃ©s :
+        {topics_text}
+
+        Points forts :
+        {strengths}
+
+        Points Ã  amÃ©liorer :
+        {improvements}
+
+        Contraintes :
+        - Si tous les feedbacks sont positifs, tu peux dire que les {feedback_count} feedbacks sont positifs.
+        - Sinon, ne dis jamais que les {feedback_count} feedbacks sont tous positifs.
+        - Utilise la formulation exacte : "{positive_count} positifs, {neutral_count} neutres et {negative_count} nÃ©gatifs".
+        - Ne mentionne que les thÃ¨mes, points forts et axes d'amÃ©lioration fournis.
+        - RÃ©ponds en franÃ§ais, style professionnel RH.
+        """
+
+        try:
+            response = requests.post(
+                OLLAMA_CHAT_URL,
+                json={
+                    "model": OLLAMA_MODEL,
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": system_message
+                        },
+                        {
+                            "role": "user",
+                            "content": user_message
+                        }
+                    ],
+                    "stream": False,
+                    "think": False,
+                    "options": {
+                        "temperature": 0.2,
+                        "num_predict": 160
+                    },
+                    "keep_alive": "10m"
+                },
+                timeout=OLLAMA_TIMEOUT_SECONDS
+            )
+
+            if response.status_code != 200:
+                return fallback_summary, False, f"fallback_template_ollama_status_{response.status_code}"
+
+            data = response.json()
+
+            message = data.get("message", {})
+            text = str(message.get("content", "")).strip()
+
+            positive_count = distribution.get("positive", 0)
+            neutral_count = distribution.get("neutral", 0)
+            negative_count = distribution.get("negative", 0)
+
+            all_feedbacks_are_positive = (
+                positive_count == feedback_count
+                and neutral_count == 0
+                and negative_count == 0
+            )
+
+            text_lower = text.lower()
+
+            if not all_feedbacks_are_positive:
+                forbidden_patterns = [
+                    f"{feedback_count} feedbacks positifs",
+                    f"{feedback_count} retours positifs",
+                    f"{feedback_count} commentaires positifs"
+                ]
+
+                for pattern in forbidden_patterns:
+                    if pattern in text_lower:
+                        return fallback_summary, False, "fallback_template_qwen_summary_validation_failed"
+
+            if not text:
+                return fallback_summary, False, "fallback_template_empty_qwen_chat_content"
+
+            return text, True, "qwen3_ollama_chat"
+
+        except Exception as exc:
+            return fallback_summary, False, f"fallback_template_ollama_error_{type(exc).__name__}"
+    
+
+    def _empty_response(
+        self,
+        event_id: str,
+        event_title: str | None,
+        message: str
+    ) -> FeedbackInsightResponse:
+        return FeedbackInsightResponse(
+            event_id=event_id,
+            event_title=event_title,
+            feedback_count=0,
+            average_rating=0.0,
+            global_sentiment="NEUTRAL",
+            sentiment_score=0.0,
+            sentiment_distribution=SentimentDistribution(
+                positive=0,
+                neutral=0,
+                negative=0
+            ),
+            topics=[],
+            keywords=[],
+            strengths=[],
+            improvements=[],
+            summary=message,
+            qwen_used=False,
+            summary_source="empty_response",
+            model_info={
+                "sentiment": SENTIMENT_MODEL_NAME,
+                "topics": "BERTopic",
+                "embeddings": EMBEDDING_MODEL_NAME,
+                "summary": "qwen3:0.6b"
+            }
+        )
+
+    def _clean_for_nlp(self, text: str) -> str:
+        text = self._remove_reference_parts(text)
+        text = re.sub(r"\s+", " ", text)
+        return text.strip()
+
+    def _remove_reference_parts(self, text: str) -> str:
+        text = str(text)
+        text = re.sub(r"CatÃ©gorie\s*:\s*[^.]+\.?", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"Point de rÃ©fÃ©rence\s*:\s*[^.]+\.?", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"\s+", " ", text)
+        return text.strip()
+
+    def _truncate_text(self, text: str, max_chars: int = 450) -> str:
+        text = str(text).strip()
+        if len(text) <= max_chars:
+            return text
+        return text[:max_chars]
+===== app/schemas/feedback_insights.py =====
+from pydantic import BaseModel
+
+
+class SentimentDistribution(BaseModel):
+    positive: int
+    neutral: int
+    negative: int
+
+
+class FeedbackTopic(BaseModel):
+    topic_id: int
+    label: str
+    count: int
+    keywords: list[str]
+
+
+class FeedbackInsightResponse(BaseModel):
+    event_id: str
+    event_title: str | None = None
+    feedback_count: int
+    average_rating: float
+    global_sentiment: str
+    sentiment_score: float
+    sentiment_distribution: SentimentDistribution
+    topics: list[FeedbackTopic]
+    keywords: list[str]
+    strengths: list[str]
+    improvements: list[str]
+    summary: str
+    qwen_used: bool
+    summary_source: str
+    model_info: dict[str, str]
+===== app/api/hr_copilot.py =====
+from fastapi import APIRouter, Depends
+
+from app.core.security import verify_ai_service_key
+from app.schemas.hr_copilot import HrCopilotResponse
+from app.services.hr_copilot_service import HrCopilotService
+
+
+router = APIRouter(
+    prefix="/ai/hr-copilot",
+    tags=["AI HR Copilot"]
+)
+
+hr_copilot_service = HrCopilotService()
+
+
+@router.get("/suggestions", response_model=HrCopilotResponse)
+def get_hr_copilot_suggestions(
+    _: bool = Depends(verify_ai_service_key)
+):
+    return hr_copilot_service.get_suggestions()
+===== app/api/hr_copilot_feedback.py =====
+from fastapi import APIRouter, Depends
+
+from app.core.security import verify_ai_service_key
+from app.schemas.copilot_feedback import (
+    HrCopilotFeedbackRequest,
+    HrCopilotFeedbackResponse
+)
+from app.services.copilot_logger import CopilotLogger
+
+
+router = APIRouter(
+    prefix="/ai/hr-copilot",
+    tags=["AI HR Copilot Feedback"]
+)
+
+copilot_logger = CopilotLogger()
+
+
+@router.post("/feedback", response_model=HrCopilotFeedbackResponse)
+def submit_hr_copilot_feedback(
+    payload: HrCopilotFeedbackRequest,
+    _: bool = Depends(verify_ai_service_key)
+):
+    copilot_logger.log_hr_copilot_feedback(
+        request_id=payload.request_id,
+        suggestion_type=payload.suggestion_type,
+        related_event_id=payload.related_event_id,
+        useful=payload.useful,
+        comment=payload.comment
+    )
+
+    return HrCopilotFeedbackResponse(
+        status="SAVED",
+        message="Feedback Copilote RH enregistrÃ©."
+    )
+===== app/api/copilot_monitoring.py =====
+from fastapi import APIRouter, Depends, Query
+
+from app.core.security import verify_ai_service_key
+from app.schemas.copilot_monitoring import HrCopilotMonitoringResponse
+from app.services.copilot_monitoring_service import CopilotMonitoringService
+
+
+router = APIRouter(
+    prefix="/ai/monitoring/hr-copilot",
+    tags=["AI HR Copilot Monitoring"]
+)
+
+copilot_monitoring_service = CopilotMonitoringService()
+
+
+@router.get("/summary", response_model=HrCopilotMonitoringResponse)
+def get_hr_copilot_monitoring_summary(
+    limit: int = Query(default=10, ge=1, le=50),
+    _: bool = Depends(verify_ai_service_key)
+):
+    return copilot_monitoring_service.get_hr_copilot_summary(limit=limit)
+===== app/services/hr_copilot_service.py =====
+from typing import Any
+
+import requests
+from sqlalchemy import text
+
+from app.data.db import engine
+from app.schemas.hr_copilot import HrCopilotResponse, HrCopilotSuggestion
+
+from datetime import datetime, timedelta, timezone
+
+from datetime import datetime, timezone
+from uuid import uuid4
+
+from app.services.copilot_logger import CopilotLogger
+
+
+OLLAMA_CHAT_URL = "http://127.0.0.1:11434/api/chat"
+OLLAMA_MODEL = "qwen3:0.6b"
+OLLAMA_TIMEOUT_SECONDS = 45
+
+
+class HrCopilotService:
+
+    def __init__(self) -> None:
+        self.copilot_logger = CopilotLogger()
+
+    def get_suggestions(self) -> HrCopilotResponse:
+        request_id = str(uuid4())
+        generated_at = datetime.now(timezone.utc).isoformat()
+
+        rule_suggestions = []
+
+        try:
+            rule_suggestions.extend(self._detect_pending_invitations())
+            rule_suggestions.extend(self._detect_low_registration_events())
+            rule_suggestions.extend(self._detect_low_feedback_events())
+            rule_suggestions.extend(self._detect_low_engagement_departments())
+            rule_suggestions.extend(self._detect_rsvp_friction_events())
+
+            ranked = self._rank_suggestions(rule_suggestions)[:3]
+
+            final_suggestions = []
+            qwen_used_any = False
+            source = "rules_only"
+
+            for suggestion in ranked:
+                draft, qwen_used, draft_source = self._build_qwen_draft(suggestion)
+                qwen_used_any = qwen_used_any or qwen_used
+
+                if qwen_used:
+                    source = draft_source
+
+                final_suggestions.append(
+                    HrCopilotSuggestion(
+                        **suggestion,
+                        draft=draft
+                    )
+                )
+
+            self.copilot_logger.log_hr_copilot(
+                request_id=request_id,
+                suggestions=[item.model_dump() for item in final_suggestions],
+                qwen_used=qwen_used_any,
+                summary_source=source,
+                status="SUCCESS",
+                message="HR copilot suggestions generated successfully."
+            )
+
+            return HrCopilotResponse(
+                request_id=request_id,
+                generated_at=generated_at,
+                suggestions=final_suggestions,
+                qwen_used=qwen_used_any,
+                summary_source=source
+            )
+
+        except Exception as exc:
+            self.copilot_logger.log_hr_copilot(
+                request_id=request_id,
+                suggestions=[],
+                qwen_used=False,
+                summary_source="error",
+                status="FAILED",
+                message=str(exc)
+            )
+
+            raise
+
+    def _read_rows(self, query: str, params: dict | None = None) -> list[dict[str, Any]]:
+        with engine.connect() as connection:
+            rows = connection.execute(text(query), params or {}).mappings().all()
+
+        return [dict(row) for row in rows]
+
+    def _detect_pending_invitations(self) -> list[dict]:
+        cooldown_after = datetime.now(timezone.utc) - timedelta(hours=24)
+
+        rows = self._read_rows("""
+            SELECT
+                e.id::text AS event_id,
+                e.title AS event_title,
+
+                COUNT(i.id) AS pending_count,
+
+                SUM(
+                    CASE
+                        WHEN NOT EXISTS (
+                            SELECT 1
+                            FROM event_invitation_reminders r
+                            WHERE r.invitation_id = i.id
+                            AND r.status = 'SENT'
+                            AND r.sent_at >= :cooldown_after
+                        )
+                        THEN 1 ELSE 0
+                    END
+                ) AS eligible_reminder_count,
+
+                SUM(
+                    CASE
+                        WHEN EXISTS (
+                            SELECT 1
+                            FROM event_invitation_reminders r
+                            WHERE r.invitation_id = i.id
+                            AND r.status = 'SENT'
+                            AND r.sent_at >= :cooldown_after
+                        )
+                        THEN 1 ELSE 0
+                    END
+                ) AS recently_reminded_count
+
+            FROM event_invitations i
+            JOIN events e ON e.id = i.event_id
+            WHERE e.status = 'PUBLISHED'
+            AND e.start_at > NOW()
+            AND i.status = 'PENDING'
+            AND i.rsvp_response IS NULL
+            GROUP BY e.id, e.title
+            HAVING
+                SUM(
+                    CASE
+                        WHEN NOT EXISTS (
+                            SELECT 1
+                            FROM event_invitation_reminders r
+                            WHERE r.invitation_id = i.id
+                            AND r.status = 'SENT'
+                            AND r.sent_at >= :cooldown_after
+                        )
+                        THEN 1 ELSE 0
+                    END
+                ) > 0
+            ORDER BY eligible_reminder_count DESC, pending_count DESC
+            LIMIT 3
+        """, {"cooldown_after": cooldown_after})
+
+        suggestions = []
+
+        for row in rows:
+            pending_count = int(row["pending_count"] or 0)
+            eligible_count = int(row["eligible_reminder_count"] or 0)
+            recently_reminded_count = int(row["recently_reminded_count"] or 0)
+
+            suggestions.append({
+                "type": "PENDING_INVITATIONS",
+                "priority": "HIGH" if eligible_count >= 10 else "MEDIUM",
+                "title": "Relancer les invitÃ©s sans rÃ©ponse",
+                "insight": (
+                    f"{pending_count} invitation(s) sont encore en attente pour cet Ã©vÃ©nement, "
+                    f"dont {eligible_count} relanÃ§able(s) maintenant. "
+                    f"{recently_reminded_count} invitation(s) ont dÃ©jÃ  Ã©tÃ© relancÃ©es rÃ©cemment."
+                ),
+                "recommended_action": (
+                    "Envoyer une relance uniquement aux collaborateurs dÃ©jÃ  invitÃ©s, "
+                    "sans crÃ©er de nouvelle invitation."
+                ),
+                "action_type": "REMIND_PENDING_INVITATIONS",
+                "related_event_id": row["event_id"],
+                "related_event_title": row["event_title"],
+                "metadata": {
+                    "pending_count": pending_count,
+                    "eligible_reminder_count": eligible_count,
+                    "recently_reminded_count": recently_reminded_count,
+                    "cooldown_hours": 24
+                }
+            })
+
+        return suggestions
+
+    def _detect_low_registration_events(self) -> list[dict]:
+        rows = self._read_rows("""
+            SELECT
+                e.id::text AS event_id,
+                e.title AS event_title,
+                e.capacity,
+                COUNT(r.id) AS registered_count
+            FROM events e
+            LEFT JOIN event_registrations r
+                ON r.event_id = e.id
+                AND r.status NOT IN ('CANCELLED', 'UNREGISTERED')
+            WHERE e.status = 'PUBLISHED'
+              AND e.start_at > NOW()
+              AND e.capacity > 0
+            GROUP BY e.id, e.title, e.capacity
+            HAVING COUNT(r.id)::float / NULLIF(e.capacity, 0) < 0.30
+            ORDER BY COUNT(r.id)::float / NULLIF(e.capacity, 0) ASC
+            LIMIT 3
+        """)
+
+        suggestions = []
+
+        for row in rows:
+            capacity = int(row["capacity"] or 0)
+            registered_count = int(row["registered_count"] or 0)
+            rate = registered_count / capacity if capacity > 0 else 0
+
+            suggestions.append({
+                "type": "LOW_REGISTRATION",
+                "priority": "HIGH" if rate < 0.15 else "MEDIUM",
+                "title": "AmÃ©liorer le taux dâ€™inscription",
+                "insight": f"Lâ€™Ã©vÃ©nement a seulement {registered_count}/{capacity} inscrit(s), soit {round(rate * 100)}%.",
+                "recommended_action": "Renforcer la visibilitÃ© de lâ€™Ã©vÃ©nement et cibler les collaborateurs intÃ©ressÃ©s.",
+                "related_event_id": row["event_id"],
+                "related_event_title": row["event_title"],
+                "metadata": {
+                    "capacity": capacity,
+                    "registered_count": registered_count,
+                    "registration_rate": rate
+                }
+            })
+
+        return suggestions
+
+    def _detect_low_feedback_events(self) -> list[dict]:
+        rows = self._read_rows("""
+            SELECT
+                e.id::text AS event_id,
+                e.title AS event_title,
+                AVG(f.rating) AS average_rating,
+                COUNT(f.id) AS feedback_count
+            FROM event_feedbacks f
+            JOIN events e ON e.id = f.event_id
+            GROUP BY e.id, e.title
+            HAVING COUNT(f.id) >= 3
+               AND AVG(f.rating) < 3.2
+            ORDER BY AVG(f.rating) ASC
+            LIMIT 3
+        """)
+
+        suggestions = []
+
+        for row in rows:
+            average_rating = float(row["average_rating"] or 0)
+            feedback_count = int(row["feedback_count"] or 0)
+
+            suggestions.append({
+                "type": "LOW_FEEDBACK_SCORE",
+                "priority": "HIGH" if average_rating < 2.8 else "MEDIUM",
+                "title": "Analyser les feedbacks nÃ©gatifs",
+                "insight": f"Lâ€™Ã©vÃ©nement a une note moyenne de {average_rating:.2f}/5 sur {feedback_count} feedback(s).",
+                "recommended_action": "Consulter lâ€™analyse Feedback Intelligence et identifier les axes dâ€™amÃ©lioration.",
+                "related_event_id": row["event_id"],
+                "related_event_title": row["event_title"],
+                "metadata": {
+                    "average_rating": average_rating,
+                    "feedback_count": feedback_count
+                }
+            })
+
+        return suggestions
+    
+    def _detect_low_engagement_departments(self) -> list[dict]:
+        rows = self._read_rows("""
+            SELECT
+                d.id AS department_id,
+                d.name AS department_name,
+                COUNT(DISTINCT u.id) AS active_employees,
+                COUNT(DISTINCT r.user_id) AS participating_users
+            FROM departments d
+            JOIN users u ON u.department_id = d.id AND u.is_active = true
+            LEFT JOIN event_registrations r
+                ON r.user_id = u.id
+                AND r.status NOT IN ('CANCELLED', 'UNREGISTERED')
+            GROUP BY d.id, d.name
+            HAVING COUNT(DISTINCT u.id) >= 3
+            AND (
+                    COUNT(DISTINCT r.user_id)::float
+                    / NULLIF(COUNT(DISTINCT u.id), 0)
+            ) < 0.30
+            ORDER BY (
+                COUNT(DISTINCT r.user_id)::float
+                / NULLIF(COUNT(DISTINCT u.id), 0)
+            ) ASC
+            LIMIT 2
+        """)
+
+        suggestions = []
+
+        for row in rows:
+            active_employees = int(row["active_employees"] or 0)
+            participating_users = int(row["participating_users"] or 0)
+            rate = participating_users / active_employees if active_employees > 0 else 0
+
+            suggestions.append({
+                "type": "LOW_DEPARTMENT_ENGAGEMENT",
+                "priority": "HIGH" if rate < 0.15 else "MEDIUM",
+                "title": "Renforcer lâ€™engagement dâ€™un dÃ©partement",
+                "insight": (
+                    f"Le dÃ©partement {row['department_name']} prÃ©sente un taux de participation "
+                    f"faible : {participating_users}/{active_employees} collaborateur(s), soit {round(rate * 100)}%."
+                ),
+                "recommended_action": "Proposer une action ciblÃ©e adaptÃ©e aux centres dâ€™intÃ©rÃªt du dÃ©partement.",
+                "related_event_id": None,
+                "related_event_title": None,
+                "metadata": {
+                    "department_id": row["department_id"],
+                    "department_name": row["department_name"],
+                    "active_employees": active_employees,
+                    "participating_users": participating_users,
+                    "participation_rate": rate
+                }
+            })
+
+        return suggestions
+
+    def _detect_rsvp_friction_events(self) -> list[dict]:
+        rows = self._read_rows("""
+            SELECT
+                e.id::text AS event_id,
+                e.title AS event_title,
+
+                COUNT(i.id) FILTER (
+                    WHERE i.rsvp_response IN ('YES', 'MAYBE', 'NO')
+                ) AS responded_count,
+
+                COUNT(i.id) FILTER (
+                    WHERE i.rsvp_response = 'YES'
+                ) AS yes_count,
+
+                COUNT(i.id) FILTER (
+                    WHERE i.rsvp_response = 'MAYBE'
+                ) AS maybe_count,
+
+                COUNT(i.id) FILTER (
+                    WHERE i.rsvp_response = 'NO'
+                ) AS no_count
+
+            FROM events e
+            JOIN event_invitations i ON i.event_id = e.id
+            WHERE e.status = 'PUBLISHED'
+            AND e.start_at > NOW()
+            GROUP BY e.id, e.title
+            HAVING COUNT(i.id) FILTER (
+                WHERE i.rsvp_response IN ('YES', 'MAYBE', 'NO')
+            ) >= 3
+            ORDER BY
+                (
+                    (
+                        COUNT(i.id) FILTER (WHERE i.rsvp_response IN ('MAYBE', 'NO'))
+                    )::float
+                    / NULLIF(
+                        COUNT(i.id) FILTER (WHERE i.rsvp_response IN ('YES', 'MAYBE', 'NO')),
+                        0
+                    )
+                ) DESC
+            LIMIT 3
+        """)
+
+        suggestions = []
+
+        for row in rows:
+            responded_count = int(row["responded_count"] or 0)
+            yes_count = int(row["yes_count"] or 0)
+            maybe_count = int(row["maybe_count"] or 0)
+            no_count = int(row["no_count"] or 0)
+
+            if responded_count == 0:
+                continue
+
+            friction_count = maybe_count + no_count
+            friction_rate = friction_count / responded_count
+
+            if friction_rate < 0.40:
+                continue
+
+            suggestions.append({
+                "type": "RSVP_FRICTION",
+                "priority": "HIGH" if friction_rate >= 0.60 else "MEDIUM",
+                "title": "Comprendre les rÃ©ponses nÃ©gatives ou hÃ©sitantes",
+                "insight": (
+                    f"Lâ€™Ã©vÃ©nement prÃ©sente {friction_count}/{responded_count} rÃ©ponse(s) "
+                    f"nÃ©gative(s) ou hÃ©sitante(s), soit {round(friction_rate * 100)}%. "
+                    f"DÃ©tail : {no_count} non, {maybe_count} peut-Ãªtre, {yes_count} oui."
+                ),
+                "recommended_action": (
+                    "Analyser le positionnement de lâ€™Ã©vÃ©nement : crÃ©neau, sujet, format ou communication. "
+                    "Une clarification du bÃ©nÃ©fice participant peut amÃ©liorer lâ€™adhÃ©sion."
+                ),
+                "action_type": "REVIEW_RSVP_FRICTION",
+                "related_event_id": row["event_id"],
+                "related_event_title": row["event_title"],
+                "metadata": {
+                    "responded_count": responded_count,
+                    "yes_count": yes_count,
+                    "maybe_count": maybe_count,
+                    "no_count": no_count,
+                    "friction_count": friction_count,
+                    "friction_rate": friction_rate
+                }
+            })
+
+        return suggestions
+
+    def _rank_suggestions(self, suggestions: list[dict]) -> list[dict]:
+        priority_score = {
+            "HIGH": 3,
+            "MEDIUM": 2,
+            "LOW": 1
+        }
+
+        sorted_items = sorted(
+            suggestions,
+            key=lambda item: (
+                priority_score.get(item["priority"], 0),
+                item.get("metadata", {}).get("pending_count", 0),
+                item.get("metadata", {}).get("registered_count", 0),
+                item.get("metadata", {}).get("feedback_count", 0)
+            ),
+            reverse=True
+        )
+
+        selected = []
+        used_types = set()
+
+        for item in sorted_items:
+            suggestion_type = item.get("type")
+
+            if suggestion_type in used_types:
+                continue
+
+            selected.append(item)
+            used_types.add(suggestion_type)
+
+            if len(selected) >= 3:
+                break
+
+        return selected
+
+    def _build_qwen_draft(self, suggestion: dict) -> tuple[str, bool, str]:
+        fallback = self._build_fallback_draft(suggestion)
+
+        system_message = (
+            "Tu es un assistant RH pour CapEvents. "
+            "Tu rÃ©diges des messages courts, professionnels et en franÃ§ais. "
+            "Tu nâ€™inventes aucune donnÃ©e. "
+            "Tu utilises uniquement les informations fournies."
+        )
+
+        user_message = f"""
+        Ã‰cris uniquement le brouillon final du message RH.
+
+        Contexte :
+        - Type : {suggestion["type"]}
+        - PrioritÃ© : {suggestion["priority"]}
+        - Titre : {suggestion["title"]}
+        - Constat : {suggestion["insight"]}
+        - Action recommandÃ©e : {suggestion["recommended_action"]}
+        - Ã‰vÃ©nement concernÃ© : {suggestion.get("related_event_title") or "Non prÃ©cisÃ©"}
+
+        RÃ¨gles :
+        - Ne rÃ©pÃ¨te pas le prompt.
+        - Nâ€™utilise pas de markdown.
+        - Nâ€™Ã©cris pas "Type", "PrioritÃ©", "Constat" ou "Contraintes".
+        - 3 phrases maximum.
+        - Ton professionnel RH.
+        - Ne pas inventer de date, lieu ou chiffres.
+        """
+
+        try:
+            response = requests.post(
+                OLLAMA_CHAT_URL,
+                json={
+                    "model": OLLAMA_MODEL,
+                    "messages": [
+                        {"role": "system", "content": system_message},
+                        {"role": "user", "content": user_message}
+                    ],
+                    "stream": False,
+                    "think": False,
+                    "options": {
+                        "temperature": 0.2,
+                        "num_predict": 150
+                    },
+                    "keep_alive": "10m"
+                },
+                timeout=OLLAMA_TIMEOUT_SECONDS
+            )
+
+            if response.status_code != 200:
+                return fallback, False, f"fallback_ollama_status_{response.status_code}"
+
+            data = response.json()
+            text_response = str(data.get("message", {}).get("content", "")).strip()
+            bad_patterns = [
+                "rÃ©dige un brouillon",
+                "le brouillon final",
+                "brouillon final du message",
+                "amÃ©liorer le taux dâ€™inscription pour",
+                "comprendre les rÃ©ponses nÃ©gatives ou hÃ©sitantes pour",
+                "type :",
+                "prioritÃ© :",
+                "constat :",
+                "contraintes",
+                "**"
+            ]
+
+            if any(pattern in text_response.lower() for pattern in bad_patterns):
+                return fallback, False, "fallback_qwen_prompt_echo"
+
+            if not text_response:
+                return fallback, False, "fallback_empty_qwen_response"
+
+            return text_response, True, "qwen3_ollama_chat"
+
+        except Exception as exc:
+            return fallback, False, f"fallback_ollama_error_{type(exc).__name__}"
+
+    def _build_fallback_draft(self, suggestion: dict) -> str:
+        event_title = suggestion.get("related_event_title")
+
+        if suggestion["type"] == "PENDING_INVITATIONS":
+            return (
+                f"Bonjour, nous vous invitons Ã  confirmer votre participation Ã  lâ€™Ã©vÃ©nement "
+                f"Â« {event_title} Â» afin de faciliter lâ€™organisation. "
+                f"Votre rÃ©ponse permettra dâ€™ajuster la logistique et de mieux anticiper la participation. "
+                f"Merci de rÃ©pondre dÃ¨s que possible."
+            )
+
+        if suggestion["type"] == "LOW_REGISTRATION":
+            return (
+                f"Bonjour, lâ€™Ã©vÃ©nement Â« {event_title} Â» prÃ©sente actuellement un niveau "
+                f"dâ€™inscription infÃ©rieur aux attentes. Nous recommandons de renforcer sa visibilitÃ© "
+                f"auprÃ¨s des collaborateurs concernÃ©s et de rappeler clairement les bÃ©nÃ©fices de la participation. "
+                f"Une relance ciblÃ©e peut aider Ã  amÃ©liorer lâ€™engagement avant la date de lâ€™Ã©vÃ©nement."
+            )
+
+        if suggestion["type"] == "LOW_FEEDBACK_SCORE":
+            return (
+                f"Les retours de lâ€™Ã©vÃ©nement Â« {event_title} Â» indiquent des axes dâ€™amÃ©lioration. "
+                f"Nous recommandons dâ€™analyser les commentaires et dâ€™ajuster lâ€™organisation des prochains Ã©vÃ©nements similaires."
+            )
+        
+        if suggestion["type"] == "LOW_DEPARTMENT_ENGAGEMENT":
+            department_name = suggestion.get("metadata", {}).get("department_name", "le dÃ©partement concernÃ©")
+            return (
+                f"Bonjour, nous souhaitons renforcer la participation du dÃ©partement {department_name} "
+                f"aux Ã©vÃ©nements internes. Une action ciblÃ©e pourrait Ãªtre proposÃ©e afin de mieux rÃ©pondre "
+                f"aux attentes des collaborateurs concernÃ©s. Nous recommandons dâ€™identifier un format court "
+                f"et adaptÃ© Ã  leurs disponibilitÃ©s."
+            )
+        
+        if suggestion["type"] == "RSVP_FRICTION":
+            event_title = suggestion.get("related_event_title") or "lâ€™Ã©vÃ©nement concernÃ©"
+
+            return (
+                f"Lâ€™Ã©vÃ©nement Â« {event_title} Â» prÃ©sente un niveau important de rÃ©ponses nÃ©gatives "
+                f"ou hÃ©sitantes. Nous recommandons dâ€™analyser les causes possibles, notamment le crÃ©neau, "
+                f"le format, le sujet ou la clartÃ© de la communication. Une clarification des objectifs et "
+                f"des bÃ©nÃ©fices pour les participants peut aider Ã  renforcer lâ€™adhÃ©sion."
+            )
+
+        return suggestion["recommended_action"]
+===== app/services/copilot_logger.py =====
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+
+LOG_DIR = Path("logs/copilot")
+
+
+class CopilotLogger:
+    def __init__(self) -> None:
+        LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+    def log_hr_copilot(
+        self,
+        request_id: str,
+        suggestions: list[dict[str, Any]],
+        qwen_used: bool,
+        summary_source: str,
+        status: str = "SUCCESS",
+        message: str | None = None
+    ) -> None:
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        log_path = LOG_DIR / f"hr-copilot-{today}.jsonl"
+
+        payload = {
+            "request_id": request_id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "suggestions_count": len(suggestions),
+            "suggestion_types": [
+                suggestion.get("type")
+                for suggestion in suggestions
+            ],
+            "related_event_ids": [
+                suggestion.get("related_event_id")
+                for suggestion in suggestions
+                if suggestion.get("related_event_id")
+            ],
+            "qwen_used": qwen_used,
+            "summary_source": summary_source,
+            "status": status,
+            "message": message
+        }
+
+        with log_path.open("a", encoding="utf-8") as file:
+            file.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+    def log_hr_copilot_feedback(
+        self,
+        request_id: str,
+        suggestion_type: str,
+        related_event_id: str | None,
+        useful: bool,
+        comment: str | None = None
+    ) -> None:
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        log_path = LOG_DIR / f"hr-copilot-feedback-{today}.jsonl"
+
+        payload = {
+            "request_id": request_id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "suggestion_type": suggestion_type,
+            "related_event_id": related_event_id,
+            "useful": useful,
+            "comment": comment
+        }
+
+        with log_path.open("a", encoding="utf-8") as file:
+            file.write(json.dumps(payload, ensure_ascii=False) + "\n")
+===== app/services/copilot_monitoring_service.py =====
+import json
+from collections import Counter
+from pathlib import Path
+from typing import Any
+
+from app.schemas.copilot_monitoring import (
+    CopilotRecentCall,
+    CopilotSuggestionTypeSummary,
+    HrCopilotMonitoringResponse
+)
+
+
+LOG_DIR = Path("logs/copilot")
+
+
+class CopilotMonitoringService:
+    def get_hr_copilot_summary(self, limit: int = 10) -> HrCopilotMonitoringResponse:
+        records = self._read_records()
+
+        feedback_records = self._read_feedback_records()
+
+        feedback_count = len(feedback_records)
+
+        useful_feedback_count = sum(
+            1 for item in feedback_records
+            if bool(item.get("useful")) is True
+        )
+
+        not_useful_feedback_count = sum(
+            1 for item in feedback_records
+            if bool(item.get("useful")) is False
+        )
+
+        usefulness_rate = (
+            useful_feedback_count / feedback_count
+            if feedback_count > 0
+            else 0.0
+        )
+
+        total_calls = len(records)
+        successful_calls = sum(1 for item in records if item.get("status") == "SUCCESS")
+        failed_calls = sum(1 for item in records if item.get("status") == "FAILED")
+
+        total_suggestions = sum(
+            int(item.get("suggestions_count") or 0)
+            for item in records
+        )
+
+        qwen_used_count = sum(
+            1 for item in records
+            if bool(item.get("qwen_used"))
+        )
+
+        qwen_usage_rate = (
+            qwen_used_count / total_calls
+            if total_calls > 0
+            else 0.0
+        )
+
+        suggestion_type_counter = Counter()
+
+        for item in records:
+            for suggestion_type in item.get("suggestion_types") or []:
+                if suggestion_type:
+                    suggestion_type_counter[str(suggestion_type)] += 1
+
+        top_suggestion_types = [
+            CopilotSuggestionTypeSummary(
+                type=suggestion_type,
+                count=count
+            )
+            for suggestion_type, count in suggestion_type_counter.most_common(8)
+        ]
+
+        recent_records = sorted(
+            records,
+            key=lambda item: str(item.get("created_at") or ""),
+            reverse=True
+        )[:limit]
+
+        recent_calls = [
+            self._to_recent_call(item)
+            for item in recent_records
+        ]
+
+        return HrCopilotMonitoringResponse(
+            total_calls=total_calls,
+            successful_calls=successful_calls,
+            failed_calls=failed_calls,
+            total_suggestions=total_suggestions,
+            qwen_used_count=qwen_used_count,
+            qwen_usage_rate=round(qwen_usage_rate, 4),
+
+            feedback_count=feedback_count,
+            useful_feedback_count=useful_feedback_count,
+            not_useful_feedback_count=not_useful_feedback_count,
+            usefulness_rate=round(usefulness_rate, 4),
+
+            top_suggestion_types=top_suggestion_types,
+            recent_calls=recent_calls
+        )
+
+    def _read_records(self) -> list[dict[str, Any]]:
+        if not LOG_DIR.exists():
+            return []
+
+        records: list[dict[str, Any]] = []
+
+        for path in sorted(LOG_DIR.glob("hr-copilot-*.jsonl")):
+            with path.open("r", encoding="utf-8") as file:
+                for line in file:
+                    line = line.strip()
+
+                    if not line:
+                        continue
+
+                    try:
+                        records.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue
+
+        return records
+
+    def _to_recent_call(self, item: dict[str, Any]) -> CopilotRecentCall:
+        return CopilotRecentCall(
+            request_id=str(item.get("request_id") or ""),
+            created_at=str(item.get("created_at") or ""),
+            suggestions_count=int(item.get("suggestions_count") or 0),
+            suggestion_types=[
+                str(value)
+                for value in item.get("suggestion_types") or []
+                if value
+            ],
+            related_event_ids=[
+                str(value)
+                for value in item.get("related_event_ids") or []
+                if value
+            ],
+            qwen_used=bool(item.get("qwen_used")),
+            summary_source=str(item.get("summary_source") or ""),
+            status=str(item.get("status") or "UNKNOWN"),
+            message=item.get("message")
+        )
+    
+    def _read_feedback_records(self) -> list[dict[str, Any]]:
+        if not LOG_DIR.exists():
+            return []
+
+        records: list[dict[str, Any]] = []
+
+        for path in sorted(LOG_DIR.glob("hr-copilot-feedback-*.jsonl")):
+            with path.open("r", encoding="utf-8") as file:
+                for line in file:
+                    line = line.strip()
+
+                    if not line:
+                        continue
+
+                    try:
+                        records.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue
+
+        return records
+===== app/schemas/hr_copilot.py =====
+from pydantic import BaseModel
+
+
+class HrCopilotSuggestion(BaseModel):
+    type: str
+    priority: str
+    title: str
+    insight: str
+    recommended_action: str
+    action_type: str | None = None
+    draft: str | None = None
+    related_event_id: str | None = None
+    related_event_title: str | None = None
+    metadata: dict
+
+
+class HrCopilotResponse(BaseModel):
+    request_id: str
+    generated_at: str
+    suggestions: list[HrCopilotSuggestion]
+    qwen_used: bool
+    summary_source: str
+===== app/schemas/copilot_feedback.py =====
+from pydantic import BaseModel, Field
+
+
+class HrCopilotFeedbackRequest(BaseModel):
+    request_id: str = Field(min_length=1)
+    suggestion_type: str = Field(min_length=1)
+    related_event_id: str | None = None
+    useful: bool
+    comment: str | None = None
+
+
+class HrCopilotFeedbackResponse(BaseModel):
+    status: str
+    message: str
+===== app/schemas/copilot_monitoring.py =====
+from pydantic import BaseModel
+
+
+class CopilotSuggestionTypeSummary(BaseModel):
+    type: str
+    count: int
+
+
+class CopilotRecentCall(BaseModel):
+    request_id: str
+    created_at: str
+    suggestions_count: int
+    suggestion_types: list[str]
+    related_event_ids: list[str]
+    qwen_used: bool
+    summary_source: str
+    status: str
+    message: str | None = None
+
+
+class HrCopilotMonitoringResponse(BaseModel):
+    total_calls: int
+    successful_calls: int
+    failed_calls: int
+
+    total_suggestions: int
+    qwen_used_count: int
+    qwen_usage_rate: float
+
+    feedback_count: int
+    useful_feedback_count: int
+    not_useful_feedback_count: int
+    usefulness_rate: float
+
+    top_suggestion_types: list[CopilotSuggestionTypeSummary]
+    recent_calls: list[CopilotRecentCall]
