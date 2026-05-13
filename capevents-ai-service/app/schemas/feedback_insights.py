@@ -1,4 +1,8 @@
-from pydantic import BaseModel
+from typing import Any
+
+from pydantic import BaseModel, field_validator
+
+from app.core.text_sanitizer import clean_text, sanitize_payload
 
 
 class SentimentDistribution(BaseModel):
@@ -12,6 +16,16 @@ class FeedbackTopic(BaseModel):
     label: str
     count: int
     keywords: list[str]
+
+    @field_validator("label", mode="before")
+    @classmethod
+    def clean_label(cls, value: Any) -> Any:
+        return clean_text(value)
+
+    @field_validator("keywords", mode="before")
+    @classmethod
+    def clean_keywords(cls, value: Any) -> Any:
+        return sanitize_payload(value or [])
 
 
 class FeedbackInsightResponse(BaseModel):
@@ -30,3 +44,30 @@ class FeedbackInsightResponse(BaseModel):
     qwen_used: bool
     summary_source: str
     model_info: dict[str, str]
+
+    @field_validator(
+        "event_title",
+        "summary",
+        mode="before",
+    )
+    @classmethod
+    def clean_text_fields(cls, value: Any) -> Any:
+        if value is None:
+            return None
+
+        return clean_text(value)
+
+    @field_validator(
+        "keywords",
+        "strengths",
+        "improvements",
+        mode="before",
+    )
+    @classmethod
+    def clean_text_lists(cls, value: Any) -> Any:
+        return sanitize_payload(value or [])
+
+    @field_validator("model_info", mode="before")
+    @classmethod
+    def clean_model_info(cls, value: Any) -> Any:
+        return sanitize_payload(value or {})

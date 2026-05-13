@@ -20,6 +20,8 @@ from sqlalchemy import text
 
 from app.data.db import engine
 
+from app.core.text_sanitizer import clean_text, sanitize_payload
+
 
 
 SENTIMENT_MODEL_NAME = "cardiffnlp/twitter-xlm-roberta-base-sentiment-multilingual"
@@ -107,7 +109,7 @@ class FeedbackInsightsService:
         event_id = str(event_id).strip()
 
         event = self._get_event_from_database(event_id)
-        event_title = event["title"] if event else None
+        event_title = clean_text(event["title"]) if event else None
 
         if event is None:
             return self._empty_response(
@@ -131,7 +133,10 @@ class FeedbackInsightsService:
             errors="coerce"
         ).fillna(0)
 
-        comments = event_feedbacks["comment"].astype(str).tolist()
+        comments = [
+            clean_text(comment)
+            for comment in event_feedbacks["comment"].astype(str).tolist()
+        ]
         ratings = event_feedbacks["rating"].tolist()
         cleaned_comments = [self._clean_for_nlp(comment) for comment in comments]
 
@@ -524,7 +529,7 @@ class FeedbackInsightsService:
             )
 
             if response.status_code != 200:
-                return fallback_summary, False, f"fallback_template_ollama_status_{response.status_code}"
+                return clean_text(fallback_summary), False, f"fallback_template_ollama_status_{response.status_code}"
 
             data = response.json()
 
@@ -552,15 +557,15 @@ class FeedbackInsightsService:
 
                 for pattern in forbidden_patterns:
                     if pattern in text_lower:
-                        return fallback_summary, False, "fallback_template_qwen_summary_validation_failed"
+                        return clean_text(fallback_summary), False, "fallback_template_qwen_summary_validation_failed"
 
             if not text:
-                return fallback_summary, False, "fallback_template_empty_qwen_chat_content"
+                return clean_text(fallback_summary), False, "fallback_template_empty_qwen_chat_content"
 
-            return text, True, "qwen3_ollama_chat"
+            return clean_text(text), True, "qwen3_ollama_chat"
 
         except Exception as exc:
-            return fallback_summary, False, f"fallback_template_ollama_error_{type(exc).__name__}"
+            return clean_text(fallback_summary), False, f"fallback_template_ollama_error_{type(exc).__name__}"
     
 
     def _empty_response(
