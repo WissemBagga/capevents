@@ -1,22 +1,20 @@
-from typing import Optional
-
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class RecommendationItem(BaseModel):
-    event_id: str
-    title: Optional[str] = None
-    category: Optional[str] = None
-    start_at: Optional[str] = None
-    rank: int
-    score: float
-    reasons: list[str]
+    event_id: str = Field(description="Recommended event identifier.")
+    title: str | None = Field(default=None, description="Recommended event title.")
+    category: str | None = Field(default=None, description="Event category.")
+    start_at: str | None = Field(default=None, description="Event start date as ISO string.")
+    rank: int = Field(description="Recommendation rank.")
+    score: float = Field(description="Model prediction score.")
+    reasons: list[str] = Field(description="Human-readable explanation reasons.")
 
 
 class RecommendationResponse(BaseModel):
-    user_id: str
-    total_candidates: int
-    items: list[RecommendationItem]
-    message: Optional[str] = None
-    request_id: Optional[str] = None
-    model_version: Optional[str] = None
+    user_id: str = Field(description="Employee identifier.")
+    total_candidates: int = Field(description="Number of candidate events scored by the model.")
+    items: list[RecommendationItem] = Field(description="Ranked recommendation items.")
+    message: str | None = Field(default=None, description="Response message.")
+    request_id: str | None = Field(default=None, description="Prediction request identifier.")
+    model_version: str | None = Field(default=None, description="Active recommendation model version.")
