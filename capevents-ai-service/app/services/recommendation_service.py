@@ -31,7 +31,67 @@ from app.services.prediction_logger import PredictionLogger
 
 from app.data.runtime_loader import load_runtime_invitation_reminders
 
+MOJIBAKE_REPLACEMENTS = {
+    "Ã©": "é",
+    "Ã¨": "è",
+    "Ãª": "ê",
+    "Ã ": "à",
+    "Ã´": "ô",
+    "Ã®": "î",
+    "Ã§": "ç",
+    "Ã‰": "É",
+    "Ãˆ": "È",
+    "ÃŠ": "Ê",
+    "Ã€": "À",
+    "â€™": "’",
+    "Â«": "«",
+    "Â»": "»",
+    "donnÃ©es": "données",
+    "dÃ©butants": "débutants",
+    "montÃ©e": "montée",
+    "compÃ©tences": "compétences",
+    "productivitÃ©": "productivité",
+    "ÃvÃ©nement": "Événement",
+    "Ã©vÃ©nement": "événement",
+    "Ã©vÃ©nements": "événements",
+    "catÃ©gorie": "catégorie",
+    "modÃ¨le": "modèle",
+    "intÃ©rÃªt": "intérêt",
+    "dÃ©partement": "département",
+}
 
+
+def clean_text(value: Any) -> str:
+    text = str(value or "").strip()
+
+    if not text:
+        return ""
+
+    for _ in range(2):
+        if any(marker in text for marker in ["Ã", "â", "Â"]):
+            try:
+                text = text.encode("latin1").decode("utf-8")
+            except Exception:
+                try:
+                    text = text.encode("cp1252").decode("utf-8")
+                except Exception:
+                    break
+
+    for old, new in MOJIBAKE_REPLACEMENTS.items():
+        text = text.replace(old, new)
+
+    return text.strip()
+
+
+def clean_text_list(values: Any) -> list[str]:
+    if not isinstance(values, list):
+        values = [values]
+
+    return [
+        cleaned
+        for item in values
+        if (cleaned := clean_text(item))
+    ]
 
 
 CATEGORY_TO_INTEREST_CODES = {
@@ -256,12 +316,12 @@ class RecommendationService:
 
             item = RecommendationItem(
                 event_id=str(row["event_id"]),
-                title=str(row.get("event_title", "")),
-                category=str(row.get("event_category", "")),
-                start_at=str(row.get("event_start_at", "")),
+                title=clean_text(row.get("title")),
+                category=clean_text(row.get("category")),
+                start_at=str(row.get("start_at")) if row.get("start_at") is not None else None,
                 rank=rank,
                 score=float(row["score"]),
-                reasons=reasons
+                reasons=clean_text_list(row.get("reasons", [])),
             )
 
             items.append(item)
@@ -283,14 +343,14 @@ class RecommendationService:
             total_candidates=int(len(candidates)),
             recommendations=log_items,
             status="SUCCESS",
-            message="Recommendations generated successfully."
+            message="Recommandations générées avec succès."
         )
 
         return RecommendationResponse(
             user_id=user_id,
             total_candidates=int(len(candidates)),
             items=items,
-            message="Recommendations generated successfully.",
+            message="Recommandations générées avec succès.",
             request_id=request_id,
             model_version=self.model_version
         )
