@@ -16,5 +16,14 @@
     "ndcg_at_5": 0.8563996058225204,
     "evaluated_users": 200,
     "evaluated_rows": 6153
+  },
+  {
+    "version": "recommendation-v1.4.0",
+    "source": "models_artifacts\\recommendation\\versions\\recommendation-v1.4.0\\metrics.json",
+    "precision_at_5": 0.685,
+    "recall_at_5": 0.7084922985511222,
+    "ndcg_at_5": 0.8236941648384943,
+    "evaluated_users": 200,
+    "evaluated_rows": 4706
   }
 ]
