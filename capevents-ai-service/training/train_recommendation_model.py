@@ -223,6 +223,20 @@ def precision_at_k(labels: np.ndarray, predictions: np.ndarray, k: int = 5) -> f
 
     return float(np.mean(top_labels > 0))
 
+def recall_at_k(labels: np.ndarray, predictions: np.ndarray, k: int = 5) -> float:
+    if len(labels) == 0:
+        return 0.0
+
+    total_relevant = np.sum(labels > 0)
+
+    if total_relevant == 0:
+        return 0.0
+
+    order = np.argsort(predictions)[::-1][:k]
+    top_labels = labels[order]
+
+    return float(np.sum(top_labels > 0) / total_relevant)
+
 
 def ndcg_at_k(labels: np.ndarray, predictions: np.ndarray, k: int = 5) -> float:
     if len(labels) == 0:
@@ -257,6 +271,7 @@ def evaluate_grouped(
     eval_df["prediction"] = predictions
 
     precision_scores = []
+    recall_scores = []
     ndcg_scores = []
 
     for _, group in eval_df.groupby("user_id"):
@@ -264,10 +279,12 @@ def evaluate_grouped(
         preds = group["prediction"].to_numpy()
 
         precision_scores.append(precision_at_k(labels, preds, k=k))
+        recall_scores.append(recall_at_k(labels, preds, k=k))
         ndcg_scores.append(ndcg_at_k(labels, preds, k=k))
 
     return {
         f"precision_at_{k}": float(np.mean(precision_scores)) if precision_scores else 0.0,
+        f"recall_at_{k}": float(np.mean(recall_scores)) if recall_scores else 0.0,
         f"ndcg_at_{k}": float(np.mean(ndcg_scores)) if ndcg_scores else 0.0,
         "evaluated_users": int(eval_df["user_id"].nunique()),
         "evaluated_rows": int(len(eval_df))
