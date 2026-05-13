@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-05-13T08:31:13.098858+00:00",
+  "generated_at": "2026-05-13T08:44:16.635271+00:00",
   "dataset_path": "datasets\\processed\\recommendation_train.csv",
-  "rows": 30804,
+  "rows": 24603,
   "columns": 45,
   "users": 1000,
   "events": 1000,
   "target_score_distribution": {
-    "0.0": 24804,
+    "0.0": 18603,
     "1.0": 3466,
     "2.0": 1084,
     "-1.0": 940,
     "3.0": 510
   },
   "data_source_distribution": {
-    "CAPEVENTS_NEGATIVE_SAMPLED": 24804,
+    "CAPEVENTS_NEGATIVE_SAMPLED": 18603,
     "CAPEVENTS_CLEAN": 6000
   },
   "reminder_features": {
@@ -21,45 +21,45 @@
       "exists": true,
       "min": 0.0,
       "max": 1.0,
-      "mean": 0.0001298532658096351,
-      "non_zero_count": 4,
-      "zero_count": 30800
+      "mean": 4.0645449741901396e-05,
+      "non_zero_count": 1,
+      "zero_count": 24602
     },
     "pair_reminder_count": {
       "exists": true,
       "min": 0.0,
       "max": 1.0,
-      "mean": 0.0001298532658096351,
-      "non_zero_count": 4,
-      "zero_count": 30800
+      "mean": 4.0645449741901396e-05,
+      "non_zero_count": 1,
+      "zero_count": 24602
     },
     "days_since_last_reminder": {
       "exists": true,
       "min": 0.0,
-      "max": 7.0,
-      "mean": 0.000876509544215037,
-      "non_zero_count": 4,
-      "zero_count": 30800
+      "max": 6.0,
+      "mean": 0.00024387269845140838,
+      "non_zero_count": 1,
+      "zero_count": 24602
     },
     "user_total_reminders_received": {
       "exists": true,
       "min": 0.0,
       "max": 2.0,
-      "mean": 0.049636410855733025,
-      "non_zero_count": 1464,
-      "zero_count": 29340
+      "mean": 0.0497093850343454,
+      "non_zero_count": 1171,
+      "zero_count": 23432
     },
     "event_total_reminders_sent": {
       "exists": true,
       "min": 0.0,
       "max": 1.0,
-      "mean": 0.04035190235034411,
-      "non_zero_count": 1243,
-      "zero_count": 29561
+      "mean": 0.038857049953257734,
+      "non_zero_count": 956,
+      "zero_count": 23647
     }
   },
-  "was_reminded_count": 4,
-  "was_reminded_rate": 0.00013,
+  "was_reminded_count": 1,
+  "was_reminded_rate": 4.1e-05,
   "decision": "READY_FOR_BASELINE_ONLY",
   "decision_explanation": "Les colonnes de relance existent, mais le volume de relances est trop faible pour entraîner une version v1.1.0 fiable basée sur ces signaux."
 }
