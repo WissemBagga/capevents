@@ -1,11 +1,11 @@
 # Audit Markdown français — CapEvents AI
 
-Généré le : 2026-05-13T14:45:52.677981+00:00
+Généré le : 2026-05-13T14:49:55.735607+00:00
 
 ## Résumé
 
-- Fichiers Markdown analysés : 18
-- Fichiers OK : 16
+- Fichiers Markdown analysés : 19
+- Fichiers OK : 17
 - Fichiers à corriger : 2
 
 ## Détail
@@ -36,6 +36,12 @@ Statut : **À corriger**
 - Contenu anglais détecté : `## Dataset`
 
 ### `docs/ai/planning-intelligent.md`
+
+Statut : **OK**
+
+- Aucun problème détecté.
+
+### `docs/ai/rapport-nettoyage-final-ia.md`
 
 Statut : **OK**
 
