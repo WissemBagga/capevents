@@ -1,6 +1,6 @@
 # Audit Markdown français — CapEvents AI
 
-Généré le : 2026-05-13T14:49:55.735607+00:00
+Généré le : 2026-05-13T14:51:27.148613+00:00
 
 ## Résumé
 
