@@ -1,17 +1,17 @@
-export interface AiCopilotSuggestionTypeSummary {
+export interface AiHrCopilotSuggestionTypeSummary {
   type: string;
   count: number;
 }
 
-export interface AiCopilotRecentCall {
+export interface AiHrCopilotRecentCall {
   requestId: string;
   createdAt: string;
+  status: string;
   suggestionsCount: number;
   suggestionTypes: string[];
   relatedEventIds: string[];
   qwenUsed: boolean;
-  summarySource: string;
-  status: string;
+  summarySource: string | null;
   message: string | null;
 }
 
@@ -20,6 +20,7 @@ export interface AiHrCopilotMonitoringResponse {
   successfulCalls: number;
   failedCalls: number;
   totalSuggestions: number;
+
   qwenUsedCount: number;
   qwenUsageRate: number;
 
@@ -28,6 +29,6 @@ export interface AiHrCopilotMonitoringResponse {
   notUsefulFeedbackCount: number;
   usefulnessRate: number;
 
-  topSuggestionTypes: AiCopilotSuggestionTypeSummary[];
-  recentCalls: AiCopilotRecentCall[];
+  topSuggestionTypes: AiHrCopilotSuggestionTypeSummary[];
+  recentCalls: AiHrCopilotRecentCall[];
 }

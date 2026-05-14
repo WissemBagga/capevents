@@ -684,7 +684,7 @@ export class AdminStats {
       this.loadPlanningMonitoring();
     }
   }
-  
+
   refreshSelectedAiMonitoringPanel(): void {
     switch (this.selectedAiMonitoringPanel) {
       case 'recommendations':
@@ -815,26 +815,32 @@ export class AdminStats {
       successfulCalls: this.pick<number>(response, 'successfulCalls', 'successful_calls', 0),
       failedCalls: this.pick<number>(response, 'failedCalls', 'failed_calls', 0),
       totalSuggestions: this.pick<number>(response, 'totalSuggestions', 'total_suggestions', 0),
+
       qwenUsedCount: this.pick<number>(response, 'qwenUsedCount', 'qwen_used_count', 0),
       qwenUsageRate: this.pick<number>(response, 'qwenUsageRate', 'qwen_usage_rate', 0),
+
       feedbackCount: this.pick<number>(response, 'feedbackCount', 'feedback_count', 0),
       usefulFeedbackCount: this.pick<number>(response, 'usefulFeedbackCount', 'useful_feedback_count', 0),
       notUsefulFeedbackCount: this.pick<number>(response, 'notUsefulFeedbackCount', 'not_useful_feedback_count', 0),
       usefulnessRate: this.pick<number>(response, 'usefulnessRate', 'usefulness_rate', 0),
 
       topSuggestionTypes: this.pick<any[]>(response, 'topSuggestionTypes', 'top_suggestion_types', [])
-        .map(item => ({
+        .map((item: any) => ({
           type: this.pick<string>(item, 'type', 'type', ''),
           count: this.pick<number>(item, 'count', 'count', 0)
         })),
 
       recentCalls: this.pick<any[]>(response, 'recentCalls', 'recent_calls', [])
-        .map(item => ({
+        .map((item: any) => ({
           requestId: this.pick<string>(item, 'requestId', 'request_id', ''),
           createdAt: this.pick<string>(item, 'createdAt', 'created_at', ''),
           status: this.pick<string>(item, 'status', 'status', ''),
           suggestionsCount: this.pick<number>(item, 'suggestionsCount', 'suggestions_count', 0),
-          qwenUsed: this.pick<boolean>(item, 'qwenUsed', 'qwen_used', false)
+          suggestionTypes: this.pick<string[]>(item, 'suggestionTypes', 'suggestion_types', []),
+          relatedEventIds: this.pick<string[]>(item, 'relatedEventIds', 'related_event_ids', []),
+          qwenUsed: this.pick<boolean>(item, 'qwenUsed', 'qwen_used', false),
+          summarySource: this.pick<string | null>(item, 'summarySource', 'summary_source', null),
+          message: this.pick<string | null>(item, 'message', 'message', null)
         }))
     };
   }
