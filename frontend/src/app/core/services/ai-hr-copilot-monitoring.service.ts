@@ -5,8 +5,7 @@ import { Observable, catchError, map, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   AiHrCopilotMonitoringResponse,
-  AiCopilotRecentCall,
-  AiCopilotSuggestionTypeSummary
+  AiHrCopilotRecentCall, AiHrCopilotSuggestionTypeSummary
 } from '../models/ai-hr-copilot-monitoring.model';
 
 @Injectable({
@@ -17,7 +16,7 @@ export class AiHrCopilotMonitoringService {
   private readonly apiUrl = `${environment.apiBaseUrl}/api/ai/monitoring/hr-copilot`;
 
   getSummary(limit = 10): Observable<AiHrCopilotMonitoringResponse> {
-    const params = new HttpParams().set('limit', limit);
+    const params = new HttpParams().set('limit', String(limit));
 
     return this.http
       .get<any>(`${this.apiUrl}/summary`, { params })
@@ -66,12 +65,12 @@ export class AiHrCopilotMonitoringService {
       notUsefulFeedbackCount: response?.notUsefulFeedbackCount ?? response?.not_useful_feedback_count ?? 0,
       usefulnessRate: response?.usefulnessRate ?? response?.usefulness_rate ?? 0,
 
-      topSuggestionTypes: rawTypes.map((item: any): AiCopilotSuggestionTypeSummary => ({
+      topSuggestionTypes: rawTypes.map((item: any): AiHrCopilotSuggestionTypeSummary => ({
         type: item?.type ?? '',
         count: item?.count ?? 0
       })),
 
-      recentCalls: rawCalls.map((item: any): AiCopilotRecentCall => ({
+      recentCalls: rawCalls.map((item: any): AiHrCopilotRecentCall => ({
         requestId: item?.requestId ?? item?.request_id ?? '',
         createdAt: item?.createdAt ?? item?.created_at ?? '',
         suggestionsCount: item?.suggestionsCount ?? item?.suggestions_count ?? 0,
