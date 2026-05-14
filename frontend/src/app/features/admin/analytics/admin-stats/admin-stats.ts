@@ -674,6 +674,16 @@ export class AdminStats {
     this.cdr.markForCheck();
   }
 
+  refreshAllAiMonitoring(): void {
+    if (this.isHr) {
+      this.loadAiMonitoring();
+      this.loadAiCopilotMonitoring();
+    }
+
+    if (this.isHr || this.isManager) {
+      this.loadPlanningMonitoring();
+    }
+  }
   refreshSelectedAiMonitoringPanel(): void {
     switch (this.selectedAiMonitoringPanel) {
       case 'recommendations':
@@ -686,6 +696,10 @@ export class AdminStats {
 
       case 'planning':
         this.loadPlanningMonitoring();
+        break;
+
+      default:
+        this.refreshAllAiMonitoring();
         break;
     }
   }

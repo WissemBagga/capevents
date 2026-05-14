@@ -170,7 +170,7 @@
                 </p>
               </div>
 
-              <button type="button" class="btn-secondary" (click)="refreshSelectedAiMonitoringPanel()">
+              <button type="button" class="btn-secondary" (click)="refreshAllAiMonitoring()">
                 Actualiser
               </button>
             </div>
@@ -207,6 +207,8 @@
                   role="button"
                   tabindex="0"
                   (click)="openAiMonitoringPanel('hr-copilot')"
+                  (keydown.enter)="openAiMonitoringPanel('hr-copilot')"
+                  (keydown.space)="openAiMonitoringPanel('hr-copilot')"
                 >
                   <div class="monitoring-card-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
@@ -232,7 +234,10 @@
                 role="button"
                 tabindex="0"
                 (click)="openAiMonitoringPanel('planning')"
+                (keydown.enter)="openAiMonitoringPanel('planning')"
+                (keydown.space)="openAiMonitoringPanel('planning')"
               >
+
                 <div class="monitoring-card-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
                       viewBox="0 0 24 24" fill="none" stroke="currentColor"

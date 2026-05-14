@@ -16,7 +16,7 @@ import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-t
 @Component({
   selector: 'app-ai-hr-assistant-panel',
   standalone: true,
-  imports: [RouterLink, FormsModule, DatePipe, ScrollToMessageDirective],
+  imports: [RouterLink, FormsModule, ScrollToMessageDirective],
   templateUrl: './ai-hr-assistant-panel.html',
   styleUrl: './ai-hr-assistant-panel.css'
 })
