@@ -54,39 +54,7 @@
       }
 
       @if (activeTab === 'planning') {
-        <article class="assistant-panel">
-          <div class="assistant-panel-icon planning">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
-                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8 6a4 4 0 0 1 7.5-2"></path>
-              <path d="M16 6a4 4 0 0 1 1 7.87"></path>
-              <path d="M8 18a4 4 0 0 1-1-7.87"></path>
-              <path d="M16 18a4 4 0 0 1-7.5 2"></path>
-              <path d="M12 6v12"></path>
-              <path d="M8 10h8"></path>
-              <path d="M8 14h8"></path>
-            </svg>
-          </div>
-
-          <div class="assistant-panel-body">
-            <h2>Planning intelligent</h2>
-            <p>
-              Génère des propositions d’événements et recommande les meilleurs créneaux
-              à partir des données récentes.
-            </p>
-
-            <ul>
-              <li>Analyse de la semaine précédente</li>
-              <li>Propositions d’événements IA</li>
-              <li>Créneaux scorés avec le modèle Planning</li>
-            </ul>
-
-            <button type="button" class="btn-primary" (click)="openPlanning()">
-              Ouvrir le planning intelligent
-            </button>
-          </div>
-        </article>
+        <app-ai-planning-panel></app-ai-planning-panel>
       }
     </section>
   </div>

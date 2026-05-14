@@ -2,11 +2,14 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
+import { AiPlanningPanel } from '../ai-planning-panel/ai-planning-panel';
+
 type AssistantTab = 'hr-assistant' | 'planning';
 
 @Component({
   selector: 'app-ai-assistants-hub',
   standalone: true,
+  imports: [AiPlanningPanel],
   templateUrl: './ai-assistants-hub.html',
   styleUrl: './ai-assistants-hub.css'
 })
