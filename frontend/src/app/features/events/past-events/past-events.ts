@@ -129,4 +129,35 @@ export class PastEvents {
       this.loadEvents();
     }
   }
+
+  get visiblePages(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+
+    if (this.totalPages <= 0) {
+      return pages;
+    }
+
+    let start = Math.max(0, this.currentPage - 2);
+    let end = Math.min(this.totalPages - 1, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(0, end - maxVisible + 1);
+    }
+
+    for (let page = start; page <= end; page++) {
+      pages.push(page);
+    }
+
+    return pages;
+  }
+
+  goToPage(page: number): void {
+    if (page < 0 || page >= this.totalPages || page === this.currentPage) {
+      return;
+    }
+
+    this.currentPage = page;
+    this.loadEvents();
+  }
 }
