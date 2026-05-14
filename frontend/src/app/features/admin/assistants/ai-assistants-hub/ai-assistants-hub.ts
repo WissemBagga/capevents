@@ -68,11 +68,6 @@ export class AiAssistantsHub {
     });
   }
 
-  openPlanning(): void {
-    this.router.navigate([this.dashboardRoute], {
-      queryParams: { panel: 'planning' }
-    });
-  }
 
   get activeDescription(): string {
     switch (this.activeTab) {

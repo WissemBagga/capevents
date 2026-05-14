@@ -64,17 +64,17 @@
     }
 
     @if (aiPlanningResponse) {
-      <div class="planning-meta">
-        <span>
-          Période :
-          {{ aiPlanningResponse.analysisPeriod?.['from'] | date:'dd MMM yyyy' }}
-          —
-          {{ aiPlanningResponse.analysisPeriod?.['to'] | date:'dd MMM yyyy' }}
-        </span>
+        <div class="planning-meta">
+            <span>
+            Période :
+            {{ aiPlanningResponse.analysisPeriod['from'] | date:'dd MMM yyyy' }}
+            —
+            {{ aiPlanningResponse.analysisPeriod['to'] | date:'dd MMM yyyy' }}
+            </span>
 
-        <span>{{ aiPlanningResponse.totalProposals }} proposition(s)</span>
-        <span>{{ aiPlanningResponse.modelInfo?.['version'] }}</span>
-      </div>
+            <span>{{ aiPlanningResponse.totalProposals }} proposition(s)</span>
+            <span>{{ aiPlanningResponse.modelInfo['version'] || 'planning-model' }}</span>
+        </div>
     }
 
     @if (aiPlanningLoading) {
@@ -84,9 +84,9 @@
       </div>
     }
 
-    @if (!aiPlanningLoading && aiPlanningResponse?.items?.length) {
-      <div class="proposal-list">
-        @for (proposal of aiPlanningResponse?.items; track trackByPlanningProposal($index, proposal)) {
+    @if (!aiPlanningLoading && aiPlanningResponse && aiPlanningResponse.items.length > 0) {
+        <div class="proposal-list">
+          @for (proposal of aiPlanningResponse.items; track trackByPlanningProposal($index, proposal)) {
           <article class="proposal-card">
             <div class="proposal-top">
               <span class="proposal-rank">#{{ proposal.rank }}</span>

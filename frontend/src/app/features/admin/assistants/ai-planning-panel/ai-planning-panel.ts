@@ -85,12 +85,16 @@ export class AiPlanningPanel {
       ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
       : this.planningTargetDepartmentId;
 
+    const safeLimit = Math.min(Math.max(Number(this.planningLimit) || 3, 1), 5);
+    const safeSlotLimit = Math.min(Math.max(Number(this.planningSlotLimit) || 3, 1), 5);
+    const safeDaysHorizon = Math.min(Math.max(Number(this.planningDaysHorizon) || 30, 7), 50);
+
     this.aiPlanningService.proposeEvents({
       referenceDate: this.planningReferenceDate || null,
       targetDepartmentId,
-      limit: this.planningLimit,
-      slotLimit: this.planningSlotLimit,
-      daysHorizon: this.planningDaysHorizon
+      limit: safeLimit,
+      slotLimit: safeSlotLimit,
+      daysHorizon: safeDaysHorizon
     })
       .pipe(finalize(() => {
         this.aiPlanningLoading = false;

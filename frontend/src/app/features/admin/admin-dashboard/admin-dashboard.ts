@@ -16,13 +16,6 @@ import { Department } from '../../../core/models/department.model';
 
 import { resolveEventImageUrl } from '../../../core/constants/event-image-presets';
 
-import { AiPlanningService } from '../../../core/services/ai-planning.service';
-import {
-  AiPlanningEventProposal,
-  AiPlanningEventProposalResponse
-} from '../../../core/models/ai-planning.model';
-
-
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -40,7 +33,6 @@ export class AdminDashboard {
 
   private userService = inject(UserService);
 
-  private aiPlanningService = inject(AiPlanningService);
 
   departments: Department[] = [];
   selectedAudience = 'ALL';
@@ -64,16 +56,6 @@ export class AdminDashboard {
   hasPrevious = false;
 
 
-  aiPlanningLoading = false;
-  aiPlanningError = '';
-  aiPlanningResponse: AiPlanningEventProposalResponse | null = null;
-  showAiPlanningPanel = false;
-
-  planningReferenceDate = '';
-  planningLimit = 3;
-  planningSlotLimit = 3;
-  planningDaysHorizon = 30;
-  planningTargetDepartmentId: number | null = null;
 
 
 
@@ -82,10 +64,6 @@ export class AdminDashboard {
       this.loadDepartments();
     }
 
-    if (this.authService.isManager()) {
-      const currentUser = this.authService.getCurrentUserSnapshot();
-      this.planningTargetDepartmentId = currentUser?.departmentId ?? null;
-    }
     this.loadEvents();
   }
 
@@ -334,222 +312,6 @@ export class AdminDashboard {
 
   get currentDepartmentName(): string {
     return this.authService.getCurrentUserSnapshot()?.departmentName || 'Votre département';
-  }
-
-  canUsePlanningAi(): boolean {
-    return this.authService.isHr() || this.authService.isManager();
-  }
-
-  toggleAiPlanningPanel(): void {
-    this.showAiPlanningPanel = !this.showAiPlanningPanel;
-    this.cdr.markForCheck();
-  }
-
-  loadAiPlanningProposals(): void {
-    if (!this.canUsePlanningAi()) return;
-
-    this.aiPlanningLoading = true;
-    this.aiPlanningError = '';
-    this.aiPlanningResponse = null;
-    this.cdr.markForCheck();
-
-    const targetDepartmentId = this.authService.isManager()
-      ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
-      : this.planningTargetDepartmentId;
-
-    const safeLimit = Math.min(Math.max(Number(this.planningLimit) || 3, 1), 5);
-    const safeSlotLimit = Math.min(Math.max(Number(this.planningSlotLimit) || 3, 1), 5);
-    const safeDaysHorizon = Math.min(Math.max(Number(this.planningDaysHorizon) || 30, 7), 50);
-
-    this.aiPlanningService.proposeEvents({
-      referenceDate: this.planningReferenceDate || null,
-      targetDepartmentId,
-      limit: safeLimit,
-      slotLimit: safeSlotLimit,
-      daysHorizon: safeDaysHorizon
-    })
-      .pipe(finalize(() => {
-        this.aiPlanningLoading = false;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: (response) => {
-          this.aiPlanningResponse = response;
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          this.aiPlanningError =
-            err?.error?.message ||
-            err?.error ||
-            'Impossible de générer les propositions IA.';
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
-  planningScorePercent(score: number): number {
-    return Math.round((score ?? 0) * 100);
-  }
-
-  planningAudienceLabel(audience: string): string {
-    switch (audience) {
-      case 'GLOBAL':
-        return 'Global';
-      case 'DEPARTMENT':
-        return 'Département';
-      default:
-        return audience || 'N/D';
-    }
-  }
-
-  planningLocationLabel(locationType: string): string {
-    switch (locationType) {
-      case 'ONSITE':
-        return 'Présentiel';
-      case 'ONLINE':
-        return 'En ligne';
-      case 'EXTERNAL':
-        return 'Externe';
-      default:
-        return locationType || 'N/D';
-    }
-  }
-
-  usePlanningProposal(proposal: AiPlanningEventProposal): void {
-    const firstSlot = proposal.suggestedSlots?.[0];
-
-    if (!firstSlot) {
-      this.aiPlanningError = 'Cette proposition ne contient aucun créneau utilisable.';
-      this.cdr.markForCheck();
-      return;
-    }
-
-    const targetDepartmentId = this.authService.isManager()
-      ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
-      : proposal.targetDepartmentId;
-
-    const draft = {
-      title: proposal.title,
-      category: proposal.category,
-      description: this.buildPlanningDescription(proposal),
-      startAt: firstSlot.startAt,
-      durationMinutes: proposal.durationMinutes,
-      locationType: proposal.locationType || 'ONSITE',
-      capacity: proposal.capacity,
-      audience: this.authService.isManager() ? 'DEPARTMENT' : proposal.audience,
-      targetDepartmentId: this.authService.isManager()
-        ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
-        : proposal.targetDepartmentId,
-
-      aiPlanningUsage: {
-        requestId: this.aiPlanningResponse?.requestId ?? null,
-        proposalRank: proposal.rank,
-        proposalTitle: proposal.title,
-        category: proposal.category,
-        targetDepartmentId: this.authService.isManager()
-          ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
-          : proposal.targetDepartmentId,
-        selectedSlotStartAt: firstSlot.startAt,
-        selectedSlotScore: firstSlot.score
-      }
-    };
-
-    const key = `ai-planning-proposal-${Date.now()}`;
-
-    sessionStorage.setItem(key, JSON.stringify(draft));
-
-    this.logPlanningUsage(proposal, 'USED_TO_PREFILL');
-
-    this.router.navigate(['/admin/create-event'], {
-      queryParams: {
-        aiProposal: key
-      }
-    });
-  }
-
-  private buildPlanningDescription(proposal: AiPlanningEventProposal): string {
-    const category = proposal.category || 'événement interne';
-    const title = proposal.title || 'événement interne';
-
-    return [
-      `Participez à « ${title} », un événement interne de type ${category.toLowerCase()} conçu pour accompagner les collaborateurs dans leur développement professionnel.`,
-      '',
-      proposal.objective,
-      '',
-      'Cette session proposera un moment d’échange, de partage de pratiques et de réflexion collective autour d’un sujet utile au quotidien professionnel.',
-      '',
-      'Votre participation contribuera à enrichir les échanges et à renforcer la collaboration au sein de l’organisation.'
-    ].join('\n');
-  }
-
-  copyPlanningProposal(proposal: AiPlanningEventProposal): void {
-    const firstSlot = proposal.suggestedSlots?.[0];
-
-    const text = [
-      `Titre : ${proposal.title}`,
-      `Catégorie : ${proposal.category}`,
-      `Audience : ${this.planningAudienceLabel(proposal.audience)}`,
-      `Format : ${this.planningLocationLabel(proposal.locationType)}`,
-      `Durée : ${proposal.durationMinutes} minutes`,
-      `Capacité : ${proposal.capacity} places`,
-      firstSlot ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}` : '',
-      '',
-      `Objectif : ${proposal.objective}`,
-      '',
-      'Justification :',
-      ...(proposal.rationale ?? []).map(item => `- ${item}`)
-    ].filter(Boolean).join('\n');
-
-    navigator.clipboard?.writeText(text);
-    this.logPlanningUsage(proposal, 'COPIED');
-  }
-
-  trackByPlanningProposal(_: number, item: AiPlanningEventProposal): number {
-    return item.rank;
-  }
-
-  trackByPlanningSlot(_: number, item: any): number {
-    return item.rank;
-  }
-
-  planningConfidenceLabel(confidence: string): string {
-    switch (confidence) {
-      case 'MEDIUM':
-        return 'Confiance moyenne';
-      case 'LOW':
-        return 'Confiance faible';
-      case 'VERY_LOW':
-        return 'Confiance très faible';
-      default:
-        return confidence || 'Confiance non définie';
-    }
-  }
-
-  private logPlanningUsage(
-    proposal: AiPlanningEventProposal,
-    action: 'COPIED' | 'USED_TO_PREFILL'
-  ): void {
-    const firstSlot = proposal.suggestedSlots?.[0];
-
-    const targetDepartmentId = this.authService.isManager()
-      ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
-      : proposal.targetDepartmentId;
-
-    this.aiPlanningService.logUsage({
-      requestId: this.aiPlanningResponse?.requestId ?? undefined,
-      action,
-      proposalRank: proposal.rank,
-      proposalTitle: proposal.title,
-      category: proposal.category,
-      targetDepartmentId,
-      selectedSlotStartAt: firstSlot?.startAt ?? null,
-      selectedSlotScore: firstSlot?.score ?? null,
-      source: 'angular_admin_dashboard'
-    }).subscribe({
-      error: () => {
-        // Monitoring non bloquant.
-      }
-    });
   }
 
 }
