@@ -1230,3 +1230,452 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== Unified AI Monitoring Hub ===== */
+
+.ai-monitoring-hub-section {
+  border-color: rgba(0, 88, 171, 0.12);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.monitoring-hub-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.ai-section-kicker {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 6px;
+  color: #0058AB;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ai-monitoring-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.ai-monitoring-summary-card {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 14px;
+  position: relative;
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid #E4EAF1;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  box-shadow: 0 4px 16px rgba(18, 26, 56, 0.04);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.ai-monitoring-summary-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 88, 171, 0.18);
+  box-shadow: 0 14px 28px rgba(18, 26, 56, 0.08);
+}
+
+.ai-monitoring-summary-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: #0058AB;
+}
+
+.ai-monitoring-summary-card.copilot-card::before {
+  background: #71609E;
+}
+
+.ai-monitoring-summary-card.planning-card::before {
+  background: #00828E;
+}
+
+.monitoring-card-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: rgba(0, 88, 171, 0.07);
+  color: #0058AB;
+}
+
+.copilot-card .monitoring-card-icon {
+  background: rgba(113, 96, 158, 0.10);
+  color: #71609E;
+}
+
+.planning-card .monitoring-card-icon {
+  background: rgba(0, 130, 142, 0.10);
+  color: #00828E;
+}
+
+.monitoring-card-body {
+  min-width: 0;
+}
+
+.monitoring-card-body span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.monitoring-card-body strong {
+  display: block;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 28px;
+  line-height: 1;
+  color: #121A38;
+  margin-bottom: 7px;
+}
+
+.monitoring-card-body p {
+  margin: 0;
+  color: #64748B;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.monitoring-card-action {
+  grid-column: 1 / -1;
+  justify-self: flex-start;
+  margin-top: 6px;
+  color: #0058AB;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ai-monitoring-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(18, 26, 56, 0.48);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.ai-monitoring-modal {
+  width: min(1120px, 100%);
+  max-height: min(88vh, 860px);
+  overflow: auto;
+  background: #ffffff;
+  border-radius: 28px;
+  border: 1px solid #E4EAF1;
+  box-shadow: 0 28px 80px rgba(18, 26, 56, 0.26);
+  padding: 24px;
+}
+
+.ai-monitoring-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #EEF2F7;
+}
+
+.ai-monitoring-modal-header h2 {
+  margin: 0 0 6px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 26px;
+  color: #121A38;
+}
+
+.ai-monitoring-modal-header p {
+  margin: 0;
+  color: #64748B;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.modal-close-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  border: 1px solid #D9E1EA;
+  background: #ffffff;
+  color: #121A38;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-close-btn:hover {
+  background: #F8FAFC;
+  color: #0058AB;
+}
+
+.ai-monitoring-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ai-monitoring-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ai-monitoring-kpi-card {
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid #E4EAF1;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(18, 26, 56, 0.04);
+}
+
+.ai-monitoring-kpi-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748B;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ai-monitoring-kpi-card strong {
+  display: block;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 24px;
+  color: #121A38;
+  margin-bottom: 6px;
+}
+
+.ai-monitoring-kpi-card small {
+  color: #8A94A6;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.ai-monitoring-kpi-card.success {
+  border-top: 3px solid #00828E;
+}
+
+.ai-monitoring-kpi-card.warning {
+  border-top: 3px solid #FEB100;
+}
+
+.ai-monitoring-content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ai-monitoring-panel {
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid #E4EAF1;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+}
+
+.ai-monitoring-panel h3 {
+  margin: 0 0 5px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 17px;
+  color: #121A38;
+}
+
+.panel-subtitle {
+  margin: 0 0 14px;
+  color: #64748B;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.compact {
+  margin-bottom: 0;
+}
+
+.ai-top-events-list,
+.ai-recent-predictions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-top-event-row,
+.ai-recent-prediction-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid #EEF2F7;
+  background: #F8FAFC;
+}
+
+.ai-event-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ai-event-text strong {
+  color: #121A38;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-event-text span {
+  color: #64748B;
+  font-size: 12px;
+}
+
+.ai-count-pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 88, 171, 0.08);
+  color: #0058AB;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ai-recent-prediction-main {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ai-recent-prediction-main strong {
+  color: #121A38;
+  font-size: 13.5px;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.ai-recent-prediction-main span:not(.ai-status-pill) {
+  color: #64748B;
+  font-size: 12px;
+}
+
+.ai-recent-prediction-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  color: #64748B;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ai-status-pill {
+  display: inline-flex;
+  width: fit-content;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #EEF2F7;
+  color: #46506A;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.ai-status-pill.success,
+.ai-status-success {
+  background: rgba(0, 130, 142, 0.10);
+  color: #006E78;
+}
+
+.ai-status-pill.error,
+.ai-status-error {
+  background: rgba(143, 50, 55, 0.10);
+  color: #8F3237;
+}
+
+.ai-status-warning {
+  background: rgba(254, 177, 0, 0.14);
+  color: #936300;
+}
+
+.planning-monitoring-filter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.planning-monitoring-filter label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.planning-monitoring-filter select {
+  min-height: 42px;
+  border: 1px solid #D9E1EA;
+  border-radius: 14px;
+  padding: 0 12px;
+  background: #ffffff;
+  font-family: inherit;
+  color: #121A38;
+}
+
+@media (max-width: 1100px) {
+  .ai-monitoring-cards-grid,
+  .ai-monitoring-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-monitoring-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .ai-monitoring-modal {
+    padding: 18px;
+  }
+
+  .ai-monitoring-modal-header,
+  .modal-actions,
+  .ai-top-event-row,
+  .ai-recent-prediction-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ai-monitoring-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-actions .btn-secondary,
+  .modal-close-btn {
+    width: 100%;
+  }
+
+  .ai-recent-prediction-meta {
+    align-items: flex-start;
+  }
+}

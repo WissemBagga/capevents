@@ -30,6 +30,7 @@ type TrendPointVm = {
   x: number;
   y: number;
 };
+type StatsAiMonitoringPanel = 'recommendations' | 'hr-copilot' | 'planning';
 
 @Component({
   selector: 'app-admin-stats',
@@ -85,6 +86,7 @@ export class AdminStats {
   planningMonitoringError = '';
   planningMonitoring: AiPlanningMonitoringSummary | null = null;
   planningMonitoringDays = 30;
+  selectedAiMonitoringPanel: StatsAiMonitoringPanel | null = null;
 
   ngOnInit(): void {
     if (this.isHr) {
@@ -647,5 +649,100 @@ export class AdminStats {
 
   copilotUsefulnessPercent(): number {
     return Math.round((this.aiCopilotMonitoring?.usefulnessRate ?? 0) * 100);
+  }
+
+  openAiMonitoringPanel(panel: StatsAiMonitoringPanel): void {
+    this.selectedAiMonitoringPanel = panel;
+
+    if (panel === 'recommendations' && this.isHr && !this.aiMonitoring && !this.aiMonitoringLoading) {
+      this.loadAiMonitoring();
+    }
+
+    if (panel === 'hr-copilot' && this.isHr && !this.aiCopilotMonitoring && !this.aiCopilotMonitoringLoading) {
+      this.loadAiCopilotMonitoring();
+    }
+
+    if (panel === 'planning' && !this.planningMonitoring && !this.planningMonitoringLoading) {
+      this.loadPlanningMonitoring();
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  closeAiMonitoringPanel(): void {
+    this.selectedAiMonitoringPanel = null;
+    this.cdr.markForCheck();
+  }
+
+  refreshSelectedAiMonitoringPanel(): void {
+    switch (this.selectedAiMonitoringPanel) {
+      case 'recommendations':
+        this.loadAiMonitoring();
+        break;
+
+      case 'hr-copilot':
+        this.loadAiCopilotMonitoring();
+        break;
+
+      case 'planning':
+        this.loadPlanningMonitoring();
+        break;
+    }
+  }
+
+  get selectedAiMonitoringTitle(): string {
+    switch (this.selectedAiMonitoringPanel) {
+      case 'recommendations':
+        return 'Monitoring recommandations';
+
+      case 'hr-copilot':
+        return 'Monitoring Assistant RH';
+
+      case 'planning':
+        return 'Monitoring Planning intelligent';
+
+      default:
+        return 'Monitoring IA';
+    }
+  }
+
+  get selectedAiMonitoringSubtitle(): string {
+    switch (this.selectedAiMonitoringPanel) {
+      case 'recommendations':
+        return 'Suivi des appels du moteur de recommandation et des événements les plus recommandés.';
+
+      case 'hr-copilot':
+        return 'Suivi des suggestions générées par l’Assistant RH, de l’usage Qwen et des retours utiles.';
+
+      case 'planning':
+        return 'Suivi des propositions générées, copiées et utilisées pour préremplir la création d’événement.';
+
+      default:
+        return 'Suivi des modules IA de CapEvents.';
+    }
+  }
+
+  get recommendationMonitoringSummaryLabel(): string {
+    if (this.aiMonitoringLoading) return 'Chargement...';
+    if (this.aiMonitoringErrorMessage) return 'Erreur de chargement';
+    if (!this.aiMonitoring) return 'Non chargé';
+
+    return `${this.aiMonitoring.totalCalls} appel(s) · ${Math.round(this.aiSuccessRate)}% succès`;
+  }
+
+  get hrCopilotMonitoringSummaryLabel(): string {
+    if (this.aiCopilotMonitoringLoading) return 'Chargement...';
+    if (this.aiCopilotMonitoringError) return 'Erreur de chargement';
+    if (!this.aiCopilotMonitoring) return 'Non chargé';
+
+    return `${this.aiCopilotMonitoring.totalCalls} appel(s) · ${this.aiCopilotMonitoring.totalSuggestions} suggestion(s)`;
+  }
+
+  get planningMonitoringSummaryLabel(): string {
+    if (this.planningMonitoringLoading) return 'Chargement...';
+    if (this.planningMonitoringError) return 'Erreur de chargement';
+    if (!this.planningMonitoring) return 'Non chargé';
+
+    return `${this.planningMonitoring.totalGenerations} génération(s) · ${this.planningUsagePercent()}% usage`;
   }
 }
