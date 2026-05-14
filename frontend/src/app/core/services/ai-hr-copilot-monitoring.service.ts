@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, map, of } from 'rxjs';
-
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   AiHrCopilotMonitoringResponse,
@@ -21,36 +20,22 @@ export class AiHrCopilotMonitoringService {
     return this.http
       .get<any>(`${this.apiUrl}/summary`, { params })
       .pipe(
-        map((response) => this.normalizeResponse(response)),
-        catchError(() =>
-          of({
-            totalCalls: 0,
-            successfulCalls: 0,
-            failedCalls: 0,
-            totalSuggestions: 0,
-            qwenUsedCount: 0,
-            qwenUsageRate: 0,
-
-            feedbackCount: 0,
-            usefulFeedbackCount: 0,
-            notUsefulFeedbackCount: 0,
-            usefulnessRate: 0,
-
-            topSuggestionTypes: [],
-            recentCalls: []
-          })
-        )
+        map((response) => this.normalizeResponse(response))
       );
   }
 
-  private normalizeResponse(response: any): AiHrCopilotMonitoringResponse {
-    const rawTypes = Array.isArray(response?.topSuggestionTypes)
-      ? response.topSuggestionTypes
-      : response?.top_suggestion_types ?? [];
+  private asArray(value: any): any[] {
+    return Array.isArray(value) ? value : [];
+  }
 
-    const rawCalls = Array.isArray(response?.recentCalls)
-      ? response.recentCalls
-      : response?.recent_calls ?? [];
+  private normalizeResponse(response: any): AiHrCopilotMonitoringResponse {
+    const rawTypes = this.asArray(
+      response?.topSuggestionTypes ?? response?.top_suggestion_types
+    );
+
+    const rawCalls = this.asArray(
+      response?.recentCalls ?? response?.recent_calls
+    );
 
     return {
       totalCalls: response?.totalCalls ?? response?.total_calls ?? 0,
