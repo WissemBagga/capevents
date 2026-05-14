@@ -121,7 +121,9 @@ export class AdminStats {
       }))
       .subscribe({
         next: (summary) => {
+          console.log('RAW planning monitoring:', summary);
           this.planningMonitoring = this.normalizePlanningMonitoring(summary);
+          console.log('NORMALIZED planning monitoring:', this.planningMonitoring);
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -531,7 +533,9 @@ export class AdminStats {
       }))
       .subscribe({
         next: (response) => {
+          console.log('RAW recommendation monitoring:', response);
           this.aiMonitoring = this.normalizeRecommendationMonitoring(response);
+          console.log('NORMALIZED recommendation monitoring:', this.aiMonitoring);
           this.cdr.markForCheck();
         },
         error: () => {
@@ -597,7 +601,9 @@ export class AdminStats {
       }))
       .subscribe({
         next: (response) => {
+          console.log('RAW copilot monitoring:', response);
           this.aiCopilotMonitoring = this.normalizeCopilotMonitoring(response);
+          console.log('NORMALIZED copilot monitoring:', this.aiCopilotMonitoring);
           this.cdr.markForCheck();
         },
         error: () => {
@@ -761,11 +767,47 @@ export class AdminStats {
     return `${this.planningMonitoring.totalGenerations} génération(s) · ${this.planningUsagePercent()}% usage`;
   }
 
-  private pick<T = any>(source: any, camelKey: string, snakeKey: string, fallback: T): T {
-    if (!source) return fallback;
+  private unwrapMonitoringResponse(response: any): any {
+    return (
+      response?.body ??
+      response?.data ??
+      response?.payload ??
+      response?.content ??
+      response ??
+      {}
+    );
+  }
 
-    const camelValue = source[camelKey];
-    const snakeValue = source[snakeKey];
+  private toNumber(value: any, fallback = 0): number {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  private toBoolean(value: any, fallback = false): boolean {
+    if (typeof value === 'boolean') return value;
+
+    if (typeof value === 'number') {
+      return value === 1;
+    }
+
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase();
+      if (['true', '1', 'yes', 'y'].includes(normalized)) return true;
+      if (['false', '0', 'no', 'n'].includes(normalized)) return false;
+    }
+
+    return fallback;
+  }
+
+  private toArray(value: any): any[] {
+    return Array.isArray(value) ? value : [];
+  }
+
+  private pick<T = any>(source: any, camelKey: string, snakeKey: string, fallback: T): T {
+    const response = this.unwrapMonitoringResponse(source);
+
+    const camelValue = response?.[camelKey];
+    const snakeValue = response?.[snakeKey];
 
     if (camelValue !== undefined && camelValue !== null) {
       return camelValue as T;
@@ -778,87 +820,109 @@ export class AdminStats {
     return fallback;
   }
 
-  private normalizeRecommendationMonitoring(response: any): AiRecommendationMonitoringSummary {
+  private pickNumber(source: any, camelKey: string, snakeKey: string, fallback = 0): number {
+    return this.toNumber(
+      this.pick<any>(source, camelKey, snakeKey, fallback),
+      fallback
+    );
+  }
+
+  private pickArray(source: any, camelKey: string, snakeKey: string): any[] {
+    return this.toArray(
+      this.pick<any>(source, camelKey, snakeKey, [])
+    );
+  }
+
+  private normalizeRecommendationMonitoring(rawResponse: any): AiRecommendationMonitoringSummary {
+    const response = this.unwrapMonitoringResponse(rawResponse);
+
     return {
-      totalCalls: this.pick<number>(response, 'totalCalls', 'total_calls', 0),
-      successfulCalls: this.pick<number>(response, 'successfulCalls', 'successful_calls', 0),
-      failedCalls: this.pick<number>(response, 'failedCalls', 'failed_calls', 0),
-      totalRecommendations: this.pick<number>(response, 'totalRecommendations', 'total_recommendations', 0),
+      totalCalls: this.pickNumber(response, 'totalCalls', 'total_calls'),
+      successfulCalls: this.pickNumber(response, 'successfulCalls', 'successful_calls'),
+      failedCalls: this.pickNumber(response, 'failedCalls', 'failed_calls'),
+      totalRecommendations: this.pickNumber(response, 'totalRecommendations', 'total_recommendations'),
+
       lastModelName: this.pick<string | null>(response, 'lastModelName', 'last_model_name', null),
       lastModelVersion: this.pick<string | null>(response, 'lastModelVersion', 'last_model_version', null),
 
-      topRecommendedEvents: this.pick<any[]>(response, 'topRecommendedEvents', 'top_recommended_events', [])
-        .map(item => ({
+      topRecommendedEvents: this.pickArray(response, 'topRecommendedEvents', 'top_recommended_events')
+        .map((item: any) => ({
           eventId: this.pick<string>(item, 'eventId', 'event_id', ''),
           title: this.pick<string | null>(item, 'title', 'title', null),
           category: this.pick<string | null>(item, 'category', 'category', null),
-          count: this.pick<number>(item, 'count', 'count', 0)
+          count: this.pickNumber(item, 'count', 'count')
         })),
 
-      recentPredictions: this.pick<any[]>(response, 'recentPredictions', 'recent_predictions', [])
-        .map(item => ({
+      recentPredictions: this.pickArray(response, 'recentPredictions', 'recent_predictions')
+        .map((item: any) => ({
           requestId: this.pick<string>(item, 'requestId', 'request_id', ''),
           createdAt: this.pick<string>(item, 'createdAt', 'created_at', ''),
           userId: this.pick<string>(item, 'userId', 'user_id', ''),
           status: this.pick<string>(item, 'status', 'status', ''),
           modelName: this.pick<string>(item, 'modelName', 'model_name', ''),
           modelVersion: this.pick<string>(item, 'modelVersion', 'model_version', ''),
-          totalCandidates: this.pick<number>(item, 'totalCandidates', 'total_candidates', 0),
-          recommendationsCount: this.pick<number>(item, 'recommendationsCount', 'recommendations_count', 0)
+          totalCandidates: this.pickNumber(item, 'totalCandidates', 'total_candidates'),
+          recommendationsCount: this.pickNumber(item, 'recommendationsCount', 'recommendations_count')
         }))
     };
   }
 
-  private normalizeCopilotMonitoring(response: any): AiHrCopilotMonitoringResponse {
+  private normalizeCopilotMonitoring(rawResponse: any): AiHrCopilotMonitoringResponse {
+    const response = this.unwrapMonitoringResponse(rawResponse);
+
     return {
-      totalCalls: this.pick<number>(response, 'totalCalls', 'total_calls', 0),
-      successfulCalls: this.pick<number>(response, 'successfulCalls', 'successful_calls', 0),
-      failedCalls: this.pick<number>(response, 'failedCalls', 'failed_calls', 0),
-      totalSuggestions: this.pick<number>(response, 'totalSuggestions', 'total_suggestions', 0),
+      totalCalls: this.pickNumber(response, 'totalCalls', 'total_calls'),
+      successfulCalls: this.pickNumber(response, 'successfulCalls', 'successful_calls'),
+      failedCalls: this.pickNumber(response, 'failedCalls', 'failed_calls'),
+      totalSuggestions: this.pickNumber(response, 'totalSuggestions', 'total_suggestions'),
 
-      qwenUsedCount: this.pick<number>(response, 'qwenUsedCount', 'qwen_used_count', 0),
-      qwenUsageRate: this.pick<number>(response, 'qwenUsageRate', 'qwen_usage_rate', 0),
+      qwenUsedCount: this.pickNumber(response, 'qwenUsedCount', 'qwen_used_count'),
+      qwenUsageRate: this.pickNumber(response, 'qwenUsageRate', 'qwen_usage_rate'),
 
-      feedbackCount: this.pick<number>(response, 'feedbackCount', 'feedback_count', 0),
-      usefulFeedbackCount: this.pick<number>(response, 'usefulFeedbackCount', 'useful_feedback_count', 0),
-      notUsefulFeedbackCount: this.pick<number>(response, 'notUsefulFeedbackCount', 'not_useful_feedback_count', 0),
-      usefulnessRate: this.pick<number>(response, 'usefulnessRate', 'usefulness_rate', 0),
+      feedbackCount: this.pickNumber(response, 'feedbackCount', 'feedback_count'),
+      usefulFeedbackCount: this.pickNumber(response, 'usefulFeedbackCount', 'useful_feedback_count'),
+      notUsefulFeedbackCount: this.pickNumber(response, 'notUsefulFeedbackCount', 'not_useful_feedback_count'),
+      usefulnessRate: this.pickNumber(response, 'usefulnessRate', 'usefulness_rate'),
 
-      topSuggestionTypes: this.pick<any[]>(response, 'topSuggestionTypes', 'top_suggestion_types', [])
+      topSuggestionTypes: this.pickArray(response, 'topSuggestionTypes', 'top_suggestion_types')
         .map((item: any) => ({
           type: this.pick<string>(item, 'type', 'type', ''),
-          count: this.pick<number>(item, 'count', 'count', 0)
+          count: this.pickNumber(item, 'count', 'count')
         })),
 
-      recentCalls: this.pick<any[]>(response, 'recentCalls', 'recent_calls', [])
+      recentCalls: this.pickArray(response, 'recentCalls', 'recent_calls')
         .map((item: any) => ({
           requestId: this.pick<string>(item, 'requestId', 'request_id', ''),
           createdAt: this.pick<string>(item, 'createdAt', 'created_at', ''),
-          status: this.pick<string>(item, 'status', 'status', ''),
-          suggestionsCount: this.pick<number>(item, 'suggestionsCount', 'suggestions_count', 0),
-          suggestionTypes: this.pick<string[]>(item, 'suggestionTypes', 'suggestion_types', []),
-          relatedEventIds: this.pick<string[]>(item, 'relatedEventIds', 'related_event_ids', []),
-          qwenUsed: this.pick<boolean>(item, 'qwenUsed', 'qwen_used', false),
+          status: this.pick<string>(item, 'status', 'status', 'UNKNOWN'),
+          suggestionsCount: this.pickNumber(item, 'suggestionsCount', 'suggestions_count'),
+          suggestionTypes: this.pickArray(item, 'suggestionTypes', 'suggestion_types') as string[],
+          relatedEventIds: this.pickArray(item, 'relatedEventIds', 'related_event_ids') as string[],
+          qwenUsed: this.toBoolean(this.pick<any>(item, 'qwenUsed', 'qwen_used', false)),
           summarySource: this.pick<string | null>(item, 'summarySource', 'summary_source', null),
           message: this.pick<string | null>(item, 'message', 'message', null)
         }))
     };
   }
 
-  private normalizePlanningMonitoring(response: any): AiPlanningMonitoringSummary {
+  private normalizePlanningMonitoring(rawResponse: any): AiPlanningMonitoringSummary {
+    const response = this.unwrapMonitoringResponse(rawResponse);
+
     return {
-      periodDays: this.pick<number>(response, 'periodDays', 'period_days', 30),
+      periodDays: this.pickNumber(response, 'periodDays', 'period_days', 30),
       targetDepartmentId: this.pick<number | null>(response, 'targetDepartmentId', 'target_department_id', null),
-      totalGenerations: this.pick<number>(response, 'totalGenerations', 'total_generations', 0),
-      totalUsageEvents: this.pick<number>(response, 'totalUsageEvents', 'total_usage_events', 0),
-      copiedCount: this.pick<number>(response, 'copiedCount', 'copied_count', 0),
-      usedToPrefillCount: this.pick<number>(response, 'usedToPrefillCount', 'used_to_prefill_count', 0),
-      createdFromAiCount: this.pick<number>(response, 'createdFromAiCount', 'created_from_ai_count', 0),
-      usageRate: this.pick<number>(response, 'usageRate', 'usage_rate', 0),
-      topCategories: this.pick<any[]>(response, 'topCategories', 'top_categories', []),
-      topProposals: this.pick<any[]>(response, 'topProposals', 'top_proposals', []),
-      modelVersions: this.pick<any[]>(response, 'modelVersions', 'model_versions', []),
-      latestEvents: this.pick<any[]>(response, 'latestEvents', 'latest_events', [])
+
+      totalGenerations: this.pickNumber(response, 'totalGenerations', 'total_generations'),
+      totalUsageEvents: this.pickNumber(response, 'totalUsageEvents', 'total_usage_events'),
+      copiedCount: this.pickNumber(response, 'copiedCount', 'copied_count'),
+      usedToPrefillCount: this.pickNumber(response, 'usedToPrefillCount', 'used_to_prefill_count'),
+      createdFromAiCount: this.pickNumber(response, 'createdFromAiCount', 'created_from_ai_count'),
+      usageRate: this.pickNumber(response, 'usageRate', 'usage_rate'),
+
+      topCategories: this.pickArray(response, 'topCategories', 'top_categories'),
+      topProposals: this.pickArray(response, 'topProposals', 'top_proposals'),
+      modelVersions: this.pickArray(response, 'modelVersions', 'model_versions'),
+      latestEvents: this.pickArray(response, 'latestEvents', 'latest_events')
     };
   }
 

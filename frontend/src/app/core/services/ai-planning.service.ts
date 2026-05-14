@@ -35,7 +35,7 @@ export class AiPlanningService {
   getMonitoringSummary(
     days = 30,
     targetDepartmentId: number | null = null
-  ): Observable<AiPlanningMonitoringSummary> {
+  ): Observable<any> {
     const params: Record<string, string> = {
       days: String(days)
     };
@@ -44,22 +44,10 @@ export class AiPlanningService {
       params['targetDepartmentId'] = String(targetDepartmentId);
     }
 
-    return this.http
-      .get<any>(`${this.apiUrl}/monitoring/summary`, { params })
-      .pipe(map(response => ({
-        periodDays: response?.periodDays ?? response?.period_days ?? 30,
-        targetDepartmentId: response?.targetDepartmentId ?? response?.target_department_id ?? null,
-        totalGenerations: response?.totalGenerations ?? response?.total_generations ?? 0,
-        totalUsageEvents: response?.totalUsageEvents ?? response?.total_usage_events ?? 0,
-        copiedCount: response?.copiedCount ?? response?.copied_count ?? 0,
-        usedToPrefillCount: response?.usedToPrefillCount ?? response?.used_to_prefill_count ?? 0,
-        createdFromAiCount: response?.createdFromAiCount ?? response?.created_from_ai_count ?? 0,
-        usageRate: response?.usageRate ?? response?.usage_rate ?? 0,
-        topCategories: response?.topCategories ?? response?.top_categories ?? [],
-        topProposals: response?.topProposals ?? response?.top_proposals ?? [],
-        modelVersions: response?.modelVersions ?? response?.model_versions ?? [],
-        latestEvents: response?.latestEvents ?? response?.latest_events ?? []
-      })));
+    return this.http.get<any>(
+      `${this.apiUrl}/monitoring/summary`,
+      { params }
+    );
   }
 
   logUsage(payload: AiPlanningUsageRequest): Observable<AiPlanningUsageResponse> {

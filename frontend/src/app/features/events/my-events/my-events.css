@@ -34,22 +34,6 @@
   gap: 6px;
 }
 
-.page-kicker {
-  display: inline-flex;
-  width: fit-content;
-  min-height: 28px;
-  align-items: center;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: rgba(0, 88, 171, 0.08);
-  color: #0058AB;
-  border: 1px solid rgba(0, 88, 171, 0.10);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
 .header-text h1 {
   font-family: 'Ubuntu', sans-serif;
   font-size: 32px;

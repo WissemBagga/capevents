@@ -1,11 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
+
 import { environment } from '../../../environments/environment';
-import {
-  AiHrCopilotMonitoringResponse,
-  AiHrCopilotRecentCall, AiHrCopilotSuggestionTypeSummary
-} from '../models/ai-hr-copilot-monitoring.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,58 +11,12 @@ export class AiHrCopilotMonitoringService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/api/ai/monitoring/hr-copilot`;
 
-  getSummary(limit = 10): Observable<AiHrCopilotMonitoringResponse> {
+  getSummary(limit = 10): Observable<any> {
     const params = new HttpParams().set('limit', String(limit));
 
-    return this.http
-      .get<any>(`${this.apiUrl}/summary`, { params })
-      .pipe(
-        map((response) => this.normalizeResponse(response))
-      );
-  }
-
-  private asArray(value: any): any[] {
-    return Array.isArray(value) ? value : [];
-  }
-
-  private normalizeResponse(response: any): AiHrCopilotMonitoringResponse {
-    const rawTypes = this.asArray(
-      response?.topSuggestionTypes ?? response?.top_suggestion_types
+    return this.http.get<any>(
+      `${this.apiUrl}/summary`,
+      { params }
     );
-
-    const rawCalls = this.asArray(
-      response?.recentCalls ?? response?.recent_calls
-    );
-
-    return {
-      totalCalls: response?.totalCalls ?? response?.total_calls ?? 0,
-      successfulCalls: response?.successfulCalls ?? response?.successful_calls ?? 0,
-      failedCalls: response?.failedCalls ?? response?.failed_calls ?? 0,
-      totalSuggestions: response?.totalSuggestions ?? response?.total_suggestions ?? 0,
-      qwenUsedCount: response?.qwenUsedCount ?? response?.qwen_used_count ?? 0,
-      qwenUsageRate: response?.qwenUsageRate ?? response?.qwen_usage_rate ?? 0,
-
-      feedbackCount: response?.feedbackCount ?? response?.feedback_count ?? 0,
-      usefulFeedbackCount: response?.usefulFeedbackCount ?? response?.useful_feedback_count ?? 0,
-      notUsefulFeedbackCount: response?.notUsefulFeedbackCount ?? response?.not_useful_feedback_count ?? 0,
-      usefulnessRate: response?.usefulnessRate ?? response?.usefulness_rate ?? 0,
-
-      topSuggestionTypes: rawTypes.map((item: any): AiHrCopilotSuggestionTypeSummary => ({
-        type: item?.type ?? '',
-        count: item?.count ?? 0
-      })),
-
-      recentCalls: rawCalls.map((item: any): AiHrCopilotRecentCall => ({
-        requestId: item?.requestId ?? item?.request_id ?? '',
-        createdAt: item?.createdAt ?? item?.created_at ?? '',
-        suggestionsCount: item?.suggestionsCount ?? item?.suggestions_count ?? 0,
-        suggestionTypes: item?.suggestionTypes ?? item?.suggestion_types ?? [],
-        relatedEventIds: item?.relatedEventIds ?? item?.related_event_ids ?? [],
-        qwenUsed: item?.qwenUsed ?? item?.qwen_used ?? false,
-        summarySource: item?.summarySource ?? item?.summary_source ?? '',
-        status: item?.status ?? 'UNKNOWN',
-        message: item?.message ?? null
-      }))
-    };
   }
 }

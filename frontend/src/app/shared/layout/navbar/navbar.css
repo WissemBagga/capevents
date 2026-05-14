@@ -33,21 +33,6 @@
   min-width: 0;
 }
 
-.topbar-kicker {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: rgba(0, 88, 171, 0.07);
-  color: #0058AB;
-  font-family: 'Verdana', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .topbar-title {
   margin: 0;
   font-family: 'Ubuntu', sans-serif;
