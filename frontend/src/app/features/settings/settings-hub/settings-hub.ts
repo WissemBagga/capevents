@@ -83,4 +83,19 @@ export class SettingsHub {
 
     return ['interests', 'profile'].includes(tab);
   }
+
+  get activeDescription(): string {
+    switch (this.activeTab) {
+      case 'departments':
+        return 'Gérez la liste des départements au sein de l’organisation.';
+      case 'users':
+        return 'Gérez les rôles métier et les accès des utilisateurs.';
+      case 'interests':
+        return 'Personnalisez vos centres d’intérêt pour améliorer les recommandations.';
+      case 'profile':
+        return 'Mettez à jour vos informations personnelles et votre avatar.';
+      default:
+        return 'Gérez vos préférences et la sécurité de votre compte.';
+    }
+  }
 }

@@ -48,4 +48,15 @@ export class AiAssistantsHub {
       queryParams: { panel: 'planning' }
     });
   }
+
+  get activeDescription(): string {
+    switch (this.activeTab) {
+      case 'hr-assistant':
+        return 'Analyse les événements, invitations et signaux RH pour proposer des actions intelligentes.';
+      case 'planning':
+        return 'Génère des propositions d’événements et recommande les meilleurs créneaux.';
+      default:
+        return 'Accédez aux assistants intelligents disponibles selon votre rôle.';
+    }
+  }
 }

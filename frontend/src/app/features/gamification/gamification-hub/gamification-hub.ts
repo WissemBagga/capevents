@@ -25,4 +25,17 @@ export class GamificationHub {
   selectTab(tab: GamificationTab): void {
     this.activeTab = tab;
   }
+
+  get activeDescription(): string {
+    switch (this.activeTab) {
+      case 'points':
+        return 'Consultez votre solde de points et l’historique de vos transactions.';
+      case 'badges':
+        return 'Suivez vos accomplissements et votre progression dans CapEvents.';
+      case 'rewards':
+        return 'Consultez vos récompenses disponibles et vos demandes d’échange.';
+      default:
+        return 'Suivez votre engagement dans CapEvents.';
+    }
+  }
 }

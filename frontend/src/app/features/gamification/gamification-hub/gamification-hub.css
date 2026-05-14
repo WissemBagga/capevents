@@ -31,7 +31,17 @@
   border-bottom: 1px solid #d9e2ee;
   padding-bottom: 0;
   overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+
+.hub-tabs::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 
 .hub-tab {
   position: relative;
