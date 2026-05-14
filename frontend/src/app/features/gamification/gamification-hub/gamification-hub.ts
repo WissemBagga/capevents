@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MyPoints } from '../../points/my-points/my-points';
 import { MyBadges } from '../my-badges/my-badges';
@@ -14,6 +15,9 @@ type GamificationTab = 'points' | 'badges' | 'rewards';
   styleUrl: './gamification-hub.css'
 })
 export class GamificationHub {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   activeTab: GamificationTab = 'points';
 
   tabs: { key: GamificationTab; label: string }[] = [
@@ -22,8 +26,23 @@ export class GamificationHub {
     { key: 'rewards', label: 'Mes récompenses' }
   ];
 
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe(params => {
+      const requestedTab = params.get('tab');
+
+      if (this.isValidTab(requestedTab)) {
+        this.activeTab = requestedTab;
+        return;
+      }
+
+      this.activeTab = 'points';
+      this.updateUrl('points', true);
+    });
+  }
+
   selectTab(tab: GamificationTab): void {
     this.activeTab = tab;
+    this.updateUrl(tab);
   }
 
   get activeDescription(): string {
@@ -37,5 +56,18 @@ export class GamificationHub {
       default:
         return 'Suivez votre engagement dans CapEvents.';
     }
+  }
+
+  private updateUrl(tab: GamificationTab, replaceUrl = false): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge',
+      replaceUrl
+    });
+  }
+
+  private isValidTab(value: string | null): value is GamificationTab {
+    return value === 'points' || value === 'badges' || value === 'rewards';
   }
 }

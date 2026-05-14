@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
 type AssistantTab = 'hr-assistant' | 'planning';
@@ -13,8 +13,23 @@ type AssistantTab = 'hr-assistant' | 'planning';
 export class AiAssistantsHub {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-  activeTab: AssistantTab = this.authService.isHr() ? 'hr-assistant' : 'planning';
+  activeTab: AssistantTab = this.defaultTab;
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe(params => {
+      const requestedTab = params.get('tab');
+
+      if (this.canAccessTab(requestedTab)) {
+        this.activeTab = requestedTab;
+        return;
+      }
+
+      this.activeTab = this.defaultTab;
+      this.updateUrl(this.defaultTab, true);
+    });
+  }
 
   get tabs(): { key: AssistantTab; label: string }[] {
     if (this.authService.isHr()) {
@@ -29,12 +44,19 @@ export class AiAssistantsHub {
     ];
   }
 
+  get defaultTab(): AssistantTab {
+    return this.authService.isHr() ? 'hr-assistant' : 'planning';
+  }
+
   get dashboardRoute(): string {
     return this.authService.isHr() ? '/admin/hr' : '/admin/manager';
   }
 
   selectTab(tab: AssistantTab): void {
+    if (!this.canAccessTab(tab)) return;
+
     this.activeTab = tab;
+    this.updateUrl(tab);
   }
 
   openAssistant(): void {
@@ -58,5 +80,26 @@ export class AiAssistantsHub {
       default:
         return 'Accédez aux assistants intelligents disponibles selon votre rôle.';
     }
+  }
+
+  private updateUrl(tab: AssistantTab, replaceUrl = false): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge',
+      replaceUrl
+    });
+  }
+
+  private canAccessTab(value: string | null): value is AssistantTab {
+    if (value === 'planning') {
+      return true;
+    }
+
+    if (value === 'hr-assistant') {
+      return this.authService.isHr();
+    }
+
+    return false;
   }
 }
