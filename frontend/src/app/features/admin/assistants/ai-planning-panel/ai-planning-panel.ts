@@ -124,6 +124,10 @@ export class AiPlanningPanel {
       return;
     }
 
+    const targetDepartmentId = this.isManager
+      ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
+      : proposal.targetDepartmentId;
+
     const draft = {
       title: proposal.title,
       category: proposal.category,
@@ -133,17 +137,33 @@ export class AiPlanningPanel {
       locationType: proposal.locationType || 'ONSITE',
       capacity: proposal.capacity,
       audience: this.isManager ? 'DEPARTMENT' : proposal.audience,
-      targetDepartmentId: this.isManager
-        ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
-        : proposal.targetDepartmentId
+      targetDepartmentId,
+
+      aiPlanningUsage: {
+        requestId: this.aiPlanningResponse?.requestId ?? null,
+        proposalRank: proposal.rank,
+        proposalTitle: proposal.title,
+        category: proposal.category,
+        targetDepartmentId,
+        selectedSlotStartAt: firstSlot.startAt,
+        selectedSlotScore: firstSlot.score
+      },
+
+      aiPlanningAdminNote: this.buildPlanningAdminNote(proposal)
     };
 
     const key = `ai-planning-proposal-${Date.now()}`;
+    const trackingKey = `ai-planning-tracking-${Date.now()}`;
+
     sessionStorage.setItem(key, JSON.stringify(draft));
+    sessionStorage.setItem(trackingKey, JSON.stringify(draft.aiPlanningUsage));
+
+    this.logPlanningUsage(proposal, 'USED_TO_PREFILL');
 
     this.router.navigate(['/admin/create-event'], {
       queryParams: {
-        aiProposal: key
+        aiProposal: key,
+        aiTracking: trackingKey
       }
     });
   }
@@ -167,6 +187,8 @@ export class AiPlanningPanel {
     ].filter(Boolean).join('\n');
 
     navigator.clipboard?.writeText(text);
+
+    this.logPlanningUsage(proposal, 'COPIED');
   }
 
   private buildPlanningDescription(proposal: AiPlanningEventProposal): string {
@@ -239,5 +261,54 @@ export class AiPlanningPanel {
 
   trackByPlanningSlot(_: number, item: any): number {
     return item.rank;
+  }
+
+  private logPlanningUsage(
+    proposal: AiPlanningEventProposal,
+    action: 'COPIED' | 'USED_TO_PREFILL'
+  ): void {
+    const firstSlot = proposal.suggestedSlots?.[0];
+
+    const targetDepartmentId = this.isManager
+      ? this.authService.getCurrentUserSnapshot()?.departmentId ?? null
+      : proposal.targetDepartmentId;
+
+    this.aiPlanningService.logUsage({
+      requestId: this.aiPlanningResponse?.requestId ?? undefined,
+      action,
+      proposalRank: proposal.rank,
+      proposalTitle: proposal.title,
+      category: proposal.category,
+      targetDepartmentId,
+      selectedSlotStartAt: firstSlot?.startAt ?? null,
+      selectedSlotScore: firstSlot?.score ?? null,
+      source: 'ai_assistants_planning_panel'
+    }).subscribe({
+      error: (err) => {
+        console.error('[AI PLANNING USAGE LOG ERROR]', err);
+      }
+    });
+  }
+
+  private buildPlanningAdminNote(proposal: AiPlanningEventProposal): string {
+    const firstSlot = proposal.suggestedSlots?.[0];
+
+    const rationale = (proposal.rationale ?? [])
+      .map(item => `• ${item}`)
+      .join('\n');
+
+    const slotText = firstSlot
+      ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}`
+      : 'Créneau recommandé : à confirmer';
+
+    return [
+      'Note IA interne',
+      slotText,
+      '',
+      'Justification :',
+      rationale,
+      '',
+      'Cette proposition doit être validée par le RH ou le manager avant publication.'
+    ].join('\n');
   }
 }
