@@ -23,34 +23,7 @@
 
     <section class="assistant-content">
       @if (activeTab === 'hr-assistant') {
-        <article class="assistant-panel">
-          <div class="assistant-panel-icon assistant">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
-                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"></path>
-              <path d="M19 15l.9 2.6L22 18.5l-2.1.9L19 22l-.9-2.6-2.1-.9 2.1-.9L19 15z"></path>
-            </svg>
-          </div>
-
-          <div class="assistant-panel-body">
-            <h2>Assistant RH</h2>
-            <p>
-              Analyse les événements, les invitations et les signaux de participation
-              pour proposer des actions RH intelligentes.
-            </p>
-
-            <ul>
-              <li>Suggestions d’amélioration de participation</li>
-              <li>Actions de relance</li>
-              <li>Analyse des événements à risque</li>
-            </ul>
-
-            <button type="button" class="btn-primary" (click)="openAssistant()">
-              Ouvrir l’assistant RH
-            </button>
-          </div>
-        </article>
+        <app-ai-hr-assistant-panel></app-ai-hr-assistant-panel>
       }
 
       @if (activeTab === 'planning') {

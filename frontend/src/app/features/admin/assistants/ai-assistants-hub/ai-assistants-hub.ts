@@ -3,13 +3,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
 import { AiPlanningPanel } from '../ai-planning-panel/ai-planning-panel';
+import { AiHrAssistantPanel } from '../ai-hr-assistant-panel/ai-hr-assistant-panel';
 
 type AssistantTab = 'hr-assistant' | 'planning';
 
 @Component({
   selector: 'app-ai-assistants-hub',
   standalone: true,
-  imports: [AiPlanningPanel],
+  imports: [AiPlanningPanel, AiHrAssistantPanel],
   templateUrl: './ai-assistants-hub.html',
   styleUrl: './ai-assistants-hub.css'
 })

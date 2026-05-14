@@ -16,17 +16,10 @@ import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-t
 import { AiMonitoringService } from '../../../../core/services/ai-monitoring.service';
 import { AiRecommendationMonitoringSummary, AiRecentPrediction, AiTopRecommendedEvent } from '../../../../core/models/ai-monitoring.model';
 
-import { AiHrCopilotService } from '../../../../core/services/ai-hr-copilot.service';
-import { AiHrCopilotResponse } from '../../../../core/models/ai-hr-copilot.model';
-
-import { AiHrCopilotSuggestion } from '../../../../core/models/ai-hr-copilot.model';
-
-import { InvitationReminderService } from '../../../../core/services/invitation-reminder.service';
 
 import { AiHrCopilotMonitoringService } from '../../../../core/services/ai-hr-copilot-monitoring.service';
 import { AiHrCopilotMonitoringResponse } from '../../../../core/models/ai-hr-copilot-monitoring.model';
 
-import { AiHrCopilotFeedbackService } from '../../../../core/services/ai-hr-copilot-feedback.service';
 
 import { AiPlanningService } from '../../../../core/services/ai-planning.service';
 import { AiPlanningMonitoringSummary } from '../../../../core/models/ai-planning.model';
@@ -51,10 +44,7 @@ export class AdminStats {
   private adminAnalyticsService = inject(AdminAnalyticsService);
   private userService = inject(UserService);
   private aiMonitoringService = inject(AiMonitoringService);
-  private aiHrCopilotService = inject(AiHrCopilotService);
-  private invitationReminderService = inject(InvitationReminderService);
   private aiHrCopilotMonitoringService = inject(AiHrCopilotMonitoringService);
-  private aiHrCopilotFeedbackService = inject(AiHrCopilotFeedbackService);
 
 
   readonly trendChartWidth = 640;
@@ -83,28 +73,12 @@ export class AdminStats {
     category: ''
   };
 
-  aiCopilot: AiHrCopilotResponse | null = null;
-  aiCopilotLoading = false;
-  aiCopilotError = '';
-  copiedCopilotSuggestionIndex: number | null = null;
-
-
-  remindingEventId: string | null = null;
-  copilotActionMessage = '';
-  copilotActionError = '';
-
-  selectedReminderSuggestion: AiHrCopilotSuggestion | null = null;
-  reminderMessageDraft = '';
 
   aiCopilotMonitoring: AiHrCopilotMonitoringResponse | null = null;
   aiCopilotMonitoringLoading = false;
   aiCopilotMonitoringError = '';
 
-  copilotFeedbackLoadingKey: string | null = null;
-  copilotFeedbackByKey: Record<string, boolean> = {};
-  copilotFeedbackMessage = '';
-  copilotFeedbackError = '';
-
+  
   private aiPlanningService = inject(AiPlanningService);
 
   planningMonitoringLoading = false;
@@ -116,7 +90,6 @@ export class AdminStats {
     if (this.isHr) {
       this.loadDepartments();
       this.loadAiMonitoring();
-      this.loadAiCopilot();
       this.loadAiCopilotMonitoring();
     }
 
@@ -608,363 +581,6 @@ export class AdminStats {
     }
   }
 
-  loadAiCopilot(): void {
-    if (!this.isHr) return;
-
-    this.aiCopilotLoading = true;
-    this.aiCopilotError = '';
-    this.cdr.markForCheck();
-
-    this.aiHrCopilotService.getSuggestions()
-      .pipe(finalize(() => {
-        this.aiCopilotLoading = false;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: (res) => {
-          this.aiCopilot = res;
-          this.cdr.markForCheck();
-        },
-        error: () => {
-          this.aiCopilot = null;
-          this.aiCopilotError = 'Impossible de charger le copilote IA.';
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
-  trackByCopilotSuggestion(index: number, item: AiHrCopilotSuggestion): string {
-    return `${item.type}-${item.relatedEventId || index}`;
-  }
-
-  hasCopilotRelatedEvent(item: AiHrCopilotSuggestion): boolean {
-    return !!item.relatedEventId;
-  }
-
-  copyCopilotDraft(draft: string | null, index: number): void {
-    if (!draft?.trim()) return;
-
-    if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(draft).then(() => {
-        this.markCopilotDraftCopied(index);
-      }).catch(() => {
-        this.copyTextFallback(draft, index);
-      });
-
-      return;
-    }
-
-    this.copyTextFallback(draft, index);
-  }
-
-  private copyTextFallback(text: string, index: number): void {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    textarea.style.top = '0';
-
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-
-    try {
-      document.execCommand('copy');
-      this.markCopilotDraftCopied(index);
-    } finally {
-      document.body.removeChild(textarea);
-    }
-  }
-
-  private markCopilotDraftCopied(index: number): void {
-    this.copiedCopilotSuggestionIndex = index;
-    this.cdr.markForCheck();
-
-    setTimeout(() => {
-      if (this.copiedCopilotSuggestionIndex === index) {
-        this.copiedCopilotSuggestionIndex = null;
-        this.cdr.markForCheck();
-      }
-    }, 1800);
-  }
-
-
-  canSendInvitationReminder(suggestion: AiHrCopilotSuggestion): boolean {
-    return (
-      suggestion.actionType === 'REMIND_PENDING_INVITATIONS' &&
-      !!suggestion.relatedEventId
-    );
-  }
-
-  sendInvitationReminderFromCopilot(suggestion: AiHrCopilotSuggestion): void {
-    if (!suggestion.relatedEventId) return;
-
-    this.remindingEventId = suggestion.relatedEventId;
-    this.copilotActionMessage = '';
-    this.copilotActionError = '';
-    this.cdr.markForCheck();
-
-    this.invitationReminderService
-      .sendPendingInvitationReminders(suggestion.relatedEventId)
-      .pipe(finalize(() => {
-        this.remindingEventId = null;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: (response) => {
-          this.copilotActionMessage = response.message;
-
-          // Recharge le copilote, car la suggestion peut disparaître
-          // si les invitations ne sont plus éligibles à une relance.
-          this.loadAiCopilot();
-
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          this.copilotActionError =
-            err?.error?.message ||
-            err?.error ||
-            'Impossible d’envoyer les relances.';
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
-  isReminderLoadingFor(suggestion: AiHrCopilotSuggestion): boolean {
-    return !!suggestion.relatedEventId && this.remindingEventId === suggestion.relatedEventId;
-  }
-
-
-
-  getCopilotMetadataNumber(
-    suggestion: AiHrCopilotSuggestion,
-    key: string
-  ): number | null {
-    const value = suggestion.metadata?.[key];
-
-    if (typeof value === 'number') {
-      return value;
-    }
-
-    if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) {
-      return Number(value);
-    }
-
-    return null;
-  }
-
-  getCopilotMetricChips(suggestion: AiHrCopilotSuggestion): { label: string; value: string; type: string }[] {
-    const chips: { label: string; value: string; type: string }[] = [];
-
-    if (suggestion.type === 'PENDING_INVITATIONS') {
-      const pending = this.getCopilotMetadataNumber(suggestion, 'pending_count');
-      const eligible = this.getCopilotMetadataNumber(suggestion, 'eligible_reminder_count');
-      const recently = this.getCopilotMetadataNumber(suggestion, 'recently_reminded_count');
-      const cooldown = this.getCopilotMetadataNumber(suggestion, 'cooldown_hours');
-
-      if (pending !== null) {
-        chips.push({ label: 'En attente', value: String(pending), type: 'neutral' });
-      }
-
-      if (eligible !== null) {
-        chips.push({ label: 'Relançables', value: String(eligible), type: 'success' });
-      }
-
-      if (recently !== null) {
-        chips.push({ label: 'Déjà relancées', value: String(recently), type: 'warning' });
-      }
-
-      if (cooldown !== null) {
-        chips.push({ label: 'Délai', value: `${cooldown}h`, type: 'info' });
-      }
-    }
-
-    if (suggestion.type === 'LOW_REGISTRATION') {
-      const capacity = this.getCopilotMetadataNumber(suggestion, 'capacity');
-      const registered = this.getCopilotMetadataNumber(suggestion, 'registered_count');
-      const rate = this.getCopilotMetadataNumber(suggestion, 'registration_rate');
-
-      if (registered !== null && capacity !== null) {
-        chips.push({ label: 'Inscrits', value: `${registered}/${capacity}`, type: 'warning' });
-      }
-
-      if (rate !== null) {
-        chips.push({ label: 'Taux', value: `${Math.round(rate * 100)}%`, type: 'warning' });
-      }
-    }
-
-    if (suggestion.type === 'LOW_FEEDBACK_SCORE') {
-      const averageRating = this.getCopilotMetadataNumber(suggestion, 'average_rating');
-      const feedbackCount = this.getCopilotMetadataNumber(suggestion, 'feedback_count');
-
-      if (averageRating !== null) {
-        chips.push({ label: 'Note', value: `${averageRating.toFixed(1)}/5`, type: 'warning' });
-      }
-
-      if (feedbackCount !== null) {
-        chips.push({ label: 'Feedbacks', value: String(feedbackCount), type: 'neutral' });
-      }
-    }
-
-    if (suggestion.type === 'LOW_DEPARTMENT_ENGAGEMENT') {
-      const activeEmployees = this.getCopilotMetadataNumber(suggestion, 'active_employees');
-      const participatingUsers = this.getCopilotMetadataNumber(suggestion, 'participating_users');
-      const rate = this.getCopilotMetadataNumber(suggestion, 'participation_rate');
-
-      if (participatingUsers !== null && activeEmployees !== null) {
-        chips.push({ label: 'Participants', value: `${participatingUsers}/${activeEmployees}`, type: 'warning' });
-      }
-
-      if (rate !== null) {
-        chips.push({ label: 'Participation', value: `${Math.round(rate * 100)}%`, type: 'warning' });
-      }
-    }
-
-    if (suggestion.type === 'RSVP_FRICTION') {
-      const responded = this.getCopilotMetadataNumber(suggestion, 'responded_count');
-      const yes = this.getCopilotMetadataNumber(suggestion, 'yes_count');
-      const maybe = this.getCopilotMetadataNumber(suggestion, 'maybe_count');
-      const no = this.getCopilotMetadataNumber(suggestion, 'no_count');
-      const frictionRate = this.getCopilotMetadataNumber(suggestion, 'friction_rate');
-
-      if (responded !== null) {
-        chips.push({ label: 'Réponses', value: String(responded), type: 'neutral' });
-      }
-
-      if (yes !== null) {
-        chips.push({ label: 'Oui', value: String(yes), type: 'success' });
-      }
-
-      if (maybe !== null) {
-        chips.push({ label: 'Peut-être', value: String(maybe), type: 'warning' });
-      }
-
-      if (no !== null) {
-        chips.push({ label: 'Non', value: String(no), type: 'warning' });
-      }
-
-      if (frictionRate !== null) {
-        chips.push({ label: 'Friction', value: `${Math.round(frictionRate * 100)}%`, type: 'warning' });
-      }
-    }
-
-    return chips;
-  }
-
-  trackByCopilotChip(_: number, item: { label: string; value: string; type: string }): string {
-    return `${item.label}-${item.value}`;
-  }
-
-
-
-  openReminderConfirmation(suggestion: AiHrCopilotSuggestion): void {
-    this.selectedReminderSuggestion = suggestion;
-    this.reminderMessageDraft = suggestion.draft || this.buildDefaultReminderDraft(suggestion);
-    this.copilotActionMessage = '';
-    this.copilotActionError = '';
-    this.cdr.markForCheck();
-  }
-
-  closeReminderConfirmation(): void {
-    this.selectedReminderSuggestion = null;
-    this.reminderMessageDraft = '';
-    this.cdr.markForCheck();
-  }
-
-  confirmSendInvitationReminder(): void {
-    const suggestion = this.selectedReminderSuggestion;
-
-    if (!suggestion?.relatedEventId) return;
-
-    this.remindingEventId = suggestion.relatedEventId;
-    this.copilotActionMessage = '';
-    this.copilotActionError = '';
-    this.cdr.markForCheck();
-
-    this.invitationReminderService
-      .sendPendingInvitationReminders(
-        suggestion.relatedEventId,
-        this.reminderMessageDraft
-      )
-      .pipe(finalize(() => {
-        this.remindingEventId = null;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: (response) => {
-          this.copilotActionMessage = response.message;
-          this.closeReminderConfirmation();
-          this.loadAiCopilot();
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          this.copilotActionError =
-            err?.error?.message ||
-            err?.error ||
-            'Impossible d’envoyer les relances.';
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
-  private buildDefaultReminderDraft(suggestion: AiHrCopilotSuggestion): string {
-    if (suggestion.relatedEventTitle) {
-      return `Nous vous rappelons que vous avez une invitation en attente pour l’événement « ${suggestion.relatedEventTitle} ». Votre réponse nous aide à mieux organiser la participation et la logistique de l’événement.`;
-    }
-
-    return 'Nous vous rappelons que vous avez une invitation en attente sur CapEvents. Votre réponse nous aide à mieux organiser la participation.';
-  }
-
-  getCopilotPrimaryActionLabel(suggestion: AiHrCopilotSuggestion): string {
-    switch (suggestion.type) {
-      case 'PENDING_INVITATIONS':
-        return 'Voir les invitations';
-
-      case 'LOW_REGISTRATION':
-        return 'Analyser les inscriptions';
-
-      case 'RSVP_FRICTION':
-        return 'Analyser les réponses';
-
-      case 'LOW_FEEDBACK_SCORE':
-        return 'Voir les feedbacks';
-
-      case 'LOW_DEPARTMENT_ENGAGEMENT':
-        return 'Voir le contexte';
-
-      default:
-        return 'Voir l’événement';
-    }
-  }
-
-  getCopilotEventSection(suggestion: AiHrCopilotSuggestion): string {
-    switch (suggestion.type) {
-      case 'PENDING_INVITATIONS':
-        return 'invitations';
-
-      case 'LOW_REGISTRATION':
-        return 'invitations';
-
-      case 'RSVP_FRICTION':
-        return 'invitations';
-
-      case 'LOW_FEEDBACK_SCORE':
-        return 'feedback';
-
-      case 'LOW_DEPARTMENT_ENGAGEMENT':
-        return 'overview';
-
-      default:
-        return 'overview';
-    }
-  }
-
-  getCopilotEventQueryParams(suggestion: AiHrCopilotSuggestion): Record<string, string> {
-    return {
-      section: this.getCopilotEventSection(suggestion)
-    };
-  }
-
   loadAiCopilotMonitoring(): void {
     if (!this.isHr) return;
 
@@ -1029,67 +645,7 @@ export class AdminStats {
     return item.requestId;
   }
 
-  getCopilotSuggestionKey(suggestion: AiHrCopilotSuggestion): string {
-    return `${suggestion.type}-${suggestion.relatedEventId || 'global'}`;
-  }
-
-  hasCopilotFeedback(suggestion: AiHrCopilotSuggestion): boolean {
-    return this.copilotFeedbackByKey[this.getCopilotSuggestionKey(suggestion)] !== undefined;
-  }
-
-  isCopilotFeedbackLoading(suggestion: AiHrCopilotSuggestion): boolean {
-    return this.copilotFeedbackLoadingKey === this.getCopilotSuggestionKey(suggestion);
-  }
-
-  submitCopilotFeedback(
-    suggestion: AiHrCopilotSuggestion,
-    useful: boolean
-  ): void {
-    if (!this.aiCopilot?.requestId) {
-      this.copilotFeedbackError = 'Impossible d’identifier la génération Copilote.';
-      this.cdr.markForCheck();
-      return;
-    }
-
-    const key = this.getCopilotSuggestionKey(suggestion);
-
-    this.copilotFeedbackLoadingKey = key;
-    this.copilotFeedbackMessage = '';
-    this.copilotFeedbackError = '';
-    this.cdr.markForCheck();
-
-    this.aiHrCopilotFeedbackService.submitFeedback({
-      requestId: this.aiCopilot.requestId,
-      suggestionType: suggestion.type,
-      relatedEventId: suggestion.relatedEventId,
-      useful,
-      comment: null
-    })
-      .pipe(finalize(() => {
-        this.copilotFeedbackLoadingKey = null;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: (response) => {
-          this.copilotFeedbackByKey[key] = useful;
-          this.copilotFeedbackMessage =
-            response?.message || 'Merci, votre retour a été enregistré.';
-          this.cdr.markForCheck();
-        },
-        error: () => {
-          this.copilotFeedbackError =
-            'Impossible d’enregistrer votre retour sur cette suggestion.';
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
   copilotUsefulnessPercent(): number {
     return Math.round((this.aiCopilotMonitoring?.usefulnessRate ?? 0) * 100);
   }
-
- 
-  
- 
-
 }

@@ -1,0 +1,266 @@
+<div class="ai-hr-assistant-panel">
+  <section class="assistant-card">
+    <div class="card-header">
+      <div class="header-text-group">
+        <span class="ai-section-kicker">Assistant IA</span>
+        <h2 class="card-title">Assistant RH</h2>
+        <p class="card-subtitle">
+          Suggestions intelligentes pour améliorer la participation, les invitations et la qualité des événements.
+        </p>
+      </div>
+
+      <button type="button" class="btn-secondary" (click)="loadAiCopilot()" [disabled]="aiCopilotLoading">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+          <path d="M3 3v5h5"></path>
+          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+          <path d="M16 21v-5h5"></path>
+        </svg>
+        {{ aiCopilotLoading ? 'Analyse...' : 'Actualiser' }}
+      </button>
+    </div>
+
+    @if (copilotActionMessage) {
+      <div class="state-message info-msg">
+        <p>{{ copilotActionMessage }}</p>
+      </div>
+    }
+
+    @if (copilotActionError) {
+      <div class="state-message error-msg" appScrollToMessage>
+        <p>{{ copilotActionError }}</p>
+      </div>
+    }
+
+    @if (copilotFeedbackMessage) {
+      <div class="state-message info-msg">
+        <p>{{ copilotFeedbackMessage }}</p>
+      </div>
+    }
+
+    @if (copilotFeedbackError) {
+      <div class="state-message error-msg" appScrollToMessage>
+        <p>{{ copilotFeedbackError }}</p>
+      </div>
+    }
+
+    @if (aiCopilotLoading && !aiCopilot) {
+      <div class="state-message loading-msg">
+        <div class="spinner"></div>
+        <p>Analyse IA en cours...</p>
+      </div>
+    }
+
+    @if (aiCopilotError) {
+      <div class="state-message error-msg">
+        <p>{{ aiCopilotError }}</p>
+      </div>
+    }
+
+    @if (!aiCopilotLoading && aiCopilot) {
+      <div class="generation-meta">
+        <span>Requête {{ aiCopilot.requestId.slice(0, 8) }}</span>
+        <span>{{ aiCopilot.suggestions.length }} suggestion(s)</span>
+      </div>
+
+      @if (aiCopilot.suggestions.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"></path>
+            </svg>
+          </div>
+          <h3>Aucune recommandation IA disponible</h3>
+          <p>Les signaux actuels ne nécessitent pas d’action RH urgente.</p>
+        </div>
+      }
+
+      @if (aiCopilot.suggestions.length > 0) {
+        <div class="ai-copilot-list">
+          @for (s of aiCopilot.suggestions; track trackByCopilotSuggestion($index, s)) {
+            <article class="ai-copilot-card">
+              <div class="copilot-header">
+                <div>
+                  <h3>{{ s.title }}</h3>
+                  @if (s.relatedEventTitle) {
+                    <span class="copilot-event">{{ s.relatedEventTitle }}</span>
+                  }
+                </div>
+
+                <span class="priority-badge" [class]="s.priority.toLowerCase()">
+                  {{ s.priority }}
+                </span>
+              </div>
+
+              <div class="copilot-feedback">
+                <span>Cette suggestion est-elle utile ?</span>
+
+                <div class="copilot-feedback-actions">
+                  <button
+                    type="button"
+                    class="copilot-feedback-btn useful"
+                    [class.selected]="copilotFeedbackByKey[getCopilotSuggestionKey(s)] === true"
+                    [disabled]="isCopilotFeedbackLoading(s)"
+                    (click)="submitCopilotFeedback(s, true)"
+                  >
+                    Utile
+                  </button>
+
+                  <button
+                    type="button"
+                    class="copilot-feedback-btn not-useful"
+                    [class.selected]="copilotFeedbackByKey[getCopilotSuggestionKey(s)] === false"
+                    [disabled]="isCopilotFeedbackLoading(s)"
+                    (click)="submitCopilotFeedback(s, false)"
+                  >
+                    Pas utile
+                  </button>
+                </div>
+              </div>
+
+              <p class="copilot-insight">
+                {{ s.insight }}
+              </p>
+
+              @if (getCopilotMetricChips(s).length > 0) {
+                <div class="copilot-metric-chips">
+                  @for (chip of getCopilotMetricChips(s); track trackByCopilotChip($index, chip)) {
+                    <span class="copilot-metric-chip" [class]="'chip-' + chip.type">
+                      <strong>{{ chip.value }}</strong>
+                      {{ chip.label }}
+                    </span>
+                  }
+                </div>
+              }
+
+              <div class="copilot-action">
+                <strong>Action recommandée :</strong>
+                <p>{{ s.recommendedAction }}</p>
+              </div>
+
+              @if (s.draft) {
+                <div class="copilot-draft">
+                  <strong>Brouillon :</strong>
+                  <p>{{ s.draft }}</p>
+                </div>
+              }
+
+              <div class="copilot-actions">
+                @if (hasCopilotRelatedEvent(s)) {
+                  <a
+                    class="btn-view copilot-action-btn"
+                    [routerLink]="['/admin/events', s.relatedEventId]"
+                    [queryParams]="getCopilotEventQueryParams(s)"
+                  >
+                    {{ getCopilotPrimaryActionLabel(s) }}
+                  </a>
+                }
+
+                @if (canSendInvitationReminder(s)) {
+                  <button
+                    type="button"
+                    class="btn-secondary copilot-action-btn"
+                    [disabled]="isReminderLoadingFor(s)"
+                    (click)="openReminderConfirmation(s)"
+                  >
+                    {{ isReminderLoadingFor(s) ? 'Relance en cours...' : 'Relancer les invités' }}
+                  </button>
+                }
+
+                @if (s.draft) {
+                  <button
+                    type="button"
+                    class="btn-secondary copilot-action-btn"
+                    (click)="copyCopilotDraft(s.draft, $index)"
+                  >
+                    {{ copiedCopilotSuggestionIndex === $index ? 'Brouillon copié' : 'Copier le brouillon' }}
+                  </button>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      }
+    }
+  </section>
+
+  @if (selectedReminderSuggestion; as selected) {
+    <div class="copilot-modal-backdrop" (click)="closeReminderConfirmation()">
+      <div class="copilot-modal" (click)="$event.stopPropagation()">
+        <div class="copilot-modal-header">
+          <div>
+            <span class="ai-section-kicker">Confirmation</span>
+            <h2>Relancer les invités</h2>
+            <p>
+              Vérifiez le message avant d’envoyer une relance aux collaborateurs invités sans réponse.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="modal-close-btn"
+            aria-label="Fermer"
+            (click)="closeReminderConfirmation()"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="copilot-modal-body">
+          <div class="modal-info-card">
+            <strong>Événement concerné</strong>
+            <p>{{ selected.relatedEventTitle || 'Événement non précisé' }}</p>
+          </div>
+
+          @if (getCopilotMetricChips(selected).length > 0) {
+            <div class="copilot-metric-chips">
+              @for (chip of getCopilotMetricChips(selected); track trackByCopilotChip($index, chip)) {
+                <span class="copilot-metric-chip" [class]="'chip-' + chip.type">
+                  <strong>{{ chip.value }}</strong>
+                  {{ chip.label }}
+                </span>
+              }
+            </div>
+          }
+
+          <div class="form-group reminder-message-group">
+            <label for="reminderMessageModal">Message de relance</label>
+
+            <textarea
+              id="reminderMessageModal"
+              rows="7"
+              [(ngModel)]="reminderMessageDraft"
+            ></textarea>
+
+            <span class="modal-help-text">
+              Le prénom du collaborateur, la salutation et la signature seront ajoutés par le backend.
+            </span>
+          </div>
+        </div>
+
+        <div class="copilot-modal-actions">
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="closeReminderConfirmation()"
+          >
+            Annuler
+          </button>
+
+          <button
+            type="button"
+            class="btn-primary-reminder"
+            [disabled]="isReminderLoadingFor(selected)"
+            (click)="confirmSendInvitationReminder()"
+          >
+            {{ isReminderLoadingFor(selected) ? 'Envoi en cours...' : 'Confirmer l’envoi' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
