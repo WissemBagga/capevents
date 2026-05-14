@@ -1,32 +1,42 @@
-<div class="error-page">
+<div class="error-page error-403">
   <div class="page-container">
-    <div class="error-card">
-      <div class="error-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <path d="M12 8v4"/>
-          <path d="M12 16h.01"/>
-        </svg>
+    <section class="error-card">
+      <div class="error-content">
+        <span class="error-kicker danger">Erreur 403</span>
+
+        <h1>Accès refusé</h1>
+
+        <p class="error-msg-secondary">
+          Vous n’avez pas les permissions nécessaires pour accéder à cette page ou effectuer cette action.
+        </p>
+
+        <div class="error-helper">
+          <span class="helper-pill danger-soft">
+            Vérifiez votre rôle ou revenez vers une page autorisée sur CapEvents.
+          </span>
+        </div>
+
+        <div class="error-actions">
+          <a routerLink="/events" class="btn-secondary">
+            Voir les événements
+          </a>
+
+          <button type="button" class="btn-primary" (click)="goBackOrHome()">
+            Retour
+          </button>
+        </div>
       </div>
 
-      <span class="error-code">403</span>
-      <h1>Accès refusé</h1>
-      <p class="error-msg-secondary">
-        Vous n'avez pas les permissions nécessaires pour accéder à cette page.
-      </p>
+      <div class="error-visual" aria-hidden="true">
+        <div class="visual-orbit orbit-one danger"></div>
+        <div class="visual-orbit orbit-two"></div>
 
-      <div class="error-helper">
-        <span class="helper-pill">
-          Vérifiez votre rôle ou revenez à une page autorisée.
-        </span>
+        <img
+          src="/images/errors/403-access-denied.svg"
+          alt=""
+          class="error-illustration"
+        />
       </div>
-
-      <div class="error-actions">
-        <a routerLink="/events" class="btn-secondary">Voir les événements</a>
-        <button type="button" class="btn-primary" (click)="goBackOrHome()">
-          Retour
-        </button>
-      </div>
-    </div>
+    </section>
   </div>
 </div>
