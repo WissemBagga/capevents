@@ -1,0 +1,37 @@
+<div class="hub-page gamification-hub-page">
+  <div class="hub-container">
+    <div class="hub-header gamification-header">
+      <div>
+        <h1>Engagemnent</h1>
+        <p>Suivez vos points, badges et récompenses dans CapEvents.</p>
+      </div>
+    </div>
+
+    <nav class="hub-tabs">
+      @for (tab of tabs; track tab.key) {
+        <button
+          type="button"
+          class="hub-tab"
+          [class.active]="activeTab === tab.key"
+          (click)="selectTab(tab.key)"
+        >
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+
+    <section class="hub-content">
+      @if (activeTab === 'points') {
+        <app-my-points [embedded]="true"></app-my-points>
+      }
+
+      @if (activeTab === 'badges') {
+        <app-my-badges [embedded]="true"></app-my-badges>
+      }
+
+      @if (activeTab === 'rewards') {
+        <app-my-rewards [embedded]="true"></app-my-rewards>
+      }
+    </section>
+  </div>
+</div>

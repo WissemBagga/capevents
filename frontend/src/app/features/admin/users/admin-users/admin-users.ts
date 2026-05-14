@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { UserService } from '../../../../core/services/user.service';
@@ -17,6 +17,8 @@ import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-t
 export class AdminUsers {
   private userService = inject(UserService);
   private cdr = inject(ChangeDetectorRef);
+
+  @Input() embedded=false;
 
   users: UserSummary[] = [];
   loading = false;

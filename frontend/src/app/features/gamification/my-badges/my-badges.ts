@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
@@ -19,6 +19,8 @@ import { DecimalPipe } from '@angular/common';
 export class MyBadges {
   private badgeService = inject(BadgeService);
   private cdr = inject(ChangeDetectorRef);
+
+  @Input() embedded = false;
 
   badges: BadgeProgressResponse[] = [];
   loading = false;

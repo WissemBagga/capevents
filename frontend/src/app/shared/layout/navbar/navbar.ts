@@ -39,6 +39,7 @@ export class Navbar {
   notificationsLoading = false;
   notificationsErrorMessage = '';
   markAllLoading = false;
+  settingsOpen = false;
 
   private refreshTimer: number | null = null;
 
@@ -57,7 +58,7 @@ export class Navbar {
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement | null;
 
-    if (target?.closest('.notification-wrapper')) {
+    if (target?.closest('.notification-wrapper') || target?.closest('.settings-wrapper')) {
       return;
     }
 
@@ -333,6 +334,27 @@ export class Navbar {
     if (url.startsWith('/my-badges')) return 'Engagement';
     if (url.startsWith('/calendar')) return 'Planification';
 
+    if (url.startsWith('/settings')) return 'Paramètres';
+    if (url.startsWith('/gamification')) return 'Gamification';
+    if (url.startsWith('/admin/assistants')) return 'Assistants IA';
+
     return 'CapEvents';
+  }
+
+  toggleSettings(event: MouseEvent): void {
+    event.stopPropagation();
+
+    this.settingsOpen = !this.settingsOpen;
+
+    if (this.settingsOpen) {
+      this.notificationsOpen = false;
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  closeSettings(): void {
+    this.settingsOpen = false;
+    this.cdr.markForCheck();
   }
 }

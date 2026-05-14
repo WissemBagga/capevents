@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { ProfileService } from '../../../core/services/profile.service';
@@ -19,6 +19,7 @@ export class MyProfile {
   private profileService = inject(ProfileService);
   private cdr = inject(ChangeDetectorRef);
 
+  @Input() embedded = false;
 
   readonly avatarPresets = AVATAR_PRESETS;
 

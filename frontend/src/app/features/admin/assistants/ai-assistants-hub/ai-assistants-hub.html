@@ -1,0 +1,93 @@
+<div class="hub-page ai-assistants-page">
+  <div class="hub-container">
+    <div class="hub-header">
+      <div>
+        <span class="hub-kicker">IA CapEvents</span>
+        <h1>Assistants IA</h1>
+        <p>Accédez aux assistants intelligents disponibles selon votre rôle.</p>
+      </div>
+    </div>
+
+    <nav class="hub-tabs">
+      @for (tab of tabs; track tab.key) {
+        <button
+          type="button"
+          class="hub-tab"
+          [class.active]="activeTab === tab.key"
+          (click)="selectTab(tab.key)"
+        >
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+
+    <section class="assistant-content">
+      @if (activeTab === 'hr-assistant') {
+        <article class="assistant-panel">
+          <div class="assistant-panel-icon assistant">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"></path>
+              <path d="M19 15l.9 2.6L22 18.5l-2.1.9L19 22l-.9-2.6-2.1-.9 2.1-.9L19 15z"></path>
+            </svg>
+          </div>
+
+          <div class="assistant-panel-body">
+            <h2>Assistant RH</h2>
+            <p>
+              Analyse les événements, les invitations et les signaux de participation
+              pour proposer des actions RH intelligentes.
+            </p>
+
+            <ul>
+              <li>Suggestions d’amélioration de participation</li>
+              <li>Actions de relance</li>
+              <li>Analyse des événements à risque</li>
+            </ul>
+
+            <button type="button" class="btn-primary" (click)="openAssistant()">
+              Ouvrir l’assistant RH
+            </button>
+          </div>
+        </article>
+      }
+
+      @if (activeTab === 'planning') {
+        <article class="assistant-panel">
+          <div class="assistant-panel-icon planning">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 6a4 4 0 0 1 7.5-2"></path>
+              <path d="M16 6a4 4 0 0 1 1 7.87"></path>
+              <path d="M8 18a4 4 0 0 1-1-7.87"></path>
+              <path d="M16 18a4 4 0 0 1-7.5 2"></path>
+              <path d="M12 6v12"></path>
+              <path d="M8 10h8"></path>
+              <path d="M8 14h8"></path>
+            </svg>
+          </div>
+
+          <div class="assistant-panel-body">
+            <h2>Planning intelligent</h2>
+            <p>
+              Génère des propositions d’événements et recommande les meilleurs créneaux
+              à partir des données récentes.
+            </p>
+
+            <ul>
+              <li>Analyse de la semaine précédente</li>
+              <li>Propositions d’événements IA</li>
+              <li>Créneaux scorés avec le modèle Planning</li>
+            </ul>
+
+            <button type="button" class="btn-primary" (click)="openPlanning()">
+              Ouvrir le planning intelligent
+            </button>
+          </div>
+        </article>
+      }
+    </section>
+  </div>
+</div>

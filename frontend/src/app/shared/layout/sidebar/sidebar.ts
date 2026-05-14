@@ -25,6 +25,9 @@ export class Sidebar {
   workOpen = false;
   participationOpen = false;
 
+  assistantsOpen = false;
+
+
   ngOnInit(): void {
     this.syncSectionsWithRoute(this.router.url);
 
@@ -88,20 +91,17 @@ export class Sidebar {
   get mainLinks(): NavItem[] {
     if (this.authService.isHr()) {
       return [
-        { label: 'Statistiques', route: '/admin/hr/stats' },
         { label: 'Gestion des événements', route: '/admin/hr' },
         { label: 'Événements', route: '/events' },
-        { label: 'Demandes récompenses', route: '/admin/reward-requests' },
-        { label: 'Départements', route: '/admin/admin-departments' },
-        { label: 'Utilisateurs & rôles', route: '/admin/admin-users' }
+        { label: 'Statistiques', route: '/admin/hr/stats' }
       ];
     }
 
     if (this.authService.isManager()) {
       return [
-        { label: 'Statistiques', route: '/admin/manager/stats' },
         { label: 'Gestion des événements', route: '/admin/manager' },
-        { label: 'Événements', route: '/events' }
+        { label: 'Événements', route: '/events' },
+        { label: 'Statistiques', route: '/admin/manager/stats' }
       ];
     }
 
@@ -111,8 +111,58 @@ export class Sidebar {
     ];
   }
 
+
+  get assistantLinks(): NavItem[] {
+    if (this.authService.isHr()) {
+      return [
+        { label: 'Assistant RH', route: '/admin/assistants' },
+        { label: 'Planning intelligent', route: '/admin/assistants' }
+      ];
+    }
+
+    if (this.authService.isManager()) {
+      return [
+        { label: 'Planning intelligent', route: '/admin/assistants' }
+      ];
+    }
+
+    return [];
+  }
+
+  get participationLinks(): NavItem[] {
+    if (!this.hasParticipationAccess) {
+      return [];
+    }
+
+    return [
+      { label: 'Mes événements', route: '/my-events' },
+      { label: 'Mes invitations', route: '/my-invitations' },
+      { label: 'Événements passés', route: '/events/past' },
+      { label: 'Gamification', route: '/gamification' }
+    ];
+  }
+
+  toggle(section: 'main' | 'work' | 'assistants' | 'participation'): void {
+    if (section === 'main') this.mainOpen = !this.mainOpen;
+    if (section === 'work') this.workOpen = !this.workOpen;
+    if (section === 'assistants') this.assistantsOpen = !this.assistantsOpen;
+    if (section === 'participation') this.participationOpen = !this.participationOpen;
+  }
+
+  goToCalendar(): void {
+    this.router.navigate(['/calendar']);
+  }
+
   get workLinks(): NavItem[] {
-    if (this.authService.isHr() || this.authService.isManager()) {
+    if (this.authService.isHr()) {
+      return [
+        { label: 'Créer un événement', route: '/admin/create-event' },
+        { label: 'Demandes en attente', route: '/admin/pending-events' },
+        { label: 'Demandes récompenses', route: '/admin/reward-requests' }
+      ];
+    }
+
+    if (this.authService.isManager()) {
       return [
         { label: 'Créer un événement', route: '/admin/create-event' },
         { label: 'Demandes en attente', route: '/admin/pending-events' }
@@ -125,28 +175,6 @@ export class Sidebar {
     ];
   }
 
-  get participationLinks(): NavItem[] {
-    if (!this.hasParticipationAccess) {
-      return [];
-    }
-
-    return [
-      { label: 'Mes événements', route: '/my-events' },
-      { label: 'Mes invitations', route: '/my-invitations' },
-      { label: 'Mes points', route: '/my-points' },
-      { label: 'Mes intérêts', route: '/my-interests' },
-      { label: 'Événements passés', route: '/events/past' },
-      { label: 'Mes badges', route: '/my-badges' },
-      { label: 'Mes récompenses', route: '/my-rewards' },
-      { label: 'Calendrier', route: '/calendar' }
-    ];
-  }
-
-  toggle(section: 'main' | 'work' | 'participation'): void {
-    if (section === 'main') this.mainOpen = !this.mainOpen;
-    if (section === 'work') this.workOpen = !this.workOpen;
-    if (section === 'participation') this.participationOpen = !this.participationOpen;
-  }
 
   goToProfile(): void {
     this.router.navigate(['/my-profile']);
@@ -165,9 +193,10 @@ export class Sidebar {
   private syncSectionsWithRoute(url: string): void {
     this.mainOpen = this.matchesAny(url, this.mainLinks);
     this.workOpen = this.matchesAny(url, this.workLinks) || this.workOpen;
+    this.assistantsOpen = this.matchesAny(url, this.assistantLinks) || this.assistantsOpen;
     this.participationOpen = this.matchesAny(url, this.participationLinks) || this.participationOpen;
 
-    if (!this.mainOpen && !this.workOpen && !this.participationOpen) {
+    if (!this.mainOpen && !this.workOpen && !this.assistantsOpen && !this.participationOpen) {
       this.mainOpen = true;
     }
   }

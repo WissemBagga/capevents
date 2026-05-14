@@ -1,14 +1,15 @@
 <div class="my-rewards-page">
   <div class="page-container">
-    <div class="page-header">
-      <div class="header-text">
-        <h1>Mes récompenses</h1>
-        <p class="header-sub">
-          Utilisez vos points pour débloquer des avantages concrets.
-        </p>
+    @if (!embedded) {
+      <div class="page-header">
+        <div class="header-text">
+          <h1>Mes récompenses</h1>
+          <p class="header-sub">
+            Utilisez vos points pour débloquer des avantages concrets.
+          </p>
+        </div>
       </div>
-    </div>
-
+    }
     @if (errorMessage) {
       <div class="state-message error-msg" appScrollToMessage>
         <p>{{ errorMessage }}</p>

@@ -51,6 +51,10 @@ import { EventCalendar } from './features/calendar/event-calendar/event-calendar
 
 import { LandingPage } from './features/landing/landing-page/landing-page';
 
+import { SettingsHub } from './features/settings/settings-hub/settings-hub';
+import { GamificationHub } from './features/gamification/gamification-hub/gamification-hub';
+import { AiAssistantsHub } from './features/admin/assistants/ai-assistants-hub/ai-assistants-hub';
+
 
 
 export const routes: Routes = [
@@ -106,7 +110,17 @@ export const routes: Routes = [
 
       { path: 'my-badges', component: MyBadges },
       { path: 'my-rewards', component: MyRewards },
-      { path: 'calendar', component: EventCalendar }
+      { path: 'calendar', component: EventCalendar },
+
+      { path: 'settings', component: SettingsHub },
+      { path: 'gamification', component: GamificationHub },
+
+      {
+        path: 'admin/assistants',
+        component: AiAssistantsHub,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] }
+      }
     ]
   },
 

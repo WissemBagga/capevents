@@ -8,6 +8,37 @@
 
   <div class="topbar-right">
     @if (currentUser$ | async; as user) {
+      <div class="settings-wrapper">
+        <a
+          routerLink="/settings"
+          class="settings-button"
+          aria-label="Ouvrir les paramètres"
+          title="Paramètres"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.38 1.06V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8.6 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1.06-.38H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8.6a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6A1.65 1.65 0 0 0 10.4 3V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.15.36.38.68.6 1 .27.38.66.6 1.06.6H21a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z"></path>
+          </svg>
+        </a>
+
+        @if (settingsOpen) {
+          <div class="settings-panel" (click)="$event.stopPropagation()">
+            <div class="settings-panel-header">
+              <h4>Paramètres</h4>
+              <span>Administration et préférences</span>
+            </div>
+
+            <div class="settings-panel-body">
+              <a routerLink="/settings" class="settings-panel-item" (click)="closeSettings()">
+                <strong>Ouvrir les paramètres</strong>
+                <span>Départements, rôles, profil et intérêts</span>
+              </a>
+            </div>
+          </div>
+        }
+      </div>
       <div class="notification-wrapper">
         <button
           type="button"

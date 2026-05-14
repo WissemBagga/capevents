@@ -1,12 +1,13 @@
 <div class="admin-users-page">
   <div class="page-container">
-    <div class="page-header">
-      <div class="header-text">
-        <h1>Utilisateurs & rôles</h1>
-        <p class="header-sub">Gérez les rôles métier des utilisateurs.</p>
+    @if (!embedded) {  
+      <div class="page-header">
+        <div class="header-text">
+          <h1>Utilisateurs & rôles</h1>
+          <p class="header-sub">Gérez les rôles métier des utilisateurs.</p>
+        </div>
       </div>
-    </div>
-
+  }
     <!-- State Messages -->
     @if (errorMessage) {
       <div class="state-message error-msg" appScrollToMessage>

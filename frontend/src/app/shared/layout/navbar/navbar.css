@@ -440,3 +440,24 @@
     font-size: 18px;
   }
 }
+.settings-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #e6ebf2;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #46506a;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.settings-button:hover {
+  background: #f7fbff;
+  color: #121A38;
+  box-shadow: 0 8px 20px rgba(18, 26, 56, 0.08);
+  transform: translateY(-1px);
+}

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
@@ -20,6 +20,8 @@ import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-m
 export class MyRewards {
   private rewardService = inject(RewardService);
   private cdr = inject(ChangeDetectorRef);
+
+  @Input() embedded = false;
 
   data: MyRewardsResponse | null = null;
   loading = false;

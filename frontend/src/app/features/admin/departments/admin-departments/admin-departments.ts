@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { UserService } from '../../../../core/services/user.service';
@@ -16,6 +16,8 @@ export class AdminDepartments {
   private userService = inject(UserService);
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
+
+  @Input() embedded = false;
 
   departments: Department[] = [];
   loading = false;

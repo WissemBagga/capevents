@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -18,6 +18,8 @@ import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-m
 export class MyPoints {
   private pointService = inject(PointService);
   private cdr = inject(ChangeDetectorRef);
+
+  @Input() embedded = false;
 
   loading = false;
   errorMessage = '';

@@ -1,14 +1,15 @@
 <div class="admin-departments-page">
   <div class="page-container">
-    
-    <!-- Page Header -->
-    <div class="page-header">
-      <div class="header-text">
-        <h1>Départements</h1>
-        <p class="header-sub">Gérez la liste des départements au sein de l’organisation.</p>
-      </div>
-    </div>
 
+    @if (!embedded) {  
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="header-text">
+          <h1>Départements</h1>
+          <p class="header-sub">Gérez la liste des départements au sein de l’organisation.</p>
+        </div>
+      </div>
+    }    
     <!-- State Messages -->
     @if (errorMessage) {
       <div class="state-message error-msg " appScrollToMessage>

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
 
@@ -18,6 +18,7 @@ import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-m
 export class MyInterests {
   private interestService = inject(InterestService);
   private cdr = inject(ChangeDetectorRef);
+  @Input() embedded = false;
 
   availableInterests: InterestResponse[] = [];
   selectedIds: number[] = [];

@@ -1,14 +1,16 @@
 <div class="my-badges-page">
   <div class="page-container">
-    <div class="page-header">
-      <div class="header-text">
-        <h1>Mes badges</h1>
-        <p class="header-sub">
-          Suivez vos accomplissements et votre progression dans CapEvents.
-        </p>
+    @if (!embedded) {
+      <div class="page-header">
+        <div class="header-text">
+          <h1>Mes badges</h1>
+          <p class="header-sub">
+            Suivez vos accomplissements et votre progression dans CapEvents.
+          </p>
+        </div>
       </div>
-    </div>
-
+    }
+    
     @if (errorMessage) {
       <div class="state-message error-msg" appScrollToMessage>
         <p>{{ errorMessage }}</p>

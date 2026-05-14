@@ -1,0 +1,78 @@
+.hub-page {
+  width: 100%;
+  font-family: 'Verdana', sans-serif;
+}
+
+.hub-container {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.hub-header h1 {
+  margin: 0;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #121A38;
+  letter-spacing: -0.03em;
+}
+
+.hub-header p {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #657189;
+}
+
+.hub-tabs {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  border-bottom: 1px solid #d9e2ee;
+  padding-bottom: 0;
+  overflow-x: auto;
+}
+
+.hub-tab {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 16px 0;
+  color: #5f6f8a;
+  font-family: 'Verdana', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.hub-tab:hover,
+.hub-tab.active {
+  color: #0058AB;
+}
+
+.hub-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: #0058AB;
+}
+
+.hub-content {
+  min-height: 420px;
+}
+
+/* Corrige les pages intégrées pour éviter les marges trop grandes */
+.hub-content .page-container {
+  max-width: none;
+  width: 100%;
+}
+
+.hub-content .page-header {
+  display: none;
+}
