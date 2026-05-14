@@ -28,10 +28,10 @@ export class GamificationHub {
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(params => {
-      const requestedTab = params.get('tab');
+      const tab = params.get('tab');
 
-      if (this.isValidTab(requestedTab)) {
-        this.activeTab = requestedTab;
+      if (this.isValidTab(tab)) {
+        this.activeTab = tab;
         return;
       }
 

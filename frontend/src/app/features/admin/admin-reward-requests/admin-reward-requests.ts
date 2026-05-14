@@ -65,6 +65,8 @@ export class AdminRewardRequests {
   }
 
   complete(item: RewardAdminRequestResponse): void {
+    if (!this.canProcess(item)) return;
+
     this.processingId = item.id;
     this.errorMessage = '';
     this.successMessage = '';
@@ -92,6 +94,11 @@ export class AdminRewardRequests {
 
   toggleRejectBox(id: number): void {
     this.showRejectBoxById[id] = !this.showRejectBoxById[id];
+
+    if (!this.showRejectBoxById[id]) {
+      this.rejectReasonById[id] = '';
+    }
+
     this.cdr.markForCheck();
   }
 
@@ -141,8 +148,52 @@ export class AdminRewardRequests {
     return labels[status] || status;
   }
 
+  statusClass(status: string): string {
+    const classes: Record<string, string> = {
+      PENDING_HR_ACTION: 'status-pending',
+      COMPLETED: 'status-completed',
+      REJECTED: 'status-rejected'
+    };
+
+    return classes[status] || 'status-default';
+  }
+
   canProcess(item: RewardAdminRequestResponse): boolean {
     return item.status === 'PENDING_HR_ACTION' && this.processingId !== item.id;
+  }
+
+  isProcessing(item: RewardAdminRequestResponse): boolean {
+    return this.processingId === item.id;
+  }
+
+  initials(fullName: string | null | undefined): string {
+    const parts = (fullName ?? '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (parts.length === 0) return '??';
+
+    return parts
+      .slice(0, 2)
+      .map(part => part.charAt(0).toUpperCase())
+      .join('');
+  }
+
+  get totalRequests(): number {
+    return this.requests.length;
+  }
+
+  get pendingCount(): number {
+    return this.requests.filter(item => item.status === 'PENDING_HR_ACTION').length;
+  }
+
+  get completedCount(): number {
+    return this.requests.filter(item => item.status === 'COMPLETED').length;
+  }
+
+  get rejectedCount(): number {
+    return this.requests.filter(item => item.status === 'REJECTED').length;
   }
 
   trackById(_: number, item: RewardAdminRequestResponse): number {

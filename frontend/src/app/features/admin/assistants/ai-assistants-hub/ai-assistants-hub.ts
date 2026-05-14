@@ -19,10 +19,10 @@ export class AiAssistantsHub {
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(params => {
-      const requestedTab = params.get('tab');
+      const tab = params.get('tab');
 
-      if (this.canAccessTab(requestedTab)) {
-        this.activeTab = requestedTab;
+      if (this.canAccessTab(tab)) {
+        this.activeTab = tab;
         return;
       }
 
@@ -92,14 +92,8 @@ export class AiAssistantsHub {
   }
 
   private canAccessTab(value: string | null): value is AssistantTab {
-    if (value === 'planning') {
-      return true;
-    }
-
-    if (value === 'hr-assistant') {
-      return this.authService.isHr();
-    }
-
+    if (value === 'planning') return true;
+    if (value === 'hr-assistant') return this.authService.isHr();
     return false;
   }
 }

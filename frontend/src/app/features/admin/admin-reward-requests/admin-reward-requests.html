@@ -2,8 +2,25 @@
   <div class="page-container">
     <div class="page-header">
       <div class="header-text">
+        <span class="page-kicker">Gamification RH</span>
         <h1>Demandes de récompenses</h1>
-        <p class="header-sub">Traitez les demandes nécessitant une validation RH.</p>
+        <p class="header-sub">
+          Traitez les demandes de récompenses nécessitant une validation RH.
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="btn-secondary" (click)="loadRequests()" [disabled]="loading">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+            <path d="M16 21v-5h5"></path>
+          </svg>
+          Actualiser
+        </button>
       </div>
     </div>
 
@@ -19,18 +36,53 @@
       </div>
     }
 
-    <section class="admin-card filter-card">
-      <div class="filter-row">
-        <select [(ngModel)]="statusFilter">
-          <option value="ALL">Toutes</option>
-          <option value="PENDING_HR_ACTION">En attente RH</option>
-          <option value="COMPLETED">Confirmées</option>
-          <option value="REJECTED">Refusées</option>
-        </select>
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span>Total</span>
+        <strong>{{ totalRequests }}</strong>
+        <small>Demande(s) affichée(s)</small>
+      </article>
 
-        <button type="button" class="btn-secondary" (click)="applyFilter()">
-          Appliquer
-        </button>
+      <article class="summary-card pending">
+        <span>En attente</span>
+        <strong>{{ pendingCount }}</strong>
+        <small>À traiter par RH</small>
+      </article>
+
+      <article class="summary-card completed">
+        <span>Confirmées</span>
+        <strong>{{ completedCount }}</strong>
+        <small>Récompenses validées</small>
+      </article>
+
+      <article class="summary-card rejected">
+        <span>Refusées</span>
+        <strong>{{ rejectedCount }}</strong>
+        <small>Points remboursés</small>
+      </article>
+    </section>
+
+    <section class="admin-card filter-card">
+      <div class="filter-content">
+        <div class="filter-text">
+          <h2>Filtrer les demandes</h2>
+          <p>Sélectionnez un statut pour afficher les demandes correspondantes.</p>
+        </div>
+
+        <div class="filter-row">
+          <div class="select-wrapper">
+            <select [(ngModel)]="statusFilter">
+              <option value="ALL">Toutes les demandes</option>
+              <option value="PENDING_HR_ACTION">En attente RH</option>
+              <option value="COMPLETED">Confirmées</option>
+              <option value="REJECTED">Refusées</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn-secondary" (click)="applyFilter()" [disabled]="loading">
+            Appliquer
+          </button>
+        </div>
       </div>
     </section>
 
@@ -42,8 +94,20 @@
     }
 
     @if (!loading && requests.length === 0) {
-      <div class="state-message info-msg" appScrollToMessage>
-        <p>Aucune demande trouvée.</p>
+      <div class="empty-state" appScrollToMessage>
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7"></path>
+            <path d="M22 7H2v5h20V7z"></path>
+            <path d="M12 22V7"></path>
+            <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+            <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+          </svg>
+        </div>
+        <h3>Aucune demande trouvée</h3>
+        <p>Aucune demande ne correspond au filtre sélectionné.</p>
       </div>
     }
 
@@ -51,64 +115,106 @@
       <div class="requests-list">
         @for (item of requests; track trackById($index, item)) {
           <article class="request-card">
-            <div class="request-main">
-              <h2>{{ item.rewardTitle }}</h2>
-              <p><strong>Employé :</strong> {{ item.employeeFullName }}</p>
-              <p><strong>Email :</strong> {{ item.employeeEmail }}</p>
-              <p><strong>Coût :</strong> {{ item.pointsSpent }} pts</p>
-              <p><strong>Demandée le :</strong> {{ item.createdAt | date:'mediumDate' }}</p>
+            <div class="request-identity">
+              <div class="employee-avatar">
+                {{ initials(item.employeeFullName) }}
+              </div>
 
-              @if (item.hrComment) {
-                <p><strong>Commentaire RH :</strong> {{ item.hrComment }}</p>
-              }
+              <div class="request-title-block">
+                <div class="title-row">
+                  <h2>{{ item.rewardTitle }}</h2>
+                  <span class="status-pill" [class]="statusClass(item.status)">
+                    {{ statusLabel(item.status) }}
+                  </span>
+                </div>
 
-              @if (item.handledByFullName) {
-                <p><strong>Traité par :</strong> {{ item.handledByFullName }}</p>
-              }
+                <p class="employee-line">
+                  Demandée par <strong>{{ item.employeeFullName }}</strong>
+                  <span>{{ item.employeeEmail }}</span>
+                </p>
+              </div>
             </div>
 
-            <div class="request-side">
-              <span class="status-pill">{{ statusLabel(item.status) }}</span>
+            <div class="request-details-grid">
+              <div class="detail-cell">
+                <span>Coût</span>
+                <strong>{{ item.pointsSpent }} pts</strong>
+              </div>
 
-              @if (canProcess(item)) {
-                <div class="request-actions">
+              <div class="detail-cell">
+                <span>Date demande</span>
+                <strong>{{ item.createdAt | date:'dd MMM yyyy' }}</strong>
+              </div>
+
+              <div class="detail-cell">
+                <span>Statut</span>
+                <strong>{{ statusLabel(item.status) }}</strong>
+              </div>
+
+              <div class="detail-cell">
+                <span>Traité par</span>
+                <strong>{{ item.handledByFullName || 'Non traité' }}</strong>
+              </div>
+            </div>
+
+            @if (item.hrComment) {
+              <div class="comment-box">
+                <span>Commentaire RH</span>
+                <p>{{ item.hrComment }}</p>
+              </div>
+            }
+
+            @if (canProcess(item)) {
+              <div class="request-actions">
+                <button
+                  type="button"
+                  class="btn-primary"
+                  (click)="complete(item)"
+                  [disabled]="isProcessing(item)"
+                >
+                  {{ isProcessing(item) ? 'Traitement...' : 'Confirmer' }}
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-danger-outline"
+                  (click)="toggleRejectBox(item.id)"
+                  [disabled]="isProcessing(item)"
+                >
+                  {{ showRejectBoxById[item.id] ? 'Annuler le refus' : 'Refuser' }}
+                </button>
+              </div>
+            }
+
+            @if (showRejectBoxById[item.id]) {
+              <div class="reject-box">
+                <label>Motif du refus</label>
+
+                <textarea
+                  [(ngModel)]="rejectReasonById[item.id]"
+                  placeholder="Expliquez brièvement le motif du refus..."
+                  rows="3"
+                ></textarea>
+
+                <div class="reject-actions">
                   <button
                     type="button"
-                    class="btn-primary"
-                    (click)="complete(item)"
-                    [disabled]="processingId === item.id"
+                    class="btn-secondary"
+                    (click)="toggleRejectBox(item.id)"
+                    [disabled]="isProcessing(item)"
                   >
-                    Confirmer
+                    Annuler
                   </button>
 
                   <button
                     type="button"
                     class="btn-danger"
-                    (click)="toggleRejectBox(item.id)"
-                    [disabled]="processingId === item.id"
+                    (click)="reject(item)"
+                    [disabled]="isProcessing(item)"
                   >
-                    Refuser
+                    {{ isProcessing(item) ? 'Traitement...' : 'Confirmer le refus' }}
                   </button>
                 </div>
-              }
-            </div>
-
-            @if (showRejectBoxById[item.id]) {
-              <div class="reject-box">
-                <textarea
-                  [(ngModel)]="rejectReasonById[item.id]"
-                  placeholder="Motif du refus"
-                  rows="3"
-                ></textarea>
-
-                <button
-                  type="button"
-                  class="btn-danger"
-                  (click)="reject(item)"
-                  [disabled]="processingId === item.id"
-                >
-                  Confirmer le refus
-                </button>
               </div>
             }
           </article>
