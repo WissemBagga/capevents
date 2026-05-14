@@ -121,9 +121,7 @@ export class AdminStats {
       }))
       .subscribe({
         next: (summary) => {
-          console.log('RAW planning monitoring:', summary);
           this.planningMonitoring = this.normalizePlanningMonitoring(summary);
-          console.log('NORMALIZED planning monitoring:', this.planningMonitoring);
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -533,9 +531,7 @@ export class AdminStats {
       }))
       .subscribe({
         next: (response) => {
-          console.log('RAW recommendation monitoring:', response);
           this.aiMonitoring = this.normalizeRecommendationMonitoring(response);
-          console.log('NORMALIZED recommendation monitoring:', this.aiMonitoring);
           this.cdr.markForCheck();
         },
         error: () => {
@@ -601,9 +597,7 @@ export class AdminStats {
       }))
       .subscribe({
         next: (response) => {
-          console.log('RAW copilot monitoring:', response);
           this.aiCopilotMonitoring = this.normalizeCopilotMonitoring(response);
-          console.log('NORMALIZED copilot monitoring:', this.aiCopilotMonitoring);
           this.cdr.markForCheck();
         },
         error: () => {
