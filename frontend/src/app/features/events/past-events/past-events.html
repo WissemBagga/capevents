@@ -11,7 +11,7 @@
       @if (!loading && totalItems > 0) {
         <div class="header-summary-pill">
           <strong>{{ totalItems }}</strong>
-          <span>événement(s)</span>
+          <span>événements</span>
         </div>
       }
     </div>
@@ -108,7 +108,7 @@
       <div class="filters-footer">
         <div class="results-inline">
           @if (!loading && totalItems > 0) {
-            <span>{{ totalItems }} résultat(s)</span>
+            <span>{{ totalItems }} résultats</span>
           }
         </div>
 
@@ -217,16 +217,7 @@
 
       @if (totalItems > 0) {
         <div class="pagination-bar modern-pagination">
-          <div class="pagination-summary">
-            Affichage de
-            <strong>{{ currentPage * pageSize + 1 }}</strong>
-            à
-            <strong>{{ ((currentPage + 1) * pageSize) > totalItems ? totalItems : ((currentPage + 1) * pageSize) }}</strong>
-            sur
-            <strong>{{ totalItems }}</strong>
-            événement(s)
-          </div>
-
+          
           @if (totalPages > 1) {
             <div class="pagination-controls">
               <button
@@ -244,15 +235,19 @@
               </button>
 
               <div class="page-numbers">
-                @for (page of visiblePages; track page) {
-                  <button
-                    type="button"
-                    class="page-number"
-                    [class.active]="page === currentPage"
-                    (click)="goToPage(page)"
-                  >
-                    {{ page + 1 }}
-                  </button>
+                @for (page of visiblePages; track $index) {
+                  @if (page === 'dots') {
+                    <span class="page-dots">...</span>
+                  } @else {
+                    <button
+                      type="button"
+                      class="page-number"
+                      [class.active]="page === currentPage"
+                      (click)="goToPage(page)"
+                    >
+                      {{ page + 1 }}
+                    </button>
+                  }
                 }
               </div>
 
@@ -275,6 +270,12 @@
               Page {{ currentPage + 1 }} / {{ totalPages }}
             </p>
           }
+          <div class="pagination-summary">
+            <strong>{{ ((currentPage + 1) * pageSize) > totalItems ? totalItems : ((currentPage + 1) * pageSize) }}</strong>
+            /
+            <strong>{{ totalItems }}</strong>
+            événements
+        </div>
         </div>
       }
     }

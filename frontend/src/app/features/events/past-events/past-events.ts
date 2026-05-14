@@ -130,24 +130,50 @@ export class PastEvents {
     }
   }
 
-  get visiblePages(): number[] {
-    const pages: number[] = [];
-    const maxVisible = 5;
+  get visiblePages(): Array<number | 'dots'> {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const pages: Array<number | 'dots'> = [];
 
-    if (this.totalPages <= 0) {
+    if (total <= 0) {
       return pages;
     }
 
-    let start = Math.max(0, this.currentPage - 2);
-    let end = Math.min(this.totalPages - 1, start + maxVisible - 1);
+    if (total <= 6) {
+      for (let page = 0; page < total; page++) {
+        pages.push(page);
+      }
+      return pages;
+    }
 
-    if (end - start + 1 < maxVisible) {
-      start = Math.max(0, end - maxVisible + 1);
+    pages.push(0);
+
+    let start = Math.max(1, current - 1);
+    let end = Math.min(total - 2, current + 1);
+
+    if (current <= 2) {
+      start = 1;
+      end = 4;
+    }
+
+    if (current >= total - 3) {
+      start = total - 5;
+      end = total - 2;
+    }
+
+    if (start > 1) {
+      pages.push('dots');
     }
 
     for (let page = start; page <= end; page++) {
       pages.push(page);
     }
+
+    if (end < total - 2) {
+      pages.push('dots');
+    }
+
+    pages.push(total - 1);
 
     return pages;
   }
@@ -160,4 +186,5 @@ export class PastEvents {
     this.currentPage = page;
     this.loadEvents();
   }
+  
 }

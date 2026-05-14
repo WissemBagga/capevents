@@ -783,7 +783,7 @@
                 <article class="ai-monitoring-kpi-card success">
                   <span>Succès</span>
                   <strong>{{ aiSuccessRate | number:'1.0-2' }}%</strong>
-                  <small>{{ monitoring.successfulCalls }} appel(s) réussis</small>
+                  <small>{{ monitoring.successfulCalls }} appels réussis</small>
                 </article>
 
                 <article class="ai-monitoring-kpi-card warning">
@@ -897,7 +897,7 @@
                 <article class="ai-monitoring-kpi-card success">
                   <span>Succès</span>
                   <strong>{{ copilotSuccessRatePercent() }}%</strong>
-                  <small>{{ copilotMonitoring.successfulCalls }} appel(s) réussis</small>
+                  <small>{{ copilotMonitoring.successfulCalls }} appels réussis</small>
                 </article>
 
                 <article class="ai-monitoring-kpi-card">
@@ -909,7 +909,7 @@
                 <article class="ai-monitoring-kpi-card warning">
                   <span>Qwen utilisé</span>
                   <strong>{{ copilotQwenUsagePercent() }}%</strong>
-                  <small>{{ copilotMonitoring.qwenUsedCount }} génération(s) Qwen</small>
+                  <small>{{ copilotMonitoring.qwenUsedCount }} générations Qwen</small>
                 </article>
 
                 <article class="ai-monitoring-kpi-card success">
@@ -917,9 +917,9 @@
                   <strong>{{ copilotUsefulnessPercent() }}%</strong>
                   <small>
                     {{ copilotMonitoring.usefulFeedbackCount }}
-                    utile(s) /
+                    utiles /
                     {{ copilotMonitoring.feedbackCount }}
-                    retour(s)
+                    retours
                   </small>
                 </article>
               </div>
@@ -989,7 +989,7 @@
                           </div>
 
                           <div class="ai-recent-prediction-meta">
-                            <span>{{ call.suggestionsCount }} suggestion(s)</span>
+                            <span>{{ call.suggestionsCount }} suggestions</span>
                             <span>{{ call.qwenUsed ? 'Qwen utilisé' : 'Fallback / règles' }}</span>
                           </div>
                         </div>

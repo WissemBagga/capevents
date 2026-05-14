@@ -778,36 +778,23 @@
 /* ===== Modern Pagination ===== */
 .modern-pagination {
   width: 100%;
-  margin-top: 30px;
-  padding: 18px 20px;
-  border: 1px solid #E4EAF1;
-  border-radius: 24px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
-  box-shadow: 0 8px 22px rgba(18, 26, 56, 0.05);
+  margin-top: 28px;
+  padding: 6px 0 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-}
-
-.pagination-summary {
-  font-family: 'Verdana', sans-serif;
-  font-size: 13px;
-  color: #64748B;
-  text-align: center;
-}
-
-.pagination-summary strong {
-  color: #121A38;
-  font-family: 'Ubuntu', sans-serif;
-  font-weight: 800;
+  gap: 10px;
 }
 
 .pagination-controls {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .page-numbers {
@@ -864,6 +851,18 @@
   background: #F8FAFC;
 }
 
+.page-dots {
+  min-width: 30px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #94A3B8;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+}
+
 .page-info {
   margin: 0;
   font-size: 13px;
@@ -871,26 +870,15 @@
   font-family: 'Verdana', sans-serif;
 }
 
-@media (max-width: 560px) {
-  .modern-pagination {
-    padding: 16px 12px;
-  }
+.pagination-summary {
+  font-family: 'Verdana', sans-serif;
+  font-size: 13px;
+  color: #64748B;
+  text-align: center;
+}
 
-  .pagination-controls {
-    width: 100%;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .page-numbers {
-    gap: 6px;
-  }
-
-  .page-arrow,
-  .page-number {
-    width: 40px;
-    min-width: 40px;
-    height: 40px;
-    border-radius: 14px;
-  }
+.pagination-summary strong {
+  color: #121A38;
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 800;
 }

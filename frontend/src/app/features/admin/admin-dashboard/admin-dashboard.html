@@ -188,15 +188,7 @@
     <!-- Pagination -->
     @if (totalItems > 0) {
       <div class="pagination-bar modern-pagination">
-        <div class="pagination-summary">
-          Affichage de
-          <strong>{{ currentPage * pageSize + 1 }}</strong>
-          à
-          <strong>{{ ((currentPage + 1) * pageSize) > totalItems ? totalItems : ((currentPage + 1) * pageSize) }}</strong>
-          sur
-          <strong>{{ totalItems }}</strong>
-          événement(s)
-        </div>
+        
 
         @if (totalPages > 1) {
           <div class="pagination-controls">
@@ -215,15 +207,19 @@
             </button>
 
             <div class="page-numbers">
-              @for (page of visiblePages; track page) {
-                <button
-                  type="button"
-                  class="page-number"
-                  [class.active]="page === currentPage"
-                  (click)="goToPage(page)"
-                >
-                  {{ page + 1 }}
-                </button>
+              @for (page of visiblePages; track $index) {
+                @if (page === 'dots') {
+                  <span class="page-dots">...</span>
+                } @else {
+                  <button
+                    type="button"
+                    class="page-number"
+                    [class.active]="page === currentPage"
+                    (click)="goToPage(page)"
+                  >
+                    {{ page + 1 }}
+                  </button>
+                }
               }
             </div>
 
@@ -243,9 +239,15 @@
           </div>
 
           <p class="page-info">
-            Page {{ currentPage + 1 }} / {{ totalPages }}
+            {{ totalPages }} Pages 
           </p>
         }
+        <div class="pagination-summary">
+          <strong>{{ ((currentPage + 1) * pageSize) > totalItems ? totalItems : ((currentPage + 1) * pageSize) }}</strong>
+          /
+          <strong>{{ totalItems }}</strong>
+          événements
+        </div>
       </div>
     }
 

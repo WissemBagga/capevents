@@ -62,7 +62,7 @@
     @if (!aiCopilotLoading && aiCopilot) {
       <div class="generation-meta">
         <span>Requête {{ aiCopilot.requestId.slice(0, 8) }}</span>
-        <span>{{ aiCopilot.suggestions.length }} suggestion(s)</span>
+        <span>{{ aiCopilot.suggestions.length }} suggestions</span>
       </div>
 
       @if (aiCopilot.suggestions.length === 0) {

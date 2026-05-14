@@ -358,7 +358,7 @@
                             <p>
                             Données insuffisantes pour une analyse IA complète.
                             Moyenne actuelle : <strong>{{ formatRating(aiFeedbackInsight.averageRating) }}/5</strong>
-                            sur <strong>{{ aiFeedbackInsight.feedbackCount }}</strong> feedback(s).
+                            sur <strong>{{ aiFeedbackInsight.feedbackCount }}</strong> feedbacks.
                             L’analyse complète sera affichée à partir de {{ minFeedbacksForFullAiAnalysis }} feedbacks.
                             </p>
                         </div>
@@ -419,7 +419,7 @@
                                 <article class="ai-topic-card">
                                     <div class="ai-topic-header">
                                     <strong>{{ topic.label }}</strong>
-                                    <span>{{ topic.count }} feedback(s)</span>
+                                    <span>{{ topic.count }} feedbacks</span>
                                     </div>
 
                                     <div class="ai-keyword-list">
@@ -777,7 +777,7 @@
                                     <span class="step-num">2</span>
                                     <span class="step-title">Choisissez des employés</span>
                                     @if (selectedUserEmails.length > 0) {
-                                        <span class="selected-count-pill">{{ selectedUserEmails.length }} sélectionné(s)</span>
+                                        <span class="selected-count-pill">{{ selectedUserEmails.length }} sélectionnés</span>
                                     }
                                 </div>
                                 @if (visibleUsersForInvitation.length === 0) {
@@ -874,7 +874,7 @@
                         <div class="invitation-footer">
                             <div class="invitation-summary">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                                <strong>{{ selectedCount }}</strong> personne(s) ciblée(s)
+                                <strong>{{ selectedCount }}</strong> personnes ciblées
                             </div>
                             <button
                                 type="button"

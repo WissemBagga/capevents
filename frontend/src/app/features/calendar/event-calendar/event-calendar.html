@@ -80,7 +80,7 @@
                   'selected': (cell.date | date:'yyyy-MM-dd') === selectedDateKey
                 }"
                 [attr.aria-pressed]="(cell.date | date:'yyyy-MM-dd') === selectedDateKey"
-                [attr.aria-label]="(cell.date | date:'fullDate' : '' : 'fr') + ' - ' + cell.events.length + ' événement(s)'"
+                [attr.aria-label]="(cell.date | date:'fullDate' : '' : 'fr') + ' - ' + cell.events.length + ' événements'"
                 (click)="selectDay(cell)"
               >
                 <div class="cell-top">
@@ -117,7 +117,7 @@
           <div class="panel-header">
             <div>
               <h3>{{ selectedDayLabel }}</h3>
-              <p>{{ selectedDayEvents.length }} événement(s) sur cette date</p>
+              <p>{{ selectedDayEvents.length }} événements sur cette date</p>
             </div>
             <span class="panel-count-badge">{{ selectedDayEvents.length }}</span>
           </div>
