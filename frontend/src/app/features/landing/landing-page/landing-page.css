@@ -42,12 +42,12 @@
 /* ================= NAVBAR ================= */
 .landing-navbar {
   width: 100%;
-  min-height: 76px;
-  padding: 0 max(28px, calc((100% - 1280px) / 2 + 28px));
-  background: rgba(255, 255, 255, 0.82);
+  min-height: 72px;
+  padding: 8px max(28px, calc((100% - 1280px) / 2 + 28px));
+  background: rgba(255, 255, 255, 0.58);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.42);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -55,44 +55,44 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: 0 1px 0 rgba(18, 26, 56, 0.04);
+  box-shadow: none;
   transition:
-    width 0.35s ease,
-    min-height 0.35s ease,
-    padding 0.35s ease,
-    margin 0.35s ease,
-    border-radius 0.35s ease,
-    background 0.35s ease,
-    box-shadow 0.35s ease,
-    border-color 0.35s ease;
+    width 0.34s ease,
+    min-height 0.34s ease,
+    padding 0.34s ease,
+    margin 0.34s ease,
+    border-radius 0.34s ease,
+    background 0.34s ease,
+    box-shadow 0.34s ease,
+    border-color 0.34s ease;
 }
 
-/* État scrollé : navbar flottante en pilule */
+/* État scrollé : navbar flottante premium */
 .landing-navbar.is-scrolled {
-  width: min(1160px, calc(100% - 28px));
-  min-height: 76px;
-  margin: 14px auto 0;
-  padding: 8px 14px 8px 18px;
+  width: min(1160px, calc(100% - 32px));
+  min-height: 68px;
+  margin: 12px auto 0;
+  padding: 7px 12px 7px 18px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(214, 222, 232, 0.95);
+  border: 1px solid rgba(214, 222, 232, 0.92);
   box-shadow:
     0 18px 42px rgba(18, 26, 56, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
 }
 
 /* Logo */
 .landing-logo {
   position: relative;
   width: 178px;
-  height: 54px;
+  height: 52px;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
   text-decoration: none;
   flex-shrink: 0;
   line-height: 0;
-  transition: width 0.32s ease, height 0.32s ease;
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
 .landing-logo-img {
@@ -102,10 +102,10 @@
   display: block;
   object-fit: contain;
   transition:
-    opacity 0.28s ease,
-    transform 0.32s ease,
-    width 0.32s ease,
-    height 0.32s ease;
+    opacity 0.26s ease,
+    transform 0.3s ease,
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
 .landing-logo-img-main {
@@ -116,21 +116,21 @@
 }
 
 .landing-logo-img-secondary {
-  width: 46px;
-  height: 46px;
+  width: 62px;
+  height: 62px;
   opacity: 0;
-  transform: translateY(-50%) scale(0.75);
+  transform: translateY(-50%) scale(0.72);
 }
 
 /* Switch logo après scroll */
 .landing-navbar.is-scrolled .landing-logo {
-  width: 54px;
-  height: 54px;
+  width: 68px;
+  height: 58px;
 }
 
 .landing-navbar.is-scrolled .landing-logo-img-main {
   opacity: 0;
-  transform: translateY(-50%) scale(0.86);
+  transform: translateY(-50%) scale(0.84);
   pointer-events: none;
 }
 
@@ -157,7 +157,7 @@
   color: #121A38;
   text-decoration: none;
   letter-spacing: -0.01em;
-  transition: color 0.18s ease, opacity 0.18s ease;
+  transition: color 0.18s ease;
   white-space: nowrap;
 }
 
@@ -192,12 +192,11 @@
   transition:
     background 0.28s ease,
     padding 0.28s ease,
-    border-radius 0.28s ease,
-    box-shadow 0.28s ease;
+    border-radius 0.28s ease;
 }
 
 .landing-navbar.is-scrolled .navbar-actions {
-  padding: 8px;
+  padding: 7px;
   border-radius: 999px;
   background: rgba(18, 26, 56, 0.08);
 }
@@ -206,11 +205,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  min-height: 38px;
   padding: 0 16px;
-  border: 1px solid rgba(217, 225, 234, 0.95);
+  border: 1px solid rgba(217, 225, 234, 0.88);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.62);
   color: #121A38;
   text-decoration: none;
   font-family: 'Ubuntu', sans-serif;
@@ -234,7 +233,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  min-height: 38px;
   padding: 0 20px;
   border-radius: 999px;
   background: #0058AB;
@@ -255,7 +254,7 @@
 }
 
 .landing-navbar.is-scrolled .nav-register-btn {
-  min-height: 38px;
+  min-height: 36px;
   padding: 0 18px;
 }
 
@@ -1619,40 +1618,6 @@
   transition: width 0.6s ease;
 }
 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 1100px) {
-  .landing-nav {
-    display: none;
-  }
-
-  .landing-navbar {
-    gap: 16px;
-  }
-
-  .landing-navbar.is-scrolled {
-    width: min(760px, calc(100% - 24px));
-  }
-
-  .hero-section,
-  .ai-section {
-    grid-template-columns: 1fr;
-  }
-
-  .features-grid,
-  .roles-grid,
-  .process-grid,
-  .faq-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .gamification-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .landing-footer {
-    grid-template-columns: 1fr 1fr;
-  }
-}
 
 @media (max-width: 768px) {
   .landing-navbar {
@@ -2207,17 +2172,31 @@
 }
 
 
+@media (max-width: 1100px) {
+  .landing-nav {
+    display: none;
+  }
+
+  .landing-navbar {
+    gap: 16px;
+  }
+
+  .landing-navbar.is-scrolled {
+    width: min(760px, calc(100% - 24px));
+  }
+}
+
 @media (max-width: 768px) {
   .landing-navbar {
-    min-height: 70px;
-    padding: 0 16px;
+    min-height: 68px;
+    padding: 8px 16px;
   }
 
   .landing-navbar.is-scrolled {
     width: calc(100% - 20px);
-    min-height: 68px;
+    min-height: 64px;
     margin-top: 10px;
-    padding: 8px 10px 8px 14px;
+    padding: 7px 10px 7px 14px;
   }
 
   .landing-logo {
@@ -2230,13 +2209,13 @@
   }
 
   .landing-logo-img-secondary {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
   }
 
   .landing-navbar.is-scrolled .landing-logo {
-    width: 44px;
-    height: 44px;
+    width: 56px;
+    height: 50px;
   }
 
   .login-link {
@@ -2244,7 +2223,7 @@
   }
 
   .nav-register-btn {
-    min-height: 38px;
+    min-height: 36px;
     padding: 0 16px;
   }
 }

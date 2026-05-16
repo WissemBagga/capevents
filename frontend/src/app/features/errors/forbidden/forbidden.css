@@ -44,29 +44,6 @@
   max-width: 500px;
 }
 
-.error-kicker {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 13px;
-  border-radius: 999px;
-  background: rgba(0, 88, 171, 0.08);
-  color: #0058AB;
-  border: 1px solid rgba(0, 88, 171, 0.12);
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 18px;
-}
-
-.error-kicker.danger {
-  background: rgba(143, 50, 55, 0.08);
-  color: #8F3237;
-  border-color: rgba(143, 50, 55, 0.14);
-}
-
 .error-card h1 {
   margin: 0 0 14px;
   font-family: 'Ubuntu', sans-serif;
@@ -253,22 +230,26 @@
     border-radius: 18px;
     padding: 10px 14px;
   }
+
+  .error-brand-img {
+    width: 136px;
+  }
 }
 
 
 .error-brand {
   display: inline-flex;
   align-items: center;
-  margin-bottom: 18px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(0, 88, 171, 0.10);
-  box-shadow: 0 8px 18px rgba(18, 26, 56, 0.05);
+  margin-bottom: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .error-brand-img {
-  width: 132px;
+  width: 160px;
   height: auto;
   object-fit: contain;
   display: block;
