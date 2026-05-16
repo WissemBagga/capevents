@@ -259,7 +259,6 @@
 .error-brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   margin-bottom: 18px;
   padding: 8px 12px;
   border-radius: 999px;
@@ -269,16 +268,8 @@
 }
 
 .error-brand-img {
-  width: 26px;
-  height: 26px;
+  width: 132px;
+  height: auto;
   object-fit: contain;
   display: block;
-}
-
-.error-brand span {
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 13px;
-  font-weight: 800;
-  color: #121A38;
-  letter-spacing: -0.02em;
 }

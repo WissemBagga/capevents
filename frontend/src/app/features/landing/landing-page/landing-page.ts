@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 
@@ -16,9 +16,21 @@ export class LandingPage implements OnInit {
     totalUsers: 256,
     totalParticipants: 856
   };
+  isNavbarScrolled = false;
+
+  private readonly navbarScrollThreshold = 80;
 
   ngOnInit(): void {
-    // No backend call needed, statistics are static for the landing page
+    this.updateNavbarState();
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.updateNavbarState();
+  }
+
+  private updateNavbarState(): void {
+    this.isNavbarScrolled = window.scrollY > this.navbarScrollThreshold;
   }
 
   ahmedBadges = [

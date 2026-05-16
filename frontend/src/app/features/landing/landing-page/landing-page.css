@@ -58,10 +58,56 @@
 }
 
 .landing-logo {
+  position: relative;
+  width: 170px;
+  height: 50px;
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
   text-decoration: none;
   flex-shrink: 0;
+  transition: width 0.28s ease, transform 0.28s ease;
+}
+
+.landing-logo-img {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  display: block;
+  object-fit: contain;
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease,
+    width 0.28s ease;
+}
+
+.landing-logo-img-main {
+  width: 170px;
+  height: auto;
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.landing-logo-img-secondary {
+  width: 46px;
+  height: 46px;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.78);
+}
+
+.landing-navbar.is-scrolled .landing-logo {
+  width: 52px;
+}
+
+.landing-navbar.is-scrolled .landing-logo-img-main {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.92);
+  pointer-events: none;
+}
+
+.landing-navbar.is-scrolled .landing-logo-img-secondary {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
 }
 
 .landing-logo-img {
@@ -71,8 +117,20 @@
   display: block;
 }
 
-.landing-logo:hover {
-  color: #004a91;
+.landing-navbar.is-scrolled {
+  min-height: 64px;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom-color: rgba(0, 88, 171, 0.10);
+  box-shadow: 0 12px 32px rgba(18, 26, 56, 0.08);
+}
+
+.landing-navbar.is-scrolled .landing-nav a {
+  color: #334155;
+}
+
+.landing-navbar.is-scrolled .nav-register-btn {
+  min-height: 36px;
+  padding: 0 18px;
 }
 
 .landing-nav {
@@ -2083,4 +2141,25 @@
 
 .gamification-panel .summary-value {
   font-size: 28px;
+}
+
+
+@media (max-width: 768px) {
+  .landing-logo {
+    width: 138px;
+    height: 44px;
+  }
+
+  .landing-logo-img-main {
+    width: 138px;
+  }
+
+  .landing-logo-img-secondary {
+    width: 40px;
+    height: 40px;
+  }
+
+  .landing-navbar.is-scrolled .landing-logo {
+    width: 44px;
+  }
 }

@@ -1,11 +1,17 @@
 <div class="landing-page">
   <!-- NAVBAR -->
-  <header class="landing-navbar">
+  <header class="landing-navbar" [class.is-scrolled]="isNavbarScrolled">
     <a routerLink="/" class="landing-logo" aria-label="Accueil CapEvents">
       <img
         src="/images/brand/capevents-logo-main.png"
         alt="CapEvents"
-        class="landing-logo-img"
+        class="landing-logo-img landing-logo-img-main"
+      />
+
+      <img
+        src="/images/brand/capevents-logo-secondary.png"
+        alt="CapEvents"
+        class="landing-logo-img landing-logo-img-secondary"
       />
     </a>
     <nav class="landing-nav" aria-label="Navigation principale">
