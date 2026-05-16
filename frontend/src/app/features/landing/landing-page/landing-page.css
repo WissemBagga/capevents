@@ -70,9 +70,10 @@
 /* État scrollé : navbar flottante premium */
 .landing-navbar.is-scrolled {
   width: min(1160px, calc(100% - 32px));
-  min-height: 68px;
-  margin: 12px auto 0;
-  padding: 7px 12px 7px 18px;
+  min-height: 46px;
+  margin: 16px auto 0;
+  top: 16px;
+  padding: 12px 12px 12px 18px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(214, 222, 232, 0.92);
@@ -116,16 +117,16 @@
 }
 
 .landing-logo-img-secondary {
-  width: 62px;
-  height: 62px;
+  width: 84px;
+  height: 84px;
   opacity: 0;
   transform: translateY(-50%) scale(0.72);
 }
 
 /* Switch logo après scroll */
 .landing-navbar.is-scrolled .landing-logo {
-  width: 68px;
-  height: 58px;
+  width: 90px;
+  height: 42px;
 }
 
 .landing-navbar.is-scrolled .landing-logo-img-main {
@@ -196,7 +197,7 @@
 }
 
 .landing-navbar.is-scrolled .navbar-actions {
-  padding: 7px;
+  padding: 3px 6px;
   border-radius: 999px;
   background: rgba(18, 26, 56, 0.08);
 }
@@ -632,12 +633,18 @@
 .process-section,
 .faq-section {
   padding: 78px 34px 84px;
+}
+
+.features-section,
+.process-section {
   background: var(--color-surface);
 }
 
 .roles-section,
 .faq-section {
+  background: #f8fbff;
   border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .section-title {
@@ -679,7 +686,7 @@
 }
 
 .feature-card {
-  background: var(--color-surface-alt);
+  background: #ffffff;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-6);
@@ -738,7 +745,7 @@
 }
 
 .role-card {
-  background: var(--color-surface-alt);
+  background: #ffffff;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 28px;
@@ -1196,7 +1203,7 @@
   padding: var(--space-6);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  background: var(--color-surface-alt);
+  background: #ffffff;
   transition: all var(--transition-base);
 }
 
@@ -1255,7 +1262,7 @@
 }
 
 .faq-grid article {
-  background: var(--color-surface-alt);
+  background: #ffffff;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--card-padding);

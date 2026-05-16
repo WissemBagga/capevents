@@ -240,12 +240,10 @@
 .error-brand {
   display: inline-flex;
   align-items: center;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
   padding: 0;
   border: none;
-  border-radius: 0;
   background: transparent;
-  box-shadow: none;
 }
 
 .error-brand-img {

@@ -6,15 +6,19 @@
   flex-direction: column;
   background: #ffffff;
   border-right: 1px solid #e6ebf2;
-  padding: 18px 14px 14px;
+  padding: 0 14px 14px;
   box-sizing: border-box;
 }
 
 .sidebar-top {
+  height: 84px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 4px 0 16px;
+
+  margin: 0 -14px 16px;
+  padding: 0 14px;
+  box-sizing: border-box;
 }
 
 .brand-logo-link {
@@ -23,6 +27,14 @@
   justify-content: center;
   text-decoration: none;
   line-height: 0;
+  width: 100%;
+}
+
+.sidebar-brand-logo {
+  width: 155px;
+  height: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .sidebar-nav {

@@ -5,7 +5,7 @@
   background: #f7f8fa;
 }
 
-.app-main {
+.app-shell__main {
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -14,7 +14,7 @@
     linear-gradient(180deg, #fbfcfd 0%, #f6f8fb 100%);
 }
 
-.app-content {
+.app-shell__content {
   flex: 1;
   min-height: calc(100vh - 84px);
   padding: 28px 32px 36px;
@@ -26,7 +26,7 @@
     grid-template-columns: 1fr;
   }
 
-  .app-content {
+  .app-shell__content {
     padding: 18px 16px 24px;
     min-height: auto;
   }
