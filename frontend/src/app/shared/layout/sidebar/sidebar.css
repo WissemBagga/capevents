@@ -11,50 +11,37 @@
 }
 
 .sidebar-top {
-  margin-bottom: 18px;
-}
-
-.brand-block {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  padding: 12px 12px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(0, 88, 171, 0.08), rgba(29, 181, 226, 0.08));
-  border: 1px solid rgba(0, 88, 171, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 0px 0 0px;
 }
 
-.brand-block:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(18, 26, 56, 0.08);
-}
-
-
-
-.brand-text {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-.brand-block {
-  display: flex;
+.brand-logo-link {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  padding: 12px 14px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(0, 88, 171, 0.08), rgba(29, 181, 226, 0.08));
-  border: 1px solid rgba(0, 88, 171, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  line-height: 0;
 }
 
-.brand-block:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(18, 26, 56, 0.08);
+.sidebar-brand-logo {
+  width: 165px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
+
+.brand-logo-link:hover .sidebar-brand-logo {
+  transform: translateY(-1px);
+  opacity: 0.92;
+}
+
+
+
+
 
 .sidebar-brand-logo {
   width: 155px;

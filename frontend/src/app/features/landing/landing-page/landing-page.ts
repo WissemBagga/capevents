@@ -18,7 +18,7 @@ export class LandingPage implements OnInit {
   };
   isNavbarScrolled = false;
 
-  private readonly navbarScrollThreshold = 80;
+  private readonly navbarScrollThreshold = 70;
 
   ngOnInit(): void {
     this.updateNavbarState();
