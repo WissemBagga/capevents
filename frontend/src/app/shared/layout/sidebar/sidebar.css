@@ -17,8 +17,9 @@
 .brand-block {
   display: flex;
   align-items: center;
+  gap: 12px;
   text-decoration: none;
-  padding: 14px 14px;
+  padding: 12px 12px;
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(0, 88, 171, 0.08), rgba(29, 181, 226, 0.08));
   border: 1px solid rgba(0, 88, 171, 0.08);
@@ -30,27 +31,50 @@
   box-shadow: 0 10px 24px rgba(18, 26, 56, 0.08);
 }
 
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  border: 1px solid rgba(0, 88, 171, 0.10);
+  box-shadow: 0 6px 16px rgba(0, 88, 171, 0.08);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand-mark-img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  display: block;
+}
+
 .brand-text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
+  min-width: 0;
 }
 
 .brand-title {
   font-family: 'Ubuntu', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: #121A38;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .brand-subtitle {
   font-family: 'Verdana', sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: #0058AB;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
+  line-height: 1.2;
 }
 
 .sidebar-nav {

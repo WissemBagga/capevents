@@ -215,3 +215,31 @@
     padding: 10px 14px;
   }
 }
+
+
+.error-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 88, 171, 0.10);
+  box-shadow: 0 8px 18px rgba(18, 26, 56, 0.05);
+}
+
+.error-brand-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+}
+
+.error-brand span {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #121A38;
+  letter-spacing: -0.02em;
+}

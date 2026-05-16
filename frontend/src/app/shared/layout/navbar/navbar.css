@@ -26,6 +26,33 @@
   min-width: 0;
 }
 
+.topbar-brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  border: 1px solid rgba(0, 88, 171, 0.10);
+  box-shadow: 0 6px 16px rgba(0, 88, 171, 0.06);
+  text-decoration: none;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.topbar-brand-mark:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(18, 26, 56, 0.08);
+}
+
+.topbar-brand-img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  display: block;
+}
+
 .topbar-title-wrap {
   display: flex;
   flex-direction: column;
@@ -415,6 +442,13 @@
     right: 0;
   }
 }
+
+@media (min-width: 1101px) {
+  .topbar-brand-mark {
+    display: none;
+  }
+}
+
 
 @media (max-width: 640px) {
   .topbar-kicker {
