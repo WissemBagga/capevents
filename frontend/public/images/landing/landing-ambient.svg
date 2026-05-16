@@ -1,0 +1,28 @@
+<svg width="1600" height="760" viewBox="0 0 1600 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="760" fill="white"/>
+  <g opacity="0.52" filter="url(#blur1)">
+    <path d="M-120 190C180 30 390 12 620 120C850 228 1012 220 1235 92C1420 -14 1598 20 1720 92V-80H-120V190Z" fill="#EAF8FF"/>
+    <path d="M1020 80C1204 -10 1390 -20 1620 76V376C1410 274 1232 298 1078 382C880 490 690 488 520 390C340 286 152 294 -80 430V170C162 40 352 34 552 134C730 223 844 166 1020 80Z" fill="#F3F7FB"/>
+    <path d="M720 140C900 22 1080 20 1270 112C1410 180 1504 196 1630 150V480C1460 558 1302 514 1146 434C980 350 862 372 690 478C518 584 344 578 150 474C50 420 -28 398 -120 420V210C52 156 210 168 372 252C514 326 586 228 720 140Z" fill="#E7F4FF"/>
+  </g>
+
+  <g opacity="0.35">
+    <circle cx="1185" cy="176" r="8" fill="#00B8F0"/>
+    <circle cx="1235" cy="136" r="5" fill="#0058AB"/>
+    <circle cx="1302" cy="205" r="7" fill="#FF2F6D"/>
+    <circle cx="1110" cy="260" r="5" fill="#00B8F0"/>
+    <circle cx="1060" cy="130" r="4" fill="#71609E"/>
+  </g>
+
+  <g opacity="0.18">
+    <path d="M1180 310C1215 250 1250 222 1290 188" stroke="#0058AB" stroke-width="3" stroke-linecap="round"/>
+    <path d="M1224 316C1262 272 1310 254 1366 244" stroke="#00B8F0" stroke-width="3" stroke-linecap="round"/>
+    <path d="M1138 300C1178 232 1188 194 1192 146" stroke="#FF2F6D" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <defs>
+    <filter id="blur1" x="-240" y="-220" width="2100" height="1040" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+  </defs>
+</svg>

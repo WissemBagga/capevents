@@ -65,23 +65,23 @@
   letter-spacing: 0.05em;
 }
 
-.brand-header h2 {
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  color: #0058AB;
-  margin: 0;
-  letter-spacing: -0.02em;
-  transition: all 0.2s ease;
+.auth-brand-logo-simple {
+  width: 178px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  transition: all 0.22s ease;
 }
 
 .brand-link-simple {
   text-decoration: none;
+  display: inline-flex;
 }
 
-.brand-link-simple:hover h2 {
-  color: #004a91;
-  transform: translateY(-1px);
+.brand-link-simple:hover .auth-brand-logo-simple {
+  transform: translateY(-1.5px) scale(1.02);
+  filter: drop-shadow(0 6px 12px rgba(0, 88, 171, 0.22));
 }
 
 .auth-icon-simple {

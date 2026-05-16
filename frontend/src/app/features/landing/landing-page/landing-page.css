@@ -42,12 +42,12 @@
 /* ================= NAVBAR ================= */
 .landing-navbar {
   width: 100%;
-  min-height: 72px;
-  padding: 8px max(28px, calc((100% - 1280px) / 2 + 28px));
-  background: rgba(255, 255, 255, 0.58);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.42);
+  min-height: 74px;
+  padding: 10px max(34px, calc((100% - 1280px) / 2 + 34px));
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -64,7 +64,8 @@
     border-radius 0.34s ease,
     background 0.34s ease,
     box-shadow 0.34s ease,
-    border-color 0.34s ease;
+    border-color 0.34s ease,
+    backdrop-filter 0.34s ease;
 }
 
 /* État scrollé : navbar flottante premium */
@@ -139,6 +140,8 @@
   opacity: 1;
   transform: translateY(-50%) scale(1);
 }
+
+
 
 /* Navigation */
 .landing-nav {
@@ -275,8 +278,11 @@
   grid-template-columns: minmax(0, 1fr) minmax(360px, 0.92fr);
   gap: 58px;
   align-items: center;
+  position: relative;
+  overflow: hidden;
   background:
-    radial-gradient(circle at 74% 24%, rgba(29, 181, 226, 0.14), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(248, 251, 255, 0.92) 100%),
+    url('/images/landing/landing-ambient.svg') top center / cover no-repeat,
     linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
 }
 
