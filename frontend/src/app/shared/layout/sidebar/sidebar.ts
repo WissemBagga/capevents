@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 interface NavItem {
   label: string;
   route: string;
+  queryParams?: Record<string, string>;
 }
 
 @Component({
@@ -115,14 +116,14 @@ export class Sidebar {
   get assistantLinks(): NavItem[] {
     if (this.authService.isHr()) {
       return [
-        { label: 'Assistant RH', route: '/admin/assistants' },
-        { label: 'Planning intelligent', route: '/admin/assistants' }
+        { label: 'Assistant RH', route: '/admin/assistants', queryParams: { tab: 'hr-assistant' } },
+        { label: 'Planning intelligent', route: '/admin/assistants', queryParams: { tab: 'planning' } }
       ];
     }
 
     if (this.authService.isManager()) {
       return [
-        { label: 'Planning intelligent', route: '/admin/assistants' }
+        { label: 'Planning intelligent', route: '/admin/assistants', queryParams: { tab: 'planning' } }
       ];
     }
 
@@ -211,27 +212,36 @@ export class Sidebar {
     return jobTitle || this.roleLabel;
   }
 
-  isLinkActive(route: string): boolean {
-    const url = this.router.url.split('?')[0];
+  isLinkActive(route: string, queryParams?: Record<string, string>): boolean {
+    const currentUrl = this.router.url;
+    const url = currentUrl.split('?')[0];
 
+    let matches = false;
     if (route === '/events') {
-      return (
+      matches = (
         url === '/events' ||
         (url.startsWith('/events/') &&
           !url.startsWith('/events/past') &&
           !url.startsWith('/events/past/'))
       );
+    } else if (route === '/admin/hr') {
+      matches = url === '/admin/hr';
+    } else if (route === '/admin/manager') {
+      matches = url === '/admin/manager';
+    } else {
+      matches = url === route || url.startsWith(route + '/');
     }
 
-    if (route === '/admin/hr') {
-      return url === '/admin/hr';
+    if (!matches) return false;
+
+    if (queryParams) {
+      const urlTree = this.router.parseUrl(currentUrl);
+      return Object.keys(queryParams).every(
+        key => urlTree.queryParams[key] === queryParams[key]
+      );
     }
 
-    if (route === '/admin/manager') {
-      return url === '/admin/manager';
-    }
-
-    return url === route || url.startsWith(route + '/');
+    return true;
   }
 
   private routeMatches(currentUrl: string, itemRoute: string): boolean {

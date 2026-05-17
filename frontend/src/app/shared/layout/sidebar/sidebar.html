@@ -124,7 +124,8 @@
             @for (item of assistantLinks; track item.label) {
               <a
                 [routerLink]="item.route"
-                [class.active-link]="isLinkActive(item.route)"
+                [queryParams]="item.queryParams"
+                [class.active-link]="isLinkActive(item.route, item.queryParams)"
                 class="nav-link">
 
                 <span class="nav-icon">

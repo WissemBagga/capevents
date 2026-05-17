@@ -49,9 +49,15 @@
   background: transparent;
   padding: 16px 0;
   color: #5f6f8a;
-  font-size: 13px;
+  font-size: 13.5px;
+  font-family: 'Ubuntu', sans-serif;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hub-tab:hover:not(.active) {
+  color: #121A38;
 }
 
 .hub-tab.active {
