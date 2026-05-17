@@ -28,6 +28,15 @@ export class MyPoints {
   weeklyPoints = 0;
   history: PointTransactionResponse[] = [];
 
+  get userLevel() {
+    const pts = this.totalPoints;
+    if (pts <= 100) return { level: 1, label: 'Novice', min: 0, max: 100, progress: pts };
+    if (pts <= 300) return { level: 2, label: 'Initié', min: 100, max: 300, progress: Math.round(((pts - 100) / 200) * 100) };
+    if (pts <= 600) return { level: 3, label: 'Actif', min: 300, max: 600, progress: Math.round(((pts - 300) / 300) * 100) };
+    if (pts <= 1000) return { level: 4, label: 'Champion', min: 600, max: 1000, progress: Math.round(((pts - 600) / 400) * 100) };
+    return { level: 5, label: 'Légende', min: 1000, max: 2000, progress: Math.min(100, Math.round(((pts - 1000) / 1000) * 100)) };
+  }
+
   ngOnInit(): void {
     this.loadPoints();
   }

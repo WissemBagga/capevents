@@ -3,9 +3,9 @@
     @if (!embedded) {
       <div class="page-header">
         <div class="header-text">
-          <h1>Mes récompenses</h1>
+          <h1>Mon Espace Cadeaux & Avantages 🎁</h1>
           <p class="header-sub">
-            Utilisez vos points pour débloquer des avantages concrets.
+            Profitez de vos succès ! Échangez vos points durement gagnés contre des récompenses choisies avec amour par l'équipe.
           </p>
         </div>
       </div>
@@ -25,19 +25,45 @@
     @if (loading) {
       <div class="state-message loading-msg">
         <div class="spinner"></div>
-        <p>Chargement des récompenses...</p>
+        <p>Préparation de votre espace cadeaux...</p>
       </div>
     }
 
     @if (!loading && data) {
-      <section class="points-summary-card">
-        <span class="summary-label">Solde actuel</span>
-        <strong class="summary-value">{{ data.currentPoints }} pts</strong>
-        <span class="summary-sub">Points disponibles pour échange</span>
+      <section class="rewards-stats-grid">
+        <div class="stat-card brand-glow">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Ma cagnotte disponible</span>
+            <strong class="stat-value">{{ data.currentPoints }} <span class="stat-unit">pts</span></strong>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon level">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Mon statut fidélité</span>
+            <strong class="stat-value text-dark">Niveau {{ userLevel.level }} <span class="stat-level-tag">{{ userLevel.label }}</span></strong>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon exchanges">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Mes plaisirs validés</span>
+            <strong class="stat-value text-dark">{{ totalExchangesCount }} <span class="stat-unit-dark">échanges</span></strong>
+          </div>
+        </div>
       </section>
 
       <section class="rewards-section">
-        <h2>Catalogue</h2>
+        <h2>Faites-vous plaisir !</h2>
 
         <div class="rewards-grid">
           @for (reward of data.catalog; track trackByRewardCode($index, reward)) {
@@ -45,12 +71,25 @@
               <div class="reward-top">
                 <span class="reward-cost">{{ reward.pointsCost }} pts</span>
 
-                @if (reward.requiresHrAction) {
-                  <span class="reward-tag">Validation RH</span>
+                @if (reward.requiresHrAction && reward.affordable) {
+                  <span class="reward-tag">Préparé par vos RH</span>
+                }
+
+                @if (!reward.affordable) {
+                  <span class="locked-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Bientôt accessible
+                  </span>
                 }
               </div>
 
-              <h3>{{ reward.title }}</h3>
+              <div class="reward-title-row">
+                <div class="reward-icon">
+                  <img [src]="getRewardImageUrl(reward.title)" [alt]="reward.title" class="reward-icon-img" />
+                </div>
+                <h3>{{ reward.title }}</h3>
+              </div>
+
               <p class="reward-description">{{ reward.description }}</p>
 
               <button
@@ -61,14 +100,18 @@
               >
                 @if (isRedeeming(reward.code)) {
                   <div class="spinner mini-spinner"></div>
-                  Échange...
+                  Préparation...
                 } @else {
-                  Échanger
+                  @if (reward.affordable) {
+                    S'offrir ce cadeau
+                  } @else {
+                    Encore un peu d'efforts !
+                  }
                 }
               </button>
 
               @if (!reward.affordable) {
-                <p class="reward-hint">Solde insuffisant</p>
+                <p class="reward-hint">Plus que {{ reward.pointsCost - data.currentPoints }} pts pour vous l'offrir !</p>
               }
             </article>
           }
@@ -76,32 +119,41 @@
       </section>
 
       <section class="history-section">
-        <h2>Historique des échanges</h2>
+        <h2>Mon journal des petits bonheurs</h2>
 
         @if (data.history.length === 0) {
           <div class="state-message info-msg">
-            <p>Aucun échange effectué pour le moment.</p>
+            <p>Pas encore de cadeaux demandés ? C'est le moment idéal pour commencer à accumuler des points ! 🌟</p>
           </div>
         }
 
         @if (data.history.length > 0) {
           <div class="history-list">
             @for (item of data.history; track trackByHistoryId($index, item)) {
-              <article class="history-card">
+              <article class="history-card" [class.status-completed]="item.status === 'COMPLETED'" [class.status-pending]="item.status === 'PENDING_HR_ACTION'" [class.status-rejected]="item.status === 'REJECTED'">
                 <div class="history-main">
-                  <h3>{{ item.rewardTitle }}</h3>
-                  <p>{{ item.createdAt | date:'mediumDate' }}</p>
+                  <div class="history-icon-bg">
+                    <img [src]="getRewardImageUrl(item.rewardTitle)" [alt]="item.rewardTitle" class="history-icon-img" />
+                  </div>
+                  <div class="history-details">
+                    <h3>{{ item.rewardTitle }}</h3>
+                    <p class="history-date">{{ item.createdAt | date:'dd MMMM yyyy' : '' : 'fr' }}</p>
+                    @if (item.hrComment) {
+                      <p class="history-comment" [title]="item.hrComment">
+                        <strong>Le petit mot des RH :</strong> {{ item.hrComment }}
+                      </p>
+                    }
+                  </div>
                 </div>
 
                 <div class="history-side">
-                  <strong>-{{ item.pointsSpent }} pts</strong>
-                  <span class="status-pill">{{ statusLabel(item.status) }}</span>
-                  @if (item.hrComment) {
-                    <p class="history-comment">Motif RH : {{ item.hrComment }}</p>
-                  }
+                  <strong class="points-spent">-{{ item.pointsSpent }} pts</strong>
+                  <span class="status-pill" [class.completed]="item.status === 'COMPLETED'" [class.pending]="item.status === 'PENDING_HR_ACTION'" [class.rejected]="item.status === 'REJECTED'">
+                    {{ statusLabel(item.status) }}
+                  </span>
 
                   @if (item.handledByFullName) {
-                    <p class="history-comment">Traité par : {{ item.handledByFullName }}</p>
+                    <p class="history-handler"><strong>Validé par :</strong> {{ item.handledByFullName }}</p>
                   }
                 </div>
               </article>
