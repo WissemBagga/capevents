@@ -116,7 +116,7 @@
   gap: 8px;
   min-height: 34px;
   padding: 0 12px;
-  border-radius: 999px;
+  border-radius: 12px;
   background: rgba(0, 88, 171, 0.06);
   color: #0058AB;
   border: 1px solid rgba(0, 88, 171, 0.10);
@@ -338,7 +338,8 @@
   align-items: flex-start;
   gap: 12px;
   padding: 14px 16px;
-  border-radius: 16px;
+  border-radius: 12px;
+  margin-top: 16px;
   margin-bottom: 22px;
   font-family: 'Verdana', sans-serif;
   font-size: 13px;

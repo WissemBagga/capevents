@@ -44,7 +44,8 @@
   align-items: flex-start;
   gap: 12px;
   padding: 14px 16px;
-  border-radius: 16px;
+  border-radius: 12px;
+  margin-top: 16px;
   margin-bottom: 24px;
   font-family: 'Verdana', sans-serif;
   font-size: 13px;
@@ -433,7 +434,7 @@
   align-items: center;
   min-height: 28px;
   padding: 0 10px;
-  border-radius: 999px;
+  border-radius: 12px;
   background: rgba(0, 130, 142, 0.10);
   color: #006e78;
   border: 1px solid rgba(0, 130, 142, 0.14);
