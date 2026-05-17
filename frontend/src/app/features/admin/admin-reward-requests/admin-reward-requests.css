@@ -32,20 +32,6 @@
   padding: 4px 0 0;
 }
 
-.page-kicker {
-  display: inline-flex;
-  width: fit-content;
-  padding: 5px 10px;
-  margin-bottom: 9px;
-  border-radius: 999px;
-  background: rgba(0, 88, 171, 0.07);
-  color: #0058AB;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .header-text h1 {
   font-family: 'Ubuntu', sans-serif;
   font-size: 32px;
