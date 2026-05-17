@@ -81,36 +81,38 @@
           >
 
             <div class="card-top">
-              <div class="top-left">
-                <span
-                  class="source-pill"
-                  [class.admin]="invitation.invitationSource === 'ADMIN'"
-                  [class.colleague]="invitation.invitationSource !== 'ADMIN'"
-                >
-                  {{ invitationSourceLabel(invitation.invitationSource) }}
+              <div class="header-row">
+                <!-- Original Date badge -->
+                <div class="date-badge">
+                  <span class="date-day">{{ invitation.eventStartAt | date:'dd' }}</span>
+                  <span class="date-month">{{ invitation.eventStartAt | date:'MMM' }}</span>
+                </div>
+
+                <!-- Source & Reminder Pills (top-left) -->
+                <div class="top-left">
+                  <span
+                    class="source-pill"
+                    [class.admin]="invitation.invitationSource === 'ADMIN'"
+                    [class.colleague]="invitation.invitationSource !== 'ADMIN'"
+                  >
+                    {{ invitationSourceLabel(invitation.invitationSource) }}
+                  </span>
+
+                  @if (canShowReminderMessages(invitation)) {
+                    <span class="reminder-received-pill">
+                      {{ reminderCountLabel(invitation) }}
+                    </span>
+                  }
+                </div>
+
+                <!-- Time Pill -->
+                <span class="event-time-value">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  {{ invitation.eventStartAt | date:'HH:mm' }}
                 </span>
-              </div>
-
-              @if (canShowReminderMessages(invitation)) {
-                <span class="reminder-received-pill">
-                  {{ reminderCountLabel(invitation) }}
-                </span>
-              }
-
-              <span class="status-overlay pending">
-                {{ statusLabel(invitation.status) }}
-              </span>
-            </div>
-
-            <div class="event-date-block">
-              <div class="date-badge">
-                <span class="date-day">{{ invitation.eventStartAt | date:'dd' }}</span>
-                <span class="date-month">{{ invitation.eventStartAt | date:'MMM' }}</span>
-              </div>
-
-              <div class="date-content">
-                <span class="event-date-value">{{ invitation.eventStartAt | date:'EEEE d MMMM yyyy' : '' : 'fr' }}</span>
-                <span class="event-time-value">{{ invitation.eventStartAt | date:'HH:mm' }}</span>
               </div>
             </div>
 
