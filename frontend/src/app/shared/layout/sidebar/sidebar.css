@@ -43,9 +43,8 @@
 }
 
 .sidebar-brand-logo {
-  width: 148px;
+  width: 172px;
   height: auto;
-  max-height: 44px;
   object-fit: contain;
   display: block;
   transition: opacity 0.22s ease, width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
@@ -54,32 +53,40 @@
 /* Logo secondaire : masqué par défaut, visible seulement en mode compact */
 .sidebar-secondary-logo {
   display: none;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
-/* Bouton toggle (réduire / ouvrir la sidebar) */
+/* Bouton toggle — style minimaliste, discret */
 .sidebar-collapse-btn {
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border: 1px solid #e8eef6;
-  background: #f7f9fc;
-  color: #6b7890;
-  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  color: #9aa3b2;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  padding: 0;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .sidebar-collapse-btn:hover {
-  background: #eaf0f9;
-  color: #0058AB;
-  border-color: #c8d8ee;
+  background: #f0f3f7;
+  color: #4b5563;
+}
+
+/* L'icône SVG du panel toggle */
+.toggle-panel-icon {
+  display: block;
+  flex-shrink: 0;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ─────────────────────────────────────────────
