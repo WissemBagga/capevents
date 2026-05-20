@@ -1,5 +1,7 @@
-<aside class="sidebar">
+<aside class="sidebar" [class.collapsed]="isCollapsed">
+  <!-- ─── En-tête : logo principal + logo secondaire (collapsed) + bouton toggle ─── -->
   <div class="sidebar-top">
+    <!-- Logo principal : visible en mode ouvert -->
     <a [routerLink]="homeRoute" class="brand-logo-link" aria-label="Accueil CapEvents">
       <img
         src="/images/brand/capevents-logo-main.png"
@@ -7,22 +9,66 @@
         class="sidebar-brand-logo"
       />
     </a>
+    <!-- Logo secondaire : visible seulement en mode compact -->
+    <img
+      src="/images/brand/capevents-logo-secondary.png"
+      alt=""
+      class="sidebar-secondary-logo"
+      aria-hidden="true"
+    />
+    <!-- Bouton toggle : ferme ou ouvre la sidebar -->
+    <button
+      type="button"
+      class="sidebar-collapse-btn"
+      (click)="toggleSidebar()"
+      [title]="isCollapsed ? 'Ouvrir la sidebar' : 'Fermer la sidebar'"
+      [attr.aria-label]="isCollapsed ? 'Ouvrir la sidebar' : 'Fermer la sidebar'"
+    >
+      @if (isCollapsed) {
+        <!-- Chevron right = rouvrir -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      } @else {
+        <!-- Chevron left = fermer -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      }
+    </button>
   </div>
 
+  <!-- ─── Navigation principale ─── -->
   <nav class="sidebar-nav">
+
+    <!-- SECTION : ÉVÉNEMENTS -->
     <section class="nav-section">
-      <button type="button" class="section-toggle" (click)="toggle('main')">
-        <span>Événements</span>
-        <span class="toggle-icon">
-          @if (mainOpen) {
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          } @else {
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          }
+      <button
+        type="button"
+        class="section-toggle"
+        [class.section-toggle--open]="isSectionOpen('main')"
+        (click)="toggle('main')"
+        [attr.aria-expanded]="isSectionOpen('main')"
+      >
+        <span class="section-toggle__icon">
+          <!-- icône Calendrier -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </span>
+        <span class="section-toggle__label">Événements</span>
+        <span class="toggle-chevron">
+          <!-- Un seul chevron, pivoté par CSS -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
         </span>
       </button>
 
-      @if (mainOpen) {
+      @if (isSectionOpen('main') && !isCollapsed) {
         <div class="section-links">
           @for (item of mainLinks; track item.route) {
             <a
@@ -35,10 +81,8 @@
                   @case ('/admin/manager') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> }
                   @case ('/dashboard/employee') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> }
                   @case ('/events') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> }
-                  @case ('/admin/admin-departments') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> }
-                  @case ('/admin/admin-users') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> }
                   @case ('/admin/hr/stats') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M3 3v18h18" /><path d="M7 16l4-4 3 3 5-7" /></svg>}
-                  @case ('/admin/manager/stats') {<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18" /><rect x="7" y="10" width="3" height="7" /><rect x="12" y="6" width="3" height="11" /><rect x="17" y="13" width="3" height="4" /></svg>}                
+                  @case ('/admin/manager/stats') {<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18" /><rect x="7" y="10" width="3" height="7" /><rect x="12" y="6" width="3" height="11" /><rect x="17" y="13" width="3" height="4" /></svg>}
                   @default { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg> }
                 }
               </span>
@@ -49,20 +93,31 @@
       }
     </section>
 
+    <!-- SECTION : ACTIONS -->
     @if (workLinks.length > 0) {
       <section class="nav-section">
-        <button type="button" class="section-toggle" (click)="toggle('work')">
-          <span>Actions</span>
-          <span class="toggle-icon">
-            @if (workOpen) {
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            } @else {
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            }
+        <button
+          type="button"
+          class="section-toggle"
+          [class.section-toggle--open]="isSectionOpen('work')"
+          (click)="toggle('work')"
+          [attr.aria-expanded]="isSectionOpen('work')"
+        >
+          <span class="section-toggle__icon">
+            <!-- icône Éclair / Actions -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </span>
+          <span class="section-toggle__label">Actions</span>
+          <span class="toggle-chevron">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </span>
         </button>
 
-        @if (workOpen) {
+        @if (isSectionOpen('work') && !isCollapsed) {
           <div class="section-links">
             @for (item of workLinks; track item.route) {
               <a
@@ -98,28 +153,32 @@
       </section>
     }
 
+    <!-- SECTION : ASSISTANTS IA -->
     @if (assistantLinks.length > 0) {
       <section class="nav-section">
-        <button type="button" class="section-toggle" (click)="toggle('assistants')">
-          <span>Assistants IA</span>
-          <span class="toggle-icon">
-            @if (assistantsOpen) {
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                  viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            } @else {
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                  viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            }
+        <button
+          type="button"
+          class="section-toggle"
+          [class.section-toggle--open]="isSectionOpen('assistants')"
+          (click)="toggle('assistants')"
+          [attr.aria-expanded]="isSectionOpen('assistants')"
+        >
+          <span class="section-toggle__icon">
+            <!-- icône IA / Étincelle -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"></path>
+              <path d="M19 15l.9 2.6L22 18.5l-2.1.9L19 22l-.9-2.6-2.1-.9 2.1-.9L19 15z"></path>
+            </svg>
+          </span>
+          <span class="section-toggle__label">Assistants IA</span>
+          <span class="toggle-chevron">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </span>
         </button>
 
-        @if (assistantsOpen) {
+        @if (isSectionOpen('assistants') && !isCollapsed) {
           <div class="section-links">
             @for (item of assistantLinks; track item.label) {
               <a
@@ -159,20 +218,34 @@
       </section>
     }
 
+    <!-- SECTION : PARTICIPATION -->
     @if (participationLinks.length > 0) {
       <section class="nav-section">
-        <button type="button" class="section-toggle" (click)="toggle('participation')">
-          <span>Participation</span>
-          <span class="toggle-icon">
-            @if (participationOpen) {
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            } @else {
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            }
+        <button
+          type="button"
+          class="section-toggle"
+          [class.section-toggle--open]="isSectionOpen('participation')"
+          (click)="toggle('participation')"
+          [attr.aria-expanded]="isSectionOpen('participation')"
+        >
+          <span class="section-toggle__icon">
+            <!-- icône Utilisateur / Participation -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </span>
+          <span class="section-toggle__label">Participation</span>
+          <span class="toggle-chevron">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </span>
         </button>
 
-        @if (participationOpen) {
+        @if (isSectionOpen('participation') && !isCollapsed) {
           <div class="section-links">
             @for (item of participationLinks; track item.route) {
               <a
@@ -183,11 +256,7 @@
                   @switch (item.route) {
                     @case ('/my-events') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> }
                     @case ('/my-invitations') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> }
-                    @case ('/my-points') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> }
-                    @case ('/my-interests') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> }
                     @case ('/events/past') { <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M3 10h18" /><path d="M12 14v4" /><path d="M10 16h4" /></svg>}
-                    @case ('/events/feedback') {<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>}
-                    
                     @case ('/gamification') {
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                           viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -212,6 +281,7 @@
     }
   </nav>
 
+  <!-- ─── Pied de page : calendrier + profil utilisateur ─── -->
   <div class="sidebar-footer">
     <button type="button" class="calendar-footer-card" (click)="goToCalendar()">
       <div class="calendar-footer-icon">
@@ -247,7 +317,6 @@
         <span>{{ userSubtitle }}</span>
       </div>
 
-      <!-- ChatGPT settings gear or dots -->
       <button type="button" class="user-action-btn" (click)="logout(); $event.stopPropagation()" title="Déconnexion">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
       </button>

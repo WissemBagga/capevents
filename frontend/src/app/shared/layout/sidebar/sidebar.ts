@@ -22,12 +22,11 @@ export class Sidebar {
 
   avatarLoadError = false;
 
-  mainOpen = true;
-  workOpen = false;
-  participationOpen = false;
+  /** Identifiant de la section accordéon actuellement ouverte. null = toutes fermées. */
+  openedSection: string | null = 'main';
 
-  assistantsOpen = false;
-
+  /** true = sidebar en mode compact (icônes seules), false = mode étendu normal */
+  isCollapsed = false;
 
   ngOnInit(): void {
     this.syncSectionsWithRoute(this.router.url);
@@ -143,11 +142,30 @@ export class Sidebar {
     ];
   }
 
-  toggle(section: 'main' | 'work' | 'assistants' | 'participation'): void {
-    if (section === 'main') this.mainOpen = !this.mainOpen;
-    if (section === 'work') this.workOpen = !this.workOpen;
-    if (section === 'assistants') this.assistantsOpen = !this.assistantsOpen;
-    if (section === 'participation') this.participationOpen = !this.participationOpen;
+  /**
+   * Accordéon exclusif : ouvre la section cliquée et ferme toutes les autres.
+   * Si la section est déjà ouverte, elle se referme.
+   * Si la sidebar est en mode compact, elle s'ouvre automatiquement.
+   */
+  toggle(section: string): void {
+    if (this.isCollapsed) {
+      // En mode compact : ouvrir la sidebar et afficher cette section
+      this.isCollapsed = false;
+      this.openedSection = section;
+    } else {
+      // En mode étendu : accordéon normal
+      this.openedSection = this.openedSection === section ? null : section;
+    }
+  }
+
+  /** Retourne true si la section donnée est actuellement ouverte. */
+  isSectionOpen(section: string): boolean {
+    return this.openedSection === section;
+  }
+
+  /** Ouvre ou ferme la sidebar en mode compact. */
+  toggleSidebar(): void {
+    this.isCollapsed = !this.isCollapsed;
   }
 
   goToCalendar(): void {
@@ -192,13 +210,18 @@ export class Sidebar {
   }
 
   private syncSectionsWithRoute(url: string): void {
-    this.mainOpen = this.matchesAny(url, this.mainLinks);
-    this.workOpen = this.matchesAny(url, this.workLinks) || this.workOpen;
-    this.assistantsOpen = this.matchesAny(url, this.assistantLinks) || this.assistantsOpen;
-    this.participationOpen = this.matchesAny(url, this.participationLinks) || this.participationOpen;
-
-    if (!this.mainOpen && !this.workOpen && !this.assistantsOpen && !this.participationOpen) {
-      this.mainOpen = true;
+    // Ouvrir uniquement la section qui contient la route active
+    if (this.matchesAny(url, this.mainLinks)) {
+      this.openedSection = 'main';
+    } else if (this.matchesAny(url, this.workLinks)) {
+      this.openedSection = 'work';
+    } else if (this.matchesAny(url, this.assistantLinks)) {
+      this.openedSection = 'assistants';
+    } else if (this.matchesAny(url, this.participationLinks)) {
+      this.openedSection = 'participation';
+    } else if (this.openedSection === null) {
+      // Aucune section active trouvée et rien d'ouvert : ouvrir main par défaut
+      this.openedSection = 'main';
     }
   }
 

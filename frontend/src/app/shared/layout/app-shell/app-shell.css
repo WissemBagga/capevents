@@ -1,7 +1,7 @@
 .app-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 288px 1fr;
+  grid-template-columns: auto 1fr;
   background: #f7f8fa;
 }
 
