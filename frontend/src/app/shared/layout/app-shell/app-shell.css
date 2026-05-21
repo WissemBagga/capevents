@@ -2,23 +2,211 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: auto 1fr;
-  background: #f7f8fa;
+  background: #f6f9fd;
 }
 
+.app-shell__sidebar {
+  position: relative;
+  z-index: 30;
+}
+
+/* =========================================================
+   PREMIUM INTERNAL BACKGROUND — CapEvents Aurora Mesh
+   ========================================================= */
 .app-shell__main {
+  position: relative;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  isolation: isolate;
   background:
-    radial-gradient(circle at top left, rgba(29, 181, 226, 0.05), transparent 28%),
-    linear-gradient(180deg, #fbfcfd 0%, #f6f8fb 100%);
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 38%, #f4f8fc 100%);
+}
+
+/* Grande couche de lumière premium, couvrant tout le fond */
+.app-shell__main::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 0 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background:
+    radial-gradient(circle at 10% 12%, rgba(0, 88, 171, 0.12), transparent 28%),
+    radial-gradient(circle at 84% 10%, rgba(29, 181, 226, 0.14), transparent 30%),
+    radial-gradient(circle at 18% 86%, rgba(255, 47, 109, 0.07), transparent 30%),
+    radial-gradient(circle at 88% 82%, rgba(113, 96, 158, 0.075), transparent 32%),
+    radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.92), transparent 54%),
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 48%, #f4f8fd 100%);
+
+  background-size:
+    1200px 1200px,
+    1200px 1200px,
+    1100px 1100px,
+    1200px 1200px,
+    100% 100%,
+    100% 100%;
+
+  background-position:
+    -18% -18%,
+    118% -16%,
+    -14% 118%,
+    116% 116%,
+    center,
+    center;
+
+  animation: capeventsAuroraFlow 28s ease-in-out infinite;
+}
+
+/* Voile glass très doux pour que le contenu reste lisible */
+.app-shell__main::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.76) 0%,
+      rgba(255, 255, 255, 0.38) 38%,
+      rgba(248, 251, 255, 0.72) 100%
+    );
+
+  backdrop-filter: blur(0.4px);
+  -webkit-backdrop-filter: blur(0.4px);
+}
+
+/* Navbar au-dessus du fond */
+app-navbar {
+  position: relative;
+  z-index: 8;
+  display: block;
 }
 
 .app-shell__content {
+  position: relative;
+  z-index: 4;
   flex: 1;
   min-height: calc(100vh - 84px);
   padding: 28px 32px 36px;
   background: transparent;
+}
+
+/* Texture premium très subtile, évite le fond plat */
+.app-shell__content::before {
+  content: "";
+  position: fixed;
+  inset: 84px 0 0 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.34;
+
+  background-image:
+    linear-gradient(rgba(0, 88, 171, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 88, 171, 0.028) 1px, transparent 1px),
+    radial-gradient(circle at 20% 24%, rgba(29, 181, 226, 0.08), transparent 24%),
+    radial-gradient(circle at 82% 72%, rgba(255, 47, 109, 0.045), transparent 26%);
+
+  background-size:
+    72px 72px,
+    72px 72px,
+    100% 100%,
+    100% 100%;
+
+  mask-image:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      black 18%,
+      black 78%,
+      transparent 100%
+    );
+
+  -webkit-mask-image:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      black 18%,
+      black 78%,
+      transparent 100%
+    );
+}
+
+/* Couche de profondeur : une lumière diagonale élégante */
+.app-shell__content::after {
+  content: "";
+  position: fixed;
+  inset: 84px 0 0 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.26;
+
+  background:
+    linear-gradient(
+      115deg,
+      transparent 0%,
+      transparent 22%,
+      rgba(29, 181, 226, 0.08) 36%,
+      rgba(255, 255, 255, 0.20) 50%,
+      rgba(0, 88, 171, 0.055) 64%,
+      transparent 78%,
+      transparent 100%
+    );
+
+  transform: translateX(-8%);
+  animation: capeventsLightSweep 34s ease-in-out infinite;
+}
+
+/* Le contenu reste toujours au-dessus */
+.page-shell {
+  position: relative;
+  z-index: 5;
+}
+
+/* Transitions lentes, premium, non agressives */
+@keyframes capeventsAuroraFlow {
+  0%, 100% {
+    background-position:
+      -18% -18%,
+      118% -16%,
+      -14% 118%,
+      116% 116%,
+      center,
+      center;
+  }
+
+  50% {
+    background-position:
+      -10% -10%,
+      108% -6%,
+      -6% 108%,
+      106% 106%,
+      center,
+      center;
+  }
+}
+
+@keyframes capeventsLightSweep {
+  0%, 100% {
+    transform: translateX(-10%) translateY(0) rotate(0deg);
+    opacity: 0.18;
+  }
+
+  50% {
+    transform: translateX(6%) translateY(-2%) rotate(0.5deg);
+    opacity: 0.30;
+  }
+}
+
+/* Accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  .app-shell__main::before,
+  .app-shell__content::after {
+    animation: none;
+  }
 }
 
 @media (max-width: 1100px) {
@@ -29,5 +217,28 @@
   .app-shell__content {
     padding: 18px 16px 24px;
     min-height: auto;
+  }
+
+  .app-shell__main::before {
+    background-size:
+      900px 900px,
+      900px 900px,
+      840px 840px,
+      900px 900px,
+      100% 100%,
+      100% 100%;
+  }
+
+  .app-shell__content::before {
+    opacity: 0.22;
+    background-size:
+      92px 92px,
+      92px 92px,
+      100% 100%,
+      100% 100%;
+  }
+
+  .app-shell__content::after {
+    opacity: 0.16;
   }
 }
