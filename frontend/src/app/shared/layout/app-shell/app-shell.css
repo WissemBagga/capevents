@@ -2,12 +2,12 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: auto 1fr;
-  background: #f5f8fc;
+  background: #f6f9fd;
 }
 
 .app-shell__sidebar {
   position: relative;
-  z-index: 40;
+  z-index: 30;
 }
 
 .app-shell__main {
@@ -18,209 +18,121 @@
   overflow: hidden;
   isolation: isolate;
   background:
-    linear-gradient(180deg, #ffffff 0%, #f8fbff 42%, #f3f7fc 100%);
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 48%, #f4f7fb 100%);
 }
 
-/* ======================================================
-   CAPEVENTS SIGNATURE FLOW BACKGROUND
-   Fond premium avec courbes abstraites de marque
-   ====================================================== */
-
+/* Grand watermark CapEvents derrière toutes les pages */
 .app-shell__main::before {
+  content: "";
+  position: fixed;
+  top: 52%;
+  left: 58%;
+  width: min(62vw, 760px);
+  height: min(62vw, 760px);
+  transform: translate(-50%, -50%) rotate(-12deg);
+  pointer-events: none;
+  z-index: 0;
+
+  background-image: url('/images/brand/capevents-logo-secondary.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  opacity: 0.035;
+  filter: saturate(1.1);
+}
+
+/* Soft panels abstraits très discrets */
+.app-shell__main::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
-
-  background:
-    radial-gradient(circle at 14% 16%, rgba(0, 88, 171, 0.12), transparent 30%),
-    radial-gradient(circle at 86% 14%, rgba(29, 181, 226, 0.16), transparent 32%),
-    radial-gradient(circle at 18% 86%, rgba(255, 47, 109, 0.075), transparent 34%),
-    radial-gradient(circle at 86% 84%, rgba(113, 96, 158, 0.08), transparent 34%),
-    linear-gradient(135deg, #ffffff 0%, #f8fbff 48%, #f4f8fd 100%);
-
-  animation: signatureAmbientMove 32s ease-in-out infinite;
-}
-
-/* Grandes courbes abstraites inspirées du logo CapEvents */
-.app-shell__main::after {
-  content: "";
-  position: fixed;
-  inset: -18% -12%;
-  pointer-events: none;
   z-index: 1;
-  opacity: 0.42;
 
   background:
-    conic-gradient(
-      from 210deg at 28% 42%,
-      transparent 0deg,
-      rgba(0, 88, 171, 0.00) 42deg,
-      rgba(0, 88, 171, 0.16) 76deg,
-      rgba(29, 181, 226, 0.20) 112deg,
-      transparent 150deg,
-      transparent 360deg
-    ),
-    conic-gradient(
-      from 35deg at 78% 34%,
-      transparent 0deg,
-      rgba(255, 47, 109, 0.00) 60deg,
-      rgba(255, 47, 109, 0.13) 92deg,
-      rgba(113, 96, 158, 0.12) 128deg,
-      transparent 168deg,
-      transparent 360deg
-    ),
-    conic-gradient(
-      from 130deg at 52% 88%,
-      transparent 0deg,
-      rgba(29, 181, 226, 0.00) 44deg,
-      rgba(29, 181, 226, 0.12) 84deg,
-      rgba(0, 88, 171, 0.09) 124deg,
-      transparent 166deg,
-      transparent 360deg
-    );
-
-  filter: blur(42px);
-  transform: rotate(-5deg);
-  animation: signatureFlowMove 38s ease-in-out infinite;
+    radial-gradient(ellipse at 18% 12%, rgba(0, 88, 171, 0.07), transparent 34%),
+    radial-gradient(ellipse at 90% 18%, rgba(29, 181, 226, 0.08), transparent 36%),
+    radial-gradient(ellipse at 16% 92%, rgba(255, 47, 109, 0.035), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.32));
 }
 
 /* Navbar au-dessus du fond */
 app-navbar {
   position: relative;
-  z-index: 10;
+  z-index: 8;
   display: block;
 }
 
 .app-shell__content {
   position: relative;
-  z-index: 5;
+  z-index: 4;
   flex: 1;
   min-height: calc(100vh - 84px);
   padding: 28px 32px 36px;
   background: transparent;
 }
 
-/* Surface glass claire pour garder la lisibilité */
+/* Fine texture premium, presque invisible */
 .app-shell__content::before {
   content: "";
   position: fixed;
   inset: 84px 0 0 0;
   pointer-events: none;
   z-index: 2;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.72) 0%,
-      rgba(255, 255, 255, 0.38) 34%,
-      rgba(248, 251, 255, 0.68) 100%
-    );
-
-  backdrop-filter: blur(0.35px);
-  -webkit-backdrop-filter: blur(0.35px);
-}
-
-/* Grille premium ultra subtile comme un produit SaaS haut de gamme */
-.app-shell__content::after {
-  content: "";
-  position: fixed;
-  inset: 84px 0 0 0;
-  pointer-events: none;
-  z-index: 3;
-  opacity: 0.22;
+  opacity: 0.18;
 
   background-image:
-    linear-gradient(rgba(0, 88, 171, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 88, 171, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(0, 88, 171, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 88, 171, 0.028) 1px, transparent 1px);
 
-  background-size: 78px 78px;
+  background-size: 96px 96px;
 
-  mask-image:
-    radial-gradient(circle at 50% 42%, black 0%, black 48%, transparent 82%);
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    black 20%,
+    black 78%,
+    transparent 100%
+  );
 
-  -webkit-mask-image:
-    radial-gradient(circle at 50% 42%, black 0%, black 48%, transparent 82%);
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    black 20%,
+    black 78%,
+    transparent 100%
+  );
 }
 
+/* Le contenu reste propre au-dessus */
 .page-shell {
   position: relative;
-  z-index: 8;
+  z-index: 5;
 }
 
-/* Halo intelligent qui suit visuellement le contenu */
+/* Petit effet de profondeur sous le contenu */
 .page-shell::before {
   content: "";
   position: fixed;
-  top: 18%;
-  left: 8%;
-  width: 84vw;
-  height: 62vh;
+  top: 140px;
+  left: 50%;
+  width: min(86vw, 1180px);
+  height: 420px;
+  transform: translateX(-50%);
   pointer-events: none;
   z-index: -1;
-  opacity: 0.26;
 
   background:
-    radial-gradient(ellipse at 20% 28%, rgba(0, 88, 171, 0.12), transparent 54%),
-    radial-gradient(ellipse at 72% 24%, rgba(29, 181, 226, 0.16), transparent 58%),
-    radial-gradient(ellipse at 48% 80%, rgba(255, 47, 109, 0.08), transparent 62%);
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.72),
+      rgba(255, 255, 255, 0.10)
+    );
 
-  filter: blur(52px);
-  animation: contentHaloBreathe 20s ease-in-out infinite;
-}
-
-/* Transitions lentes et premium */
-@keyframes signatureAmbientMove {
-  0%, 100% {
-    background-position:
-      0% 0%,
-      100% 0%,
-      0% 100%,
-      100% 100%,
-      center;
-  }
-
-  50% {
-    background-position:
-      7% 5%,
-      93% 7%,
-      8% 92%,
-      92% 90%,
-      center;
-  }
-}
-
-@keyframes signatureFlowMove {
-  0%, 100% {
-    transform: rotate(-5deg) translate3d(0, 0, 0) scale(1);
-    opacity: 0.36;
-  }
-
-  50% {
-    transform: rotate(-2deg) translate3d(-18px, -12px, 0) scale(1.04);
-    opacity: 0.48;
-  }
-}
-
-@keyframes contentHaloBreathe {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.20;
-  }
-
-  50% {
-    transform: translate3d(18px, -10px, 0) scale(1.05);
-    opacity: 0.32;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .app-shell__main::before,
-  .app-shell__main::after,
-  .page-shell::before {
-    animation: none;
-  }
+  border-radius: 48px;
+  filter: blur(34px);
+  opacity: 0.52;
 }
 
 @media (max-width: 1100px) {
@@ -233,21 +145,22 @@ app-navbar {
     min-height: auto;
   }
 
-  .app-shell__main::after {
-    inset: -12% -45%;
-    opacity: 0.30;
-    filter: blur(48px);
+  .app-shell__main::before {
+    width: 540px;
+    height: 540px;
+    left: 62%;
+    opacity: 0.028;
   }
 
-  .app-shell__content::after {
-    opacity: 0.14;
-    background-size: 92px 92px;
+  .app-shell__content::before {
+    opacity: 0.12;
+    background-size: 120px 120px;
   }
 
   .page-shell::before {
-    width: 110vw;
-    left: -8%;
-    top: 22%;
-    opacity: 0.18;
+    width: 96vw;
+    height: 320px;
+    top: 120px;
+    opacity: 0.38;
   }
 }
