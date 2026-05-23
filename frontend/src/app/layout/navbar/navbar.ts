@@ -5,7 +5,7 @@ import {
   inject
 } from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
@@ -39,7 +39,6 @@ export class Navbar {
   notificationsLoading = false;
   notificationsErrorMessage = '';
   markAllLoading = false;
-  settingsOpen = false;
 
   private refreshTimer: number | null = null;
 
@@ -58,7 +57,7 @@ export class Navbar {
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement | null;
 
-    if (target?.closest('.notification-wrapper') || target?.closest('.settings-wrapper')) {
+    if (target?.closest('.notification-wrapper')) {
       return;
     }
 
@@ -341,20 +340,5 @@ export class Navbar {
     return 'CapEvents';
   }
 
-  toggleSettings(event: MouseEvent): void {
-    event.stopPropagation();
-
-    this.settingsOpen = !this.settingsOpen;
-
-    if (this.settingsOpen) {
-      this.notificationsOpen = false;
-    }
-
-    this.cdr.markForCheck();
-  }
-
-  closeSettings(): void {
-    this.settingsOpen = false;
-    this.cdr.markForCheck();
-  }
+  
 }

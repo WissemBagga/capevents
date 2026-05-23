@@ -15,7 +15,8 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
   isolation: isolate;
   background:
     linear-gradient(180deg, #ffffff 0%, #f8fbff 48%, #f4f7fb 100%);

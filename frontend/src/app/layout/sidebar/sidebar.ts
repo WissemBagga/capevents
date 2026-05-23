@@ -268,23 +268,27 @@ export class Sidebar {
   }
 
   private routeMatches(currentUrl: string, itemRoute: string): boolean {
+    const url = currentUrl.split('?')[0];
+
     if (itemRoute === '/events') {
       return (
-        currentUrl === '/events' ||
-        (currentUrl.startsWith('/events/') &&
-          !currentUrl.startsWith('/events/past') &&
-          !currentUrl.startsWith('/events/past/'))
+        url === '/events' ||
+        (
+          url.startsWith('/events/') &&
+          !url.startsWith('/events/past') &&
+          !url.startsWith('/events/past/')
+        )
       );
     }
 
     if (itemRoute === '/admin/hr') {
-      return currentUrl === '/admin/hr';
+      return url === '/admin/hr';
     }
 
     if (itemRoute === '/admin/manager') {
-      return currentUrl === '/admin/manager';
+      return url === '/admin/manager';
     }
 
-    return currentUrl === itemRoute || currentUrl.startsWith(itemRoute + '/');
+    return url === itemRoute || url.startsWith(itemRoute + '/');
   }
 }

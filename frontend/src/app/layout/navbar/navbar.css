@@ -27,28 +27,27 @@
 }
 
 .topbar-brand-mark {
-  width: 44px;
+  display: inline-flex;
+  align-items: center;
+  width: 132px;
   height: 44px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  background: #ffffff;
-  border: 1px solid rgba(0, 88, 171, 0.10);
-  box-shadow: 0 6px 16px rgba(0, 88, 171, 0.06);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   text-decoration: none;
-  overflow: hidden;
+  overflow: visible;
   flex-shrink: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .topbar-brand-mark:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(18, 26, 56, 0.08);
+  transform: none;
+  box-shadow: none;
 }
 
 .topbar-brand-img {
-  width: 34px;
-  height: 34px;
+  width: 132px;
+  height: auto;
   object-fit: contain;
   display: block;
 }

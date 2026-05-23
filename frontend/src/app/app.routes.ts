@@ -16,7 +16,7 @@ import { AppShell } from './layout/app-shell/app-shell';
 import { VerifyEmail } from './features/auth/verify-email/verify-email';
 import { VerifyEmailPending } from './features/auth/verify-email-pending/verify-email-pending';
 import { AdminEventDetails } from './features/admin/admin-event-details/admin-event-details';
-import {MyEvents} from './features/events/my-events/my-events'
+import {MyEvents} from './features/events/my-events/my-events';
 
 import { MyInvitations } from './features/invitations/my-invitations/my-invitations'
 import { SubmitEvent } from './features/submissions/new/submit-event/submit-event';
