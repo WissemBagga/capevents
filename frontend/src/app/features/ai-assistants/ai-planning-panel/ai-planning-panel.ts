@@ -4,14 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { AuthService } from '../../../../core/services/auth.service';
-import { UserService } from '../../../../core/services/user.service';
-import { AiPlanningService } from '../../../../core/services/ai-planning.service';
-import { Department } from '../../../../core/models/department.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { UserService } from '../../../core/services/user.service';
+import { AiPlanningService } from '../../../core/services/ai-planning.service';
+import { Department } from '../../../core/models/department.model';
 import {
   AiPlanningEventProposal,
   AiPlanningEventProposalResponse
-} from '../../../../core/models/ai-planning.model';
+} from '../../../core/models/ai-planning.model';
 
 @Component({
   selector: 'app-ai-planning-panel',

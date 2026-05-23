@@ -4,14 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { AiHrCopilotService } from '../../../../core/services/ai-hr-copilot.service';
+import { AiHrCopilotService } from '../../../core/services/ai-hr-copilot.service';
 import {
   AiHrCopilotResponse,
   AiHrCopilotSuggestion
-} from '../../../../core/models/ai-hr-copilot.model';
-import { InvitationReminderService } from '../../../../core/services/invitation-reminder.service';
-import { AiHrCopilotFeedbackService } from '../../../../core/services/ai-hr-copilot-feedback.service';
-import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
+} from '../../../core/models/ai-hr-copilot.model';
+import { InvitationReminderService } from '../../../core/services/invitation-reminder.service';
+import { AiHrCopilotFeedbackService } from '../../../core/services/ai-hr-copilot-feedback.service';
+import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
 @Component({
   selector: 'app-ai-hr-assistant-panel',

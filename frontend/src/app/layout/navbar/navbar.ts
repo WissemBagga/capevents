@@ -8,9 +8,9 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { AuthService } from '../../../core/services/auth.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { NotificationResponse } from '../../../core/models/notification.model';
+import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { NotificationResponse } from '../../core/models/notification.model';
 
 interface NotificationGroup{
   label: string;

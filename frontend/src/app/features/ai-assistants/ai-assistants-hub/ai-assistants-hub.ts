@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 import { AiPlanningPanel } from '../ai-planning-panel/ai-planning-panel';
 import { AiHrAssistantPanel } from '../ai-hr-assistant-panel/ai-hr-assistant-panel';

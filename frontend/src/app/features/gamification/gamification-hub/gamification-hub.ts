@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { MyPoints } from '../../points/my-points/my-points';
+import { MyPoints } from '../my-points/my-points';
 import { MyBadges } from '../my-badges/my-badges';
-import { MyRewards } from '../../rewards/my-rewards/my-rewards';
+import { MyRewards } from '../my-rewards/my-rewards';
 
 type GamificationTab = 'points' | 'badges' | 'rewards';
 
