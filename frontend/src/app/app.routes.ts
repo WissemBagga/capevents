@@ -26,7 +26,7 @@ import { MySubmissions } from './features/submissions/my-submissions/my-submissi
 
 import { FeedbackEvent } from './features/events/feedback-event/feedback-event';
 
-import { MyPoints } from './features/points/my-points/my-points';
+import { MyPoints } from './features/gamification/my-points/my-points';
 
 import { MyInterests } from './features/interests/my-interests/my-interests';
 
@@ -43,7 +43,7 @@ import { PastEvents } from './features/events/past-events/past-events';
 
 import { MyBadges } from './features/gamification/my-badges/my-badges';
 
-import { MyRewards } from './features/rewards/my-rewards/my-rewards';
+import { MyRewards } from './features/gamification/my-rewards/my-rewards';
 
 import { AdminRewardRequests } from './features/admin/admin-reward-requests/admin-reward-requests';
 
@@ -53,7 +53,7 @@ import { LandingPage } from './features/landing/landing-page/landing-page';
 
 import { SettingsHub } from './features/settings/settings-hub/settings-hub';
 import { GamificationHub } from './features/gamification/gamification-hub/gamification-hub';
-import { AiAssistantsHub } from './features/admin/assistants/ai-assistants-hub/ai-assistants-hub';
+import { AiAssistantsHub } from './features/ai-assistants/ai-assistants-hub/ai-assistants-hub';
 
 
 
