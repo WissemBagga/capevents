@@ -11,13 +11,13 @@ import { PastEventCardResponse } from '../../../core/models/feedback.model';
 import { PageResponse } from '../../../core/models/page-response.model';
 import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories';
 
-import { resolveEventImageUrl} from '../../../core/constants/event-image-presets';
-
+import { resolveEventImageUrl } from '../../../core/constants/event-image-presets';
+import { Pagination } from '../../../shared/components/pagination/pagination';
 
 @Component({
   selector: 'app-past-events',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, RouterLink, FormsModule],
+  imports: [DatePipe, DecimalPipe, RouterLink, FormsModule, Pagination],
   templateUrl: './past-events.html',
   styleUrl: './past-events.css'
 })
@@ -115,68 +115,6 @@ export class PastEvents {
     getEventImageUrl(event: PastEventCardResponse): string {
       return resolveEventImageUrl(event.imageUrl, event.category);
     }
-
-  previousPage(): void {
-    if (this.currentPage > 0) {
-      this.currentPage--;
-      this.loadEvents();
-    }
-  }
-
-  nextPage(): void {
-    if (this.currentPage + 1 < this.totalPages) {
-      this.currentPage++;
-      this.loadEvents();
-    }
-  }
-
-  get visiblePages(): Array<number | 'dots'> {
-    const total = this.totalPages;
-    const current = this.currentPage;
-    const pages: Array<number | 'dots'> = [];
-
-    if (total <= 0) {
-      return pages;
-    }
-
-    if (total <= 6) {
-      for (let page = 0; page < total; page++) {
-        pages.push(page);
-      }
-      return pages;
-    }
-
-    pages.push(0);
-
-    let start = Math.max(1, current - 1);
-    let end = Math.min(total - 2, current + 1);
-
-    if (current <= 2) {
-      start = 1;
-      end = 4;
-    }
-
-    if (current >= total - 3) {
-      start = total - 5;
-      end = total - 2;
-    }
-
-    if (start > 1) {
-      pages.push('dots');
-    }
-
-    for (let page = start; page <= end; page++) {
-      pages.push(page);
-    }
-
-    if (end < total - 2) {
-      pages.push('dots');
-    }
-
-    pages.push(total - 1);
-
-    return pages;
-  }
 
   goToPage(page: number): void {
     if (page < 0 || page >= this.totalPages || page === this.currentPage) {
