@@ -12,7 +12,7 @@ import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard
 import {AdminStats} from './features/admin/analytics/admin-stats/admin-stats';
 import { CreateEvent } from './features/admin/create-event/create-event';
 import { EditEvent } from './features/admin/edit-event/edit-event';
-import { AppShell } from './shared/layout/app-shell/app-shell';
+import { AppShell } from './layout/app-shell/app-shell';
 import { VerifyEmail } from './features/auth/verify-email/verify-email';
 import { VerifyEmailPending } from './features/auth/verify-email-pending/verify-email-pending';
 import { AdminEventDetails } from './features/admin/admin-event-details/admin-event-details';
