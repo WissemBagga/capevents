@@ -1,5 +1,6 @@
 @if (hasItems) {
   <div class="pagination-bar modern-pagination">
+
     @if (totalPages > 1) {
       <div class="pagination-controls">
         <button
@@ -18,8 +19,8 @@
 
         <div class="page-numbers">
           @for (page of visiblePages; track trackByPage($index, page)) {
-            @if (page === 'ellipsis') {
-              <span class="page-ellipsis">...</span>
+            @if (page === 'dots') {
+              <span class="page-dots">...</span>
             } @else {
               <button
                 type="button"
@@ -49,7 +50,7 @@
       </div>
 
       <p class="page-info">
-        Page {{ currentPage + 1 }} / {{ totalPages }}
+        {{ totalPages }} Pages
       </p>
     }
 

@@ -15,12 +15,13 @@ import { UserService } from '../../../core/services/user.service';
 import { Department } from '../../../core/models/department.model';
 
 import { resolveEventImageUrl } from '../../../core/constants/event-image-presets';
+import { Pagination } from '../../../shared/components/pagination/pagination';
 
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [DatePipe, RouterLink, FormsModule, ScrollToMessageDirective],
+  imports: [DatePipe, RouterLink, FormsModule, ScrollToMessageDirective, Pagination],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })
@@ -179,19 +180,6 @@ export class AdminDashboard {
     this.hasNext = this.currentPage + 1 < this.totalPages;
   }
 
-  previousPage(): void {
-    if (!this.hasPrevious) return;
-    this.currentPage--;
-    this.updatePagedEvents();
-    this.cdr.markForCheck();
-  }
-
-  nextPage(): void {
-    if (!this.hasNext) return;
-    this.currentPage++;
-    this.updatePagedEvents();
-    this.cdr.markForCheck();
-  }
 
   goToEdit(eventId: string): void {
     this.router.navigate(['/admin/edit-event', eventId]);
@@ -312,54 +300,6 @@ export class AdminDashboard {
 
   get currentDepartmentName(): string {
     return this.authService.getCurrentUserSnapshot()?.departmentName || 'Votre département';
-  }
-
-  get visiblePages(): Array<number | 'dots'> {
-    const total = this.totalPages;
-    const current = this.currentPage;
-    const pages: Array<number | 'dots'> = [];
-
-    if (total <= 0) {
-      return pages;
-    }
-
-    if (total <= 6) {
-      for (let page = 0; page < total; page++) {
-        pages.push(page);
-      }
-      return pages;
-    }
-
-    pages.push(0);
-
-    let start = Math.max(1, current - 1);
-    let end = Math.min(total - 2, current + 1);
-
-    if (current <= 2) {
-      start = 1;
-      end = 4;
-    }
-
-    if (current >= total - 3) {
-      start = total - 5;
-      end = total - 2;
-    }
-
-    if (start > 1) {
-      pages.push('dots');
-    }
-
-    for (let page = start; page <= end; page++) {
-      pages.push(page);
-    }
-
-    if (end < total - 2) {
-      pages.push('dots');
-    }
-
-    pages.push(total - 1);
-
-    return pages;
   }
 
   goToPage(page: number): void {

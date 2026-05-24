@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
+type PaginationPage = number | 'dots';
+
 @Component({
   selector: 'app-pagination',
   standalone: true,
@@ -9,7 +11,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class Pagination {
   @Input() currentPage = 0;
   @Input() pageSize = 9;
-  @Input() totalPages = 1;
+  @Input() totalPages = 0;
   @Input() totalItems = 0;
   @Input() itemLabel = 'éléments';
 
@@ -31,31 +33,48 @@ export class Pagination {
     return Math.min((this.currentPage + 1) * this.pageSize, this.totalItems);
   }
 
-  get visiblePages(): Array<number | 'ellipsis'> {
-    const total = Math.max(this.totalPages, 1);
+  get visiblePages(): PaginationPage[] {
+    const total = this.totalPages;
     const current = this.currentPage;
+    const pages: PaginationPage[] = [];
 
-    if (total <= 7) {
-      return Array.from({ length: total }, (_, index) => index);
+    if (total <= 0) {
+      return pages;
     }
 
-    const pages: Array<number | 'ellipsis'> = [];
+    if (total <= 6) {
+      for (let page = 0; page < total; page++) {
+        pages.push(page);
+      }
+
+      return pages;
+    }
 
     pages.push(0);
 
-    if (current > 3) {
-      pages.push('ellipsis');
+    let start = Math.max(1, current - 1);
+    let end = Math.min(total - 2, current + 1);
+
+    if (current <= 2) {
+      start = 1;
+      end = 4;
     }
 
-    const start = Math.max(1, current - 1);
-    const end = Math.min(total - 2, current + 1);
+    if (current >= total - 3) {
+      start = total - 5;
+      end = total - 2;
+    }
+
+    if (start > 1) {
+      pages.push('dots');
+    }
 
     for (let page = start; page <= end; page++) {
       pages.push(page);
     }
 
-    if (current < total - 4) {
-      pages.push('ellipsis');
+    if (end < total - 2) {
+      pages.push('dots');
     }
 
     pages.push(total - 1);
@@ -73,15 +92,14 @@ export class Pagination {
     this.pageChange.emit(this.currentPage + 1);
   }
 
-  goToPage(page: number | 'ellipsis'): void {
-    if (page === 'ellipsis') return;
-    if (page === this.currentPage) return;
-    if (page < 0 || page >= this.totalPages) return;
+  goToPage(page: PaginationPage): void {
+    if (page === 'dots') return;
+    if (page < 0 || page >= this.totalPages || page === this.currentPage) return;
 
     this.pageChange.emit(page);
   }
 
-  trackByPage(index: number, page: number | 'ellipsis'): string {
-    return page === 'ellipsis' ? `ellipsis-${index}` : `page-${page}`;
+  trackByPage(index: number, page: PaginationPage): string {
+    return page === 'dots' ? `dots-${index}` : `page-${page}`;
   }
 }

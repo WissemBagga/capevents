@@ -14,13 +14,14 @@ import { EVENT_CATEGORY_OPTIONS } from '../../../core/constants/event-categories
 import { resolveEventImageUrl } from '../../../core/constants/event-image-presets';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
+import { Pagination } from '../../../shared/components/pagination/pagination';
 
 
 
 @Component({
   selector: 'app-events-list',
   standalone: true,
-  imports: [RouterLink, FormsModule, DatePipe, ScrollToMessageDirective],
+  imports: [RouterLink, FormsModule, DatePipe, ScrollToMessageDirective, Pagination],
   templateUrl: './events-list.html',
   styleUrl: './events-list.css'
 })
@@ -96,18 +97,6 @@ export class EventsList {
 
   search(): void {
     this.fetchEvents(0);
-  }
-
-  previousPage(): void {
-    if (this.hasPrevious) {
-      this.fetchEvents(this.currentPage - 1);
-    }
-  }
-
-  nextPage(): void {
-    if (this.hasNext) {
-      this.fetchEvents(this.currentPage + 1);
-    }
   }
 
   resetFilters(): void {
@@ -194,9 +183,9 @@ export class EventsList {
   }
 
 
-getEventImageUrl(event: EventResponse): string {
-  return resolveEventImageUrl(event.imageUrl, event.category);
-}
+  getEventImageUrl(event: EventResponse): string {
+    return resolveEventImageUrl(event.imageUrl, event.category);
+  }
 
   private mapSort(): { sortBy: string; sortDir: 'asc' | 'desc' } {
     switch (this.sortBy) {
@@ -234,54 +223,6 @@ getEventImageUrl(event: EventResponse): string {
     if (isNaN(date.getTime())) return null;
 
     return date.toISOString();
-  }
-
-  get visiblePages(): Array<number | 'dots'> {
-    const total = this.totalPages;
-    const current = this.currentPage;
-    const pages: Array<number | 'dots'> = [];
-
-    if (total <= 0) {
-      return pages;
-    }
-
-    if (total <= 6) {
-      for (let page = 0; page < total; page++) {
-        pages.push(page);
-      }
-      return pages;
-    }
-
-    pages.push(0);
-
-    let start = Math.max(1, current - 1);
-    let end = Math.min(total - 2, current + 1);
-
-    if (current <= 2) {
-      start = 1;
-      end = 4;
-    }
-
-    if (current >= total - 3) {
-      start = total - 5;
-      end = total - 2;
-    }
-
-    if (start > 1) {
-      pages.push('dots');
-    }
-
-    for (let page = start; page <= end; page++) {
-      pages.push(page);
-    }
-
-    if (end < total - 2) {
-      pages.push('dots');
-    }
-
-    pages.push(total - 1);
-
-    return pages;
   }
 
   goToPage(page: number): void {
