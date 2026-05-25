@@ -116,10 +116,15 @@ export const routes: Routes = [
       { path: 'gamification', component: GamificationHub },
 
       {
-        path: 'admin/assistants',
+        path: 'assistants',
         component: AiAssistantsHub,
         canActivate: [roleGuard],
         data: { roles: ['ROLE_HR', 'ROLE_MANAGER'] }
+      },
+      {
+        path: 'admin/assistants',
+        redirectTo: 'assistants',
+        pathMatch: 'full'
       }
     ]
   },

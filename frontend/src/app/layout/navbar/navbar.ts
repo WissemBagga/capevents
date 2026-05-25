@@ -305,6 +305,8 @@ export class Navbar {
 
     if (url.startsWith('/dashboard/employee')) return 'Espace employé';
 
+    if (url.startsWith('/assistants')) return 'Assistants IA';
+
     if (url.startsWith('/admin/hr/stats')) return 'Administration RH';
     if (url.startsWith('/admin/manager/stats')) return 'Espace Manager';
     if (url.startsWith('/admin/hr')) return 'Administration RH';
@@ -335,7 +337,6 @@ export class Navbar {
 
     if (url.startsWith('/settings')) return 'Paramètres';
     if (url.startsWith('/gamification')) return 'Gamification';
-    if (url.startsWith('/admin/assistants')) return 'Assistants IA';
 
     return 'CapEvents';
   }

@@ -115,14 +115,14 @@ export class Sidebar {
   get assistantLinks(): NavItem[] {
     if (this.authService.isHr()) {
       return [
-        { label: 'Assistant RH', route: '/admin/assistants', queryParams: { tab: 'hr-assistant' } },
-        { label: 'Planning intelligent', route: '/admin/assistants', queryParams: { tab: 'planning' } }
+        { label: 'Assistant RH', route: '/assistants', queryParams: { tab: 'hr-assistant' } },
+        { label: 'Planning intelligent', route: '/assistants', queryParams: { tab: 'planning' } } 
       ];
     }
 
     if (this.authService.isManager()) {
       return [
-        { label: 'Planning intelligent', route: '/admin/assistants', queryParams: { tab: 'planning' } }
+        { label: 'Planning intelligent', route: '/assistants', queryParams: { tab: 'planning' } }
       ];
     }
 
