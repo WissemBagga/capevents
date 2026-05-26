@@ -6,8 +6,11 @@
 }
 
 .app-shell__sidebar {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 30;
+  align-self: start;
+  height: 100vh;
 }
 
 .app-shell__main {

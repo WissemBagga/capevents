@@ -44,21 +44,16 @@
   margin-bottom: 22px;
 }
 
-.brand-kicker {
-  
-  align-items: center;
-  
+.brand-kicker {  
+  align-items: center; 
   padding: 0 10px;
   color: var(--color-primary);
-    font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-
-    text-transform: uppercase;
-
-    background: transparent;
-    border: none;
-
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
 }
 
 
