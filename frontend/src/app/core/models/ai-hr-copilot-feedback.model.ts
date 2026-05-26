@@ -1,4 +1,4 @@
-export interface AiHrCopilotFeedbackRequest {
+﻿export interface AiHrCopilotFeedbackRequest {
   requestId: string;
   suggestionType: string;
   relatedEventId: string | null;

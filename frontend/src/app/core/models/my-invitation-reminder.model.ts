@@ -1,4 +1,4 @@
-export interface MyInvitationReminder {
+﻿export interface MyInvitationReminder {
   id: number;
   invitationId: number;
   subject: string | null;

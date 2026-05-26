@@ -1,4 +1,4 @@
-export interface AiSentimentDistribution {
+﻿export interface AiSentimentDistribution {
   positive: number;
   neutral: number;
   negative: number;

@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from '../navbar/navbar';
 import { Sidebar } from '../sidebar/sidebar';
-import { PremiumBackground } from '../../shared/components/premium-background/premium-background';
+import { PremiumBackground } from '@shared/components/premium-background/premium-background';
 
 @Component({
   selector: 'app-app-shell',

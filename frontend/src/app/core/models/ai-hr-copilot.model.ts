@@ -1,4 +1,4 @@
-export interface AiHrCopilotSuggestion {
+﻿export interface AiHrCopilotSuggestion {
   type: string;
   priority: string;
   title: string;

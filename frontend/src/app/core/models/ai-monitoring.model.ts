@@ -1,4 +1,4 @@
-export interface AiTopRecommendedEvent {
+﻿export interface AiTopRecommendedEvent {
   eventId: string;
   title: string | null;
   category: string | null;

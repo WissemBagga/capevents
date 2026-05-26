@@ -5,24 +5,24 @@ import { finalize } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
 
-import { AuthService } from '../../../../core/services/auth.service';
-import { AdminAnalyticsOverviewResponse, EventEngagementResponse } from '../../../../core/models/admin-analytics.model';
-import { AdminAnalyticsService } from '../../../../core/services/admin-analytics.service';
-import { UserService } from '../../../../core/services/user.service';
-import { Department } from '../../../../core/models/department.model';
-import { EVENT_CATEGORY_OPTIONS } from '../../../../core/constants/event-categories';
+import { AuthService } from '@core/services/auth.service';
+import { AdminAnalyticsOverviewResponse, EventEngagementResponse } from '@core/models/admin-analytics.model';
+import { AdminAnalyticsService } from '@core/services/admin-analytics.service';
+import { UserService } from '@core/services/user.service';
+import { Department } from '@core/models/department.model';
+import { EVENT_CATEGORY_OPTIONS } from '@core/constants/event-categories';
 import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
 
-import { AiMonitoringService } from '../../../../core/services/ai-monitoring.service';
-import { AiRecommendationMonitoringSummary, AiRecentPrediction, AiTopRecommendedEvent } from '../../../../core/models/ai-monitoring.model';
+import { AiMonitoringService } from '@core/services/ai-monitoring.service';
+import { AiRecommendationMonitoringSummary, AiRecentPrediction, AiTopRecommendedEvent } from '@core/models/ai-monitoring.model';
 
 
-import { AiHrCopilotMonitoringService } from '../../../../core/services/ai-hr-copilot-monitoring.service';
-import { AiHrCopilotMonitoringResponse } from '../../../../core/models/ai-hr-copilot-monitoring.model';
+import { AiHrCopilotMonitoringService } from '@core/services/ai-hr-copilot-monitoring.service';
+import { AiHrCopilotMonitoringResponse } from '@core/models/ai-hr-copilot-monitoring.model';
 
 
-import { AiPlanningService } from '../../../../core/services/ai-planning.service';
-import { AiPlanningMonitoringSummary } from '../../../../core/models/ai-planning.model';
+import { AiPlanningService } from '@core/services/ai-planning.service';
+import { AiPlanningMonitoringSummary } from '@core/models/ai-planning.model';
 
 type TrendPointVm = {
   month: string;
@@ -200,7 +200,7 @@ export class AdminStats {
     const labels: Record<string, string> = {
       DRAFT: 'Brouillon',
       PUBLISHED: 'Publié',
-      CANCELLED: 'Annulé',
+      CANCELLED: 'Annule',
       ARCHIVED: 'Archivé',
       PENDING: 'En attente'
     };
@@ -287,9 +287,9 @@ export class AdminStats {
       Rang: index + 1,
       Nom: item.fullName,
       Email: item.email,
-      Département: item.departmentName || '',
+      'Département': item.departmentName || '',
       Inscrits: item.registeredCount,
-      Présents: item.presentCount,
+      'Présents': item.presentCount,
       'Taux présence (%)': item.attendanceRate
     }));
 
@@ -750,7 +750,7 @@ export class AdminStats {
     if (this.aiCopilotMonitoringError) return 'Erreur de chargement';
     if (!this.aiCopilotMonitoring) return 'Non chargé';
 
-    return `${this.aiCopilotMonitoring.totalCalls} appel(s) · ${this.aiCopilotMonitoring.totalSuggestions} suggestion(s)`;
+    return `${this.aiCopilotMonitoring.totalCalls} appel(s) Â· ${this.aiCopilotMonitoring.totalSuggestions} suggestion(s)`;
   }
 
   get planningMonitoringSummaryLabel(): string {
@@ -758,7 +758,7 @@ export class AdminStats {
     if (this.planningMonitoringError) return 'Erreur de chargement';
     if (!this.planningMonitoring) return 'Non chargé';
 
-    return `${this.planningMonitoring.totalGenerations} génération(s) · ${this.planningUsagePercent()}% usage`;
+    return `${this.planningMonitoring.totalGenerations} génération(s) Â· ${this.planningUsagePercent()}% usage`;
   }
 
   private unwrapMonitoringResponse(response: any): any {

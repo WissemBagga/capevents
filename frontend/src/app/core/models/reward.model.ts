@@ -1,4 +1,4 @@
-export interface RewardCatalogItemResponse {
+﻿export interface RewardCatalogItemResponse {
   code: string;
   title: string;
   description: string;

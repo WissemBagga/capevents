@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
-import { UserService } from '../../../core/services/user.service';
-import { Department } from '../../../core/models/department.model';
+import { AuthService } from '@core/services/auth.service';
+import { UserService } from '@core/services/user.service';
+import { Department } from '@core/models/department.model';
 
-import { AVATAR_PRESETS } from '../../../core/constants/avatar-presets';
+import { AVATAR_PRESETS } from '@core/constants/avatar-presets';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
@@ -201,3 +201,4 @@ export class Register implements OnInit {
   }
 
 }
+

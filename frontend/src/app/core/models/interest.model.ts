@@ -1,4 +1,4 @@
-export interface InterestResponse {
+﻿export interface InterestResponse {
   id: number;
   code: string;
   label: string;

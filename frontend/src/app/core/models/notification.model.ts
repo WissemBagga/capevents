@@ -1,4 +1,4 @@
-export interface NotificationResponse {
+﻿export interface NotificationResponse {
   id: number;
   type: string;
   title: string;

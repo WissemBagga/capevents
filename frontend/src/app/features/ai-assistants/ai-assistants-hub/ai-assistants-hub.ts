@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+﻿import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '@core/services/auth.service';
 
 import { AiPlanningPanel } from '../ai-planning-panel/ai-planning-panel';
 import { AiHrAssistantPanel } from '../ai-hr-assistant-panel/ai-hr-assistant-panel';
@@ -73,11 +73,11 @@ export class AiAssistantsHub {
   get activeDescription(): string {
     switch (this.activeTab) {
       case 'hr-assistant':
-        return 'Analyse les événements, invitations et signaux RH pour proposer des actions intelligentes.';
+        return 'Analyse les Ã©vÃ©nements, invitations et signaux RH pour proposer des actions intelligentes.';
       case 'planning':
-        return 'Génère des propositions d’événements et recommande les meilleurs créneaux.';
+        return 'GÃ©nÃ¨re des propositions dâ€™Ã©vÃ©nements et recommande les meilleurs crÃ©neaux.';
       default:
-        return 'Accédez aux assistants intelligents disponibles selon votre rôle.';
+        return 'AccÃ©dez aux assistants intelligents disponibles selon votre rÃ´le.';
     }
   }
 

@@ -1,10 +1,10 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { EventService } from '../../../core/services/event.service';
-import { RegistrationResponse } from '../../../core/models/registration.model';
+import { EventService } from '@core/services/event.service';
+import { RegistrationResponse } from '@core/models/registration.model';
 import { FormsModule } from '@angular/forms';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
@@ -93,7 +93,7 @@ export class MyEvents {
 
   eventStatusLabel(registration: RegistrationResponse): string {
     if (this.isEventCancelled(registration)) {
-      return 'Événement annulé';
+      return 'Ã‰vÃ©nement annulÃ©';
     }
 
     if (registration.status === 'REGISTERED') {
@@ -101,7 +101,7 @@ export class MyEvents {
     }
 
     if (registration.status === 'CANCELLED') {
-      return 'Annulé';
+      return 'AnnulÃ©';
     }
 
     return registration.status;
@@ -147,9 +147,10 @@ export class MyEvents {
       case 'REGISTERED':
         return 'Inscrit';
       case 'CANCELLED':
-        return 'Annulé';
+        return 'AnnulÃ©';
       default:
         return status;
     }
   }
 }
+

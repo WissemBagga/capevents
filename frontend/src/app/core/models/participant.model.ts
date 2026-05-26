@@ -1,4 +1,4 @@
-export type AttendanceStatus = 'PENDING' | 'PRESENT' | 'ABSENT';
+﻿export type AttendanceStatus = 'PENDING' | 'PRESENT' | 'ABSENT';
 
 export interface EventParticipantResponse {
   registrationId: number;

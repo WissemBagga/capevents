@@ -1,9 +1,9 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '@core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
@@ -95,7 +95,7 @@ export class Login {
     }
 
     if (raw.includes('Email is not verified')) {
-      return 'Votre email n’est pas encore vérifié.';
+      return 'Votre email nâ€™est pas encore vÃ©rifiÃ©.';
     }
 
     if (raw.includes('Bad credentials') || raw.includes('Invalid email or password')) {
@@ -103,9 +103,10 @@ export class Login {
     }
 
     if (raw.includes('User is not active')) {
-      return 'Votre compte est désactivé. Contactez un administrateur.';
+      return 'Votre compte est dÃ©sactivÃ©. Contactez un administrateur.';
     }
 
     return raw || 'Connexion impossible.';
   }
 }
+

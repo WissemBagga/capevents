@@ -1,4 +1,4 @@
-export interface AiHrCopilotSuggestionTypeSummary {
+﻿export interface AiHrCopilotSuggestionTypeSummary {
   type: string;
   count: number;
 }

@@ -1,4 +1,4 @@
-export interface InvitationReminderResponse {
+﻿export interface InvitationReminderResponse {
   eventId: string;
   eventTitle: string;
   eligibleInvitations: number;

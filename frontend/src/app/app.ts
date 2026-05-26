@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+﻿import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 
@@ -10,3 +10,4 @@ import { AuthService } from './core/services/auth.service';
   styleUrl: './app.css'
 })
 export class App {}
+

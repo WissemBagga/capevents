@@ -1,4 +1,4 @@
-export interface PointTransactionResponse {
+﻿export interface PointTransactionResponse {
   id: number;
   type: string;
   pointsDelta: number;

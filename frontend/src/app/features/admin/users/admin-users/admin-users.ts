@@ -1,9 +1,9 @@
-import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
-import { UserService } from '../../../../core/services/user.service';
-import { UserSummary } from '../../../../core/models/user-summary.model';
-import { PageResponse } from '../../../../core/models/page-response.model';
+import { UserService } from '@core/services/user.service';
+import { UserSummary } from '@core/models/user-summary.model';
+import { PageResponse } from '@core/models/page-response.model';
 import { FormsModule } from '@angular/forms';
 import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
 
@@ -26,7 +26,7 @@ export class AdminUsers {
   successMessage = '';
 
   roleOptions = [
-    { value: 'ROLE_EMPLOYEE', label: 'Employé' },
+    { value: 'ROLE_EMPLOYEE', label: 'EmployÃ©' },
     { value: 'ROLE_MANAGER', label: 'Manager' },
     { value: 'ROLE_HR', label: 'RH' }
   ];
@@ -48,7 +48,7 @@ export class AdminUsers {
     const httpErr = err as HttpErrorResponse;
 
     if (httpErr?.error instanceof ProgressEvent || httpErr?.status === 0) {
-      return 'Impossible de contacter le serveur. Vérifiez que le backend est lancé et accessible.';
+      return 'Impossible de contacter le serveur. VÃ©rifiez que le backend est lancÃ© et accessible.';
     }
 
     if (typeof httpErr?.error === 'string' && httpErr.error.trim()) {
@@ -181,15 +181,15 @@ export class AdminUsers {
           this.confirmHrPromotionByUserId[updatedUser.id] = false;
 
           this.successMessage = repairingParticipationAccess
-          ? `Accès Participation réactivé pour ${updatedUser.firstName} ${updatedUser.lastName}. Email et notification envoyés.`
-          : `Rôle mis à jour pour ${updatedUser.firstName} ${updatedUser.lastName}. Email et notification envoyés.`;
+          ? `AccÃ¨s Participation rÃ©activÃ© pour ${updatedUser.firstName} ${updatedUser.lastName}. Email et notification envoyÃ©s.`
+          : `RÃ´le mis Ã  jour pour ${updatedUser.firstName} ${updatedUser.lastName}. Email et notification envoyÃ©s.`;
 
           this.cdr.markForCheck();
         },
         error: (err) => {
           const rawMessage = this.extractErrorMessage(
             err,
-            'Impossible de modifier le rôle.'
+            'Impossible de modifier le rÃ´le.'
           );
 
           this.errorMessage = this.mapRoleErrorMessage(rawMessage);
@@ -272,7 +272,7 @@ export class AdminUsers {
 
   getRoleBadgeLabel(role: string): string {
     const labels: Record<string, string> = {
-      ROLE_EMPLOYEE: 'Employé',
+      ROLE_EMPLOYEE: 'EmployÃ©',
       ROLE_MANAGER: 'Manager',
       ROLE_HR: 'RH'
     };
@@ -294,7 +294,7 @@ export class AdminUsers {
     const lower = message.toLowerCase();
 
     if (lower.includes('manager') && lower.includes('department')) {
-      return 'Ce département a déjà un manager actif.';
+      return 'Ce dÃ©partement a dÃ©jÃ  un manager actif.';
     }
 
     if (
@@ -306,7 +306,7 @@ export class AdminUsers {
     }
 
     if (lower.includes('confirmation') && lower.includes('rh')) {
-      return 'Veuillez confirmer explicitement la promotion vers le rôle RH.';
+      return 'Veuillez confirmer explicitement la promotion vers le rÃ´le RH.';
     }
 
     return message;

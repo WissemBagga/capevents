@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { UserService } from '../../../../core/services/user.service';
-import { Department } from '../../../../core/models/department.model';
+import { UserService } from '@core/services/user.service';
+import { Department } from '@core/models/department.model';
 import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
 
 @Component({
@@ -49,7 +49,7 @@ export class AdminDepartments {
         },
         error: (err) => {
           this.errorMessage =
-            err?.error?.message || err?.error || 'Impossible de charger les départements.';
+            err?.error?.message || err?.error || 'Impossible de charger les dÃ©partements.';
           this.cdr.markForCheck();
         }
       });
@@ -69,7 +69,7 @@ export class AdminDepartments {
     }
 
     if (this.departmentExistsLocally(name)) {
-      this.errorMessage = 'Ce département existe déjà.';
+      this.errorMessage = 'Ce dÃ©partement existe dÃ©jÃ .';
       this.successMessage = '';
       this.cdr.markForCheck();
       return;
@@ -86,14 +86,14 @@ export class AdminDepartments {
       }))
       .subscribe({
         next: () => {
-          this.successMessage = 'Département ajouté avec succès.';
+          this.successMessage = 'DÃ©partement ajoutÃ© avec succÃ¨s.';
           this.form.reset({ name: '' });
           this.loadDepartments();
           this.cdr.markForCheck();
         },
         error: (err) => {
           this.errorMessage =
-            err?.error?.message || err?.error || 'Impossible d’ajouter le département.';
+            err?.error?.message || err?.error || 'Impossible dâ€™ajouter le dÃ©partement.';
           this.cdr.markForCheck();
         }
       });

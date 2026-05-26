@@ -1,4 +1,4 @@
-export interface InvitationReminderHistoryResponse {
+﻿export interface InvitationReminderHistoryResponse {
   id: number;
   invitationId: number;
 

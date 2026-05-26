@@ -1,4 +1,4 @@
-export interface AiPlanningSuggestionRequest {
+﻿export interface AiPlanningSuggestionRequest {
   category: string;
   audience?: string;
   locationType?: string;

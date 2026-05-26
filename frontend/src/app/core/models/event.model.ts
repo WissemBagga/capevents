@@ -1,4 +1,4 @@
-export interface EventResponse {
+﻿export interface EventResponse {
   id: string;
   title: string;
   category: string | null;

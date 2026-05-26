@@ -1,9 +1,9 @@
-import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
-import { BadgeService } from '../../../core/services/badge.service';
-import { BadgeProgressResponse } from '../../../core/models/badge.model';
+import { BadgeService } from '@core/services/badge.service';
+import { BadgeProgressResponse } from '@core/models/badge.model';
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
 import { DecimalPipe } from '@angular/common';

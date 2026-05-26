@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+﻿import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { MyPoints } from '../my-points/my-points';
@@ -23,7 +23,7 @@ export class GamificationHub {
   tabs: { key: GamificationTab; label: string }[] = [
     { key: 'points', label: 'Mes points' },
     { key: 'badges', label: 'Mes badges' },
-    { key: 'rewards', label: 'Mes récompenses' }
+    { key: 'rewards', label: 'Mes rÃ©compenses' }
   ];
 
   ngOnInit(): void {
@@ -48,11 +48,11 @@ export class GamificationHub {
   get activeDescription(): string {
     switch (this.activeTab) {
       case 'points':
-        return 'Consultez votre solde de points et l’historique de vos transactions.';
+        return 'Consultez votre solde de points et lâ€™historique de vos transactions.';
       case 'badges':
         return 'Suivez vos accomplissements et votre progression dans CapEvents.';
       case 'rewards':
-        return 'Consultez vos récompenses disponibles et vos demandes d’échange.';
+        return 'Consultez vos rÃ©compenses disponibles et vos demandes dâ€™Ã©change.';
       default:
         return 'Suivez votre engagement dans CapEvents.';
     }

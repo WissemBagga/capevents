@@ -1,4 +1,4 @@
-export interface CreateEventFeedbackRequest {
+﻿export interface CreateEventFeedbackRequest {
   rating: number;
   comment: string | null;
   shareCommentPublicly: boolean;

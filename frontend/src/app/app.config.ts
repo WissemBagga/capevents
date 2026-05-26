@@ -1,4 +1,4 @@
-import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, LOCALE_ID } from '@angular/core';
+﻿import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, LOCALE_ID } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {registerLocaleData} from '@angular/common'
 
@@ -23,3 +23,4 @@ export const appConfig: ApplicationConfig = {
     {provide: LOCALE_ID, useValue:'fr-FR'}
   ]
 };
+

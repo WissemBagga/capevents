@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+﻿import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 type PaginationPage = number | 'dots';
 
@@ -13,7 +13,7 @@ export class Pagination {
   @Input() pageSize = 9;
   @Input() totalPages = 0;
   @Input() totalItems = 0;
-  @Input() itemLabel = 'éléments';
+  @Input() itemLabel = 'Ã©lÃ©ments';
 
   @Output() pageChange = new EventEmitter<number>();
 

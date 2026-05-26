@@ -1,4 +1,4 @@
-export interface BadgeProgressResponse {
+﻿export interface BadgeProgressResponse {
   code: string;
   title: string;
   description: string;

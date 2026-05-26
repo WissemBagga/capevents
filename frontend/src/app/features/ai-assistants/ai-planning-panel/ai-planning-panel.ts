@@ -1,17 +1,17 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { AuthService } from '../../../core/services/auth.service';
-import { UserService } from '../../../core/services/user.service';
-import { AiPlanningService } from '../../../core/services/ai-planning.service';
-import { Department } from '../../../core/models/department.model';
+import { AuthService } from '@core/services/auth.service';
+import { UserService } from '@core/services/user.service';
+import { AiPlanningService } from '@core/services/ai-planning.service';
+import { Department } from '@core/models/department.model';
 import {
   AiPlanningEventProposal,
   AiPlanningEventProposalResponse
-} from '../../../core/models/ai-planning.model';
+} from '@core/models/ai-planning.model';
 
 @Component({
   selector: 'app-ai-planning-panel',
@@ -59,7 +59,7 @@ export class AiPlanningPanel {
   }
 
   get currentDepartmentName(): string {
-    return this.authService.getCurrentUserSnapshot()?.departmentName || 'Votre département';
+    return this.authService.getCurrentUserSnapshot()?.departmentName || 'Votre dÃ©partement';
   }
 
   loadDepartments(): void {
@@ -109,7 +109,7 @@ export class AiPlanningPanel {
           this.aiPlanningError =
             err?.error?.message ||
             err?.error ||
-            'Impossible de générer les propositions IA.';
+            'Impossible de gÃ©nÃ©rer les propositions IA.';
           this.cdr.markForCheck();
         }
       });
@@ -119,7 +119,7 @@ export class AiPlanningPanel {
     const firstSlot = proposal.suggestedSlots?.[0];
 
     if (!firstSlot) {
-      this.aiPlanningError = 'Cette proposition ne contient aucun créneau utilisable.';
+      this.aiPlanningError = 'Cette proposition ne contient aucun crÃ©neau utilisable.';
       this.cdr.markForCheck();
       return;
     }
@@ -173,12 +173,12 @@ export class AiPlanningPanel {
 
     const text = [
       `Titre : ${proposal.title}`,
-      `Catégorie : ${proposal.category}`,
+      `CatÃ©gorie : ${proposal.category}`,
       `Audience : ${this.planningAudienceLabel(proposal.audience)}`,
       `Format : ${this.planningLocationLabel(proposal.locationType)}`,
-      `Durée : ${proposal.durationMinutes} minutes`,
-      `Capacité : ${proposal.capacity} places`,
-      firstSlot ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}` : '',
+      `DurÃ©e : ${proposal.durationMinutes} minutes`,
+      `CapacitÃ© : ${proposal.capacity} places`,
+      firstSlot ? `CrÃ©neau recommandÃ© : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}` : '',
       '',
       `Objectif : ${proposal.objective}`,
       '',
@@ -193,22 +193,22 @@ export class AiPlanningPanel {
 
   private buildPlanningDescription(proposal: AiPlanningEventProposal): string {
     const rationale = (proposal.rationale ?? [])
-      .map(item => `• ${item}`)
+      .map(item => `â€¢ ${item}`)
       .join('\n');
 
     return [
       proposal.objective,
       '',
-      `Participez à « ${proposal.title} », un événement interne conçu pour accompagner les collaborateurs dans leur développement professionnel.`,
+      `Participez Ã  Â« ${proposal.title} Â», un Ã©vÃ©nement interne conÃ§u pour accompagner les collaborateurs dans leur dÃ©veloppement professionnel.`,
       '',
-      'Cette session proposera un moment d’échange, de partage de pratiques et de réflexion collective autour d’un sujet utile au quotidien professionnel.',
+      'Cette session proposera un moment dâ€™Ã©change, de partage de pratiques et de rÃ©flexion collective autour dâ€™un sujet utile au quotidien professionnel.',
       '',
-      'Votre participation contribuera à enrichir les échanges et à renforcer la collaboration au sein de l’organisation.',
+      'Votre participation contribuera Ã  enrichir les Ã©changes et Ã  renforcer la collaboration au sein de lâ€™organisation.',
       '',
       'Justification IA :',
       rationale,
       '',
-      'Note : cette proposition doit être validée par le RH ou le manager avant publication.'
+      'Note : cette proposition doit Ãªtre validÃ©e par le RH ou le manager avant publication.'
     ].join('\n');
   }
 
@@ -221,7 +221,7 @@ export class AiPlanningPanel {
       case 'GLOBAL':
         return 'Global';
       case 'DEPARTMENT':
-        return 'Département';
+        return 'DÃ©partement';
       default:
         return audience || 'N/D';
     }
@@ -230,7 +230,7 @@ export class AiPlanningPanel {
   planningLocationLabel(locationType: string): string {
     switch (locationType) {
       case 'ONSITE':
-        return 'Présentiel';
+        return 'PrÃ©sentiel';
       case 'ONLINE':
         return 'En ligne';
       case 'EXTERNAL':
@@ -243,15 +243,15 @@ export class AiPlanningPanel {
   planningConfidenceLabel(confidence: string): string {
     switch (confidence) {
       case 'HIGH':
-        return 'Confiance élevée';
+        return 'Confiance Ã©levÃ©e';
       case 'MEDIUM':
         return 'Confiance moyenne';
       case 'LOW':
         return 'Confiance faible';
       case 'VERY_LOW':
-        return 'Confiance très faible';
+        return 'Confiance trÃ¨s faible';
       default:
-        return confidence || 'Confiance non définie';
+        return confidence || 'Confiance non dÃ©finie';
     }
   }
 
@@ -294,12 +294,12 @@ export class AiPlanningPanel {
     const firstSlot = proposal.suggestedSlots?.[0];
 
     const rationale = (proposal.rationale ?? [])
-      .map(item => `• ${item}`)
+      .map(item => `â€¢ ${item}`)
       .join('\n');
 
     const slotText = firstSlot
-      ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}`
-      : 'Créneau recommandé : à confirmer';
+      ? `CrÃ©neau recommandÃ© : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}`
+      : 'CrÃ©neau recommandÃ© : Ã  confirmer';
 
     return [
       'Note IA interne',
@@ -308,7 +308,7 @@ export class AiPlanningPanel {
       'Justification :',
       rationale,
       '',
-      'Cette proposition doit être validée par le RH ou le manager avant publication.'
+      'Cette proposition doit Ãªtre validÃ©e par le RH ou le manager avant publication.'
     ].join('\n');
   }
 }

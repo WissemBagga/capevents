@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, HostBinding, inject } from '@angular/core';
+﻿import { AfterViewInit, Directive, ElementRef, HostBinding, inject } from '@angular/core';
 
 @Directive({
   selector: '[appScrollToMessage]',

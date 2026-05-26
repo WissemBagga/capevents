@@ -1,4 +1,4 @@
-export interface EventEngagementResponse {
+﻿export interface EventEngagementResponse {
   eventId: string;
   title: string;
   status: string;

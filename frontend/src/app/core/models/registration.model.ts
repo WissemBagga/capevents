@@ -1,4 +1,4 @@
-export interface RegistrationResponse {
+﻿export interface RegistrationResponse {
   registrationId: number;
   eventId: string;
   eventTitle: string;

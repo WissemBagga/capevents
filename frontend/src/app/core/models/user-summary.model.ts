@@ -1,4 +1,4 @@
-export interface UserSummary {
+﻿export interface UserSummary {
   id: string;
   firstName: string;
   lastName: string;
@@ -11,3 +11,4 @@ export interface UserSummary {
   active: boolean;
   roles: string[];
 }
+

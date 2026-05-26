@@ -1,0 +1,235 @@
+﻿import { DatePipe } from '@angular/common';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import { EventService } from '@core/services/event.service';
+import { AuthService } from '@core/services/auth.service';
+import { EventResponse } from '@core/models/event.model';
+import { PageResponse } from '@core/models/page-response.model';
+import { RegistrationResponse } from '@core/models/registration.model';
+import { EVENT_CATEGORY_OPTIONS } from '@core/constants/event-categories';
+
+import { resolveEventImageUrl } from '@core/constants/event-image-presets';
+
+import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
+import { Pagination } from '@shared/components/pagination/pagination';
+
+
+
+@Component({
+  selector: 'app-events-list',
+  standalone: true,
+  imports: [RouterLink, FormsModule, DatePipe, ScrollToMessageDirective, Pagination],
+  templateUrl: './events-list.html',
+  styleUrl: './events-list.css'
+})
+export class EventsList {
+  private eventService = inject(EventService);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+
+  readonly categoryOptions = EVENT_CATEGORY_OPTIONS;
+
+  events: EventResponse[] = [];
+  registeredEventIds = new Set<string>();
+
+  loading = false;
+  errorMessage = '';
+
+  category = '';
+  from = '';
+  to = '';
+  sortBy = 'DATE_ASC';
+  viewMode: 'grid' | 'list' = 'grid';
+  titleQuery = '';
+
+  currentPage = 0;
+  pageSize = 6;
+  totalPages = 0;
+  totalItems = 0;
+  hasNext = false;
+  hasPrevious = false;
+
+  statusFilter: 'ALL' | 'AVAILABLE' | 'FULL' | 'DEADLINE_PASSED' = 'ALL';
+
+
+  ngOnInit(): void {
+    this.fetchEvents(0);
+
+    if (this.authService.hasEmployeeRole()) {
+      this.loadRegisteredEvents();
+    }
+  }
+
+  private loadRegisteredEvents(): void {
+    this.eventService.getMyRegistrations().subscribe({
+      next: (items: RegistrationResponse[]) => {
+        this.registeredEventIds = new Set(items.map(item => item.eventId));
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.registeredEventIds = new Set();
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  isRegistered(event: EventResponse): boolean {
+    return this.registeredEventIds.has(event.id);
+  }
+
+  isFull(event: EventResponse): boolean {
+    return event.remainingCapacity === 0;
+  }
+
+  statusLabel(status: string): string {
+    switch (status) {
+      case 'DRAFT': return 'Brouillon';
+      case 'PUBLISHED': return 'PubliÃ©';
+      case 'CANCELLED': return 'AnnulÃ©';
+      case 'ARCHIVED': return 'ArchivÃ©';
+      case 'PENDING': return 'En attente';
+      default: return status;
+    }
+  }
+
+  search(): void {
+    this.fetchEvents(0);
+  }
+
+  resetFilters(): void {
+    this.category = '';
+    this.from = '';
+    this.to = '';
+    this.sortBy = 'DATE_ASC';
+    this.viewMode = 'grid';
+    this.titleQuery = '';
+    this.statusFilter = 'ALL';
+    this.fetchEvents(0);
+  }
+
+
+  isDeadlinePassed(event: EventResponse): boolean {
+    if (!event.registrationDeadline) return false;
+    return new Date().getTime() > new Date(event.registrationDeadline).getTime();
+  }
+
+  get displayedEvents(): EventResponse[] {
+    return this.events;
+  }
+
+  private fetchEvents(page = 0): void {
+    this.loading = true;
+    this.errorMessage = '';
+    this.cdr.markForCheck();
+
+    const { sortBy, sortDir } = this.mapSort();
+
+    const hasFilters = !!this.category || !!this.from || !!this.to || !!this.titleQuery?.trim() || this.statusFilter !== 'ALL';
+
+    const request$ = hasFilters
+      ? this.eventService.searchPublished(
+        this.normalizeSearchText(this.category),
+        this.normalizeSearchText(this.titleQuery),
+        this.toIsoInstant(this.from),
+        this.toIsoInstant(this.to),
+        this.statusFilter,
+        page,
+        this.pageSize,
+        sortBy,
+        sortDir
+      )
+      : this.eventService.getPublished(
+          page,
+          this.pageSize,
+          sortBy,
+          sortDir
+        );
+
+    request$
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (response: PageResponse<EventResponse>) => {
+          this.applyPage(response);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.errorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de charger les Ã©vÃ©nements.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  getParticipantAvatars(event: EventResponse): string[] {
+    return (event.participantAvatarUrls ?? []).filter(Boolean).slice(0, 3);
+  }
+
+  getRemainingParticipantCount(event: EventResponse): number {
+    const total = event.registeredCount ?? 0;
+    const shown = this.getParticipantAvatars(event).length;
+    return Math.max(total - shown, 0);
+  }
+
+  hasParticipants(event: EventResponse): boolean {
+    return (event.registeredCount ?? 0) > 0;
+  }
+
+
+  getEventImageUrl(event: EventResponse): string {
+    return resolveEventImageUrl(event.imageUrl, event.category);
+  }
+
+  private mapSort(): { sortBy: string; sortDir: 'asc' | 'desc' } {
+    switch (this.sortBy) {
+      case 'DATE_DESC':
+        return { sortBy: 'startAt', sortDir: 'desc' };
+      case 'TITLE_ASC':
+        return { sortBy: 'title', sortDir: 'asc' };
+      case 'TITLE_DESC':
+        return { sortBy: 'title', sortDir: 'desc' };
+      case 'DATE_ASC':
+      default:
+        return { sortBy: 'startAt', sortDir: 'asc' };
+    }
+  }
+
+  private normalizeSearchText(value: string): string | null {
+    if (!value || !value.trim()) return null;
+    return value.trim();
+  }
+
+  private applyPage(response: PageResponse<EventResponse>): void {
+    this.events = response.items ?? [];
+    this.currentPage = response.currentPage;
+    this.pageSize = response.pageSize;
+    this.totalPages = response.totalPages;
+    this.totalItems = response.totalItems;
+    this.hasNext = response.hasNext;
+    this.hasPrevious = response.hasPrevious;
+  }
+
+  private toIsoInstant(value: string): string | null {
+    if (!value) return null;
+
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return null;
+
+    return date.toISOString();
+  }
+
+  goToPage(page: number): void {
+    if (page < 0 || page >= this.totalPages || page === this.currentPage) {
+      return;
+    }
+
+    this.fetchEvents(page);
+  }
+}

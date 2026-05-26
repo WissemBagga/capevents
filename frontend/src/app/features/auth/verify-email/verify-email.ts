@@ -1,4 +1,4 @@
-import { AuthService } from '../../../core/services/auth.service';
+﻿import { AuthService } from '@core/services/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 
@@ -30,7 +30,7 @@ export class VerifyEmail {
 
     if (!token) {
       this.loading = false;
-      this.errorMessage = 'Token de vérification manquant.';
+      this.errorMessage = 'Token de vÃ©rification manquant.';
       return;
     }
 
@@ -38,7 +38,7 @@ export class VerifyEmail {
     this.authService.verifyEmail(token).subscribe({
       next: () => {
         this.loading = false;
-        this.successMessage = 'Votre email a été vérifié avec succès. Redirection vers la connexion...';
+        this.successMessage = 'Votre email a Ã©tÃ© vÃ©rifiÃ© avec succÃ¨s. Redirection vers la connexion...';
         this.cdr.markForCheck();
 
         setTimeout(() => {
@@ -51,13 +51,13 @@ export class VerifyEmail {
         const raw = err?.error?.message || err?.error || '';
 
         if (!token) {
-          this.errorMessage = 'Le token de vérification est manquant.';
+          this.errorMessage = 'Le token de vÃ©rification est manquant.';
         } else if (typeof raw === 'string' && raw.includes('Invalid verification token')) {
-          this.errorMessage = 'Le lien de vérification est invalide.';
+          this.errorMessage = 'Le lien de vÃ©rification est invalide.';
         } else if (typeof raw === 'string' && raw.includes('already used')) {
-          this.errorMessage = 'Ce lien de vérification a déjà été utilisé. Vous pouvez vous connecter.';
+          this.errorMessage = 'Ce lien de vÃ©rification a dÃ©jÃ  Ã©tÃ© utilisÃ©. Vous pouvez vous connecter.';
         } else {
-          this.errorMessage = raw || 'La vérification de l’email a échoué.';
+          this.errorMessage = raw || 'La vÃ©rification de lâ€™email a Ã©chouÃ©.';
         }
 
         this.cdr.markForCheck();
@@ -65,3 +65,4 @@ export class VerifyEmail {
     });
   }
 }
+

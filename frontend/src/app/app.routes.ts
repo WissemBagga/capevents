@@ -1,36 +1,25 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 import { ForgotPassword } from './features/auth/forgot-password/forgot-password';
 import { ResetPassword } from './features/auth/reset-password/reset-password';
-import { EventsList } from './features/events/events-list/events-list';
+import { EventsList } from './features/events/browse/events-list/events-list';
 import { authGuard } from './core/guards/auth-guard';
-import { EventDetails } from './features/events/events-details/event-details';
+import { EventDetails } from './features/events/details/events-details/event-details';
 import { roleGuard } from './core/guards/role-guard';
-import { EmployeeDashboard } from './features/events/employee-dashboard/employee-dashboard';
-import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard';
 import {AdminStats} from './features/admin/analytics/admin-stats/admin-stats';
-import { CreateEvent } from './features/admin/create-event/create-event';
-import { EditEvent } from './features/admin/edit-event/edit-event';
+
 import { AppShell } from './layout/app-shell/app-shell';
 import { VerifyEmail } from './features/auth/verify-email/verify-email';
 import { VerifyEmailPending } from './features/auth/verify-email-pending/verify-email-pending';
-import { AdminEventDetails } from './features/admin/admin-event-details/admin-event-details';
-import {MyEvents} from './features/events/my-events/my-events';
 
-import { MyInvitations } from './features/invitations/my-invitations/my-invitations'
-import { SubmitEvent } from './features/submissions/new/submit-event/submit-event';
-import { PendingEvents } from './features/admin/pending-events/pending-events';
 
-import { MySubmissions } from './features/submissions/my-submissions/my-submissions';
 
-import { FeedbackEvent } from './features/events/feedback-event/feedback-event';
+import { FeedbackEvent } from './features/events/feedback/feedback-event/feedback-event';
 
 import { MyPoints } from './features/gamification/my-points/my-points';
 
-import { MyInterests } from './features/interests/my-interests/my-interests';
 
-import { MyProfile } from './features/profile/my-profile/my-profile';
 
 import { Forbidden } from './features/errors/forbidden/forbidden';
 import { NotFound } from './features/errors/not-found/not-found';
@@ -39,19 +28,33 @@ import { NotFound } from './features/errors/not-found/not-found';
 import { AdminDepartments } from './features/admin/departments/admin-departments/admin-departments';
 import { AdminUsers } from './features/admin/users/admin-users/admin-users';
 
-import { PastEvents } from './features/events/past-events/past-events';
 
 import { MyBadges } from './features/gamification/my-badges/my-badges';
 
 import { MyRewards } from './features/gamification/my-rewards/my-rewards';
+import { PastEvents } from './features/events/history/past-events/past-events';
+import { MyEvents } from './features/events/my-events/my-events';
+import { MyInvitations } from './features/events/invitations/my-invitations/my-invitations';
+import { MySubmissions } from './features/events/submissions/my-submissions/my-submissions';
+import { SubmitEvent } from './features/events/submissions/new/submit-event/submit-event';
+import { EventCalendar } from './features/events/calendar/event-calendar/event-calendar';
 
-import { AdminRewardRequests } from './features/admin/admin-reward-requests/admin-reward-requests';
+import { EmployeeDashboard } from './features/employee/dashboard/employee-dashboard/employee-dashboard';
 
-import { EventCalendar } from './features/calendar/event-calendar/event-calendar';
+import { AdminDashboard } from './features/admin/events/event-management/admin-dashboard';
+import { AdminEventDetails } from './features/admin/events/event-details/admin-event-details';
+import { CreateEvent } from './features/admin/events/create-event/create-event';
+import { EditEvent } from './features/admin/events/edit-event/edit-event';
+import { PendingEvents } from './features/admin/events/pending-events/pending-events';
+import { AdminRewardRequests } from './features/admin/rewards/admin-reward-requests/admin-reward-requests';
 
-import { LandingPage } from './features/landing/landing-page/landing-page';
+import { MyProfile } from './features/account/profile/my-profile/my-profile';
+import { MyInterests } from './features/account/interests/my-interests/my-interests';
+import { SettingsHub } from './features/account/settings/settings-hub/settings-hub';
 
-import { SettingsHub } from './features/settings/settings-hub/settings-hub';
+
+import { LandingPage } from './features/public/landing/landing-page/landing-page';
+
 import { GamificationHub } from './features/gamification/gamification-hub/gamification-hub';
 import { AiAssistantsHub } from './features/ai-assistants/ai-assistants-hub/ai-assistants-hub';
 
@@ -131,3 +134,4 @@ export const routes: Routes = [
 
   { path: '**', redirectTo: 'not-found' }
 ];
+

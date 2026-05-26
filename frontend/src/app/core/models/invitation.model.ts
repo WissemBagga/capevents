@@ -1,4 +1,4 @@
-export type InvitationTargetType = 'GLOBAL' | 'DEPARTMENT' | 'INDIVIDUAL';
+﻿export type InvitationTargetType = 'GLOBAL' | 'DEPARTMENT' | 'INDIVIDUAL';
 
 export interface SendInvitationRequest {
 targetType: InvitationTargetType;
@@ -67,3 +67,4 @@ export interface EmployeeInviteRequest {
   userEmails: string[];
   message: string | null;
 }
+

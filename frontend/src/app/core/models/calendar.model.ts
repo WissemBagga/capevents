@@ -1,4 +1,4 @@
-export interface CalendarEventItemResponse {
+﻿export interface CalendarEventItemResponse {
   eventId: string;
   title: string;
   category: string | null;

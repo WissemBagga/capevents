@@ -1,0 +1,129 @@
+﻿import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { finalize, forkJoin } from 'rxjs';
+
+import { InterestService } from '@core/services/interest.service';
+import { InterestResponse } from '@core/models/interest.model';
+
+import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
+
+
+@Component({
+  selector: 'app-my-interests',
+  standalone: true,
+  imports: [RouterLink, ScrollToMessageDirective],
+  templateUrl: './my-interests.html',
+  styleUrl: './my-interests.css'
+})
+export class MyInterests {
+  private interestService = inject(InterestService);
+  private cdr = inject(ChangeDetectorRef);
+  @Input() embedded = false;
+
+  availableInterests: InterestResponse[] = [];
+  selectedIds: number[] = [];
+
+  loading = false;
+  saving = false;
+  errorMessage = '';
+  successMessage = '';
+
+  readonly maxSelection = 6;
+
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.loading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.cdr.markForCheck();
+
+    forkJoin({
+      available: this.interestService.getAllInterests(),
+      mine: this.interestService.getMyInterests()
+    })
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: ({ available, mine }) => {
+          this.availableInterests = available ?? [];
+          this.selectedIds = (mine ?? []).map(item => item.id);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.availableInterests = [];
+          this.selectedIds = [];
+          this.errorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible de charger vos intÃ©rÃªts.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  isSelected(id: number): boolean {
+    return this.selectedIds.includes(id);
+  }
+
+  toggleInterest(id: number): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (this.isSelected(id)) {
+      this.selectedIds = this.selectedIds.filter(item => item !== id);
+      this.cdr.markForCheck();
+      return;
+    }
+
+    if (this.selectedIds.length >= this.maxSelection) {
+      this.errorMessage = `Vous pouvez sÃ©lectionner au maximum ${this.maxSelection} intÃ©rÃªts.`;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.selectedIds = [...this.selectedIds, id];
+    this.cdr.markForCheck();
+  }
+
+  save(): void {
+    if (this.selectedIds.length === 0) {
+      this.errorMessage = 'Veuillez sÃ©lectionner au moins un intÃ©rÃªt.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.saving = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.cdr.markForCheck();
+
+    this.interestService.updateMyInterests({ interestIds: this.selectedIds })
+      .pipe(finalize(() => {
+        this.saving = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: (saved) => {
+          this.selectedIds = (saved ?? []).map(item => item.id);
+          this.successMessage = 'Vos intÃ©rÃªts ont Ã©tÃ© enregistrÃ©s.';
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.errorMessage =
+            err?.error?.message ||
+            err?.error ||
+            'Impossible dâ€™enregistrer vos intÃ©rÃªts.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  trackByInterestId(_: number, item: InterestResponse): number {
+    return item.id;
+  }
+}

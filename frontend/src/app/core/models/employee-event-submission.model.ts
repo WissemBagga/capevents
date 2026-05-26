@@ -1,4 +1,4 @@
-export interface EmployeeEventSubmissionResponse {
+﻿export interface EmployeeEventSubmissionResponse {
   eventId: string;
   status: 'PUBLISHED' | 'PENDING';
   directlyPublished: boolean;

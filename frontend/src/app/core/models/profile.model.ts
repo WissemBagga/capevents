@@ -1,4 +1,4 @@
-export interface MyProfileResponse {
+﻿export interface MyProfileResponse {
   id: string;
   firstName: string;
   lastName: string;

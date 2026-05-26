@@ -1,4 +1,4 @@
-export interface AiRecommendationItem {
+﻿export interface AiRecommendationItem {
   eventId: string;
   title: string | null;
   category: string | null;

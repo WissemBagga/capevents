@@ -1,4 +1,4 @@
-export interface AvatarPreset {
+﻿export interface AvatarPreset {
   id: string;
   label: string;
   url: string;
