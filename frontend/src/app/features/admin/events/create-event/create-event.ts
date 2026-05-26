@@ -457,7 +457,6 @@ export class CreateEvent {
     createdEventStatus: 'DRAFT' | 'PUBLISHED'
   ): void {
     if (!this.aiPlanningUsageToLog) {
-      console.warn('Aucun tracking IA Planning trouvÃ© pour cet Ã©vÃ©nement.');
       return;
     }
 

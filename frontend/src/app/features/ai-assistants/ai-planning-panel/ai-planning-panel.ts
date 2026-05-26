@@ -285,7 +285,6 @@ export class AiPlanningPanel {
       source: 'ai_assistants_planning_panel'
     }).subscribe({
       error: (err) => {
-        console.error('[AI PLANNING USAGE LOG ERROR]', err);
       }
     });
   }
