@@ -453,7 +453,9 @@
   .soft-wave,
   .bubble,
   .confetti,
-  .ribbon {
+  .ribbon,
+  .balloon,
+  .balloon__string {
     animation: none;
   }
 }
@@ -478,5 +480,157 @@
 
   .dots {
     display: none;
+  }
+}
+
+/* =========================================================
+   BALLONS FLOTTANTS — EFFET PARTY PREMIUM
+========================================================= */
+
+.balloon {
+  position: absolute;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: 58px;
+  height: 112px;
+  opacity: 0.58;
+  pointer-events: none;
+  animation:
+    balloonFly 26s linear infinite,
+    balloonSway 5.8s ease-in-out infinite alternate;
+}
+
+.balloon__body {
+  position: relative;
+  width: 46px;
+  height: 58px;
+  border-radius: 50% 50% 48% 48%;
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.90), transparent 28%),
+    linear-gradient(145deg, rgba(29, 181, 226, 0.52), rgba(0, 88, 171, 0.24));
+  box-shadow:
+    inset -8px -12px 18px rgba(18, 26, 56, 0.08),
+    0 18px 38px rgba(18, 26, 56, 0.08);
+}
+
+.balloon__body::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 12px;
+  height: 10px;
+  border-radius: 50% 50% 4px 4px;
+  transform: translateX(-50%);
+  background: inherit;
+}
+
+.balloon__string {
+  width: 1px;
+  height: 46px;
+  margin-top: 6px;
+  background: linear-gradient(
+    180deg,
+    rgba(70, 80, 106, 0.28),
+    rgba(70, 80, 106, 0.04)
+  );
+  transform-origin: top center;
+  animation: stringSway 4.4s ease-in-out infinite alternate;
+}
+
+/* positions et couleurs */
+.balloon--one {
+  left: 42%;
+  bottom: -160px;
+  animation-delay: -2s, -1s;
+}
+
+.balloon--one .balloon__body {
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.90), transparent 28%),
+    linear-gradient(145deg, rgba(29, 181, 226, 0.56), rgba(0, 88, 171, 0.24));
+}
+
+.balloon--two {
+  right: 12%;
+  bottom: -180px;
+  width: 64px;
+  height: 122px;
+  opacity: 0.36;
+  animation-duration: 31s, 6.4s;
+  animation-delay: -8s, -2s;
+}
+
+.balloon--two .balloon__body {
+  width: 52px;
+  height: 66px;
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.92), transparent 28%),
+    linear-gradient(145deg, rgba(255, 160, 211, 0.58), rgba(255, 90, 165, 0.18));
+}
+
+.balloon--three {
+  left: 68%;
+  bottom: -150px;
+  width: 50px;
+  height: 102px;
+  opacity: 0.30;
+  animation-duration: 34s, 7s;
+  animation-delay: -14s, -4s;
+}
+
+.balloon--three .balloon__body {
+  width: 40px;
+  height: 52px;
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.92), transparent 28%),
+    linear-gradient(145deg, rgba(0, 213, 208, 0.48), rgba(0, 130, 142, 0.16));
+}
+
+.balloon--four {
+  right: 30%;
+  bottom: -170px;
+  opacity: 0.28;
+  animation-duration: 38s, 7.4s;
+  animation-delay: -20s, -6s;
+}
+
+.balloon--four .balloon__body {
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.92), transparent 28%),
+    linear-gradient(145deg, rgba(254, 177, 0, 0.42), rgba(255, 129, 110, 0.18));
+}
+
+/* mouvement vertical très lent */
+@keyframes balloonFly {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.92);
+  }
+
+  100% {
+    transform: translate3d(0, -125vh, 0) scale(1.04);
+  }
+}
+
+/* mouvement gauche/droite */
+@keyframes balloonSway {
+  0% {
+    margin-left: -10px;
+  }
+
+  100% {
+    margin-left: 16px;
+  }
+}
+
+/* petite courbe de la ficelle */
+@keyframes stringSway {
+  0% {
+    transform: rotate(-4deg);
+  }
+
+  100% {
+    transform: rotate(5deg);
   }
 }
