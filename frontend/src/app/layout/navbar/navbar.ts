@@ -267,7 +267,7 @@ export class Navbar {
     const normalized = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 
     if (normalized(date) === normalized(today)) {
-      return 'Aujourdâ€™hui';
+      return 'Aujourd’hui';
     }
 
     if (normalized(date) === normalized(yesterday)) {
@@ -303,7 +303,7 @@ export class Navbar {
   get pageTitle(): string {
     const url = this.router.url;
 
-    if (url.startsWith('/dashboard/employee')) return 'Espace employÃ©';
+    if (url.startsWith('/dashboard/employee')) return 'Espace employé';
 
     if (url.startsWith('/assistants')) return 'Assistants IA';
 
@@ -312,17 +312,17 @@ export class Navbar {
     if (url.startsWith('/admin/hr')) return 'Administration RH';
     if (url.startsWith('/admin/manager')) return 'Espace Manager';
 
-    if (url.startsWith('/admin/events/')) return 'Gestion des Ã©vÃ©nements';
-    if (url.startsWith('/admin/create-event')) return 'Gestion des Ã©vÃ©nements';
-    if (url.startsWith('/admin/edit-event/')) return 'Gestion des Ã©vÃ©nements';
-    if (url.startsWith('/admin/pending-events')) return 'Gestion des Ã©vÃ©nements';
+    if (url.startsWith('/admin/events/')) return 'Gestion des événements';
+    if (url.startsWith('/admin/create-event')) return 'Gestion des événements';
+    if (url.startsWith('/admin/edit-event/')) return 'Gestion des événements';
+    if (url.startsWith('/admin/pending-events')) return 'Gestion des événements';
     if (url.startsWith('/admin/admin-users')) return 'Administration RH';
     if (url.startsWith('/admin/admin-departments')) return 'Administration RH';
     if (url.startsWith('/admin/reward-requests')) return 'Administration RH';
 
     if (url.startsWith('/events/past')) return 'Archives';
-    if (url.includes('/feedback')) return 'Ã‰vÃ©nements';
-    if (url.startsWith('/events')) return 'Ã‰vÃ©nements';
+    if (url.includes('/feedback')) return 'Événements';
+    if (url.startsWith('/events')) return 'Événements';
 
     if (url.startsWith('/my-events')) return 'Participation';
     if (url.startsWith('/my-invitations')) return 'Participation';
@@ -335,7 +335,7 @@ export class Navbar {
     if (url.startsWith('/my-badges')) return 'Engagement';
     if (url.startsWith('/calendar')) return 'Planification';
 
-    if (url.startsWith('/settings')) return 'ParamÃ¨tres';
+    if (url.startsWith('/settings')) return 'Paramètres';
     if (url.startsWith('/gamification')) return 'Gamification';
 
     return 'CapEvents';

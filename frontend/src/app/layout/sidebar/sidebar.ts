@@ -22,10 +22,10 @@ export class Sidebar {
 
   avatarLoadError = false;
 
-  /** Identifiant de la section accordÃ©on actuellement ouverte. null = toutes fermÃ©es. */
+  /** Identifiant de la section accordéon actuellement ouverte. null = toutes fermées. */
   openedSection: string | null = 'main';
 
-  /** true = sidebar en mode compact (icÃ´nes seules), false = mode Ã©tendu normal */
+  /** true = sidebar en mode compact (icônes seules), false = mode étendu normal */
   isCollapsed = false;
 
   ngOnInit(): void {
@@ -73,7 +73,7 @@ export class Sidebar {
   get roleLabel(): string {
     if (this.authService.isHr()) return 'Administrateur RH';
     if (this.authService.isManager()) return 'Manager';
-    return 'EmployÃ©';
+    return 'Employé';
   }
 
   get homeRoute(): string {
@@ -91,23 +91,23 @@ export class Sidebar {
   get mainLinks(): NavItem[] {
     if (this.authService.isHr()) {
       return [
-        { label: 'Gestion des Ã©vÃ©nements', route: '/admin/hr' },
-        { label: 'Ã‰vÃ©nements', route: '/events' },
+        { label: 'Gestion des événements', route: '/admin/hr' },
+        { label: 'Événements', route: '/events' },
         { label: 'Statistiques', route: '/admin/hr/stats' }
       ];
     }
 
     if (this.authService.isManager()) {
       return [
-        { label: 'Gestion des Ã©vÃ©nements', route: '/admin/manager' },
-        { label: 'Ã‰vÃ©nements', route: '/events' },
+        { label: 'Gestion des événements', route: '/admin/manager' },
+        { label: 'Événements', route: '/events' },
         { label: 'Statistiques', route: '/admin/manager/stats' }
       ];
     }
 
     return [
       { label: 'Tableau de bord', route: '/dashboard/employee' },
-      { label: 'Ã‰vÃ©nements', route: '/events' }
+      { label: 'Événements', route: '/events' }
     ];
   }
 
@@ -135,16 +135,16 @@ export class Sidebar {
     }
 
     return [
-      { label: 'Mes Ã©vÃ©nements', route: '/my-events' },
+      { label: 'Mes événements', route: '/my-events' },
       { label: 'Mes invitations', route: '/my-invitations' },
-      { label: 'Ã‰vÃ©nements passÃ©s', route: '/events/past' },
+      { label: 'Événements passés', route: '/events/past' },
       { label: 'Gamification', route: '/gamification' }
     ];
   }
 
   /**
-   * AccordÃ©on exclusif : ouvre la section cliquÃ©e et ferme toutes les autres.
-   * Si la section est dÃ©jÃ  ouverte, elle se referme.
+   * Accordéon exclusif : ouvre la section cliquée et ferme toutes les autres.
+   * Si la section est déjà  ouverte, elle se referme.
    * Si la sidebar est en mode compact, elle s'ouvre automatiquement.
    */
   toggle(section: string): void {
@@ -153,12 +153,12 @@ export class Sidebar {
       this.isCollapsed = false;
       this.openedSection = section;
     } else {
-      // En mode Ã©tendu : accordÃ©on normal
+      // En mode étendu : accordéon normal
       this.openedSection = this.openedSection === section ? null : section;
     }
   }
 
-  /** Retourne true si la section donnÃ©e est actuellement ouverte. */
+  /** Retourne true si la section donnée est actuellement ouverte. */
   isSectionOpen(section: string): boolean {
     return this.openedSection === section;
   }
@@ -175,21 +175,21 @@ export class Sidebar {
   get workLinks(): NavItem[] {
     if (this.authService.isHr()) {
       return [
-        { label: 'CrÃ©er un Ã©vÃ©nement', route: '/admin/create-event' },
+        { label: 'Créer un événement', route: '/admin/create-event' },
         { label: 'Demandes en attente', route: '/admin/pending-events' },
-        { label: 'Demandes rÃ©compenses', route: '/admin/reward-requests' }
+        { label: 'Demandes récompenses', route: '/admin/reward-requests' }
       ];
     }
 
     if (this.authService.isManager()) {
       return [
-        { label: 'CrÃ©er un Ã©vÃ©nement', route: '/admin/create-event' },
+        { label: 'Créer un événement', route: '/admin/create-event' },
         { label: 'Demandes en attente', route: '/admin/pending-events' }
       ];
     }
 
     return [
-      { label: 'Proposer un Ã©vÃ©nement', route: '/employee/submit-event' },
+      { label: 'Proposer un événement', route: '/employee/submit-event' },
       { label: 'Mes demandes', route: '/my-submissions' }
     ];
   }
@@ -220,7 +220,7 @@ export class Sidebar {
     } else if (this.matchesAny(url, this.participationLinks)) {
       this.openedSection = 'participation';
     } else if (this.openedSection === null) {
-      // Aucune section active trouvÃ©e et rien d'ouvert : ouvrir main par dÃ©faut
+      // Aucune section active trouvée et rien d'ouvert : ouvrir main par défaut
       this.openedSection = 'main';
     }
   }

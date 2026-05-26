@@ -123,7 +123,7 @@ export class MyInvitations implements OnInit {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible dâ€™enregistrer votre rÃ©ponse.';
+            'Impossible d’enregistrer votre réponse.';
           this.cdr.markForCheck();
         }
       });
@@ -178,7 +178,7 @@ export class MyInvitations implements OnInit {
       case 'GLOBAL':
         return 'Globale';
       case 'DEPARTMENT':
-        return 'DÃ©partement';
+        return 'Département';
       case 'INDIVIDUAL':
         return 'Individuelle';
       default:
@@ -187,7 +187,7 @@ export class MyInvitations implements OnInit {
   }
 
   invitationSourceLabel(source: 'ADMIN' | 'COLLEAGUE'): string {
-    return source === 'ADMIN' ? 'Administration' : 'CollÃ¨gue';
+    return source === 'ADMIN' ? 'Administration' : 'Collègue';
   }
 
   hasResponse(invitation: MyInvitationResponse): boolean {
@@ -201,9 +201,9 @@ export class MyInvitations implements OnInit {
       case 'PENDING':
         return 'En attente';
       case 'RESPONDED':
-        return 'RÃ©pondue';
+        return 'Répondue';
       case 'EXPIRED':
-        return 'ExpirÃ©e';
+        return 'Expirée';
       default:
         return status;
     }
@@ -235,9 +235,9 @@ export class MyInvitations implements OnInit {
   reminderStatusLabel(status: string): string {
     switch (status) {
       case 'SENT':
-        return 'EnvoyÃ©e';
+        return 'Envoyée';
       case 'FAILED':
-        return 'Ã‰chec';
+        return 'Échec';
       default:
         return status || 'N/D';
     }

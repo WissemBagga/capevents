@@ -93,7 +93,7 @@ export class MyEvents {
 
   eventStatusLabel(registration: RegistrationResponse): string {
     if (this.isEventCancelled(registration)) {
-      return 'Ã‰vÃ©nement annulÃ©';
+      return 'Événement annulé';
     }
 
     if (registration.status === 'REGISTERED') {
@@ -101,7 +101,7 @@ export class MyEvents {
     }
 
     if (registration.status === 'CANCELLED') {
-      return 'AnnulÃ©';
+      return 'Annulé';
     }
 
     return registration.status;
@@ -147,7 +147,7 @@ export class MyEvents {
       case 'REGISTERED':
         return 'Inscrit';
       case 'CANCELLED':
-        return 'AnnulÃ©';
+        return 'Annulé';
       default:
         return status;
     }

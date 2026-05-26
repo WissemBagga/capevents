@@ -60,7 +60,7 @@ export class MyInterests {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de charger vos intÃ©rÃªts.';
+            'Impossible de charger vos intérêts.';
           this.cdr.markForCheck();
         }
       });
@@ -81,7 +81,7 @@ export class MyInterests {
     }
 
     if (this.selectedIds.length >= this.maxSelection) {
-      this.errorMessage = `Vous pouvez sÃ©lectionner au maximum ${this.maxSelection} intÃ©rÃªts.`;
+      this.errorMessage = `Vous pouvez sélectionner au maximum ${this.maxSelection} intérêts.`;
       this.cdr.markForCheck();
       return;
     }
@@ -92,7 +92,7 @@ export class MyInterests {
 
   save(): void {
     if (this.selectedIds.length === 0) {
-      this.errorMessage = 'Veuillez sÃ©lectionner au moins un intÃ©rÃªt.';
+      this.errorMessage = 'Veuillez sélectionner au moins un intérêt.';
       this.cdr.markForCheck();
       return;
     }
@@ -110,14 +110,14 @@ export class MyInterests {
       .subscribe({
         next: (saved) => {
           this.selectedIds = (saved ?? []).map(item => item.id);
-          this.successMessage = 'Vos intÃ©rÃªts ont Ã©tÃ© enregistrÃ©s.';
+          this.successMessage = 'Vos intérêts ont été enregistrés.';
           this.cdr.markForCheck();
         },
         error: (err) => {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible dâ€™enregistrer vos intÃ©rÃªts.';
+            'Impossible d’enregistrer vos intérêts.';
           this.cdr.markForCheck();
         }
       });

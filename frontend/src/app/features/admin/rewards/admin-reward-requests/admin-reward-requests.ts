@@ -54,7 +54,7 @@ export class AdminRewardRequests {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de charger les demandes de rÃ©compenses.';
+            'Impossible de charger les demandes de récompenses.';
           this.cdr.markForCheck();
         }
       });
@@ -79,7 +79,7 @@ export class AdminRewardRequests {
       }))
       .subscribe({
         next: () => {
-          this.successMessage = `La demande "${item.rewardTitle}" a Ã©tÃ© confirmÃ©e.`;
+          this.successMessage = `La demande "${item.rewardTitle}" a été confirmée.`;
           this.loadRequests();
         },
         error: (err) => {
@@ -123,7 +123,7 @@ export class AdminRewardRequests {
       }))
       .subscribe({
         next: () => {
-          this.successMessage = `La demande "${item.rewardTitle}" a Ã©tÃ© refusÃ©e et les points ont Ã©tÃ© remboursÃ©s.`;
+          this.successMessage = `La demande "${item.rewardTitle}" a été refusée et les points ont été remboursés.`;
           this.rejectReasonById[item.id] = '';
           this.showRejectBoxById[item.id] = false;
           this.loadRequests();
@@ -141,8 +141,8 @@ export class AdminRewardRequests {
   statusLabel(status: string): string {
     const labels: Record<string, string> = {
       PENDING_HR_ACTION: 'En attente RH',
-      COMPLETED: 'ConfirmÃ©e',
-      REJECTED: 'RefusÃ©e'
+      COMPLETED: 'Confirmée',
+      REJECTED: 'Refusée'
     };
 
     return labels[status] || status;

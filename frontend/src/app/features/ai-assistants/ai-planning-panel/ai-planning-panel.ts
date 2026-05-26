@@ -59,7 +59,7 @@ export class AiPlanningPanel {
   }
 
   get currentDepartmentName(): string {
-    return this.authService.getCurrentUserSnapshot()?.departmentName || 'Votre dÃ©partement';
+    return this.authService.getCurrentUserSnapshot()?.departmentName || 'Votre département';
   }
 
   loadDepartments(): void {
@@ -109,7 +109,7 @@ export class AiPlanningPanel {
           this.aiPlanningError =
             err?.error?.message ||
             err?.error ||
-            'Impossible de gÃ©nÃ©rer les propositions IA.';
+            'Impossible de générer les propositions IA.';
           this.cdr.markForCheck();
         }
       });
@@ -119,7 +119,7 @@ export class AiPlanningPanel {
     const firstSlot = proposal.suggestedSlots?.[0];
 
     if (!firstSlot) {
-      this.aiPlanningError = 'Cette proposition ne contient aucun crÃ©neau utilisable.';
+      this.aiPlanningError = 'Cette proposition ne contient aucun créneau utilisable.';
       this.cdr.markForCheck();
       return;
     }
@@ -173,12 +173,12 @@ export class AiPlanningPanel {
 
     const text = [
       `Titre : ${proposal.title}`,
-      `CatÃ©gorie : ${proposal.category}`,
+      `Catégorie : ${proposal.category}`,
       `Audience : ${this.planningAudienceLabel(proposal.audience)}`,
       `Format : ${this.planningLocationLabel(proposal.locationType)}`,
-      `DurÃ©e : ${proposal.durationMinutes} minutes`,
-      `CapacitÃ© : ${proposal.capacity} places`,
-      firstSlot ? `CrÃ©neau recommandÃ© : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}` : '',
+      `Durée : ${proposal.durationMinutes} minutes`,
+      `Capacité : ${proposal.capacity} places`,
+      firstSlot ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}` : '',
       '',
       `Objectif : ${proposal.objective}`,
       '',
@@ -199,16 +199,16 @@ export class AiPlanningPanel {
     return [
       proposal.objective,
       '',
-      `Participez Ã  Â« ${proposal.title} Â», un Ã©vÃ©nement interne conÃ§u pour accompagner les collaborateurs dans leur dÃ©veloppement professionnel.`,
+      `Participez à  « ${proposal.title} », un événement interne conçu pour accompagner les collaborateurs dans leur développement professionnel.`,
       '',
-      'Cette session proposera un moment dâ€™Ã©change, de partage de pratiques et de rÃ©flexion collective autour dâ€™un sujet utile au quotidien professionnel.',
+      'Cette session proposera un moment d’échange, de partage de pratiques et de réflexion collective autour d’un sujet utile au quotidien professionnel.',
       '',
-      'Votre participation contribuera Ã  enrichir les Ã©changes et Ã  renforcer la collaboration au sein de lâ€™organisation.',
+      'Votre participation contribuera à  enrichir les échanges et à  renforcer la collaboration au sein de l’organisation.',
       '',
       'Justification IA :',
       rationale,
       '',
-      'Note : cette proposition doit Ãªtre validÃ©e par le RH ou le manager avant publication.'
+      'Note : cette proposition doit être validée par le RH ou le manager avant publication.'
     ].join('\n');
   }
 
@@ -221,7 +221,7 @@ export class AiPlanningPanel {
       case 'GLOBAL':
         return 'Global';
       case 'DEPARTMENT':
-        return 'DÃ©partement';
+        return 'Département';
       default:
         return audience || 'N/D';
     }
@@ -230,7 +230,7 @@ export class AiPlanningPanel {
   planningLocationLabel(locationType: string): string {
     switch (locationType) {
       case 'ONSITE':
-        return 'PrÃ©sentiel';
+        return 'Présentiel';
       case 'ONLINE':
         return 'En ligne';
       case 'EXTERNAL':
@@ -243,15 +243,15 @@ export class AiPlanningPanel {
   planningConfidenceLabel(confidence: string): string {
     switch (confidence) {
       case 'HIGH':
-        return 'Confiance Ã©levÃ©e';
+        return 'Confiance élevée';
       case 'MEDIUM':
         return 'Confiance moyenne';
       case 'LOW':
         return 'Confiance faible';
       case 'VERY_LOW':
-        return 'Confiance trÃ¨s faible';
+        return 'Confiance très faible';
       default:
-        return confidence || 'Confiance non dÃ©finie';
+        return confidence || 'Confiance non définie';
     }
   }
 
@@ -297,8 +297,8 @@ export class AiPlanningPanel {
       .join('\n');
 
     const slotText = firstSlot
-      ? `CrÃ©neau recommandÃ© : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}`
-      : 'CrÃ©neau recommandÃ© : Ã  confirmer';
+      ? `Créneau recommandé : ${new Date(firstSlot.startAt).toLocaleString('fr-FR')}`
+      : 'Créneau recommandé : à  confirmer';
 
     return [
       'Note IA interne',
@@ -307,7 +307,7 @@ export class AiPlanningPanel {
       'Justification :',
       rationale,
       '',
-      'Cette proposition doit Ãªtre validÃ©e par le RH ou le manager avant publication.'
+      'Cette proposition doit être validée par le RH ou le manager avant publication.'
     ].join('\n');
   }
 }

@@ -56,17 +56,17 @@ export class MySubmissions {
   statusLabel(status: EventResponse['status']): string {
     switch (status) {
       case 'PUBLISHED':
-        return 'PubliÃ©';
+        return 'Publié';
       case 'PENDING':
         return 'En attente';
       case 'DRAFT':
         return 'Brouillon';
       case 'REJECTED':
-        return 'RefusÃ©';  
+        return 'Refusé';  
       case 'CANCELLED':
-        return 'AnnulÃ©';
+        return 'Annulé';
       case 'ARCHIVED':
-        return 'ArchivÃ©';
+        return 'Archivé';
       default:
         return status;
     }

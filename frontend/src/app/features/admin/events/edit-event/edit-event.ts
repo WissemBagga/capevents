@@ -74,7 +74,7 @@ export class EditEvent {
   }
 
   get currentDepartmentName(): string {
-    return this.currentUser?.departmentName || 'non dÃ©fini';
+    return this.currentUser?.departmentName || 'non défini';
   }
 
   get currentDepartmentId(): number | null {
@@ -89,7 +89,7 @@ export class EditEvent {
     const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
-      this.errorMessage = 'Identifiant de lâ€™Ã©vÃ©nement manquant.';
+      this.errorMessage = 'Identifiant de l’événement manquant.';
       this.cdr.markForCheck();
       return;
     }
@@ -108,7 +108,7 @@ export class EditEvent {
         this.cdr.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Impossible de charger les dÃ©partements.';
+        this.errorMessage = 'Impossible de charger les départements.';
         this.cdr.markForCheck();
       }
     });
@@ -177,7 +177,7 @@ export class EditEvent {
         this.errorMessage =
           err?.error?.message ||
           err?.error ||
-          'Impossible de charger lâ€™Ã©vÃ©nement.';
+          'Impossible de charger l’événement.';
         this.cdr.markForCheck();
       }
     });
@@ -286,7 +286,7 @@ export class EditEvent {
     const rawImage = this.form.get('imageUrl')?.value?.trim() || '';
 
     if (this.imageMode === 'CUSTOM_URL' && rawImage && !this.isHttpUrl(rawImage)) {
-      this.errorMessage = 'Veuillez saisir une URL image valide commenÃ§ant par http:// ou https://';
+      this.errorMessage = 'Veuillez saisir une URL image valide commençant par http:// ou https://';
       this.cdr.markForCheck();
       return;
     }
@@ -309,7 +309,7 @@ export class EditEvent {
     };
 
     if (this.capacityBelowRegistrations) {
-      this.errorMessage = `Impossible de rÃ©duire la capacitÃ© en dessous de ${this.originalRegisteredCount} inscrit(s).`;
+      this.errorMessage = `Impossible de réduire la capacité en dessous de ${this.originalRegisteredCount} inscrit(s).`;
       this.cdr.markForCheck();
       return;
     }
@@ -317,7 +317,7 @@ export class EditEvent {
     this.eventService.updateEvent(this.eventId, payload).subscribe({
       next: () => {
         this.submitting = false;
-        this.successMessage = 'Ã‰vÃ©nement modifiÃ© avec succÃ¨s.';
+        this.successMessage = 'Événement modifié avec succès.';
         this.cdr.markForCheck();
 
         setTimeout(() => {
@@ -333,7 +333,7 @@ export class EditEvent {
         this.errorMessage =
           err?.error?.message ||
           err?.error ||
-          'Impossible de modifier lâ€™Ã©vÃ©nement.';
+          'Impossible de modifier l’événement.';
         this.cdr.markForCheck();
       }
     });

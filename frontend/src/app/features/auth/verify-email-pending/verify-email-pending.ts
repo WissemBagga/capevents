@@ -40,14 +40,14 @@ export class VerifyEmailPending {
     this.authService.resendVerification(this.email).subscribe({
       next: () => {
         this.loading = false;
-        this.successMessage = 'Un nouvel email de vÃ©rification a Ã©tÃ© envoyÃ©.';
+        this.successMessage = 'Un nouvel email de vérification a été envoyé.';
         this.cdr.markForCheck();
       },
       error: (err) => {
         this.loading = false;
 
         const raw = err?.error?.message || err?.error || '';
-        this.errorMessage = typeof raw === 'string' ? raw : 'Impossible de renvoyer lâ€™email de vÃ©rification.';
+        this.errorMessage = typeof raw === 'string' ? raw : 'Impossible de renvoyer l’email de vérification.';
         this.cdr.markForCheck();
       }
     });

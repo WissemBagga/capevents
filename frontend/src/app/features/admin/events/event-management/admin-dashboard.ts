@@ -104,7 +104,7 @@ export class AdminDashboard {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de charger les Ã©vÃ©nements.';
+            'Impossible de charger les événements.';
           this.cdr.markForCheck();
         }
       });
@@ -113,11 +113,11 @@ export class AdminDashboard {
   statusLabel(status: string): string {
     const labels: Record<string, string> = {
       'DRAFT': 'Brouillon',
-      'PUBLISHED': 'PubliÃ©',
-      'CANCELLED': 'AnnulÃ©',
-      'ARCHIVED': 'ArchivÃ©',
+      'PUBLISHED': 'Publié',
+      'CANCELLED': 'Annulé',
+      'ARCHIVED': 'Archivé',
       'PENDING': 'En attente',
-      'REJECTED': 'RefusÃ©'
+      'REJECTED': 'Refusé'
     };
     return labels[status] || status;
   }
@@ -210,7 +210,7 @@ export class AdminDashboard {
   }
 
   publish(eventId: string): void {
-    if (!window.confirm('Voulez-vous vraiment publier cet Ã©vÃ©nement ?')) {
+    if (!window.confirm('Voulez-vous vraiment publier cet événement ?')) {
       return;
     }
     this.actionLoading = true;
@@ -224,7 +224,7 @@ export class AdminDashboard {
       .subscribe({
         next: () => this.loadEvents(),
         error: (err) => {
-          this.errorMessage = err?.error?.message || err?.error || 'Impossible de publier cet Ã©vÃ©nement.';
+          this.errorMessage = err?.error?.message || err?.error || 'Impossible de publier cet événement.';
           this.cdr.markForCheck();
         }
       });
@@ -242,7 +242,7 @@ export class AdminDashboard {
       .subscribe({
         next: () => this.loadEvents(),
         error: (err) => {
-          this.errorMessage = err?.error?.message || err?.error || 'Impossible dâ€™archiver cet Ã©vÃ©nement.';
+          this.errorMessage = err?.error?.message || err?.error || 'Impossible d’archiver cet événement.';
           this.cdr.markForCheck();
         }
       });
@@ -253,8 +253,8 @@ export class AdminDashboard {
     const registered = event.registeredCount ?? 0;
     const reason = window.prompt(
       registered > 0
-        ? `Entrez la raison de lâ€™annulation. ${registered} personne(s) sont dÃ©jÃ  inscrites :`
-        : 'Entrez la raison de lâ€™annulation :'
+        ? `Entrez la raison de l’annulation. ${registered} personne(s) sont déjà  inscrites :`
+        : 'Entrez la raison de l’annulation :'
     );
 
     if (!reason || !reason.trim()) return;
@@ -270,7 +270,7 @@ export class AdminDashboard {
       .subscribe({
         next: () => this.loadEvents(),
         error: (err) => {
-          this.errorMessage = err?.error?.message || err?.error || 'Impossible dâ€™annuler cet Ã©vÃ©nement.';
+          this.errorMessage = err?.error?.message || err?.error || 'Impossible d’annuler cet événement.';
           this.cdr.markForCheck();
         }
       });
@@ -281,13 +281,13 @@ export class AdminDashboard {
   }
 
   get dashboardTitle(): string {
-    return this.authService.isHr() ? 'Gestion des Ã©vÃ©nements RH' : 'Gestion des Ã©vÃ©nements';
+    return this.authService.isHr() ? 'Gestion des événements RH' : 'Gestion des événements';
   }
 
   get dashboardSubtitle(): string {
     return this.authService.isHr()
-      ? 'GÃ©rez le cycle de vie de tous les Ã©vÃ©nements de la plateforme.'
-      : 'GÃ©rez les Ã©vÃ©nements de votre pÃ©rimÃ¨tre.';
+      ? 'Gérez le cycle de vie de tous les événements de la plateforme.'
+      : 'Gérez les événements de votre périmètre.';
   }
 
   get isHr(): boolean{
@@ -299,7 +299,7 @@ export class AdminDashboard {
   }
 
   get currentDepartmentName(): string {
-    return this.authService.getCurrentUserSnapshot()?.departmentName || 'Votre dÃ©partement';
+    return this.authService.getCurrentUserSnapshot()?.departmentName || 'Votre département';
   }
 
   goToPage(page: number): void {

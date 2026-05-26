@@ -213,13 +213,13 @@ export class AdminEventDetails {
     }
 
     if (this.event.remainingCapacity != null && this.event.remainingCapacity <= 0) {
-      return 'Invitations indisponibles : la capacitÃ© de lâ€™Ã©vÃ©nement est complÃ¨te.';
+      return 'Invitations indisponibles : la capacité de l’événement est complète.';
     }
 
     if (this.event.registrationDeadline) {
       const deadlinePassed = new Date(this.event.registrationDeadline).getTime() <= Date.now();
       if (deadlinePassed) {
-        return 'Invitations indisponibles : la date limite dâ€™inscription est dÃ©passÃ©e.';
+        return 'Invitations indisponibles : la date limite d’inscription est dépassée.';
       }
     }
 
@@ -237,7 +237,7 @@ export class AdminEventDetails {
     const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
-      this.errorMessage = 'Identifiant de lâ€™Ã©vÃ©nement manquant.';
+      this.errorMessage = 'Identifiant de l’événement manquant.';
       this.cdr.markForCheck();
       return;
     }
@@ -349,7 +349,7 @@ export class AdminEventDetails {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            "Impossible de charger les dÃ©tails de l'Ã©vÃ©nement.";
+            "Impossible de charger les détails de l'événement.";
           this.cdr.markForCheck();
         }
       });
@@ -412,7 +412,7 @@ export class AdminEventDetails {
 
   onTargetTypeChange(value: InvitationTargetType): void {
     if (this.isDepartmentAudienceEvent && value === 'GLOBAL') {
-      this.invitationErrorMessage = 'Le mode Global est interdit pour un Ã©vÃ©nement dÃ©partemental.';
+      this.invitationErrorMessage = 'Le mode Global est interdit pour un événement départemental.';
       this.cdr.markForCheck();
       return;
     }
@@ -463,20 +463,20 @@ export class AdminEventDetails {
 
 
     if (this.invitationTargetType === 'DEPARTMENT' && !this.selectedDepartmentId){
-      this.invitationErrorMessage= 'Veuillez sÃ©lectionner un dÃ©partement.';
+      this.invitationErrorMessage= 'Veuillez sélectionner un département.';
       this.cdr.markForCheck();
       return;
     }
 
     if (this.invitationTargetType === 'INDIVIDUAL' && this.selectedUserEmails.length === 0) {
-      this.invitationErrorMessage = 'Veuillez sÃ©lectionner au moins un utilisateur.';
+      this.invitationErrorMessage = 'Veuillez sélectionner au moins un utilisateur.';
       this.cdr.markForCheck();
       return;
     }
 
     if (this.isDepartmentAudienceEvent) {
       if (this.invitationTargetType === 'GLOBAL') {
-        this.invitationErrorMessage = 'Les invitations globales sont interdites pour un Ã©vÃ©nement dÃ©partemental.';
+        this.invitationErrorMessage = 'Les invitations globales sont interdites pour un événement départemental.';
         this.cdr.markForCheck();
         return;
       }
@@ -485,7 +485,7 @@ export class AdminEventDetails {
         this.invitationTargetType === 'DEPARTMENT' &&
         this.selectedDepartmentId !== this.eventTargetDepartmentId
       ) {
-        this.invitationErrorMessage = 'Vous devez sÃ©lectionner uniquement le dÃ©partement cible de cet Ã©vÃ©nement.';
+        this.invitationErrorMessage = 'Vous devez sélectionner uniquement le département cible de cet événement.';
         this.cdr.markForCheck();
         return;
       }
@@ -525,7 +525,7 @@ export class AdminEventDetails {
           this.invitationErrorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible dâ€™envoyer les invitations.';
+            'Impossible d’envoyer les invitations.';
           this.cdr.markForCheck();
         }
       });
@@ -618,11 +618,11 @@ export class AdminEventDetails {
 
   private validateReschedule(): string | null {
     if (!this.rescheduleStartAt) {
-      return 'La nouvelle date de lâ€™Ã©vÃ©nement est obligatoire.';
+      return 'La nouvelle date de l’événement est obligatoire.';
     }
 
     if (!this.rescheduleRegistrationDeadline) {
-      return 'La nouvelle date limite dâ€™inscription est obligatoire.';
+      return 'La nouvelle date limite d’inscription est obligatoire.';
     }
 
     const startAt = new Date(this.rescheduleStartAt);
@@ -630,15 +630,15 @@ export class AdminEventDetails {
     const now = new Date();
 
     if (startAt <= now) {
-      return 'La nouvelle date de lâ€™Ã©vÃ©nement doit Ãªtre dans le futur.';
+      return 'La nouvelle date de l’événement doit être dans le futur.';
     }
 
     if (deadline <= now) {
-      return 'La nouvelle date limite doit Ãªtre dans le futur.';
+      return 'La nouvelle date limite doit être dans le futur.';
     }
 
     if (deadline >= startAt) {
-      return 'La date limite dâ€™inscription doit Ãªtre avant la date de lâ€™Ã©vÃ©nement.';
+      return 'La date limite d’inscription doit être avant la date de l’événement.';
     }
 
     return null;
@@ -708,7 +708,7 @@ export class AdminEventDetails {
           .subscribe({
             next: () => {
               this.showRescheduleModal = false;
-              this.successMessage = 'Ã‰vÃ©nement reprogrammÃ© et publiÃ© avec succÃ¨s.';
+              this.successMessage = 'Événement reprogrammé et publié avec succès.';
               this.loadEvent(this.event!.id);
               this.cdr.markForCheck();
             },
@@ -716,7 +716,7 @@ export class AdminEventDetails {
               this.rescheduleErrorMessage =
                 err?.error?.message ||
                 err?.error ||
-                'Impossible de publier lâ€™Ã©vÃ©nement aprÃ¨s le reschedule.';
+                'Impossible de publier l’événement après le reschedule.';
               this.cdr.markForCheck();
             }
           });
@@ -726,7 +726,7 @@ export class AdminEventDetails {
         this.rescheduleErrorMessage =
           err?.error?.message ||
           err?.error ||
-          'Impossible de mettre Ã  jour les nouvelles dates.';
+          'Impossible de mettre à  jour les nouvelles dates.';
         this.cdr.markForCheck();
       }
     });
@@ -789,7 +789,7 @@ export class AdminEventDetails {
           this.cdr.markForCheck();
         },
         error: () => {
-          this.errorMessage = 'Impossible de marquer tous les participants comme prÃ©sents.';
+          this.errorMessage = 'Impossible de marquer tous les participants comme présents.';
           this.cdr.markForCheck();
         }
       });
@@ -893,11 +893,11 @@ export class AdminEventDetails {
       case 'YES':
         return 'Oui';
       case 'MAYBE':
-        return 'Peut-Ãªtre';
+        return 'Peut-être';
       case 'NO':
         return 'Non';
       default:
-        return 'Pas encore rÃ©pondu';
+        return 'Pas encore répondu';
     }
   }
 
@@ -939,7 +939,7 @@ export class AdminEventDetails {
   }
 
   get attendanceLockedMessage(): string {
-    return "La prÃ©sence pourra Ãªtre saisie Ã  partir du dÃ©but de lâ€™Ã©vÃ©nement.";
+    return "La présence pourra être saisie à  partir du début de l’événement.";
   }
 
 
@@ -952,15 +952,15 @@ export class AdminEventDetails {
       case 'DRAFT':
         return 'Brouillon';
       case 'PUBLISHED':
-        return 'PubliÃ©';
+        return 'Publié';
       case 'CANCELLED':
-        return 'AnnulÃ©';
+        return 'Annulé';
       case 'ARCHIVED':
-        return 'ArchivÃ©';
+        return 'Archivé';
       case 'PENDING':
         return 'En attente';
       case 'PRESENT':
-        return 'PrÃ©sent';
+        return 'Présent';
       case 'ABSENT':
         return 'Absent';
       default:
@@ -987,7 +987,7 @@ export class AdminEventDetails {
         },
         error: () => {
           this.aiFeedbackInsight = null;
-          this.aiFeedbackErrorMessage = 'Impossible de charger lâ€™analyse IA des feedbacks.';
+          this.aiFeedbackErrorMessage = 'Impossible de charger l’analyse IA des feedbacks.';
           this.cdr.markForCheck();
         }
       });
@@ -1067,7 +1067,7 @@ export class AdminEventDetails {
       case 'POSITIVE':
         return 'Positif';
       case 'NEGATIVE':
-        return 'NÃ©gatif';
+        return 'Négatif';
       case 'NEUTRAL':
         return 'Neutre';
       default:
@@ -1116,7 +1116,7 @@ export class AdminEventDetails {
         },
         error: () => {
           this.reminderHistory = [];
-          this.reminderHistoryErrorMessage = 'Impossible de charger lâ€™historique des relances.';
+          this.reminderHistoryErrorMessage = 'Impossible de charger l’historique des relances.';
           this.cdr.markForCheck();
         }
       });
@@ -1145,9 +1145,9 @@ export class AdminEventDetails {
   reminderStatusLabel(status: string): string {
     switch (status) {
       case 'SENT':
-        return 'EnvoyÃ©e';
+        return 'Envoyée';
       case 'FAILED':
-        return 'Ã‰chec';
+        return 'Échec';
       default:
         return status || 'N/D';
     }

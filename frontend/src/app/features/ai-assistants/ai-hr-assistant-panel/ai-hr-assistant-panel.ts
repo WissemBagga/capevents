@@ -67,7 +67,7 @@ export class AiHrAssistantPanel {
         },
         error: () => {
           this.aiCopilot = null;
-          this.aiCopilotError = 'Impossible de charger lâ€™assistant RH.';
+          this.aiCopilotError = 'Impossible de charger l’assistant RH.';
           this.cdr.markForCheck();
         }
       });
@@ -183,7 +183,7 @@ export class AiHrAssistantPanel {
           this.copilotActionError =
             err?.error?.message ||
             err?.error ||
-            'Impossible dâ€™envoyer les relances.';
+            'Impossible d’envoyer les relances.';
           this.cdr.markForCheck();
         }
       });
@@ -191,10 +191,10 @@ export class AiHrAssistantPanel {
 
   private buildDefaultReminderDraft(suggestion: AiHrCopilotSuggestion): string {
     if (suggestion.relatedEventTitle) {
-      return `Nous vous rappelons que vous avez une invitation en attente pour lâ€™Ã©vÃ©nement Â« ${suggestion.relatedEventTitle} Â». Votre rÃ©ponse nous aide Ã  mieux organiser la participation et la logistique de lâ€™Ã©vÃ©nement.`;
+      return `Nous vous rappelons que vous avez une invitation en attente pour l’événement « ${suggestion.relatedEventTitle} ». Votre réponse nous aide à  mieux organiser la participation et la logistique de l’événement.`;
     }
 
-    return 'Nous vous rappelons que vous avez une invitation en attente sur CapEvents. Votre rÃ©ponse nous aide Ã  mieux organiser la participation.';
+    return 'Nous vous rappelons que vous avez une invitation en attente sur CapEvents. Votre réponse nous aide à  mieux organiser la participation.';
   }
 
   getCopilotPrimaryActionLabel(suggestion: AiHrCopilotSuggestion): string {
@@ -206,7 +206,7 @@ export class AiHrAssistantPanel {
         return 'Analyser les inscriptions';
 
       case 'RSVP_FRICTION':
-        return 'Analyser les rÃ©ponses';
+        return 'Analyser les réponses';
 
       case 'LOW_FEEDBACK_SCORE':
         return 'Voir les feedbacks';
@@ -215,7 +215,7 @@ export class AiHrAssistantPanel {
         return 'Voir le contexte';
 
       default:
-        return 'Voir lâ€™Ã©vÃ©nement';
+        return 'Voir l’événement';
     }
   }
 
@@ -287,7 +287,7 @@ export class AiHrAssistantPanel {
 
     if (attendanceRate !== null) {
       chips.push({
-        label: 'PrÃ©sence',
+        label: 'Présence',
         value: `${Math.round(attendanceRate * 100)}%`,
         type: attendanceRate >= 0.6 ? 'success' : 'warning'
       });
@@ -319,7 +319,7 @@ export class AiHrAssistantPanel {
 
     if (invitedCount !== null) {
       chips.push({
-        label: 'InvitÃ©s',
+        label: 'Invités',
         value: String(invitedCount),
         type: 'neutral'
       });
@@ -335,7 +335,7 @@ export class AiHrAssistantPanel {
 
     if (capacity !== null) {
       chips.push({
-        label: 'CapacitÃ©',
+        label: 'Capacité',
         value: String(capacity),
         type: 'neutral'
       });
@@ -343,7 +343,7 @@ export class AiHrAssistantPanel {
 
     if (responded !== null) {
       chips.push({
-        label: 'RÃ©ponses',
+        label: 'Réponses',
         value: String(responded),
         type: 'neutral'
       });
@@ -359,7 +359,7 @@ export class AiHrAssistantPanel {
 
     if (maybe !== null) {
       chips.push({
-        label: 'Peut-Ãªtre',
+        label: 'Peut-être',
         value: String(maybe),
         type: 'warning'
       });
@@ -405,7 +405,7 @@ export class AiHrAssistantPanel {
     useful: boolean
   ): void {
     if (!this.aiCopilot?.requestId) {
-      this.copilotFeedbackError = 'Impossible dâ€™identifier la gÃ©nÃ©ration Assistant RH.';
+      this.copilotFeedbackError = 'Impossible d’identifier la génération Assistant RH.';
       this.cdr.markForCheck();
       return;
     }
@@ -432,12 +432,12 @@ export class AiHrAssistantPanel {
         next: (response) => {
           this.copilotFeedbackByKey[key] = useful;
           this.copilotFeedbackMessage =
-            response?.message || 'Merci, votre retour a Ã©tÃ© enregistrÃ©.';
+            response?.message || 'Merci, votre retour a été enregistré.';
           this.cdr.markForCheck();
         },
         error: () => {
           this.copilotFeedbackError =
-            'Impossible dâ€™enregistrer votre retour sur cette suggestion.';
+            'Impossible d’enregistrer votre retour sur cette suggestion.';
           this.cdr.markForCheck();
         }
       });

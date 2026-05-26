@@ -74,10 +74,10 @@ export class EventDetails {
   publicFeedbackLoading = false;
 
   readonly unregisterReasons: string[] = [
-    'Conflit dâ€™horaire',
-    'Changement de prioritÃ©',
+    'Conflit d’horaire',
+    'Changement de priorité',
     'Je ne peux plus participer',
-    'Erreur dâ€™inscription',
+    'Erreur d’inscription',
     'Autre'
   ];
 
@@ -100,7 +100,7 @@ export class EventDetails {
     const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
-      this.errorMessage = 'Identifiant de lâ€™Ã©vÃ©nement manquant.';
+      this.errorMessage = 'Identifiant de l’événement manquant.';
       this.cdr.markForCheck();
       return;
     }
@@ -137,7 +137,7 @@ export class EventDetails {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de charger cet Ã©vÃ©nement.';
+            'Impossible de charger cet événement.';
           this.cdr.markForCheck();
           return;
         }
@@ -179,7 +179,7 @@ export class EventDetails {
               this.errorMessage =
                 pastErr?.error?.message ||
                 pastErr?.error ||
-                'Impossible de charger cet Ã©vÃ©nement.';
+                'Impossible de charger cet événement.';
               this.cdr.markForCheck();
             }
           });
@@ -317,7 +317,7 @@ export class EventDetails {
         next: () => {
           this.isRegistered = true;
           this.incrementCapacity();
-          this.successMessage = 'Inscription rÃ©ussie.';
+          this.successMessage = 'Inscription réussie.';
           this.loadRegistrationStatus(this.event!.id);
           this.cdr.markForCheck();
         },
@@ -325,7 +325,7 @@ export class EventDetails {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de vous inscrire Ã  cet Ã©vÃ©nement.';
+            'Impossible de vous inscrire à  cet événement.';
           this.cdr.markForCheck();
         }
       });
@@ -335,7 +335,7 @@ export class EventDetails {
     if (!this.event || !this.isRegistered) return;
     if (this.isEventStarted) {
       this.successMessage = '';
-      this.errorMessage = "Impossible de vous dÃ©sinscrire : lâ€™Ã©vÃ©nement a dÃ©jÃ  commencÃ©.";
+      this.errorMessage = "Impossible de vous désinscrire : l’événement a déjà  commencé.";
       this.cdr.markForCheck();
       return;
     }
@@ -364,7 +364,7 @@ export class EventDetails {
     if (!this.event) return;
 
     if (!this.unregisterReason.trim()) {
-      this.unregisterErrorMessage = 'Veuillez sÃ©lectionner une raison de dÃ©sinscription.';
+      this.unregisterErrorMessage = 'Veuillez sélectionner une raison de désinscription.';
       this.cdr.markForCheck();
       return;
     }
@@ -390,7 +390,7 @@ export class EventDetails {
           this.isRegistered = false;
           this.decrementCapacity();
           this.showUnregisterModal = false;
-          this.successMessage = 'DÃ©sinscription effectuÃ©e.';
+          this.successMessage = 'Désinscription effectuée.';
           this.users = [];
           this.showEmployeeInvitePanel = false;
           this.selectedEmployeeInviteEmails = [];
@@ -401,7 +401,7 @@ export class EventDetails {
           this.unregisterErrorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de vous dÃ©sinscrire de cet Ã©vÃ©nement.';
+            'Impossible de vous désinscrire de cet événement.';
           this.cdr.markForCheck();
         }
       });
@@ -440,15 +440,15 @@ export class EventDetails {
     }
 
     if (!this.isRegistered) {
-      return "Vous devez d'abord vous inscrire Ã  cet Ã©vÃ©nement avant d'inviter des collÃ¨gues.";
+      return "Vous devez d'abord vous inscrire à  cet événement avant d'inviter des collègues.";
     }
 
     if (!this.hasDepartmentForColleagueInvite) {
-      return "Lâ€™invitation entre collÃ¨gues nâ€™est pas disponible pour un utilisateur sans dÃ©partement. Utilisez lâ€™invitation administrateur.";
+      return "L’invitation entre collègues n’est pas disponible pour un utilisateur sans département. Utilisez l’invitation administrateur.";
     }
 
     if (this.isFull) {
-      return "Les invitations aux collÃ¨gues sont fermÃ©es : lâ€™Ã©vÃ©nement est complet.";
+      return "Les invitations aux collègues sont fermées : l’événement est complet.";
     }
 
     return '';
@@ -481,7 +481,7 @@ export class EventDetails {
     if (!this.isRegistered) {
       this.showEmployeeInvitePanel = false;
       this.employeeInviteErrorMessage =
-        "Vous devez d'abord vous inscrire Ã  cet Ã©vÃ©nement avant d'inviter des collÃ¨gues.";
+        "Vous devez d'abord vous inscrire à  cet événement avant d'inviter des collègues.";
       this.employeeInviteSuccessMessage = '';
       this.cdr.markForCheck();
       return;
@@ -490,7 +490,7 @@ export class EventDetails {
     if (!this.hasDepartmentForColleagueInvite) {
       this.showEmployeeInvitePanel = false;
       this.employeeInviteErrorMessage =
-        "Lâ€™invitation entre collÃ¨gues nâ€™est pas disponible pour un utilisateur sans dÃ©partement. Utilisez lâ€™invitation administrateur.";
+        "L’invitation entre collègues n’est pas disponible pour un utilisateur sans département. Utilisez l’invitation administrateur.";
       this.employeeInviteSuccessMessage = '';
       this.cdr.markForCheck();
       return;
@@ -499,7 +499,7 @@ export class EventDetails {
     if (this.isDeadlinePassed) {
       this.showEmployeeInvitePanel = false;
       this.employeeInviteErrorMessage =
-        "Les invitations aux collÃ¨gues sont fermÃ©es : la date limite d'inscription est dÃ©passÃ©e.";
+        "Les invitations aux collègues sont fermées : la date limite d'inscription est dépassée.";
       this.employeeInviteSuccessMessage = '';
       this.cdr.markForCheck();
       return;
@@ -526,35 +526,35 @@ export class EventDetails {
   sendEmployeeInvites(): void {
     if (!this.isRegistered) {
       this.employeeInviteErrorMessage =
-        "Vous devez d'abord vous inscrire Ã  cet Ã©vÃ©nement avant d'inviter des collÃ¨gues.";
+        "Vous devez d'abord vous inscrire à  cet événement avant d'inviter des collègues.";
       this.cdr.markForCheck();
       return;
     }
 
     if (this.isFull) {
       this.employeeInviteErrorMessage =
-        "Impossible dâ€™envoyer des invitations : lâ€™Ã©vÃ©nement est complet.";
+        "Impossible d’envoyer des invitations : l’événement est complet.";
       this.cdr.markForCheck();
       return;
     }
 
     if (!this.hasDepartmentForColleagueInvite) {
       this.employeeInviteErrorMessage =
-        "Lâ€™invitation entre collÃ¨gues nâ€™est pas disponible pour un utilisateur sans dÃ©partement.";
+        "L’invitation entre collègues n’est pas disponible pour un utilisateur sans département.";
       this.cdr.markForCheck();
       return;
     }
     if (this.isDeadlinePassed) {
       this.showEmployeeInvitePanel = false;
       this.employeeInviteErrorMessage =
-        'Impossible dâ€™envoyer des invitations aprÃ¨s la date limite dâ€™inscription.';
+        'Impossible d’envoyer des invitations après la date limite d’inscription.';
       this.cdr.markForCheck();
       return;
     }
     if (!this.event) return;
 
     if (this.selectedEmployeeInviteEmails.length === 0) {
-      this.employeeInviteErrorMessage = 'Veuillez sÃ©lectionner au moins un collaborateur.';
+      this.employeeInviteErrorMessage = 'Veuillez sélectionner au moins un collaborateur.';
       this.cdr.markForCheck();
       return;
     }
@@ -591,7 +591,7 @@ export class EventDetails {
           this.employeeInviteErrorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible dâ€™envoyer les invitations.';
+            'Impossible d’envoyer les invitations.';
           this.cdr.markForCheck();
         }
       });
@@ -637,7 +637,7 @@ export class EventDetails {
     }
 
     if (this.isFull) {
-      return "Cet Ã©vÃ©nement est complet. Aucune place nâ€™est disponible.";
+      return "Cet événement est complet. Aucune place n’est disponible.";
     }
 
     return '';
@@ -646,11 +646,11 @@ export class EventDetails {
   invitationResponseLabel(response: InvitationResponseStatus | null): string {
     switch (response) {
       case 'YES':
-        return 'AcceptÃ©e';
+        return 'Acceptée';
       case 'MAYBE':
-        return 'Peut-Ãªtre';
+        return 'Peut-être';
       case 'NO':
-        return 'DÃ©clinÃ©e';
+        return 'Déclinée';
       default:
         return 'En attente';
     }
@@ -749,7 +749,7 @@ export class EventDetails {
 
   get unregisterBlockingMessage(): string {
     if (this.hasPendingSentInvitations) {
-      return 'Vous ne pouvez pas vous dÃ©sinscrire tant que des invitations envoyÃ©es sont encore en attente.';
+      return 'Vous ne pouvez pas vous désinscrire tant que des invitations envoyées sont encore en attente.';
     }
 
     return '';
@@ -794,11 +794,11 @@ export class EventDetails {
       case 'DRAFT':
         return 'Brouillon';
       case 'PUBLISHED':
-        return 'PubliÃ©';
+        return 'Publié';
       case 'CANCELLED':
-        return 'AnnulÃ©';
+        return 'Annulé';
       case 'ARCHIVED':
-        return 'ArchivÃ©';
+        return 'Archivé';
       case 'PENDING':
         return 'En attente';
       default:
@@ -835,10 +835,10 @@ export class EventDetails {
     }
 
     if (this.isRegistered) {
-      return "La date limite d'inscription est dÃ©passÃ©e. Les invitations aux collÃ¨gues sont fermÃ©es.";
+      return "La date limite d'inscription est dépassée. Les invitations aux collègues sont fermées.";
     }
 
-    return "La date limite d'inscription est dÃ©passÃ©e. Les nouvelles inscriptions sont fermÃ©es.";
+    return "La date limite d'inscription est dépassée. Les nouvelles inscriptions sont fermées.";
   }
 
   goBack(): void {

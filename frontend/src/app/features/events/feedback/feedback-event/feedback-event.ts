@@ -47,7 +47,7 @@ export class FeedbackEvent {
     const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
-      this.errorMessage = 'Identifiant de lâ€™Ã©vÃ©nement manquant.';
+      this.errorMessage = 'Identifiant de l’événement manquant.';
       this.cdr.markForCheck();
       return;
     }
@@ -76,7 +76,7 @@ export class FeedbackEvent {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de charger lâ€™Ã©vÃ©nement.';
+            'Impossible de charger l’événement.';
           this.cdr.markForCheck();
         }
       });
@@ -104,7 +104,7 @@ export class FeedbackEvent {
         this.errorMessage =
           err?.error?.message ||
           err?.error ||
-          'Impossible de vÃ©rifier votre feedback.';
+          'Impossible de vérifier votre feedback.';
         this.cdr.markForCheck();
       }
     });
@@ -137,7 +137,7 @@ export class FeedbackEvent {
       .subscribe({
         next: (feedback) => {
           this.existingFeedback = feedback;
-          this.successMessage = 'Merci, votre feedback a bien Ã©tÃ© envoyÃ©.';
+          this.successMessage = 'Merci, votre feedback a bien été envoyé.';
           this.form.patchValue({
             shareCommentPublicly: feedback.shareCommentPublicly
           });
@@ -148,7 +148,7 @@ export class FeedbackEvent {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible dâ€™envoyer votre feedback.';
+            'Impossible d’envoyer votre feedback.';
           this.cdr.markForCheck();
         }
       });

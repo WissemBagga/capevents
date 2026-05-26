@@ -90,7 +90,7 @@ export class PastEvents {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Une erreur est survenue lors du chargement des Ã©vÃ©nements passÃ©s. Veuillez rÃ©essayer ultÃ©rieurement.';
+            'Une erreur est survenue lors du chargement des événements passés. Veuillez réessayer ultérieurement.';
           this.cdr.markForCheck();
         }
       });

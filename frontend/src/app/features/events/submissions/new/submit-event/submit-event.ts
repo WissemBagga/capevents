@@ -70,13 +70,13 @@ export class SubmitEvent {
   }
 
   get submitLabel(): string {
-    return this.canShareDirectly ? 'Partager directement' : 'Proposer Ã  un admin';
+    return this.canShareDirectly ? 'Partager directement' : 'Proposer à  un admin';
   }
 
   get helperMessage(): string {
     return this.canShareDirectly
-      ? 'Micro-Ã©vÃ©nement dÃ©tectÃ© : partage direct autorisÃ©.'
-      : 'Validation admin obligatoire : la demande sera envoyÃ©e aux administrateurs concernÃ©s.';
+      ? 'Micro-événement détecté : partage direct autorisé.'
+      : 'Validation admin obligatoire : la demande sera envoyée aux administrateurs concernés.';
   }
 
   ngOnInit(): void {
@@ -142,7 +142,7 @@ export class SubmitEvent {
     const rawImage = this.form.get('imageUrl')?.value?.trim() || '';
 
     if (this.imageMode === 'CUSTOM_URL' && rawImage && !this.isHttpUrl(rawImage)) {
-      this.errorMessage = 'Veuillez saisir une URL image valide commenÃ§ant par http:// ou https://';
+      this.errorMessage = 'Veuillez saisir une URL image valide commençant par http:// ou https://';
       this.cdr.markForCheck();
       return;
     }
@@ -196,7 +196,7 @@ export class SubmitEvent {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de soumettre cet Ã©vÃ©nement.';
+            'Impossible de soumettre cet événement.';
           this.cdr.markForCheck();
         }
       });

@@ -13,7 +13,7 @@ export class Pagination {
   @Input() pageSize = 9;
   @Input() totalPages = 0;
   @Input() totalItems = 0;
-  @Input() itemLabel = 'Ã©lÃ©ments';
+  @Input() itemLabel = 'éléments';
 
   @Output() pageChange = new EventEmitter<number>();
 

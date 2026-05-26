@@ -87,7 +87,7 @@ export class CreateEvent {
   }
 
   get currentDepartmentName(): string{
-    return this.currentUser?.departmentName || 'non dÃ©fini'
+    return this.currentUser?.departmentName || 'non défini'
   }
 
   get currentDepartmentId(): number | null {
@@ -106,7 +106,7 @@ export class CreateEvent {
       },
       error: () => {
         this.loading = false;
-        this.errorMessage = 'Impossible de charger les dÃ©partements.';
+        this.errorMessage = 'Impossible de charger les départements.';
         this.cdr.markForCheck();
       }
     });
@@ -201,7 +201,7 @@ export class CreateEvent {
 
     if (this.imageMode === 'CUSTOM_URL' && rawImage && !this.isHttpUrl(rawImage)) {
       this.savingDraft = false;
-      this.errorMessage = 'Veuillez saisir une URL image valide commenÃ§ant par http:// ou https://';
+      this.errorMessage = 'Veuillez saisir une URL image valide commençant par http:// ou https://';
       this.cdr.markForCheck();
       return;
     }
@@ -213,7 +213,7 @@ export class CreateEvent {
         this.logCreatedFromAiProposal(createdEvent?.id ?? null, 'DRAFT');
 
         this.savingDraft = false;
-        this.successMessage = 'Ã‰vÃ©nement enregistrÃ© en brouillon.';
+        this.successMessage = 'Événement enregistré en brouillon.';
         this.cdr.markForCheck();
 
         setTimeout(() => {
@@ -225,7 +225,7 @@ export class CreateEvent {
         this.errorMessage =
           err?.error?.message ||
           err?.error ||
-          'Impossible dâ€™enregistrer lâ€™Ã©vÃ©nement en brouillon.';
+          'Impossible d’enregistrer l’événement en brouillon.';
         this.cdr.markForCheck();
       }
     });
@@ -246,7 +246,7 @@ export class CreateEvent {
 
     if (this.imageMode === 'CUSTOM_URL' && rawImage && !this.isHttpUrl(rawImage)) {
       this.publishing = false;
-      this.errorMessage = 'Veuillez saisir une URL image valide commenÃ§ant par http:// ou https://';
+      this.errorMessage = 'Veuillez saisir une URL image valide commençant par http:// ou https://';
       this.cdr.markForCheck();
       return;
     }
@@ -261,7 +261,7 @@ export class CreateEvent {
               this.logCreatedFromAiProposal(createdEvent?.id ?? null, 'PUBLISHED');
 
               this.publishing = false;
-              this.successMessage = 'Ã‰vÃ©nement crÃ©Ã© et publiÃ© avec succÃ¨s.';
+              this.successMessage = 'Événement créé et publié avec succès.';
               this.cdr.markForCheck();
 
               setTimeout(() => {
@@ -273,7 +273,7 @@ export class CreateEvent {
               this.errorMessage =
                 err?.error?.message ||
                 err?.error ||
-                'Ã‰vÃ©nement crÃ©Ã©, mais impossible de le publier.';
+                'Événement créé, mais impossible de le publier.';
               this.cdr.markForCheck();
             }
           });
@@ -283,7 +283,7 @@ export class CreateEvent {
         this.errorMessage =
           err?.error?.message ||
           err?.error ||
-          'Impossible de crÃ©er puis publier lâ€™Ã©vÃ©nement.';
+          'Impossible de créer puis publier l’événement.';
         this.cdr.markForCheck();
       }
     });
@@ -425,7 +425,7 @@ export class CreateEvent {
 
       sessionStorage.removeItem(proposalKey);
 
-      this.successMessage = 'Proposition IA appliquÃ©e au formulaire. VÃ©rifiez les informations avant validation.';
+      this.successMessage = 'Proposition IA appliquée au formulaire. Vérifiez les informations avant validation.';
       this.cdr.markForCheck();
     } catch {
       this.errorMessage = 'Impossible de charger la proposition IA.';

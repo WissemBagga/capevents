@@ -68,7 +68,7 @@ export class PendingEvents {
         this.errorMessage =
           err?.error?.message ||
           err?.error ||
-          'Impossible dâ€™approuver cette demande.';
+          'Impossible d’approuver cette demande.';
         this.cdr.markForCheck();
       }
     });

@@ -95,7 +95,7 @@ export class Login {
     }
 
     if (raw.includes('Email is not verified')) {
-      return 'Votre email nâ€™est pas encore vÃ©rifiÃ©.';
+      return 'Votre email n’est pas encore vérifié.';
     }
 
     if (raw.includes('Bad credentials') || raw.includes('Invalid email or password')) {
@@ -103,7 +103,7 @@ export class Login {
     }
 
     if (raw.includes('User is not active')) {
-      return 'Votre compte est dÃ©sactivÃ©. Contactez un administrateur.';
+      return 'Votre compte est désactivé. Contactez un administrateur.';
     }
 
     return raw || 'Connexion impossible.';

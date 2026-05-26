@@ -73,11 +73,11 @@ export class AiAssistantsHub {
   get activeDescription(): string {
     switch (this.activeTab) {
       case 'hr-assistant':
-        return 'Analyse les Ã©vÃ©nements, invitations et signaux RH pour proposer des actions intelligentes.';
+        return 'Analyse les événements, invitations et signaux RH pour proposer des actions intelligentes.';
       case 'planning':
-        return 'GÃ©nÃ¨re des propositions dâ€™Ã©vÃ©nements et recommande les meilleurs crÃ©neaux.';
+        return 'Génère des propositions d’événements et recommande les meilleurs créneaux.';
       default:
-        return 'AccÃ©dez aux assistants intelligents disponibles selon votre rÃ´le.';
+        return 'Accédez aux assistants intelligents disponibles selon votre rôle.';
     }
   }
 

@@ -87,9 +87,9 @@ export class EventsList {
   statusLabel(status: string): string {
     switch (status) {
       case 'DRAFT': return 'Brouillon';
-      case 'PUBLISHED': return 'PubliÃ©';
-      case 'CANCELLED': return 'AnnulÃ©';
-      case 'ARCHIVED': return 'ArchivÃ©';
+      case 'PUBLISHED': return 'Publié';
+      case 'CANCELLED': return 'Annulé';
+      case 'ARCHIVED': return 'Archivé';
       case 'PENDING': return 'En attente';
       default: return status;
     }
@@ -162,7 +162,7 @@ export class EventsList {
           this.errorMessage =
             err?.error?.message ||
             err?.error ||
-            'Impossible de charger les Ã©vÃ©nements.';
+            'Impossible de charger les événements.';
           this.cdr.markForCheck();
         }
       });

@@ -94,7 +94,7 @@ export class MyProfile {
 
     if (this.avatarMode === 'CUSTOM_URL' && rawAvatar && !this.isHttpUrl(rawAvatar)) {
       this.saving = false;
-      this.errorMessage = 'Veuillez saisir une URL valide commenÃ§ant par http:// ou https://';
+      this.errorMessage = 'Veuillez saisir une URL valide commençant par http:// ou https://';
       this.cdr.markForCheck();
       return;
     }
@@ -112,7 +112,7 @@ export class MyProfile {
     .subscribe({
       next: (profile) => {
         this.profile = profile;
-        this.successMessage = 'Profil mis Ã  jour avec succÃ¨s.';
+        this.successMessage = 'Profil mis à  jour avec succès.';
         this.cdr.markForCheck();
 
         setTimeout(() => {
@@ -123,7 +123,7 @@ export class MyProfile {
         this.errorMessage =
           err?.error?.message ||
           err?.error ||
-          'Impossible de mettre Ã  jour le profil.';
+          'Impossible de mettre à  jour le profil.';
         this.cdr.markForCheck();
       }
     });

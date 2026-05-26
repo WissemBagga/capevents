@@ -37,7 +37,7 @@ export class AiFeedbackInsightService {
             keywords: [],
             strengths: [],
             improvements: [],
-            summary: 'Impossible de charger lâ€™analyse IA des feedbacks.',
+            summary: 'Impossible de charger l’analyse IA des feedbacks.',
             qwenUsed: false,
             summarySource: 'angular_error_fallback',
             modelInfo: {}

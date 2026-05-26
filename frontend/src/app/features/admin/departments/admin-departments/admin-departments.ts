@@ -49,7 +49,7 @@ export class AdminDepartments {
         },
         error: (err) => {
           this.errorMessage =
-            err?.error?.message || err?.error || 'Impossible de charger les dÃ©partements.';
+            err?.error?.message || err?.error || 'Impossible de charger les départements.';
           this.cdr.markForCheck();
         }
       });
@@ -69,7 +69,7 @@ export class AdminDepartments {
     }
 
     if (this.departmentExistsLocally(name)) {
-      this.errorMessage = 'Ce dÃ©partement existe dÃ©jÃ .';
+      this.errorMessage = 'Ce département existe déjà .';
       this.successMessage = '';
       this.cdr.markForCheck();
       return;
@@ -86,14 +86,14 @@ export class AdminDepartments {
       }))
       .subscribe({
         next: () => {
-          this.successMessage = 'DÃ©partement ajoutÃ© avec succÃ¨s.';
+          this.successMessage = 'Département ajouté avec succès.';
           this.form.reset({ name: '' });
           this.loadDepartments();
           this.cdr.markForCheck();
         },
         error: (err) => {
           this.errorMessage =
-            err?.error?.message || err?.error || 'Impossible dâ€™ajouter le dÃ©partement.';
+            err?.error?.message || err?.error || 'Impossible d’ajouter le département.';
           this.cdr.markForCheck();
         }
       });

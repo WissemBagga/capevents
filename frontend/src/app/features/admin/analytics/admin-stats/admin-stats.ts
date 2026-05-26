@@ -288,7 +288,7 @@ export class AdminStats {
       Nom: item.fullName,
       Email: item.email,
       'Département': item.departmentName || '',
-      Inscrits: item.registeredCount,
+      'Inscrits': item.registeredCount,
       'Présents': item.presentCount,
       'Taux présence (%)': item.attendanceRate
     }));
@@ -750,7 +750,7 @@ export class AdminStats {
     if (this.aiCopilotMonitoringError) return 'Erreur de chargement';
     if (!this.aiCopilotMonitoring) return 'Non chargé';
 
-    return `${this.aiCopilotMonitoring.totalCalls} appel(s) Â· ${this.aiCopilotMonitoring.totalSuggestions} suggestion(s)`;
+    return `${this.aiCopilotMonitoring.totalCalls} appel(s) · ${this.aiCopilotMonitoring.totalSuggestions} suggestion(s)`;
   }
 
   get planningMonitoringSummaryLabel(): string {
@@ -758,7 +758,7 @@ export class AdminStats {
     if (this.planningMonitoringError) return 'Erreur de chargement';
     if (!this.planningMonitoring) return 'Non chargé';
 
-    return `${this.planningMonitoring.totalGenerations} génération(s) Â· ${this.planningUsagePercent()}% usage`;
+    return `${this.planningMonitoring.totalGenerations} génération(s) · ${this.planningUsagePercent()}% usage`;
   }
 
   private unwrapMonitoringResponse(response: any): any {

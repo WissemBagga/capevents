@@ -23,7 +23,7 @@ export class GamificationHub {
   tabs: { key: GamificationTab; label: string }[] = [
     { key: 'points', label: 'Mes points' },
     { key: 'badges', label: 'Mes badges' },
-    { key: 'rewards', label: 'Mes rÃ©compenses' }
+    { key: 'rewards', label: 'Mes récompenses' }
   ];
 
   ngOnInit(): void {
@@ -48,11 +48,11 @@ export class GamificationHub {
   get activeDescription(): string {
     switch (this.activeTab) {
       case 'points':
-        return 'Consultez votre solde de points et lâ€™historique de vos transactions.';
+        return 'Consultez votre solde de points et l’historique de vos transactions.';
       case 'badges':
         return 'Suivez vos accomplissements et votre progression dans CapEvents.';
       case 'rewards':
-        return 'Consultez vos rÃ©compenses disponibles et vos demandes dâ€™Ã©change.';
+        return 'Consultez vos récompenses disponibles et vos demandes d’échange.';
       default:
         return 'Suivez votre engagement dans CapEvents.';
     }
