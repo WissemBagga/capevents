@@ -36,7 +36,7 @@
   width: 92px;
   height: 92px;
   opacity: 0.82;
-  animation: partyPulse 5.8s ease-in-out infinite;
+  animation: partyPulse 9.5s ease-in-out infinite alternate;
 }
 
 .party-burst span {
@@ -129,7 +129,7 @@
   height: 240px;
   border-radius: 50%;
   opacity: 0.46;
-  animation: waveFloat 22s ease-in-out infinite alternate;
+  animation: waveFloat 25s ease-in-out infinite alternate;
 }
 
 .soft-wave::before,
@@ -182,7 +182,7 @@
   box-shadow:
     inset 0 18px 36px rgba(255, 255, 255, 0.48),
     0 20px 56px rgba(18, 26, 56, 0.07);
-  animation: bubbleFloat 13s ease-in-out infinite alternate;
+  animation: bubbleFloat 16s ease-in-out infinite alternate;
 }
 
 .bubble--blue {
@@ -250,7 +250,7 @@
   height: 18px;
   border-radius: 3px;
   opacity: 0.60;
-  animation: confettiFloat 14s ease-in-out infinite alternate;
+  animation: confettiFloat 15s ease-in-out infinite alternate;
 }
 
 .confetti--one {
@@ -344,7 +344,7 @@
   border-color: transparent transparent rgba(0, 88, 171, 0.10) transparent;
   border-radius: 50%;
   opacity: 0.38;
-  animation: ribbonDrift 21s ease-in-out infinite alternate;
+  animation: ribbonDrift 23s ease-in-out infinite alternate;
 }
 
 .ribbon--one {
@@ -375,6 +375,7 @@
   background-size: 14px 14px;
   mask-image: linear-gradient(135deg, transparent 0%, black 28%, black 72%, transparent 100%);
   -webkit-mask-image: linear-gradient(135deg, transparent 0%, black 28%, black 72%, transparent 100%);
+  animation: dotsDrift 27s ease-in-out infinite alternate;
 }
 
 .dots--one {
@@ -394,57 +395,128 @@
 
 @keyframes partyPulse {
   0% {
-    opacity: 0.42;
-    transform: scale(0.76) rotate(-8deg);
+    translate: 0 0;
+    opacity: 0.38;
+    filter: saturate(0.95) brightness(1);
   }
 
-  50% {
-    opacity: 0.88;
+  30% {
+    translate: 10px -8px;
+    opacity: 0.78;
+    filter: saturate(1.16) brightness(1.05);
+  }
+
+  62% {
+    translate: -8px 6px;
+    opacity: 0.60;
+    filter: saturate(1.05) brightness(1.02);
   }
 
   100% {
-    opacity: 0.56;
-    transform: scale(0.84) rotate(-2deg);
+    translate: 14px -14px;
+    opacity: 0.52;
+    filter: saturate(1.12) brightness(1.04);
   }
 }
 
 @keyframes bubbleFloat {
-  from {
+  0% {
     transform: translate3d(0, 0, 0) scale(0.98);
   }
 
-  to {
-    transform: translate3d(-16px, -20px, 0) scale(1.04);
+  28% {
+    transform: translate3d(-14px, -18px, 0) scale(1.03);
+  }
+
+  58% {
+    transform: translate3d(12px, -10px, 0) scale(1.01);
+  }
+
+  100% {
+    transform: translate3d(-8px, -28px, 0) scale(1.05);
   }
 }
 
 @keyframes waveFloat {
-  from {
+  0% {
     translate: -18px 0;
   }
 
-  to {
-    translate: 18px -14px;
+  35% {
+    translate: 14px -10px;
+  }
+
+  70% {
+    translate: -10px 8px;
+  }
+
+  100% {
+    translate: 22px -16px;
   }
 }
 
 @keyframes confettiFloat {
-  from {
+  0% {
     translate: 0 0;
+    rotate: 0deg;
+    opacity: 0.34;
   }
 
-  to {
-    translate: 12px -18px;
+  28% {
+    translate: 10px -16px;
+    rotate: 10deg;
+    opacity: 0.70;
+  }
+
+  58% {
+    translate: -8px -8px;
+    rotate: -8deg;
+    opacity: 0.48;
+  }
+
+  100% {
+    translate: 14px -28px;
+    rotate: 14deg;
+    opacity: 0.58;
   }
 }
 
 @keyframes ribbonDrift {
-  from {
+  0% {
     translate: 0 0;
+    opacity: 0.22;
   }
 
-  to {
-    translate: -18px 14px;
+  33% {
+    translate: -20px 12px;
+    opacity: 0.40;
+  }
+
+  66% {
+    translate: 14px -8px;
+    opacity: 0.30;
+  }
+
+  100% {
+    translate: -24px 18px;
+    opacity: 0.42;
+  }
+}
+
+@keyframes dotsDrift {
+  0% {
+    translate: 0 0;
+    opacity: 0.14;
+  }
+
+  45% {
+    translate: 16px -10px;
+    opacity: 0.26;
+  }
+
+  100% {
+    translate: -12px 12px;
+    opacity: 0.18;
   }
 }
 
@@ -454,6 +526,7 @@
   .bubble,
   .confetti,
   .ribbon,
+  .dots,
   .balloon,
   .balloon__string {
     animation: none;
@@ -494,7 +567,7 @@
   align-items: center;
   width: 58px;
   height: 112px;
-  opacity: 0.58;
+  opacity: 0.5;
   pointer-events: none;
   animation:
     balloonFly 26s linear infinite,
