@@ -1,9 +1,11 @@
 <div class="app-shell">
-  <div class="app-shell__sidebar">
+  <aside class="app-shell__sidebar">
     <app-sidebar></app-sidebar>
-  </div>
+  </aside>
 
-  <div class="app-shell__main">
+  <section class="app-shell__main">
+    <app-premium-background></app-premium-background>
+
     <app-navbar></app-navbar>
 
     <main class="app-shell__content">
@@ -11,5 +13,5 @@
         <router-outlet></router-outlet>
       </div>
     </main>
-  </div>
+  </section>
 </div>

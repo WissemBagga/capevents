@@ -1,0 +1,303 @@
+﻿:host {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.premium-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 88% 10%, rgba(212, 211, 241, 0.42), transparent 28%),
+    radial-gradient(circle at 74% 86%, rgba(29, 181, 226, 0.18), transparent 34%),
+    radial-gradient(circle at 16% 18%, rgba(0, 88, 171, 0.07), transparent 30%),
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 38%, #eef6ff 100%);
+}
+
+.premium-background__gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.30)),
+    radial-gradient(circle at 62% 58%, rgba(255, 255, 255, 0.54), transparent 42%);
+}
+
+.premium-background__wave {
+  position: absolute;
+  left: 22%;
+  width: 96vw;
+  height: 280px;
+  border-radius: 50%;
+  filter: blur(0.2px);
+  opacity: 0.58;
+  transform: rotate(-6deg);
+  animation: waveDrift 22s ease-in-out infinite alternate;
+}
+
+.premium-background__wave::before,
+.premium-background__wave::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border-top: 1px solid rgba(0, 88, 171, 0.10);
+  border-bottom: 1px solid rgba(29, 181, 226, 0.06);
+}
+
+.premium-background__wave::after {
+  transform: translateY(28px) scaleX(0.98);
+  opacity: 0.65;
+}
+
+.premium-background__wave--one {
+  top: 12%;
+}
+
+.premium-background__wave--two {
+  top: 58%;
+  left: 34%;
+  opacity: 0.40;
+  transform: rotate(8deg);
+  animation-duration: 28s;
+}
+
+.premium-background__orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(18px);
+  opacity: 0.56;
+  animation: breathe 12s ease-in-out infinite alternate;
+}
+
+.premium-background__orb--blue {
+  right: -80px;
+  bottom: 80px;
+  width: 360px;
+  height: 360px;
+  background: rgba(0, 88, 171, 0.16);
+}
+
+.premium-background__orb--cyan {
+  left: 42%;
+  bottom: -140px;
+  width: 440px;
+  height: 260px;
+  background: rgba(29, 181, 226, 0.13);
+  animation-duration: 15s;
+}
+
+.premium-background__orb--pink {
+  right: 7%;
+  bottom: 10%;
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 160, 211, 0.24);
+  animation-delay: -3s;
+}
+
+.premium-background__orb--violet {
+  right: 14%;
+  top: -90px;
+  width: 300px;
+  height: 300px;
+  background: rgba(212, 211, 241, 0.40);
+  animation-duration: 16s;
+}
+
+.premium-background__orb--white {
+  left: 36%;
+  top: 46%;
+  width: 260px;
+  height: 260px;
+  background: rgba(255, 255, 255, 0.82);
+  filter: blur(24px);
+  opacity: 0.50;
+}
+
+.premium-background__bubble {
+  position: absolute;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.22) 38%, rgba(0, 88, 171, 0.10));
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 16px 34px rgba(255, 255, 255, 0.42),
+    0 18px 45px rgba(18, 26, 56, 0.06);
+  animation: floatSoft 13s ease-in-out infinite alternate;
+}
+
+.premium-background__bubble--one {
+  right: 7%;
+  bottom: 18%;
+  width: 110px;
+  height: 110px;
+}
+
+.premium-background__bubble--two {
+  right: 20%;
+  bottom: 7%;
+  width: 84px;
+  height: 84px;
+  animation-duration: 17s;
+  animation-delay: -4s;
+}
+
+.premium-background__bubble--three {
+  left: 52%;
+  top: 58%;
+  width: 54px;
+  height: 54px;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.92), rgba(212, 211, 241, 0.20) 45%, rgba(113, 96, 158, 0.14));
+  animation-duration: 15s;
+  animation-delay: -2s;
+}
+
+.premium-background__confetti {
+  position: absolute;
+  width: 10px;
+  height: 18px;
+  border-radius: 3px;
+  opacity: 0.55;
+  animation: confettiDrift 16s ease-in-out infinite alternate;
+}
+
+.premium-background__confetti--one {
+  left: 49%;
+  top: 17%;
+  background: rgba(254, 177, 0, 0.38);
+  transform: rotate(24deg);
+}
+
+.premium-background__confetti--two {
+  left: 66%;
+  top: 62%;
+  background: rgba(255, 129, 110, 0.32);
+  transform: rotate(-18deg);
+  animation-delay: -3s;
+}
+
+.premium-background__confetti--three {
+  right: 19%;
+  top: 18%;
+  background: rgba(255, 160, 211, 0.36);
+  transform: rotate(28deg);
+  animation-delay: -5s;
+}
+
+.premium-background__confetti--four {
+  right: 8%;
+  top: 52%;
+  background: rgba(0, 213, 208, 0.32);
+  transform: rotate(41deg);
+  animation-delay: -7s;
+}
+
+.premium-background__confetti--five {
+  left: 37%;
+  bottom: 22%;
+  background: rgba(29, 181, 226, 0.36);
+  transform: rotate(-24deg);
+  animation-delay: -9s;
+}
+
+.premium-background__confetti--six {
+  right: 31%;
+  bottom: 24%;
+  background: rgba(254, 177, 0, 0.34);
+  transform: rotate(18deg);
+  animation-delay: -11s;
+}
+
+.premium-background__dots {
+  position: absolute;
+  width: 170px;
+  height: 130px;
+  opacity: 0.28;
+  background-image: radial-gradient(rgba(0, 88, 171, 0.22) 1.2px, transparent 1.2px);
+  background-size: 14px 14px;
+  mask-image: linear-gradient(135deg, transparent 0%, black 28%, black 72%, transparent 100%);
+  -webkit-mask-image: linear-gradient(135deg, transparent 0%, black 28%, black 72%, transparent 100%);
+}
+
+.premium-background__dots--one {
+  left: 50%;
+  top: 55%;
+}
+
+.premium-background__dots--two {
+  right: 10%;
+  top: 48%;
+  opacity: 0.20;
+}
+
+@keyframes breathe {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.98);
+  }
+
+  to {
+    transform: translate3d(16px, -12px, 0) scale(1.04);
+  }
+}
+
+@keyframes floatSoft {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-14px, -18px, 0);
+  }
+}
+
+@keyframes waveDrift {
+  from {
+    transform: translate3d(-18px, 0, 0) rotate(-6deg);
+  }
+
+  to {
+    transform: translate3d(18px, -12px, 0) rotate(-3deg);
+  }
+}
+
+@keyframes confettiDrift {
+  from {
+    translate: 0 0;
+  }
+
+  to {
+    translate: 10px -14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-background__wave,
+  .premium-background__orb,
+  .premium-background__bubble,
+  .premium-background__confetti {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .premium-background__orb--blue {
+    width: 260px;
+    height: 260px;
+    right: -120px;
+  }
+
+  .premium-background__orb--pink,
+  .premium-background__bubble--one,
+  .premium-background__bubble--two {
+    opacity: 0.32;
+  }
+
+  .premium-background__dots {
+    display: none;
+  }
+}

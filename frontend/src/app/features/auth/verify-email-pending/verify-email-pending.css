@@ -45,21 +45,42 @@
 }
 
 .brand-kicker {
-  display: inline-flex;
-  align-self: center;
-  width: fit-content;
-  min-height: 28px;
+  
   align-items: center;
+  
   padding: 0 10px;
-  border-radius: 999px;
-  background: rgba(0, 88, 171, 0.08);
-  color: #0058AB;
-  border: 1px solid rgba(0, 88, 171, 0.10);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--color-primary);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
+
+    background: transparent;
+    border: none;
+
 }
+
+
+/*
+
+ {
+    color: var(--color-primary);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
+
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+
+
+*/
+
 
 .auth-brand-logo-simple {
   width: 178px;
