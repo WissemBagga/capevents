@@ -1,6 +1,6 @@
 <aside class="sidebar" [class.collapsed]="isCollapsed">
-  <!-- ─── En-tête : logo principal + logo secondaire (collapsed) + bouton toggle ─── -->
-  <div class="sidebar-top">
+    <!-- ─── En-tête : logo principal + logo secondaire (collapsed) + bouton toggle ─── -->
+    <div class="sidebar-top">
     <!-- Logo principal : visible en mode ouvert -->
     <a [routerLink]="homeRoute" class="brand-logo-link" aria-label="Accueil CapEvents">
       <img
@@ -9,14 +9,8 @@
         class="sidebar-brand-logo"
       />
     </a>
-    <!-- Logo secondaire : visible seulement en mode compact -->
-    <img
-      src="/images/brand/capevents-logo-secondary.png"
-      alt=""
-      class="sidebar-secondary-logo"
-      aria-hidden="true"
-    />
-    <!-- Bouton toggle : ferme ou ouvre la sidebar -->
+
+    <!-- Un seul bouton : icône ouverte / logo fermé -->
     <button
       type="button"
       class="sidebar-collapse-btn"
@@ -24,30 +18,30 @@
       [title]="isCollapsed ? 'Ouvrir la sidebar' : 'Fermer la sidebar'"
       [attr.aria-label]="isCollapsed ? 'Ouvrir la sidebar' : 'Fermer la sidebar'"
     >
-      <!-- Icône panel-left (Lucide) — représente une sidebar, tourne selon l'état -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="18" height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.75"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="toggle-panel-icon"
-        [class.is-collapsed]="isCollapsed"
-      >
-        <!-- Cadre extérieur -->
-        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-        <!-- Séparateur vertical panel gauche -->
-        <line x1="9" y1="3" x2="9" y2="21"></line>
-        <!-- Flèche dans le panel gauche : pointe gauche = fermer, droite = ouvrir -->
-        @if (!isCollapsed) {
-          <polyline points="7 9 5 12 7 15"></polyline>
-        } @else {
-          <polyline points="5 9 7 12 5 15"></polyline>
-        }
-      </svg>
+      @if (isCollapsed) {
+        <img
+          src="/images/brand/capevents-logo-secondary.png"
+          alt=""
+          class="sidebar-toggle-logo"
+          aria-hidden="true"
+        />
+      } @else {
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.65"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="toggle-panel-icon"
+        >
+          <rect x="4.5" y="5" width="15" height="14" rx="2.25"></rect>
+          <line x1="9.5" y1="5" x2="9.5" y2="19"></line>
+        </svg>
+      }
     </button>
   </div>
 
