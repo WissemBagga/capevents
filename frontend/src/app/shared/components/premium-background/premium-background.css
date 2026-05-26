@@ -526,10 +526,116 @@
   .bubble,
   .confetti,
   .ribbon,
-  .dots,
   .balloon,
-  .balloon__string {
+  .balloon__string,
+  .ribbon-rain span {
     animation: none;
+  }
+}
+
+/* =========================================================
+   RUBANS DYNAMIQUES EN HAUT
+========================================================= */
+
+.ribbon-rain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.ribbon-rain span {
+  position: absolute;
+  top: -12vh;
+  display: block;
+  width: 8px;
+  height: 18px;
+  border-radius: 2px;
+  opacity: 0;
+  filter: drop-shadow(0 6px 10px rgba(18, 26, 56, 0.04));
+  animation:
+    ribbonFall var(--fall-duration, 18s) linear infinite,
+    ribbonSwing var(--swing-duration, 5.8s) ease-in-out infinite alternate;
+}
+
+/* Positions, couleurs et timings volontairement variés */
+.ribbon-rain span:nth-child(1)  { left: 18%; width: 7px; height: 17px; background: rgba(0, 213, 208, 0.58); --fall-duration: 17s; --swing-duration: 5.2s; animation-delay: -1s, -2s; }
+.ribbon-rain span:nth-child(2)  { left: 24%; width: 5px; height: 14px; background: rgba(254, 177, 0, 0.58); --fall-duration: 21s; --swing-duration: 6.2s; animation-delay: -8s, -1s; }
+.ribbon-rain span:nth-child(3)  { left: 31%; width: 9px; height: 20px; background: rgba(113, 96, 158, 0.52); --fall-duration: 19s; --swing-duration: 5.7s; animation-delay: -13s, -3s; }
+.ribbon-rain span:nth-child(4)  { left: 38%; width: 4px; height: 16px; background: rgba(29, 181, 226, 0.48); --fall-duration: 23s; --swing-duration: 6.8s; animation-delay: -4s, -4s; }
+.ribbon-rain span:nth-child(5)  { left: 45%; width: 7px; height: 18px; background: rgba(255, 129, 110, 0.44); --fall-duration: 20s; --swing-duration: 5.4s; animation-delay: -16s, -2s; }
+.ribbon-rain span:nth-child(6)  { left: 52%; width: 5px; height: 15px; background: rgba(0, 213, 208, 0.48); --fall-duration: 24s; --swing-duration: 7s; animation-delay: -6s, -5s; }
+.ribbon-rain span:nth-child(7)  { left: 59%; width: 8px; height: 19px; background: rgba(254, 177, 0, 0.50); --fall-duration: 18s; --swing-duration: 6.1s; animation-delay: -11s, -2s; }
+.ribbon-rain span:nth-child(8)  { left: 66%; width: 5px; height: 14px; background: rgba(113, 96, 158, 0.48); --fall-duration: 22s; --swing-duration: 5.9s; animation-delay: -2s, -1s; }
+.ribbon-rain span:nth-child(9)  { left: 73%; width: 9px; height: 18px; background: rgba(29, 181, 226, 0.46); --fall-duration: 25s; --swing-duration: 7.2s; animation-delay: -18s, -6s; }
+.ribbon-rain span:nth-child(10) { left: 80%; width: 6px; height: 16px; background: rgba(255, 90, 165, 0.34); --fall-duration: 20s; --swing-duration: 5.6s; animation-delay: -9s, -3s; }
+
+.ribbon-rain span:nth-child(11) { left: 21%; width: 4px; height: 13px; background: rgba(29, 181, 226, 0.36); --fall-duration: 28s; --swing-duration: 7.4s; animation-delay: -20s, -4s; }
+.ribbon-rain span:nth-child(12) { left: 28%; width: 8px; height: 18px; background: rgba(254, 177, 0, 0.42); --fall-duration: 26s; --swing-duration: 6.4s; animation-delay: -15s, -1s; }
+.ribbon-rain span:nth-child(13) { left: 35%; width: 5px; height: 16px; background: rgba(0, 213, 208, 0.38); --fall-duration: 24s; --swing-duration: 6.9s; animation-delay: -7s, -5s; }
+.ribbon-rain span:nth-child(14) { left: 42%; width: 9px; height: 21px; background: rgba(255, 129, 110, 0.36); --fall-duration: 29s; --swing-duration: 7.6s; animation-delay: -23s, -7s; }
+.ribbon-rain span:nth-child(15) { left: 49%; width: 4px; height: 14px; background: rgba(113, 96, 158, 0.40); --fall-duration: 27s; --swing-duration: 6.7s; animation-delay: -5s, -3s; }
+.ribbon-rain span:nth-child(16) { left: 56%; width: 7px; height: 17px; background: rgba(0, 88, 171, 0.30); --fall-duration: 30s; --swing-duration: 7.8s; animation-delay: -19s, -2s; }
+.ribbon-rain span:nth-child(17) { left: 63%; width: 5px; height: 15px; background: rgba(0, 213, 208, 0.42); --fall-duration: 25s; --swing-duration: 6.5s; animation-delay: -10s, -4s; }
+.ribbon-rain span:nth-child(18) { left: 70%; width: 8px; height: 19px; background: rgba(254, 177, 0, 0.42); --fall-duration: 31s; --swing-duration: 8s; animation-delay: -25s, -6s; }
+.ribbon-rain span:nth-child(19) { left: 77%; width: 4px; height: 14px; background: rgba(29, 181, 226, 0.38); --fall-duration: 24s; --swing-duration: 6.3s; animation-delay: -12s, -3s; }
+.ribbon-rain span:nth-child(20) { left: 84%; width: 9px; height: 20px; background: rgba(113, 96, 158, 0.40); --fall-duration: 28s; --swing-duration: 7.1s; animation-delay: -17s, -5s; }
+
+.ribbon-rain span:nth-child(21) { left: 14%; width: 5px; height: 15px; background: rgba(255, 90, 165, 0.28); --fall-duration: 32s; --swing-duration: 8.4s; animation-delay: -28s, -3s; }
+.ribbon-rain span:nth-child(22) { left: 33%; width: 7px; height: 18px; background: rgba(0, 213, 208, 0.32); --fall-duration: 34s; --swing-duration: 8.2s; animation-delay: -30s, -7s; }
+.ribbon-rain span:nth-child(23) { left: 61%; width: 5px; height: 13px; background: rgba(254, 177, 0, 0.34); --fall-duration: 33s; --swing-duration: 7.9s; animation-delay: -26s, -5s; }
+.ribbon-rain span:nth-child(24) { left: 88%; width: 8px; height: 18px; background: rgba(29, 181, 226, 0.30); --fall-duration: 35s; --swing-duration: 8.6s; animation-delay: -31s, -6s; }
+.ribbon-rain span:nth-child(25) { left: 12%; width: 6px; height: 15px; background: rgba(0, 213, 208, 0.36); --fall-duration: 27s; --swing-duration: 7.2s; animation-delay: -4s, -2s; }
+.ribbon-rain span:nth-child(26) { left: 17%; width: 8px; height: 19px; background: rgba(254, 177, 0, 0.38); --fall-duration: 30s; --swing-duration: 7.8s; animation-delay: -12s, -5s; }
+.ribbon-rain span:nth-child(27) { left: 26%; width: 5px; height: 14px; background: rgba(255, 90, 165, 0.30); --fall-duration: 34s; --swing-duration: 8.4s; animation-delay: -22s, -7s; }
+.ribbon-rain span:nth-child(28) { left: 39%; width: 7px; height: 17px; background: rgba(29, 181, 226, 0.34); --fall-duration: 29s; --swing-duration: 7.1s; animation-delay: -17s, -4s; }
+.ribbon-rain span:nth-child(29) { left: 47%; width: 4px; height: 13px; background: rgba(113, 96, 158, 0.32); --fall-duration: 32s; --swing-duration: 8.1s; animation-delay: -26s, -3s; }
+.ribbon-rain span:nth-child(30) { left: 54%; width: 9px; height: 21px; background: rgba(255, 129, 110, 0.30); --fall-duration: 36s; --swing-duration: 8.7s; animation-delay: -9s, -6s; }
+.ribbon-rain span:nth-child(31) { left: 67%; width: 6px; height: 15px; background: rgba(0, 213, 208, 0.34); --fall-duration: 31s; --swing-duration: 7.6s; animation-delay: -19s, -4s; }
+.ribbon-rain span:nth-child(32) { left: 75%; width: 8px; height: 18px; background: rgba(254, 177, 0, 0.34); --fall-duration: 35s; --swing-duration: 8.5s; animation-delay: -28s, -6s; }
+.ribbon-rain span:nth-child(33) { left: 82%; width: 5px; height: 14px; background: rgba(29, 181, 226, 0.32); --fall-duration: 33s; --swing-duration: 7.9s; animation-delay: -14s, -5s; }
+.ribbon-rain span:nth-child(34) { left: 91%; width: 7px; height: 17px; background: rgba(113, 96, 158, 0.30); --fall-duration: 37s; --swing-duration: 8.9s; animation-delay: -31s, -7s; }
+.ribbon-rain span:nth-child(35) { left: 6%; width: 4px; height: 12px; background: rgba(255, 90, 165, 0.28); --fall-duration: 38s; --swing-duration: 9.1s; animation-delay: -24s, -3s; }
+.ribbon-rain span:nth-child(36) { left: 96%; width: 6px; height: 16px; background: rgba(0, 88, 171, 0.26); --fall-duration: 39s; --swing-duration: 9.2s; animation-delay: -33s, -8s; }
+
+
+
+@keyframes ribbonFall {
+  0% {
+    top: -12vh;
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 0.72;
+  }
+
+  82% {
+    opacity: 0.52;
+  }
+
+  100% {
+    top: 108vh;
+    opacity: 0;
+  }
+}
+
+@keyframes ribbonSwing {
+  0% {
+    transform: translateX(-10px) rotate(-18deg);
+  }
+
+  35% {
+    transform: translateX(12px) rotate(14deg);
+  }
+
+  68% {
+    transform: translateX(-6px) rotate(-8deg);
+  }
+
+  100% {
+    transform: translateX(16px) rotate(22deg);
   }
 }
 
