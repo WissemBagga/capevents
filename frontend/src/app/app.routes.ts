@@ -80,8 +80,8 @@ export const routes: Routes = [
     children: [
       { path: 'events', component: EventsList },
       { path: 'events/past', component: PastEvents },
-      { path: 'events/:id', component: EventDetails },
       { path: 'events/:id/feedback', component: FeedbackEvent },
+      { path: 'events/:id', component: EventDetails },
 
       { path: 'dashboard/employee', component: EmployeeDashboard, canActivate: [roleGuard], data: { roles: ['ROLE_EMPLOYEE'] } },
 
@@ -98,11 +98,21 @@ export const routes: Routes = [
 
       { path: 'my-events', component: MyEvents },
       { path: 'my-invitations', component: MyInvitations },
-      { path: 'my-submissions', component: MySubmissions },
-      { path: 'employee/submit-event', component: SubmitEvent },
       { path: 'my-points', component: MyPoints },
       { path: 'my-interests', component: MyInterests },
       { path: 'my-profile', component: MyProfile },
+      {
+        path: 'employee/submit-event',
+        component: SubmitEvent,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE'] }
+      },
+      {
+        path: 'my-submissions',
+        component: MySubmissions,
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_EMPLOYEE'] }
+      },
       { 
         path: 'admin/events/:id',
         component: AdminEventDetails,
