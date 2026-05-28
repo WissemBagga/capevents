@@ -8,7 +8,6 @@ import {
   AiPlanningEventProposalResponse,
   AiPlanningSuggestionRequest,
   AiPlanningSuggestionResponse,
-  AiPlanningMonitoringSummary,
   AiPlanningUsageRequest,
   AiPlanningUsageResponse
 } from '../models/ai-planning.model';
