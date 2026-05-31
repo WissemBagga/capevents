@@ -27,6 +27,7 @@
       <!-- Left Column: Summary & Actions -->
       <div class="points-left-col">
         <!-- Summary Card -->
+        <!-- Summary Card -->
         <section class="summary-section">
           <div class="summary-card" [class.loading-shimmer]="loading">
             @if (loading) {
@@ -36,17 +37,31 @@
             } @else {
               <div class="card-overlay"></div>
               <div class="card-content">
-                <span class="card-label">Solde actuel</span>
-                <div class="points-display">
-                  <strong class="total-value">{{ totalPoints }}</strong>
-                  <span class="pts-unit">pts</span>
+                <div class="summary-main">
+                  <div class="summary-text">
+                    <span class="card-label">Solde actuel</span>
+                    <div class="points-display">
+                      <strong class="total-value">{{ totalPoints }}</strong>
+                      <span class="pts-unit">pts</span>
+                    </div>
+
+                    <div class="weekly-info">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                      <span>{{ formatDelta(weeklyPoints) }} cette semaine</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="level-progress-block">
                   <div class="level-header">
-                    <span class="level-badge">Niveau {{ userLevel.level }} · {{ userLevel.label }}</span>
+                    <div class="level-badge-container">
+                      <div class="level-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                      </div>
+                      <span class="level-badge">Niveau {{ userLevel.level }} - {{ userLevel.label }}</span>
+                    </div>
                     @if (userLevel.level < 5) {
-                      <span class="next-level-pts">{{ totalPoints }}/{{ userLevel.max }} pts</span>
+                      <span class="next-level-pts">{{ totalPoints }} / {{ userLevel.max }} pts</span>
                     }
                   </div>
                   <div class="progress-bar-container">
@@ -57,11 +72,6 @@
                   } @else {
                     <small class="progress-hint">Niveau maximal atteint !</small>
                   }
-                </div>
-
-                <div class="weekly-info">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                  <span>{{ formatDelta(weeklyPoints) }} cette semaine</span>
                 </div>
               </div>
             }
@@ -76,9 +86,10 @@
             <a class="action-card" routerLink="/events">
               <div class="icon-circle earn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="M12 8v8"/>
-                  <path d="M8 12h8"/>
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
               </div>
 
@@ -88,14 +99,19 @@
                   Inscrivez-vous, participez et envoyez un feedback pour gagner des points.
                 </small>
               </div>
+              <div class="action-arrow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
             </a>
 
-            <a class="action-card" routerLink="/my-rewards">
+            <a class="action-card" routerLink="/gamification/rewards">
               <div class="icon-circle redeem">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                  <path d="M2 7l10 5 10-5"/>
-                  <path d="M2 13l10 5 10-5"/>
+                  <polyline points="20 12 20 22 4 22 4 12"/>
+                  <rect x="2" y="7" width="20" height="5"/>
+                  <line x1="12" y1="22" x2="12" y2="7"/>
+                  <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+                  <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
                 </svg>
               </div>
 
@@ -104,6 +120,9 @@
                 <small class="action-subtitle">
                   Utilisez vos points pour demander une récompense disponible.
                 </small>
+              </div>
+              <div class="action-arrow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </div>
             </a>
           </div>
@@ -114,7 +133,24 @@
       <div class="points-right-col">
         <section class="history-section">
           <div class="history-header">
-            <h2 class="section-title">Historique des transactions</h2>
+            <div class="history-header-left">
+              <div class="history-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="history-header-text">
+                <h2 class="section-title">Historique des transactions</h2>
+                <p class="section-subtitle">Vos dernières activités et points gagnés</p>
+              </div>
+            </div>
+            
+            <!-- Mock route for now, but looks exactly like the image -->
+            <a routerLink="/gamification/points" class="btn-history-all">
+              Voir tout l'historique
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
           </div>
 
           @if (loading) {
@@ -144,7 +180,13 @@
                   <div class="item-icon">
                     @if (isPositive(item.pointsDelta)) {
                       <div class="icon-bg positive">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                          <line x1="16" y1="2" x2="16" y2="6"/>
+                          <line x1="8" y1="2" x2="8" y2="6"/>
+                          <line x1="3" y1="10" x2="21" y2="10"/>
+                          <path d="M9 16l2 2 4-4"/>
+                        </svg>
                       </div>
                     } @else {
                       <div class="icon-bg negative">
@@ -154,18 +196,31 @@
                   </div>
                   <div class="item-body">
                     <h3 class="item-title">{{ item.reason }}</h3>
-                    <p class="item-subtitle">{{ item.eventTitle || (item.createdAt | date:'dd MMMM yyyy' : '' : 'fr') }}</p>
+                    <p class="item-subtitle">{{ item.eventTitle || 'Événement non spécifié' }}</p>
                   </div>
-                  <div class="item-points" [class.positive]="isPositive(item.pointsDelta)" [class.negative]="!isPositive(item.pointsDelta)">
-                    {{ formatDelta(item.pointsDelta) }} pts
-                  </div>
-                  <div class="item-chevron">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  <div class="item-right-group">
+                    <div class="item-points" [class.positive]="isPositive(item.pointsDelta)" [class.negative]="!isPositive(item.pointsDelta)">
+                      {{ formatDelta(item.pointsDelta) }} pts
+                    </div>
+                    <div class="item-date">
+                      {{ item.createdAt | date:'dd MMM yyyy • HH:mm' : '' : 'fr' }}
+                    </div>
                   </div>
                 </article>
               }
             </div>
           }
+
+          <!-- Motivational Block -->
+          <div class="motivational-block">
+            <div class="moto-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </div>
+            <div class="moto-text">
+              <h4>Continuez à participer</h4>
+              <p>Plus vous participez, plus vous progressez et débloquez des récompenses exclusives !</p>
+            </div>
+          </div>
         </section>
       </div>
     </div>
