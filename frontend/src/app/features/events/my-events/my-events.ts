@@ -1,16 +1,16 @@
-﻿import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { EventService } from '@core/services/event.service';
 import { RegistrationResponse } from '@core/models/registration.model';
+import { resolveEventImageUrl } from '@core/constants/event-image-presets';
 import { FormsModule } from '@angular/forms';
 
 import { ScrollToMessageDirective } from '../../../shared/directives/scroll-to-message.directive';
 
 type MyEventsFilter = 'ALL' | 'UPCOMING' | 'PAST';
-
 
 @Component({
   selector: 'app-my-events',
@@ -25,6 +25,7 @@ export class MyEvents {
 
   registrations: RegistrationResponse[] = [];
   filteredRegistrations: RegistrationResponse[] = [];
+  eventImages: Record<string, string> = {};
 
   loading = false;
   errorMessage   = '';
@@ -48,6 +49,7 @@ export class MyEvents {
       .subscribe({
         next: (registrations) => {
           this.registrations = this.sortByNearest(registrations ?? []);
+          this.fetchEventImages();
           this.applyFilter();
           this.cdr.markForCheck();
         },
@@ -59,6 +61,24 @@ export class MyEvents {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  private fetchEventImages(): void {
+    const uniqueEventIds = [...new Set(this.registrations.map(r => r.eventId))];
+    for (const id of uniqueEventIds) {
+      if (!this.eventImages[id]) {
+        this.eventService.getPublishedById(id).subscribe({
+          next: (ev) => {
+            this.eventImages[id] = resolveEventImageUrl(ev.imageUrl, ev.category);
+            this.cdr.markForCheck();
+          },
+          error: () => {
+            this.eventImages[id] = resolveEventImageUrl(null, null);
+            this.cdr.markForCheck();
+          }
+        });
+      }
+    }
   }
 
   onFilterChange(): void {
@@ -151,6 +171,12 @@ export class MyEvents {
       default:
         return status;
     }
+  }
+
+  getDayOfWeek(dateStr: string): string {
+    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const d = new Date(dateStr);
+    return days[d.getDay()] ?? '';
   }
 }
 

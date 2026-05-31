@@ -103,92 +103,87 @@
 
     <div class="events-grid">
       @for (registration of filteredRegistrations; track registration.eventId) {
-        <article class="event-card" [class.upcoming]="isUpcoming(registration)">
+        <article
+          class="event-card"
+          [class.upcoming]="isUpcoming(registration)"
+          [class.past]="!isUpcoming(registration)"
+          [class.cancelled]="isEventCancelled(registration)">
 
-          <div class="card-top">
-            <div class="top-left">
-              @if (isUpcoming(registration)) {
-                <span class="timeline-badge">À venir</span>
+          <!-- Top Section: Split Date and Image -->
+          <div class="card-header-split">
+            <!-- Left: Date Info -->
+            <div class="date-side">
+              @if (isUpcoming(registration) && !isEventCancelled(registration)) {
+                <span class="status-badge upcoming">À VENIR</span>
+              } @else if (isEventCancelled(registration)) {
+                <span class="status-badge cancelled">ANNULÉ</span>
               } @else {
-                <span class="timeline-badge past">Passé</span>
+                <span class="status-badge past">PASSÉ</span>
               }
-            </div>
 
-            <span class="status-overlay"
-              [class.registered]="registration.status === 'REGISTERED' && !isEventCancelled(registration)"
-              [class.cancelled]="isEventCancelled(registration) || registration.status === 'CANCELLED'">
-              {{ eventStatusLabel(registration) }}
-            </span>
-          </div>
-
-          <div class="event-date-block">
-            <div class="date-badge">
-              <span class="date-day">{{ registration.eventStartAt | date:'dd' }}</span>
-              <span class="date-month">{{ registration.eventStartAt | date:'MMM' }}</span>
-            </div>
-
-            <div class="date-content">
-              <span class="event-date-value">{{ registration.eventStartAt | date:'EEEE d MMMM yyyy' : '' : 'fr' }}</span>
-              <span class="event-time-value">{{ registration.eventStartAt | date:'HH:mm' }}</span>
-            </div>
-          </div>
-
-          <div class="card-body">
-            <h3 class="event-title">{{ registration.eventTitle }}</h3>
-
-            <div class="meta-list">
-              <div class="meta-row">
-                <span class="meta-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                  </svg>
-                </span>
-                <span class="meta-text">Inscrit le <strong>{{ registration.registeredAt | date:'mediumDate' }}</strong></span>
+              <div class="date-big">
+                <span class="day">{{ registration.eventStartAt | date:'dd' }}</span>
+                <span class="month">{{ registration.eventStartAt | date:'MMM' }}</span>
+                <span class="weekday">{{ getDayOfWeek(registration.eventStartAt) }}</span>
               </div>
 
-              @if (registration.status === 'CANCELLED' && registration.cancelledAt) {
-                <div class="meta-row cancelled-row">
-                  <span class="meta-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"/>
-                      <line x1="15" y1="9" x2="9" y2="15"/>
-                      <line x1="9" y1="9" x2="15" y2="15"/>
-                    </svg>
-                  </span>
-                  <span class="meta-text">Annulé le <strong>{{ registration.cancelledAt | date:'mediumDate' }}</strong></span>
-                </div>
-              }
+              <div class="time-pill">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>{{ registration.eventStartAt | date:'HH:mm' }}</span>
+              </div>
+            </div>
+
+            <!-- Right: Image -->
+            <div class="image-side">
+              <img [src]="eventImages[registration.eventId] || '/images/events/formation.jpg'" alt="Event Cover" class="event-img" />
+
+              <div class="overlay-badges">
+                @if (isEventCancelled(registration)) {
+                  <span class="reg-badge cancelled">ÉVÉNEMENT ANNULÉ</span>
+                } @else if (registration.status === 'REGISTERED') {
+                  <span class="reg-badge registered">INSCRIT</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle Section: Title & Details -->
+          <div class="card-content">
+            <h3 class="event-title" [title]="registration.eventTitle">{{ registration.eventTitle }}</h3>
+
+            <div class="reg-info">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <span>Inscrit le <strong>{{ registration.registeredAt | date:'dd MMM yyyy' }}</strong></span>
             </div>
 
             @if (isEventCancelled(registration)) {
-              <div class="status-message cancelled-msg">
-                <strong>Raison de l’annulation :</strong>
-                {{ registration.eventCancelReason || 'Aucune raison précisée.' }}
+              <div class="cancel-reason-box">
+                <strong>Raison de l'annulation :</strong> {{ registration.eventCancelReason || 'Aucune raison précisée' }}
               </div>
             }
           </div>
 
-          <div class="card-footer">
-            <div class="actions">
-              @if (canLeaveFeedback(registration)) {
-                <a class="btn-secondary" [routerLink]="['/events', registration.eventId, 'feedback']">
-                  Feedback
-                </a>
+          <!-- Bottom Section: Actions -->
+          <div class="card-actions">
+            @if (canLeaveFeedback(registration)) {
+              <a class="action-btn btn-secondary" [routerLink]="['/events', registration.eventId, 'feedback']">
+                Feedback
+              </a>
+            } @else {
+              <!-- Empty spacer to push details button to right if needed, or just let it fill -->
+              @if (!canLeaveFeedback(registration)) {
+                <span class="action-spacer"></span>
               }
+            }
 
-              @if (canOpenEventDetails(registration)) {
-                <a [routerLink]="['/events', registration.eventId]" class="btn-details">
-                  Voir les détails
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14"/>
-                    <path d="m12 5 7 7-7 7"/>
-                  </svg>
-                </a>
-              } @else {
-                <span class="btn-details disabled">Événement annulé</span>
-              }
-            </div>
+            @if (canOpenEventDetails(registration)) {
+              <a class="action-btn btn-primary" [routerLink]="['/events', registration.eventId]">
+                Voir les détails
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </a>
+            } @else {
+              <span class="action-btn btn-disabled">Événement annulé</span>
+            }
           </div>
 
         </article>

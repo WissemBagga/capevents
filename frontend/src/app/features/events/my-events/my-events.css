@@ -251,8 +251,8 @@
 
 /* ===== Event Card ===== */
 .event-card {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
-  border-radius: 24px;
+  background: #ffffff;
+  border-radius: 18px;
   overflow: hidden;
   border: 1px solid #E4EAF1;
   box-shadow: 0 4px 16px rgba(18, 26, 56, 0.04);
@@ -264,141 +264,179 @@
 
 .event-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(0, 88, 171, 0.14);
-  box-shadow: 0 14px 28px rgba(18, 26, 56, 0.08);
+  border-color: rgba(0, 88, 171, 0.16);
+  box-shadow: 0 14px 30px rgba(18, 26, 56, 0.08);
 }
 
-.event-card.upcoming {
-  border-top: 3px solid #0058AB;
-}
-
-/* ===== Card Top ===== */
-.card-top {
+/* ===== Top Section: Split Header ===== */
+.card-header-split {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding: 18px 18px 0;
-}
-
-.top-left {
-  display: flex;
-  align-items: center;
-}
-
-.timeline-badge {
-  display: inline-flex;
-  align-items: center;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: rgba(0, 88, 171, 0.08);
-  color: #0058AB;
-  border: 1px solid rgba(0, 88, 171, 0.10);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.timeline-badge.past {
-  background: #F1F4F8;
-  color: #556176;
-  border-color: #E2E8F0;
-}
-
-.status-overlay {
-  display: inline-flex;
-  align-items: center;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.status-overlay.registered {
-  background: rgba(0, 130, 142, 0.10);
-  color: #00828E;
-  border: 1px solid rgba(0, 130, 142, 0.14);
-}
-
-.status-overlay.cancelled {
-  background: rgba(143, 50, 55, 0.10);
-  color: #8F3237;
-  border: 1px solid rgba(143, 50, 55, 0.14);
-}
-
-/* ===== Event Date Block ===== */
-.event-date-block {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 18px 14px;
+  align-items: stretch;
   border-bottom: 1px solid #EEF2F7;
+  height: 160px; /* Increased height for better breathing room */
 }
 
-.date-badge {
-  width: 54px;
-  min-width: 54px;
-  height: 54px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(0, 88, 171, 0.10), rgba(29, 181, 226, 0.10));
-  border: 1px solid rgba(0, 88, 171, 0.10);
+/* Left side: Date */
+.date-side {
+  width: 120px; /* Slightly wider */
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between; /* This perfectly spaces the badge, date, and time vertically */
+  padding: 16px 10px;
+  border-right: 1px solid #EEF2F7;
+  position: relative;
 }
 
-.date-day {
+.event-card.upcoming .date-side {
+  background: linear-gradient(180deg, #F0F7FF 0%, #ffffff 100%);
+}
+
+.event-card.past .date-side {
+  background: linear-gradient(180deg, #F8FAFC 0%, #ffffff 100%);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px; /* Slightly taller */
+  padding: 0 12px;
+  border-radius: 8px; /* Slightly rounder */
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.status-badge.upcoming {
+  background: #0058AB;
+  color: #ffffff;
+}
+
+.status-badge.past {
+  background: #E2E8F0;
+  color: #64748B;
+}
+
+.status-badge.cancelled {
+  background: #8F3237;
+  color: #ffffff;
+}
+
+.date-big {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.date-big .day {
   font-family: 'Ubuntu', sans-serif;
-  font-size: 18px;
+  font-size: 32px; /* Bigger number */
   font-weight: 800;
   color: #121A38;
   line-height: 1;
 }
 
-.date-month {
-  font-size: 10px;
-  font-weight: 700;
+.event-card.upcoming .date-big .day {
   color: #0058AB;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
-.date-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.event-date-value {
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #121A38;
-  text-transform: capitalize;
-  line-height: 1.4;
-}
-
-.event-time-value {
+.date-big .month {
   font-size: 12px;
   font-weight: 700;
-  color: #0058AB;
-  width: fit-content;
-  background: rgba(0, 88, 171, 0.08);
-  border: 1px solid rgba(0, 88, 171, 0.10);
-  padding: 4px 10px;
-  border-radius: 999px;
+  color: #121A38;
+  text-transform: uppercase;
+  margin-top: 4px;
+  letter-spacing: 0.05em;
 }
 
-/* ===== Card Body ===== */
-.card-body {
-  padding: 18px;
+.event-card.upcoming .date-big .month {
+  color: #0058AB;
+}
+
+.date-big .weekday {
+  font-size: 10px;
+  color: #64748B;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.time-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 88, 171, 0.06);
+  border: 1px solid rgba(0, 88, 171, 0.1);
+  color: #0058AB;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.event-card.past .time-pill {
+  background: #F1F4F8;
+  border-color: #E2E8F0;
+  color: #64748B;
+}
+
+/* Right side: Image */
+.image-side {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  padding: 10px;
+  background: #F8FAFC;
+}
+
+.event-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.overlay-badges {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.reg-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 8px rgba(18, 26, 56, 0.15);
+}
+
+.reg-badge.registered {
+  background: #D1FAE5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+
+.reg-badge.cancelled {
+  background: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+
+/* ===== Middle Section: Content ===== */
+.card-content {
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -406,121 +444,82 @@
 
 .event-title {
   font-family: 'Ubuntu', sans-serif;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   color: #121A38;
-  margin: 0 0 14px;
+  margin: 0 0 10px 0;
   line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.meta-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.meta-row {
+.reg-info {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-.meta-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  min-width: 26px;
-  background: #F8FAFC;
-  border-radius: 8px;
+  gap: 6px;
+  font-size: 11px;
   color: #64748B;
 }
 
-.meta-text {
-  font-size: 12px;
-  color: #475569;
-  line-height: 1.45;
+.reg-info svg {
+  color: #94A3B8;
 }
 
-.meta-text strong {
-  color: #121A38;
+.reg-info strong {
+  color: #1E293B;
   font-weight: 700;
 }
 
-.cancelled-row .meta-icon {
-  background: rgba(143, 50, 55, 0.08);
-  color: #DC2626;
+.cancel-reason-box {
+  margin-top: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(143, 50, 55, 0.05);
+  border: 1px dashed rgba(143, 50, 55, 0.2);
+  color: #8F3237;
+  font-size: 11px;
+  line-height: 1.5;
 }
 
-.cancelled-row .meta-text,
-.cancelled-row .meta-text strong {
-  color: #DC2626;
-}
-
-.status-message {
-  font-size: 12px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  margin-top: auto;
-  line-height: 1.55;
-}
-
-.status-message strong {
+.cancel-reason-box strong {
+  display: block;
   font-weight: 700;
+  margin-bottom: 2px;
 }
 
-.cancelled-msg {
-  background: rgba(143, 50, 55, 0.08);
-  color: #991B1B;
-  border: 1px dashed #FCA5A5;
-}
-
-/* ===== Card Footer ===== */
-.card-footer {
-  padding: 16px 18px 18px;
-  background: #ffffff;
-  border-top: 1px solid #EEF2F7;
-}
-
-.actions {
+/* ===== Bottom Section: Actions ===== */
+.card-actions {
   display: flex;
-  align-items: center;
   gap: 10px;
+  padding: 0 18px 18px;
+  margin-top: auto;
 }
 
-.btn-details,
-.btn-secondary {
+.action-spacer {
+  flex: 0;
+}
+
+.action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 14px;
+  gap: 6px;
+  height: 38px;
+  border-radius: 10px;
   font-family: 'Ubuntu', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   text-decoration: none;
   transition: all 0.2s ease;
-  white-space: nowrap;
+  cursor: pointer;
   border: 1px solid transparent;
 }
 
-.btn-details {
-  background: #0058AB;
-  color: #ffffff;
-  flex: 1;
-  box-shadow: 0 10px 20px rgba(0, 88, 171, 0.16);
-}
-
-.btn-details:hover {
-  background: #004b92;
-  transform: translateY(-1px);
-}
-
 .btn-secondary {
+  flex: 1;
   background: #ffffff;
   color: #121A38;
   border-color: #D9E1EA;
@@ -528,21 +527,28 @@
 
 .btn-secondary:hover {
   background: #F8FBFF;
-  border-color: rgba(0, 88, 171, 0.18);
+  border-color: #0058AB;
   color: #0058AB;
 }
 
-.btn-details.disabled {
+.btn-primary {
+  flex: 2;
+  background: #0058AB;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 88, 171, 0.16);
+}
+
+.btn-primary:hover {
+  background: #004b92;
+  transform: translateY(-1px);
+}
+
+.btn-disabled {
+  flex: 1;
   background: #F1F5F9;
   color: #94A3B8;
   border-color: #E2E8F0;
   cursor: not-allowed;
-  box-shadow: none;
-}
-
-.btn-details.disabled:hover {
-  background: #F1F5F9;
-  transform: none;
 }
 
 /* ===== Responsive ===== */
@@ -574,10 +580,6 @@
     text-align: center;
     padding: 10px 10px;
   }
-
-  .actions {
-    flex-wrap: wrap;
-  }
 }
 
 @media (max-width: 560px) {
@@ -591,19 +593,12 @@
     padding: 18px;
   }
 
-  .card-body,
-  .card-footer {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .actions {
+  .card-actions {
     flex-direction: column;
-    align-items: stretch;
   }
-
-  .btn-secondary,
-  .btn-details {
+  
+  .btn-primary, .btn-secondary {
     width: 100%;
+    flex: none;
   }
 }
