@@ -290,11 +290,11 @@
 }
 
 .event-card.upcoming .date-side {
-  background: linear-gradient(180deg, #F0F7FF 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #E8F2FF 0%, #ffffff 100%);
 }
 
 .event-card.past .date-side {
-  background: linear-gradient(180deg, #F8FAFC 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #F1F5F9 0%, #ffffff 100%);
 }
 
 .status-badge {
@@ -344,6 +344,10 @@
   color: #0058AB;
 }
 
+.event-card.past .date-big .day {
+  color: #64748B;
+}
+
 .date-big .month {
   font-size: 12px;
   font-weight: 700;
@@ -355,6 +359,10 @@
 
 .event-card.upcoming .date-big .month {
   color: #0058AB;
+}
+
+.event-card.past .date-big .month {
+  color: #64748B;
 }
 
 .date-big .weekday {
