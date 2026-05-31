@@ -1,4 +1,4 @@
-﻿import { DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -12,6 +12,7 @@ import {
 } from '@core/models/invitation.model';
 
 import { MyInvitationReminder } from '@core/models/my-invitation-reminder.model';
+import { resolveEventImageUrl } from '@core/constants/event-image-presets';
 
 import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
 
@@ -42,6 +43,17 @@ export class MyInvitations implements OnInit {
 
   highlightedInvitationId: number | null = null;
 
+  activeTab: 'ALL' | 'PENDING' = 'ALL';
+
+  eventImages: Record<string, string> = {};
+
+  get filteredInvitations(): MyInvitationResponse[] {
+    if (this.activeTab === 'PENDING') {
+      return this.invitations.filter(i => !i.rsvpResponse || i.rsvpResponse as any === 'PENDING');
+    }
+    return this.invitations;
+  }
+
   ngOnInit(): void {
     this.loadInvitations();
   }
@@ -59,6 +71,7 @@ export class MyInvitations implements OnInit {
       .subscribe({
         next: (invitations) => {
           this.invitations = invitations ?? [];
+          this.fetchEventImages();
           this.openInvitationFromNotificationIfNeeded();
           this.cdr.markForCheck();
         },
@@ -70,6 +83,24 @@ export class MyInvitations implements OnInit {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  private fetchEventImages(): void {
+    const uniqueEventIds = [...new Set(this.invitations.map(i => i.eventId))];
+    for (const id of uniqueEventIds) {
+      if (!this.eventImages[id]) {
+        this.eventService.getPublishedById(id).subscribe({
+          next: (ev) => {
+            this.eventImages[id] = resolveEventImageUrl(ev.imageUrl, ev.category);
+            this.cdr.markForCheck();
+          },
+          error: () => {
+            this.eventImages[id] = resolveEventImageUrl(null, null);
+            this.cdr.markForCheck();
+          }
+        });
+      }
+    }
   }
 
   private openInvitationFromNotificationIfNeeded(): void {
@@ -272,6 +303,25 @@ export class MyInvitations implements OnInit {
     return `${count} messages de relance`;
   }
 
+  getDayOfWeek(dateStr: string): string {
+    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const d = new Date(dateStr);
+    return days[d.getDay()] ?? '';
+  }
+
+  getInitials(name: string | undefined | null): string {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    }
+    return name.charAt(0).toUpperCase();
+  }
+
+  setTab(tab: 'ALL' | 'PENDING'): void {
+    this.activeTab = tab;
+    this.cdr.markForCheck();
+  }
 
 }
 
