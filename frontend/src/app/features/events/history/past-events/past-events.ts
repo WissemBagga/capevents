@@ -1,5 +1,5 @@
-﻿import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -17,7 +17,7 @@ import { Pagination } from '@shared/components/pagination/pagination';
 @Component({
   selector: 'app-past-events',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, RouterLink, FormsModule, Pagination],
+  imports: [DatePipe, DecimalPipe, RouterLink, FormsModule, Pagination, NgClass],
   templateUrl: './past-events.html',
   styleUrl: './past-events.css'
 })
@@ -112,9 +112,9 @@ export class PastEvents {
     this.loadEvents();
   }
 
-    getEventImageUrl(event: PastEventCardResponse): string {
-      return resolveEventImageUrl(event.imageUrl, event.category);
-    }
+  getEventImageUrl(event: PastEventCardResponse): string {
+    return resolveEventImageUrl(event.imageUrl, event.category);
+  }
 
   goToPage(page: number): void {
     if (page < 0 || page >= this.totalPages || page === this.currentPage) {
@@ -124,6 +124,33 @@ export class PastEvents {
     this.currentPage = page;
     this.loadEvents();
   }
-  
+
+  getRatingLabel(event: PastEventCardResponse): string {
+    if (!event.averageRating) return 'Aucun avis';
+    if (event.averageRating >= 4.5) return 'Très apprécié';
+    if (event.averageRating >= 3.5) return 'Apprécié';
+    if (event.averageRating >= 2.5) return 'Moyen';
+    return 'À améliorer';
+  }
+
+  getCategoryClass(category: string | null): string {
+    if (!category) return 'cat-default';
+    const normalized = category.toLowerCase().trim();
+    if (normalized.includes('team building')) return 'cat-teambuilding';
+    if (normalized.includes('formation')) return 'cat-formation';
+    if (normalized.includes('webinaire') || normalized.includes('conference')) return 'cat-webinaire';
+    if (normalized.includes('rse')) return 'cat-rse';
+    if (normalized.includes('innovation')) return 'cat-innovation';
+    if (normalized.includes('atelier')) return 'cat-atelier';
+    return 'cat-default';
+  }
+
+  hasFeedback(event: PastEventCardResponse): boolean {
+    return event.feedbackCount > 0;
+  }
+
+  hasPresence(event: PastEventCardResponse): boolean {
+    return event.presentCount > 0;
+  }
 }
 

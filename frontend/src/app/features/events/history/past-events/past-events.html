@@ -151,62 +151,120 @@
       <div class="past-events-grid">
         @for (event of events; track event.eventId) {
           <article class="event-card">
+            <!-- Top Image Section -->
             <div class="event-image" [style.background-image]="'url(' + getEventImageUrl(event) + ')'">
               <div class="image-overlay"></div>
 
-              <div class="badge-overlay">
-                <span class="overlay-badge category-badge">{{ event.category || 'Événement' }}</span>
-              </div>
-
+              <!-- Top Left: Date Overlay -->
               <div class="date-chip">
                 <span class="chip-day">{{ event.startAt | date:'dd' }}</span>
                 <span class="chip-month">{{ event.startAt | date:'MMM' }}</span>
               </div>
+
+              <!-- Top Right: Category Badge -->
+              <div class="badge-overlay">
+                <span class="overlay-badge" [ngClass]="getCategoryClass(event.category)">
+                  {{ event.category || 'Événement' }}
+                </span>
+              </div>
             </div>
 
+            <!-- Card Body -->
             <div class="event-body">
+              <!-- Meta List -->
               <div class="meta-list">
                 <div class="meta-row">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                     <line x1="16" y1="2" x2="16" y2="6"/>
                     <line x1="8" y1="2" x2="8" y2="6"/>
                     <line x1="3" y1="10" x2="21" y2="10"/>
                   </svg>
-                  <span>{{ event.startAt | date:'mediumDate' }}</span>
+                  <span>{{ event.startAt | date:'dd MMM yyyy' }}</span>
                 </div>
-
+                
                 <div class="meta-row">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
                   </svg>
                   <span>{{ event.departmentName }}</span>
                 </div>
+
+                <div class="meta-row">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                  </svg>
+                  <span style="text-transform: capitalize;">{{ event.audience === 'GLOBAL' ? 'Global' : 'Département' }}</span>
+                </div>
               </div>
 
-              <h3>{{ event.title }}</h3>
+              <!-- Title & Teaser -->
+              <h3 [title]="event.title">{{ event.title }}</h3>
+              @if (event.teaser) {
+                <p class="event-teaser">{{ event.teaser }}</p>
+              } @else {
+                <p class="event-teaser empty">Aucune description disponible pour cet événement.</p>
+              }
 
-              <div class="stats-row">
-                <div class="stat-box rating-box">
-                  <span class="stat-label">Note moyenne</span>
-                  <span class="stat-value">{{ (event.averageRating || 0) | number:'1.1-1' }} / 5</span>
+              <!-- Stats Block -->
+              <div class="stats-block">
+                <!-- Rating -->
+                <div class="stat-item">
+                  <div class="stat-val rating">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    @if (hasFeedback(event)) {
+                      <strong>{{ event.averageRating | number:'1.1-1' }}<span class="text-xs text-gray">/5</span></strong>
+                    } @else {
+                      <strong class="text-xs text-gray">N/A</strong>
+                    }
+                  </div>
                   <span class="stat-sub">{{ event.feedbackCount }} avis</span>
                 </div>
 
-                <div class="stat-box presence-box">
-                  <span class="stat-label">Présence</span>
-                  <span class="stat-value">{{ event.presentCount }}</span>
-                  <span class="stat-sub">participants présents</span>
+                <!-- Presence -->
+                <div class="stat-item presence-border">
+                  <div class="stat-val">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                    @if (hasPresence(event)) {
+                      <strong>{{ event.presentCount }}</strong>
+                    } @else {
+                      <strong class="text-xs text-gray">-</strong>
+                    }
+                  </div>
+                  <span class="stat-sub">présents</span>
+                </div>
+
+                <!-- Qualitative Badge -->
+                <div class="stat-item flex-end">
+                  @if (hasFeedback(event)) {
+                    <div class="qualitative-badge" [class.excellent]="event.averageRating >= 4.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      {{ getRatingLabel(event) }}
+                    </div>
+                  } @else {
+                    <div class="qualitative-badge neutral">
+                      Aucun avis
+                    </div>
+                  }
                 </div>
               </div>
 
+              <!-- Footer -->
               <div class="card-footer-actions">
                 <a [routerLink]="['/events', event.eventId]" class="btn-details">
                   Voir les détails
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 12h14"/>
-                    <polyline points="12 5 19 12 12 19"/>
+                    <path d="m12 5 7 7-7 7"/>
                   </svg>
                 </a>
               </div>
