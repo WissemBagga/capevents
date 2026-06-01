@@ -10,7 +10,7 @@
       <div class="header-top">
         <div class="header-text">
           <h1>Mes demandes</h1>
-          <p class="header-sub">Suivez l'état de vos propositions et demandes d'événements.</p>
+          <p class="header-sub">Suivi de l'état d'avancement des propositions d'événements.</p>
         </div>
 
         <div class="header-actions">
@@ -40,25 +40,17 @@
       </div>
     </div>
 
-    <section class="intro-card">
-      <div class="intro-card-header">
-        <div>
-          <h2 class="card-title">Suivi de vos propositions</h2>
-          <p class="card-subtitle">
-            Retrouvez ici l’état de validation et l’accès aux événements que vous avez proposés.
-          </p>
-        </div>
+    <!-- Info Banner -->
+    <div class="info-banner">
+      <h2 class="info-banner-title">Suivre vos demandes</h2>
+      <p class="info-banner-text">
+        Consultez ici les demandes que vous avez soumises et suivez leur évolution : en attente de revue ou validées par l'administration (RH ou manager).
+      </p>
+      <div class="info-banner-alert">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>Les demandes sont examinées par l'administration avant validation et ouverture des détails.</span>
       </div>
-
-      <div class="helper-pill">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M12 16v.01"/>
-          <path d="M12 8v4"/>
-        </svg>
-        <span>Les demandes publiées peuvent être ouvertes directement depuis cette page.</span>
-      </div>
-    </section>
+    </div>
 
     @if (loading) {
       <div class="state-message loading-msg" appScrollToMessage>
@@ -98,59 +90,108 @@
     @else {
       <div class="submissions-list">
         @for (event of submissions; track trackByEventId($index, event)) {
-          <article class="submission-card" [class]="'status-card-' + event.status.toLowerCase()">
-
-            <div class="submission-top">
-              <div class="top-left">
-                <span class="status-badge" [class]="'status-' + event.status.toLowerCase()">
+          <article class="proposal-card" [class]="'card-' + event.status.toLowerCase()">
+            <div class="proposal-card-content">
+              
+              <!-- A. Zone gauche -->
+              <div class="zone-left">
+                <span class="status-badge" [class]="'badge-' + event.status.toLowerCase()">
                   {{ statusLabel(event.status) }}
                 </span>
+                <div class="date-block">
+                  <span class="day">{{ getDay(event.startAt) }}</span>
+                  <span class="month">{{ getMonth(event.startAt) }}</span>
+                  <span class="weekday">{{ getWeekday(event.startAt) }}</span>
+                </div>
               </div>
 
-              <time class="event-date">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8" y1="2" x2="8" y2="6"/>
-                  <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                {{ event.startAt | date:'dd MMM yyyy · HH:mm' }}
-              </time>
-            </div>
-
-            <div class="submission-main">
-              <h2 class="event-title">{{ event.title }}</h2>
-
-              <div class="submission-meta-row">
-                <span class="category-pill">{{ event.category || 'Non spécifiée' }}</span>
+              <!-- B. Zone centrale -->
+              <div class="zone-center">
+                <h2 class="event-title">{{ event.title }}</h2>
+                @if (event.description) {
+                  <p class="event-description">{{ event.description }}</p>
+                }
+                <div class="category-pill">{{ event.category || 'Non spécifiée' }}</div>
               </div>
 
-              @if (event.description) {
-                <p class="event-description">{{ event.description }}</p>
-              }
-            </div>
+              <!-- C. Zone droite (Stepper) -->
+              <div class="zone-right">
+                <div class="stepper" [class]="'stepper-' + event.status.toLowerCase()">
+                  @for (step of getProgressSteps(event.status); track step.label; let last = $last) {
+                    <div class="step" [class.completed]="step.completed" [class.active]="step.active">
+                      <div class="step-icon">
+                        @if (step.completed) {
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        } @else if (step.active) {
+                          <div class="active-dot"></div>
+                        }
+                      </div>
+                      <span class="step-label">{{ step.label }}</span>
+                    </div>
+                    @if (!last) {
+                      <div class="step-line" [class.completed]="step.completed"></div>
+                    }
+                  }
+                </div>
 
-            <div class="card-footer">
-              <div class="card-meta">
-                <span class="meta-label">Catégorie</span>
-                <span class="meta-value">{{ event.category || 'Non spécifiée' }}</span>
+                @if (getNextStepLabel(event.status)) {
+                  <div class="next-step-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <div class="next-step-text">
+                      <span class="next-step-title">Prochaine étape</span>
+                      <span class="next-step-label">{{ getNextStepLabel(event.status) }}</span>
+                    </div>
+                  </div>
+                }
               </div>
 
-              @if (canOpenEvent(event.status)) {
-                <a [routerLink]="['/events', event.id]" class="btn-view">
-                  Voir l'événement
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14"/>
-                    <polyline points="12 5 19 12 12 19"/>
-                  </svg>
-                </a>
-              } @else {
-                <span class="btn-view disabled">
-                  Non disponible
-                </span>
-              }
             </div>
 
+            <!-- D. Ligne du bas & E. Actions -->
+            <div class="proposal-card-footer">
+              <div class="metadata-row">
+                <div class="meta-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <div class="meta-texts">
+                    <span class="meta-label">Proposé le</span>
+                    <span class="meta-value">{{ (event.createdAt || event.startAt) | date:'dd MMM yyyy' }}</span>
+                  </div>
+                </div>
+                <div class="meta-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <div class="meta-texts">
+                    <span class="meta-label">Public cible</span>
+                    <span class="meta-value">{{ getTargetAudience(event) }}</span>
+                  </div>
+                </div>
+                <div class="meta-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                  <div class="meta-texts">
+                    <span class="meta-label">Participants estimés</span>
+                    <span class="meta-value">{{ event.capacity || 'Non renseigné' }}</span>
+                  </div>
+                </div>
+                <div class="meta-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <div class="meta-texts">
+                    <span class="meta-label">Date prévue</span>
+                    <span class="meta-value">{{ event.startAt | date:'dd MMM yyyy · HH:mm' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="action-buttons">
+                @if (canOpenEvent(event.status)) {
+                  <a [routerLink]="['/events', event.id]" class="btn-primary-action">
+                    Détails
+                  </a>
+                } @else {
+                  <button type="button" class="btn-primary-action disabled" disabled>
+                    Détails
+                  </button>
+                }
+              </div>
+            </div>
           </article>
         }
       </div>

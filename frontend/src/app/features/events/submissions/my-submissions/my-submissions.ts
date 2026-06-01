@@ -1,4 +1,4 @@
-﻿import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -23,6 +23,10 @@ export class MySubmissions {
   loading = false;
   errorMessage = '';
 
+  pendingCount = 0;
+  validatedCount = 0;
+  publishedCount = 0;
+
   ngOnInit(): void {
     this.loadMySubmissions();
   }
@@ -40,6 +44,7 @@ export class MySubmissions {
       .subscribe({
         next: (page) => {
           this.submissions = page.items ?? [];
+          this.calculateStats();
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -53,30 +58,90 @@ export class MySubmissions {
       });
   }
 
-  statusLabel(status: EventResponse['status']): string {
+  statusLabel(status: string): string {
     switch (status) {
-      case 'PUBLISHED':
-        return 'Publié';
-      case 'PENDING':
-        return 'En attente';
-      case 'DRAFT':
-        return 'Brouillon';
-      case 'REJECTED':
-        return 'Refusé';  
-      case 'CANCELLED':
-        return 'Annulé';
-      case 'ARCHIVED':
-        return 'Archivé';
-      default:
-        return status;
+      case 'PUBLISHED': return 'Publiée';
+      case 'VALIDATED': return 'Validée';
+      case 'PENDING': return 'En attente';
+      case 'DRAFT': return 'Brouillon';
+      case 'REJECTED': return 'Refusée';  
+      case 'CANCELLED': return 'Annulée';
+      case 'ARCHIVED': return 'Archivée';
+      default: return status;
     }
   }
 
-  canOpenEvent(status: EventResponse['status']): boolean {
+  canOpenEvent(status: string): boolean {
     return status === 'PUBLISHED';
+  }
+
+  canOpenDetails(status: string): boolean {
+    return status === 'VALIDATED';
   }
 
   trackByEventId(_: number, item: EventResponse): string {
     return item.id;
+  }
+
+  calculateStats(): void {
+    this.pendingCount = this.submissions.filter(s => s.status === 'PENDING').length;
+    // Assuming VALIDATED might exist or be derived, else 0 for now
+    this.validatedCount = this.submissions.filter(s => (s.status as any) === 'VALIDATED').length;
+    this.publishedCount = this.submissions.filter(s => s.status === 'PUBLISHED').length;
+  }
+
+  getDay(dateString: string | null): string {
+    if (!dateString) return '--';
+    return new Date(dateString).getDate().toString().padStart(2, '0');
+  }
+
+  getMonth(dateString: string | null): string {
+    if (!dateString) return '---';
+    return new Date(dateString).toLocaleString('fr-FR', { month: 'short' }).toUpperCase().replace('.', '');
+  }
+
+  getWeekday(dateString: string | null): string {
+    if (!dateString) return '---';
+    return new Date(dateString).toLocaleString('fr-FR', { weekday: 'short' }).toUpperCase().replace('.', '');
+  }
+
+  getProposalStatusColor(status: string): string {
+    switch(status) {
+      case 'PENDING': return 'orange';
+      case 'VALIDATED': return 'green';
+      case 'PUBLISHED': return 'blue';
+      default: return 'gray';
+    }
+  }
+
+  getProgressSteps(status: string): { id: string, label: string, completed: boolean, active: boolean }[] {
+    const steps = [
+      { id: 'SUBMITTED', label: 'Soumise' },
+      { id: 'PENDING', label: 'En attente' },
+      { id: 'PUBLISHED', label: 'Publiée' }
+    ];
+
+    let currentIndex = 0;
+    if (status === 'PENDING') currentIndex = 1;
+    if (status === 'VALIDATED' || status === 'PUBLISHED') currentIndex = 2;
+
+    return steps.map((s, i) => ({
+      id: s.id,
+      label: s.label,
+      completed: i < currentIndex || status === 'PUBLISHED' || status === 'VALIDATED',
+      active: i === currentIndex
+    }));
+  }
+
+  getNextStepLabel(status: string): string | null {
+    if (status === 'PENDING') return 'En cours de revue RH';
+    if (status === 'VALIDATED') return 'Prête à être publiée';
+    return null;
+  }
+
+  getTargetAudience(event: EventResponse): string {
+    if (event.audience === 'GLOBAL') return 'Tous départements';
+    if (event.audience === 'DEPARTMENT' && event.targetDepartmentName) return event.targetDepartmentName;
+    return 'Employés';
   }
 }
