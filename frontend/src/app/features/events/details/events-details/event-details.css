@@ -751,10 +751,17 @@
 
 /* ===== Invitation Section ===== */
 .invitation-section,
-.sent-invitations-section,
 .public-feedback-outer {
   margin-top: 28px;
   overflow: hidden;
+}
+
+.sent-invitations-section {
+  margin-top: 28px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #E4EAF1;
+  border-radius: 20px;
 }
 
 .inv-panel-header,
@@ -774,6 +781,31 @@
   font-weight: 700;
   color: #121A38;
   margin: 0 0 4px;
+}
+
+.header-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-with-icon h2 {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #121A38;
+  margin: 0;
+}
+
+.header-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 88, 171, 0.08);
+  color: #0058AB;
 }
 
 .inv-panel-sub,
@@ -900,25 +932,32 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding: 12px 14px;
-  border: 1px solid #E4EAF1;
-  border-radius: 16px;
+  padding: 14px 18px;
   background: #F8FAFC;
+  border: 1px solid #E4EAF1;
+  border-radius: 12px;
+  margin-bottom: 12px;
 }
 
 .select-all-option {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  cursor: pointer;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
+  color: #46506A;
+  margin: 0;
 }
 
 .selection-summary {
-  font-size: 13px;
-  color: #64748B;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0058AB;
+  background: rgba(0, 88, 171, 0.08);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 .user-selection-list {
@@ -1325,6 +1364,245 @@
   color: #7B879C;
 }
 
+.two-columns-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.invitation-col-left {
+  flex: 0 0 calc(45% - 16px);
+  width: calc(45% - 16px);
+  min-width: 0;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #E4EAF1;
+  border-radius: 20px;
+  padding: 24px;
+  margin-right: 16px;
+}
+
+.invitation-col-right {
+  flex: 0 0 calc(55% - 16px);
+  width: calc(55% - 16px);
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: #ffffff;
+  border: 1px solid #E4EAF1;
+  border-radius: 20px;
+  padding: 24px;
+  margin-left: 16px;
+}
+
+/* User List & Micro Avatars */
+.user-info-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.user-avatar-micro {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #E4EAF1;
+  color: #46506A;
+  font-size: 10px;
+  font-weight: 700;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.user-avatar-micro.has-image {
+  background: transparent;
+}
+
+.user-avatar-micro img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Compact Results */
+.result-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.result-list.compact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-row.compact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #F8FAFC;
+  border: 1px solid #E4EAF1;
+  border-radius: 12px;
+  gap: 12px;
+}
+
+.result-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.result-text-stack {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.result-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #121A38;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-email {
+  font-size: 11px;
+  color: #7B879C;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.status-pill.success-pill {
+  background: rgba(0, 130, 142, 0.1);
+  color: #00828E;
+}
+
+.status-pill.warning-pill {
+  background: rgba(245, 158, 11, 0.1);
+  color: #B45309;
+}
+
+.status-pill svg {
+  stroke-width: 2.5;
+}
+
+.end-aligned {
+  justify-content: flex-end;
+}
+
+/* Compact Table (Sent Invitations) */
+.sent-invitations-list.compact-table {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 24px 24px;
+  overflow-x: auto;
+}
+
+.table-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #EEF2F7;
+  margin-bottom: 4px;
+  min-width: 700px;
+}
+
+.header-cell {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.flex-0 { flex: 0 0 auto; }
+.flex-1 { flex: 1; }
+.flex-2 { flex: 2; }
+.text-right { justify-content: flex-end; }
+
+.sent-inv-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px solid #E4EAF1;
+  border-radius: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 700px;
+}
+
+.sent-inv-row:hover {
+  border-color: rgba(0, 88, 171, 0.16);
+  box-shadow: 0 4px 12px rgba(18, 26, 56, 0.04);
+}
+
+.inv-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.inv-email-cell {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  font-size: 13px;
+  color: #64748B;
+}
+
+.inv-date-cell, .inv-dept-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  font-size: 12px;
+  color: #64748B;
+  min-width: 0;
+}
+
+.inv-status-cell {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 100px;
+}
+
 /* ===== Public feedback ===== */
 .feedback-container {
   padding: 0;
@@ -1498,8 +1776,24 @@
 
   .details-grid,
   .feedback-highlights-row,
-  .feedback-summary-cards {
+  .feedback-summary-cards,
+  .two-columns-layout {
     grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .two-columns-layout {
+    gap: 24px;
+  }
+
+  .two-columns-layout .invitation-col-left,
+  .two-columns-layout .invitation-col-right {
+    flex: none;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 24px;
   }
 
   .registration-card,

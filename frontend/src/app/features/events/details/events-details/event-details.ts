@@ -1,4 +1,4 @@
-﻿import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 
 import { ActivatedRoute } from '@angular/router';
 import { DatePipe, Location, DecimalPipe } from '@angular/common';
@@ -599,6 +599,10 @@ export class EventDetails {
 
   get filteredInvitableUserEmails(): string[] {
     return this.filteredInvitableUsers.map(user => user.email);
+  }
+
+  getInvitableUserByEmail(email: string): UserSummary | undefined {
+    return this.users?.find(u => u.email === email);
   }
 
   get areAllFilteredInvitableUsersSelected(): boolean {
