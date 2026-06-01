@@ -1,5 +1,5 @@
-﻿import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { DatePipe, NgClass } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -13,7 +13,7 @@ import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-t
 @Component({
   selector: 'app-feedback-event',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe, ScrollToMessageDirective],
+  imports: [ReactiveFormsModule, DatePipe, NgClass, ScrollToMessageDirective],
   templateUrl: './feedback-event.html',
   styleUrl: './feedback-event.css'
 })
@@ -156,5 +156,16 @@ export class FeedbackEvent {
 
   goBack(): void {
     this.router.navigate(['/my-events']);
+  }
+
+  getRatingClass(rating: number): string {
+    switch(rating) {
+      case 1: return 'rating-1';
+      case 2: return 'rating-2';
+      case 3: return 'rating-3';
+      case 4: return 'rating-4';
+      case 5: return 'rating-5';
+      default: return '';
+    }
   }
 }

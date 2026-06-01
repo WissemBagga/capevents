@@ -13,7 +13,7 @@
       <div class="header-text">
         <h1>Laisser un feedback</h1>
         @if (event) {
-          <p class="header-sub">{{ event.title }} · {{ event.startAt | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p class="header-sub">{{ event.title }} • {{ event.startAt | date:'dd/MM/yyyy à HH:mm' }}</p>
         }
       </div>
     </div>
@@ -48,21 +48,39 @@
 
     @if (!loading && event) {
       <section class="event-context-card">
+        <div class="context-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5.8 11.3 2 22l10.7-3.79"/>
+            <path d="M4 3h.01"/>
+            <path d="M22 8h.01"/>
+            <path d="M15 2h.01"/>
+            <path d="M22 20h.01"/>
+            <path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/>
+            <path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17"/>
+            <path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.91 9 5.52 9 6.23V7"/>
+            <path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/>
+          </svg>
+        </div>
         <div class="context-main">
-          <span class="context-label">Événement concerné</span>
+          <span class="context-label">ÉVÉNEMENT CONCERNÉ</span>
           <h2>{{ event.title }}</h2>
           <p>Votre retour aide à améliorer la qualité des prochains événements.</p>
         </div>
 
         <div class="context-meta">
           <div class="context-pill">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            <span>{{ event.startAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            <div class="context-pill-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div class="context-pill-text">
+              <span class="pill-date">{{ event.startAt | date:'dd/MM/yyyy' }}</span>
+              <span class="pill-time">{{ event.startAt | date:'HH:mm' }}</span>
+            </div>
           </div>
         </div>
       </section>
@@ -122,33 +140,29 @@
         <form [formGroup]="form" class="event-form">
           <section class="admin-card form-section">
             <div class="card-header">
-              <div class="header-with-rating">
-                <div>
-                  <h2 class="card-title">Votre évaluation</h2>
-                  <p class="card-subtitle">Partagez votre ressenti sur l’organisation, le contenu et l’expérience globale.</p>
-                </div>
+              <div>
+                <h2 class="card-title">Votre évaluation</h2>
+                <p class="card-subtitle">Partagez votre ressenti sur l’organisation, le contenu et l’expérience globale.</p>
+              </div>
 
-                <div class="current-rating-pill">
-                  <span>Note</span>
-                  <strong>{{ currentRating }}/5</strong>
-                </div>
+              <div class="current-rating-pill">
+                <span>Note</span>
+                <strong>{{ currentRating }}/5</strong>
               </div>
             </div>
 
             <div class="feedback-helper">
-              <div class="helper-pill">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="M12 16v.01"/>
-                  <path d="M12 8v4"/>
-                </svg>
-                <span>La note est obligatoire. Le commentaire reste optionnel.</span>
-              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v.01"/>
+                <path d="M12 8v4"/>
+              </svg>
+              <span>La note est obligatoire. Le commentaire reste optionnel.</span>
             </div>
 
             <div class="form-grid">
               <div class="form-group full-width">
-                <label>Votre note</label>
+                <label>VOTRE NOTE</label>
 
                 <div class="star-rating">
                   @for (star of [1, 2, 3, 4, 5]; track star) {
@@ -164,9 +178,9 @@
                     </button>
                   }
 
-                  <span class="rating-text">
+                  <span class="rating-text" [ngClass]="getRatingClass(currentRating)">
                     @switch (currentRating) {
-                      @case (1) { Faible }
+                      @case (1) { À améliorer }
                       @case (2) { Moyen }
                       @case (3) { Bien }
                       @case (4) { Très bien }
@@ -178,7 +192,7 @@
 
               <div class="form-group full-width">
                 <label for="comment">
-                  Commentaire <span class="optional-tag">(optionnel)</span>
+                  COMMENTAIRE <span class="optional-tag">(OPTIONNEL)</span>
                 </label>
                 <div class="input-wrapper">
                   <textarea
@@ -204,7 +218,11 @@
 
           <div class="form-actions-bar">
             <div class="actions-helper-text">
-              Votre retour sera enregistré une seule fois pour cet événement.
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+              <span>Votre retour sera enregistré une seule fois pour cet événement.</span>
             </div>
 
             <div class="actions-buttons">
