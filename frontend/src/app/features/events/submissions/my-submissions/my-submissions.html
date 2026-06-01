@@ -92,7 +92,7 @@
         @for (event of submissions; track trackByEventId($index, event)) {
           <article class="proposal-card" [class]="'card-' + event.status.toLowerCase()">
             <div class="proposal-card-content">
-              
+
               <!-- A. Zone gauche -->
               <div class="zone-left">
                 <span class="status-badge" [class]="'badge-' + event.status.toLowerCase()">

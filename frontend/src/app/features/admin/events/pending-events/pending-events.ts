@@ -1,4 +1,4 @@
-﻿import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -107,6 +107,24 @@ export class PendingEvents {
 
   trackByEventId(_: number, item: EventResponse): string {
     return item.id;
+  }
+
+  getAudienceLabel(event: EventResponse): string {
+    if (event.audience === 'GLOBAL') return 'Global';
+    if (event.audience === 'DEPARTMENT' && event.targetDepartmentName) return event.targetDepartmentName;
+    return 'Employés';
+  }
+
+  getCapacityLabel(event: EventResponse): string {
+    return event.capacity ? `${event.capacity} pers.` : 'Non renseigné';
+  }
+
+  formatDuration(minutes: number | undefined): string {
+    if (!minutes) return 'Non renseigné';
+    if (minutes < 60) return `${minutes} min`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m > 0 ? `${h}h${m.toString().padStart(2, '0')}` : `${h}h`;
   }
 }
 

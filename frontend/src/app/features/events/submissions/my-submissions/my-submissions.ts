@@ -64,7 +64,7 @@ export class MySubmissions {
       case 'VALIDATED': return 'Validée';
       case 'PENDING': return 'En attente';
       case 'DRAFT': return 'Brouillon';
-      case 'REJECTED': return 'Refusée';  
+      case 'REJECTED': return 'Refusée';
       case 'CANCELLED': return 'Annulée';
       case 'ARCHIVED': return 'Archivée';
       default: return status;

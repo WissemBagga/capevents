@@ -54,32 +54,51 @@
 
             <!-- Card Body -->
             <div class="event-card-body">
-              <div class="meta-grid">
-                 <div class="meta-item">
-                   <span class="meta-label">Date :</span>
-                   <span class="meta-value">{{ event.startAt | date:'dd/MM/yyyy HH:mm' }}</span>
-                 </div>
-                 <div class="meta-item">
-                   <span class="meta-label">Audience :</span>
-                   <span class="meta-value">{{ event.audience === 'GLOBAL' ? 'Global' : 'Département' }}</span>
-                 </div>
-                 <div class="meta-item">
-                   <span class="meta-label">Capacité :</span>
-                   <span class="meta-value">{{ event.capacity }} pers.</span>
-                 </div>
-                 <div class="meta-item">
-                   <span class="meta-label">Durée :</span>
-                   <span class="meta-value">{{ event.durationMinutes }} min</span>
-                 </div>
-                 @if (event.targetDepartmentName) {
-                   <div class="meta-item full-width">
-                     <span class="meta-label">Département cible :</span>
-                     <span class="meta-value">{{ event.targetDepartmentName }}</span>
-                   </div>
-                 }
-              </div>
-              <div class="description-container">
-                <p class="description">{{ event.description || 'Aucune description fournie.' }}</p>
+              <div class="request-details-section">
+                <h4 class="request-section-title">Informations de la demande</h4>
+                <div class="request-info-grid">
+                  <div class="info-block">
+                    <span class="info-label">DATE</span>
+                    <div class="info-val">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                      <div class="info-val-text">
+                        <span class="date-text">{{ event.startAt | date:'dd/MM/yyyy' }}</span>
+                        <span class="time-text">{{ event.startAt | date:'HH:mm' }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="info-block">
+                    <span class="info-label">AUDIENCE</span>
+                    <div class="info-val">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                      <span class="info-val-text">{{ getAudienceLabel(event) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="info-block">
+                    <span class="info-label">CAPACITÉ</span>
+                    <div class="info-val">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      <span class="info-val-text">{{ getCapacityLabel(event) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="info-block">
+                    <span class="info-label">DURÉE</span>
+                    <div class="info-val">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <span class="info-val-text">{{ formatDuration(event.durationMinutes) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                @if (event.description) {
+                  <div class="request-desc-section">
+                    <h4 class="request-section-title">Description proposée</h4>
+                    <p class="request-desc-text">{{ event.description }}</p>
+                  </div>
+                }
               </div>
             </div>
 
