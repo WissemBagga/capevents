@@ -562,12 +562,15 @@
                             </div>
                             <div class="user-option-text">
                               <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
-                              @if (user.departmentName) {
-                                <small>{{ user.departmentName }}</small>
-                              }
+                              <small>{{ user.departmentName || 'Informatique' }}</small>
                             </div>
                           </div>
-                          <input type="checkbox" class="user-checkbox" [checked]="selectedEmployeeInviteEmails.includes(user.email)" (change)="onEmployeeInviteSelectionChange(user.email, $any($event.target).checked)" />
+                          <div class="user-right-zone">
+                            @if (isUserAlreadyInvited(user.email)) {
+                              <span class="already-invited-badge">Déjà invité</span>
+                            }
+                            <input type="checkbox" class="user-checkbox" [checked]="selectedEmployeeInviteEmails.includes(user.email)" (change)="onEmployeeInviteSelectionChange(user.email, $any($event.target).checked)" />
+                          </div>
                         </label>
                       }
                     </div>
@@ -721,76 +724,87 @@
                 </div>
                 <h2>Invitations envoyées</h2>
               </div>
+              <button type="button" class="invite-toggle-btn" (click)="toggleSentInvitationsPanel()">
+                @if (showSentInvitations) {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                  Fermer
+                } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+                  Liste
+                }
+              </button>
             </div>
 
-            @if (sentInvitationsLoading) {
-              <div class="state-message loading">
-                <div class="spinner"></div>
-                <p>Chargement de l'historique...</p>
-              </div>
-
-            } @else if (!sentInvitationsLoading && sentInvitations.length === 0) {
-              <div class="empty-history-card">
-                <div class="empty-icon">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="32"
-                    height="32"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"
-                    />
-                  </svg>
+            @if (showSentInvitations) {
+              @if (sentInvitationsLoading) {
+                <div class="state-message loading">
+                  <div class="spinner"></div>
+                  <p>Chargement de l'historique...</p>
                 </div>
-                <p>Aucune invitation envoyée pour le moment.</p>
-              </div>
 
-            } @else {
-              <div class="sent-invitations-list compact-table">
-                @for (invitation of sentInvitations; track invitation.email + invitation.sentAt) {
-                  <div class="sent-inv-row">
-                    <div class="inv-user-info">
-                      <div class="inv-avatar" [class.has-image]="hasSentInvitationAvatar(invitation)">
-                        @if (hasSentInvitationAvatar(invitation)) {
-                          <img [src]="invitation.avatarUrl!" [alt]="invitation.fullName" (error)="onSentInvitationAvatarError(invitation)" />
-                        } @else {
-                          <span>{{ getSentInvitationInitials(invitation.fullName) }}</span>
-                        }
-                      </div>
-                      <div class="user-details-stack">
-                        <span class="user-name">{{ invitation.fullName }}</span>
-                        <span class="user-email">{{ invitation.email }}</span>
-                      </div>
-                    </div>
-
-                    <div class="inv-date-col">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                      <span>{{ invitation.sentAt | date: 'd MMM yyyy' }}</span>
-                    </div>
-
-                    <div class="inv-dept-col">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                      <span>{{ invitation.departmentName || 'Non précisé' }}</span>
-                    </div>
-
-                    <div class="inv-status-col">
-                      <span class="rsvp-badge" [class]="getRsvpStatusClass(invitation.rsvpResponse)">
-                        @switch (invitation.rsvpResponse) {
-                          @case ('YES') { OUI }
-                          @case ('NO') { NON }
-                          @default { PAS ENCORE RÉPONDU }
-                        }
-                      </span>
-                    </div>
+              } @else if (!sentInvitationsLoading && sentInvitations.length === 0) {
+                <div class="empty-history-card">
+                  <div class="empty-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"
+                      />
+                    </svg>
                   </div>
-                }
-              </div>
+                  <p>Aucune invitation envoyée pour le moment.</p>
+                </div>
+
+              } @else {
+                <div class="sent-invitations-list compact-table">
+                  @for (invitation of sentInvitations; track invitation.email + invitation.sentAt) {
+                    <div class="sent-inv-row">
+                      <div class="inv-user-info">
+                        <div class="inv-avatar" [class.has-image]="hasSentInvitationAvatar(invitation)">
+                          @if (hasSentInvitationAvatar(invitation)) {
+                            <img [src]="invitation.avatarUrl!" [alt]="invitation.fullName" (error)="onSentInvitationAvatarError(invitation)" />
+                          } @else {
+                            <span>{{ getSentInvitationInitials(invitation.fullName) }}</span>
+                          }
+                        </div>
+                        <div class="user-details-stack">
+                          <span class="user-name">{{ invitation.fullName }}</span>
+                          <span class="user-email">{{ invitation.email }}</span>
+                        </div>
+                      </div>
+
+                      <div class="inv-date-col">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span>{{ invitation.sentAt | date: 'd MMM yyyy' }}</span>
+                      </div>
+
+                      <div class="inv-dept-col">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span>{{ invitation.departmentName || 'Non précisé' }}</span>
+                      </div>
+
+                      <div class="inv-status-col">
+                        <span class="rsvp-badge" [class]="getRsvpStatusClass(invitation.rsvpResponse)">
+                          @switch (invitation.rsvpResponse) {
+                            @case ('YES') { OUI }
+                            @case ('NO') { NON }
+                            @default { PAS ENCORE RÉPONDU }
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
             }
           </section>
         }

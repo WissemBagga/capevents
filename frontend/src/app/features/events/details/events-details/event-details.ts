@@ -56,6 +56,7 @@ export class EventDetails {
   users: UserSummary[] = [];
 
   showEmployeeInvitePanel = false;
+  showSentInvitations = false;
   employeeInviteLoading = false;
   employeeInviteErrorMessage = '';
   employeeInviteSuccessMessage = '';
@@ -727,6 +728,15 @@ export class EventDetails {
       default:
         return 'rsvp-pending';
     }
+  }
+
+  isUserAlreadyInvited(email: string): boolean {
+    return this.sentInvitations?.some(inv => inv.email === email) ?? false;
+  }
+
+  toggleSentInvitationsPanel(): void {
+    this.showSentInvitations = !this.showSentInvitations;
+    this.cdr.markForCheck();
   }
 
   get isLateUnregister(): boolean {
