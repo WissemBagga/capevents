@@ -57,6 +57,7 @@ export class AdminEventDetails {
 
   participants: EventParticipantResponse[]= [];
   participantsLoading = false;
+  showParticipantsList = true;
 
 
   showInvitationPanel = false;
@@ -1233,6 +1234,11 @@ export class AdminEventDetails {
 
   toggleSentInvitationsPanel(): void {
     this.showSentInvitations = !this.showSentInvitations;
+    this.cdr.markForCheck();
+  }
+
+  toggleParticipantsList(): void {
+    this.showParticipantsList = !this.showParticipantsList;
     this.cdr.markForCheck();
   }
 
