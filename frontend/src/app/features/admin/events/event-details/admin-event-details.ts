@@ -74,6 +74,7 @@ export class AdminEventDetails {
 
   invitations: AdminEventInvitationResponse[] = [];
   invitationsLoading = false;
+  showSentInvitations = false;
 
   lastInvitedItems: InvitationCreatedItemResponse[] = [];
   lastSkippedItems: InvitationSkippedItemResponse[] = [];
@@ -1228,6 +1229,11 @@ export class AdminEventDetails {
       default:
         return 'admin-event-overview-section';
     }
+  }
+
+  toggleSentInvitationsPanel(): void {
+    this.showSentInvitations = !this.showSentInvitations;
+    this.cdr.markForCheck();
   }
 
 }
