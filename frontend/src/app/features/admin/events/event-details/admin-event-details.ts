@@ -1,4 +1,4 @@
-﻿import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, Location, UpperCasePipe } from '@angular/common';
 import { finalize, forkJoin  } from 'rxjs';
@@ -321,7 +321,7 @@ export class AdminEventDetails {
           if (this.isHr) {
             this.loadReminderHistory(event.id);
           }
-          
+
 
           if (this.canRequestFeedbackInsightsFor(event)) {
             this.loadAiFeedbackInsights(event.id);
@@ -448,6 +448,33 @@ export class AdminEventDetails {
     }
 
     this.cdr.markForCheck();
+  }
+
+  get areAllFilteredUsersSelected(): boolean {
+    const filtered = this.filteredSelectableUsers;
+    if (filtered.length === 0) return false;
+    return filtered.every(user => this.selectedUserEmails.includes(user.email));
+  }
+
+  toggleSelectAllFilteredUsers(checked: boolean): void {
+    const filtered = this.filteredSelectableUsers;
+    if (checked) {
+      const currentSelected = [...this.selectedUserEmails];
+      filtered.forEach(user => {
+        if (!currentSelected.includes(user.email)) {
+          currentSelected.push(user.email);
+        }
+      });
+      this.selectedUserEmails = currentSelected;
+    } else {
+      const filteredEmails = filtered.map(user => user.email);
+      this.selectedUserEmails = this.selectedUserEmails.filter(email => !filteredEmails.includes(email));
+    }
+    this.cdr.markForCheck();
+  }
+
+  getUserByEmail(email: string): UserSummary | undefined {
+    return this.users.find(u => u.email === email);
   }
 
   sendInvitations(): void {

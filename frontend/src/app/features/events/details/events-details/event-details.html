@@ -421,7 +421,7 @@
         </div>
       }
 
-      
+
 
       @if (deadlineClosedMessage) {
         <div class="state-message error" appScrollToMessage>
@@ -464,7 +464,7 @@
           <p>{{ invitationBlockingMessage }}</p>
         </div>
       }
-      
+
       @if (canInviteColleagues) {
         <section class="invitation-section">
           <!-- Section Header -->
@@ -542,7 +542,7 @@
                     <div class="selection-toolbar">
                       <label class="select-all-option">
                         <input type="checkbox" [checked]="areAllFilteredInvitableUsersSelected" (change)="toggleSelectAllEmployeeInvitableUsers($any($event.target).checked)" />
-                        <span>Tout sélectionner les résultats affichés</span>
+                        <span>Tout sélectionner</span>
                       </label>
                       <span class="selection-summary">
                         {{ selectedFilteredInvitableCount }} / {{ filteredInvitableUsers.length }} sélectionnés
@@ -776,7 +776,7 @@
                     <div class="inv-email-cell flex-2">
                       <span class="user-email">{{ invitation.email }}</span>
                     </div>
-                    
+
                     <div class="inv-date-cell flex-1">
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                       {{ invitation.sentAt | date: 'd MMM yyyy' }}
