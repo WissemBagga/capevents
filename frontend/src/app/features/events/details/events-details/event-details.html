@@ -719,7 +719,7 @@
                 <div class="header-icon-box">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                 </div>
-                <h2>Invitations déjà envoyées</h2>
+                <h2>Invitations envoyées</h2>
               </div>
             </div>
 
@@ -753,16 +753,9 @@
 
             } @else {
               <div class="sent-invitations-list compact-table">
-                <div class="table-header-row">
-                  <div class="header-cell flex-2">Nom</div>
-                  <div class="header-cell flex-2">Email</div>
-                  <div class="header-cell flex-1">Date d'envoi</div>
-                  <div class="header-cell flex-1">Département</div>
-                  <div class="header-cell flex-0 text-right">Statut</div>
-                </div>
                 @for (invitation of sentInvitations; track invitation.email + invitation.sentAt) {
                   <div class="sent-inv-row">
-                    <div class="inv-user-cell flex-2">
+                    <div class="inv-user-info">
                       <div class="inv-avatar" [class.has-image]="hasSentInvitationAvatar(invitation)">
                         @if (hasSentInvitationAvatar(invitation)) {
                           <img [src]="invitation.avatarUrl!" [alt]="invitation.fullName" (error)="onSentInvitationAvatarError(invitation)" />
@@ -770,26 +763,29 @@
                           <span>{{ getSentInvitationInitials(invitation.fullName) }}</span>
                         }
                       </div>
-                      <span class="user-name">{{ invitation.fullName }}</span>
+                      <div class="user-details-stack">
+                        <span class="user-name">{{ invitation.fullName }}</span>
+                        <span class="user-email">{{ invitation.email }}</span>
+                      </div>
                     </div>
 
-                    <div class="inv-email-cell flex-2">
-                      <span class="user-email">{{ invitation.email }}</span>
+                    <div class="inv-date-col">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                      <span>{{ invitation.sentAt | date: 'd MMM yyyy' }}</span>
                     </div>
 
-                    <div class="inv-date-cell flex-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                      {{ invitation.sentAt | date: 'd MMM yyyy' }}
+                    <div class="inv-dept-col">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                      <span>{{ invitation.departmentName || 'Non précisé' }}</span>
                     </div>
 
-                    <div class="inv-dept-cell flex-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                      {{ invitation.departmentName || 'Non précisé' }}
-                    </div>
-
-                    <div class="inv-status-cell flex-0 text-right">
+                    <div class="inv-status-col">
                       <span class="rsvp-badge" [class]="getRsvpStatusClass(invitation.rsvpResponse)">
-                        {{ invitationResponseLabel(invitation.rsvpResponse) }}
+                        @switch (invitation.rsvpResponse) {
+                          @case ('YES') { OUI }
+                          @case ('NO') { NON }
+                          @default { PAS ENCORE RÉPONDU }
+                        }
                       </span>
                     </div>
                   </div>

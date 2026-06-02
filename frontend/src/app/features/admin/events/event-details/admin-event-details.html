@@ -988,17 +988,10 @@
             <!-- Invitation List -->
             @else {
                 <div class="sent-invitations-list compact-table">
-                    <div class="table-header-row">
-                        <div class="header-cell flex-2">Nom</div>
-                        <div class="header-cell flex-2">Email</div>
-                        <div class="header-cell flex-1">Date d'envoi</div>
-                        <div class="header-cell flex-1">Département</div>
-                        <div class="header-cell flex-0 text-right">Statut</div>
-                    </div>
                     @for (invitation of invitations; track invitation.email + invitation.sentAt) {
                         <div class="sent-inv-item-wrapper">
                             <div class="sent-inv-row">
-                                <div class="inv-user-cell flex-2">
+                                <div class="inv-user-info">
                                     <div class="inv-avatar">
                                         @if (invitation.avatarUrl) {
                                             <img [src]="invitation.avatarUrl" [alt]="invitation.fullName" (error)="$any($event.target).style.display='none'" />
@@ -1006,34 +999,39 @@
                                             <span>{{ invitation.fullName.charAt(0) | uppercase }}</span>
                                         }
                                     </div>
-                                    <span class="user-name">{{ invitation.fullName }}</span>
+                                    <div class="user-details-stack">
+                                        <span class="user-name">{{ invitation.fullName }}</span>
+                                        <span class="user-email">{{ invitation.email }}</span>
+                                    </div>
                                 </div>
 
-                                <div class="inv-email-cell flex-2">
-                                    <span class="user-email">{{ invitation.email }}</span>
+                                <div class="inv-date-col">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    <span>{{ invitation.sentAt | date:'d MMM yyyy' }}</span>
                                 </div>
 
-                                <div class="inv-date-cell flex-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                    {{ invitation.sentAt | date:'mediumDate' }}
+                                <div class="inv-dept-col">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    <span>
+                                        @if (canShowDepartmentInSentInvitations && invitation.departmentName) {
+                                            {{ invitation.departmentName }}
+                                        } @else {
+                                            Non précisé
+                                        }
+                                    </span>
                                 </div>
 
-                                <div class="inv-dept-cell flex-1">
-                                    @if (canShowDepartmentInSentInvitations && invitation.departmentName) {
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                        {{ invitation.departmentName }}
-                                    } @else {
-                                        <span class="muted-text">Non précisé</span>
-                                    }
-                                </div>
-
-                                <div class="inv-status-cell flex-0 text-right">
+                                <div class="inv-status-col">
                                     <span class="rsvp-badge"
                                         [class.rsvp-yes]="invitation.rsvpResponse === 'YES'"
                                         [class.rsvp-no]="invitation.rsvpResponse === 'NO'"
                                         [class.rsvp-maybe]="invitation.rsvpResponse === 'MAYBE'"
-                                        [class.rsvp-none]="!invitation.rsvpResponse">
-                                        {{ invitationResponseLabel(invitation.rsvpResponse) }}
+                                        [class.rsvp-pending]="!invitation.rsvpResponse">
+                                        @switch (invitation.rsvpResponse) {
+                                            @case ('YES') { OUI }
+                                            @case ('NO') { NON }
+                                            @default { PAS ENCORE RÉPONDU }
+                                        }
                                     </span>
                                 </div>
                             </div>
