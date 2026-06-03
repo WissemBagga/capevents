@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 
 import { ActivatedRoute } from '@angular/router';
-import { DatePipe, Location, DecimalPipe } from '@angular/common';
+import { DatePipe, Location, DecimalPipe, UpperCasePipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
 import { EventService } from '@core/services/event.service';
@@ -23,7 +23,7 @@ import { PastEventFeedbackDetailsResponse } from '@core/models/feedback.model';
 @Component({
   selector: 'app-event-details',
   standalone: true,
-  imports: [DatePipe, FormsModule, ScrollToMessageDirective, DecimalPipe],
+  imports: [DatePipe, UpperCasePipe, FormsModule, ScrollToMessageDirective, DecimalPipe],
   templateUrl: './event-details.html',
   styleUrl: './event-details.css'
 })
