@@ -98,9 +98,7 @@
   animation: spin 0.75s linear infinite;
 }
 
-/* ===========================================================================
-   HERO SECTION
-   =========================================================================== */
+/* ===== Hero ===== */
 .hero-section {
   position: relative;
   border-radius: 28px;
@@ -109,8 +107,15 @@
   min-height: 340px;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(18, 26, 56, 0.06);
-  box-shadow: 0 12px 32px rgba(18, 26, 56, 0.10);
+  background: #0B1124;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(11, 17, 36, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px rgba(11, 17, 36, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 .hero-image-wrap {
@@ -119,6 +124,11 @@
   width: 100%;
   height: 100%;
   z-index: 0;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.hero-section:hover .hero-image-wrap {
+  transform: scale(1.04);
 }
 
 .hero-img {
@@ -134,56 +144,65 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(18, 26, 56, 0.28) 0%,
-    rgba(18, 26, 56, 0.18) 32%,
-    rgba(18, 26, 56, 0.82) 100%
+    rgba(11, 17, 36, 0.15) 0%,
+    rgba(11, 17, 36, 0.3) 30%,
+    rgba(11, 17, 36, 0.88) 85%,
+    #0B1124 100%
   );
   pointer-events: none;
   z-index: 1;
 }
 
-/* Floating Date Card — inline in hero-content */
+/* Floating Date Card */
 .floating-date-card {
   position: relative;
   width: 116px;
   height: 116px;
   min-width: 116px;
-  background: rgba(18, 24, 43, 0.65);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
   padding: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0 px;
+  gap: 0;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px) saturate(120%);
   flex-shrink: 0;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.hero-section:hover .floating-date-card {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 2px 8px rgba(255, 255, 255, 0.2);
 }
 
 .fd-day {
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 32px;
+  font-family: \'Ubuntu\', sans-serif;
+  font-size: 34px;
   font-weight: 700;
   color: #ffffff;
   line-height: 1;
   margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .fd-month {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: \'Ubuntu\', sans-serif;
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   margin: 0;
 }
 
 .fd-weekday {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: \'Ubuntu\', sans-serif;
   font-size: 10px;
   font-weight: 700;
   color: #FBBF24;
@@ -193,22 +212,26 @@
 }
 
 .fd-divider {
-  width: 80%;
+  width: 75%;
   border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  margin: 2px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 4px 0;
 }
 
 .fd-time-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   color: #ffffff;
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-family: \'Ubuntu\', sans-serif;
+  font-size: 11px;
   font-weight: 700;
   margin: 0;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1);
 }
 
 .fd-time-badge svg {
@@ -224,49 +247,49 @@
   gap: 8px;
 }
 
-.hero-date-line {
-  font-family: 'Verdana', sans-serif;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.75);
-  font-weight: 400;
-  text-transform: capitalize;
-}
-
 .hero-category-tag,
 .hero-status-tag {
   display: inline-flex;
   align-items: center;
   min-height: 32px;
-  padding: 0 12px;
+  padding: 0 14px;
   border-radius: 999px;
-  font-family: 'Verdana', sans-serif;
+  font-family: \'Verdana\', sans-serif;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #ffffff;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-category-tag:hover,
+.hero-status-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .hero-category-tag {
-  background: rgba(164, 126, 68, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(164, 126, 68, 0.95), rgba(138, 101, 48, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .hero-status-tag {
-  background: rgba(100, 116, 139, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: linear-gradient(135deg, rgba(100, 116, 139, 0.9), rgba(71, 85, 105, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.hero-status-tag.published { background: rgba(30, 122, 51, 0.95); }
-.hero-status-tag.draft     { background: rgba(71, 85, 105, 0.88); }
-.hero-status-tag.cancelled { background: rgba(143, 50, 55, 0.88); }
-.hero-status-tag.archived  { background: rgba(254, 177, 0, 0.92); color: #1f2937; }
+.hero-status-tag.published { background: linear-gradient(135deg, rgba(30, 122, 51, 0.95), rgba(20, 92, 36, 0.95)); }
+.hero-status-tag.draft     { background: linear-gradient(135deg, rgba(71, 85, 105, 0.9), rgba(51, 65, 85, 0.9)); }
+.hero-status-tag.cancelled { background: linear-gradient(135deg, rgba(143, 50, 55, 0.95), rgba(113, 30, 35, 0.95)); }
+.hero-status-tag.archived  { background: linear-gradient(135deg, rgba(254, 177, 0, 0.95), rgba(214, 147, 0, 0.95)); color: #1f2937; }
 
 .hero-content {
   position: relative;
   z-index: 2;
-  padding: 28px 30px;
+  padding: 32px 36px;
   color: #ffffff;
   flex: 1;
   display: flex;
@@ -280,7 +303,7 @@
   align-items: center;
   margin-bottom: auto;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 
 .hero-content-main {
@@ -288,26 +311,26 @@
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 0;
-  gap: 24px;
+  gap: 28px;
   flex-wrap: wrap;
 }
 
 .hero-title {
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 32px;
+  font-family: \'Ubuntu\', sans-serif;
+  font-size: 36px;
   font-weight: 700;
   color: #ffffff;
   margin: 0;
   line-height: 1.15;
-  letter-spacing: -0.02em;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+  letter-spacing: -0.01em;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .hero-badges-row {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-top: 12px;
+  margin-top: 14px;
   flex-wrap: wrap;
 }
 
@@ -316,168 +339,28 @@
   align-items: center;
   gap: 8px;
   min-height: 32px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #e2e8f0;
-  padding: 0 12px;
-  border-radius: 8px;
-  font-family: 'Verdana', sans-serif;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-family: \'Verdana\', sans-serif;
   font-size: 13px;
-  font-weight: 400;
-  backdrop-filter: blur(10px);
+  font-weight: 500;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.hero-info-badge:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .hero-info-badge svg {
-  opacity: 0.8;
-}
-
-.hero-inscriptions-badge svg {
-  color: #ffffff;
-  flex-shrink: 0;
-}
-
-/* hero-meta-row removed — info consolidated in floating-date-card + sidebar */
-
-/* ===========================================================================
-   STATS ROW
-   =========================================================================== */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 28px;
-}
-
-.stat-card {
-  min-width: 0;
-  background: #ffffff;
-  border: 1px solid #E4EAF1;
-  border-radius: 20px;
-  padding: 18px 16px;
-  text-align: center;
-  box-shadow: 0 4px 16px rgba(18, 26, 56, 0.04);
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(0, 88, 171, 0.16);
-  box-shadow: 0 12px 24px rgba(18, 26, 56, 0.08);
-}
-
-.stat-card.accent {
-  border-top: 3px solid #0058AB;
-}
-
-.stat-card.stat-success {
-  border-top: 3px solid #00828E;
-}
-
-.stat-card.stat-danger {
-  border-top: 3px solid #8F3237;
-}
-
-.stat-card.stat-warning {
-  border-top: 3px solid #BE4D00;
-}
-
-.stat-card.stat-deadline {
-  border-top: 3px solid #71609E;
-}
-
-.stat-value {
-  display: block;
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 26px;
-  font-weight: 700;
-  color: #121A38;
-  line-height: 1;
-  margin-bottom: 8px;
-}
-
-.stat-value-date {
-  font-size: 17px;
-}
-
-.stat-label {
-  display: block;
-  font-family: 'Verdana', sans-serif;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: #6B7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* ===========================================================================
-   CANCELLED / ARCHIVED BANNERS
-   =========================================================================== */
-.cancel-banner-section,
-.archived-banner-section {
-  margin-bottom: 24px;
-}
-
-.cancel-banner-card {
-  background: #fffbf5;
-  border: 1px dashed #fed7aa;
-  border-radius: 8px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.cancel-banner-content {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-.cancel-banner-icon {
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  background: #fef3c7;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #d97706;
-}
-
-.cancel-banner-content h4 {
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: #92400e;
-  margin: 0 0 6px;
-}
-
-.cancel-banner-content p {
-  font-family: Verdana, Geneva, sans-serif;
-  font-size: 13.5px;
-  color: #78350f;
-  margin: 0;
-  line-height: 1.6;
-  opacity: 0.85;
-}
-
-.archived-banner-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 16px 20px;
-  color: #64748b;
-}
-
-.archived-banner-card p {
-  margin: 0;
-  font-family: Verdana, Geneva, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
+  opacity: 0.9;
 }
 
 /* ===========================================================================
