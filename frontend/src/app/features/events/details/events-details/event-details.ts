@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 
 import { ActivatedRoute } from '@angular/router';
-import { DatePipe, Location, DecimalPipe, UpperCasePipe } from '@angular/common';
+import { DatePipe, Location, DecimalPipe, UpperCasePipe, PercentPipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
 import { EventService } from '@core/services/event.service';
@@ -23,7 +23,7 @@ import { PastEventFeedbackDetailsResponse } from '@core/models/feedback.model';
 @Component({
   selector: 'app-event-details',
   standalone: true,
-  imports: [DatePipe, UpperCasePipe, FormsModule, ScrollToMessageDirective, DecimalPipe],
+  imports: [DatePipe, UpperCasePipe, FormsModule, ScrollToMessageDirective, DecimalPipe, PercentPipe],
   templateUrl: './event-details.html',
   styleUrl: './event-details.css'
 })
@@ -73,6 +73,7 @@ export class EventDetails {
 
   publicFeedback: PastEventFeedbackDetailsResponse | null = null;
   publicFeedbackLoading = false;
+  feedbackTab: 'feedbacks' | 'strengths' | 'weaknesses' = 'feedbacks';
 
   readonly unregisterReasons: string[] = [
     'Conflit d’horaire',

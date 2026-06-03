@@ -619,89 +619,166 @@
 
     @if (event && (isPastEvent || event.status === 'ARCHIVED')) {
       <section class="public-feedback-outer">
-        <div class="feedback-container">
-          <div class="feedback-header">
-            <h2>Feedback des participants</h2>
-            <p class="feedback-subtitle">Découvrez ce que les participants ont pensé de cet événement.</p>
+        <div class="feedback-header-card">
+          <div class="feedback-header-text">
+            <h2>Avis des participants</h2>
+            <p>Découvrez ce que les participants ont pensé de cet événement</p>
           </div>
-
+          
           @if (publicFeedbackLoading) {
             <div class="state-message loading">
               <div class="spinner"></div>
               <p>Chargement des avis...</p>
             </div>
           } @else if (publicFeedback) {
-            <div class="public-feedback-grid">
-              <!-- Stats Summary -->
-              <div class="feedback-summary-cards">
-                <div class="summary-stat-card">
-                  <span class="stat-value">{{ publicFeedback.averageRating | number:'1.1-1' }}</span>
-                  <span class="stat-label">Note moyenne</span>
+            <div class="feedback-header-stats">
+              <div class="fh-rating">
+                <div class="fh-stars">
+                  @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" [attr.fill]="star <= publicFeedback.averageRating ? 'currentColor' : '#E2E8F0'" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  }
                 </div>
-                <div class="summary-stat-card">
-                  <span class="stat-value">{{ publicFeedback.feedbackCount }}</span>
-                  <span class="stat-label">Avis partagés</span>
-                </div>
+                <div class="fh-score"><strong>{{ publicFeedback.averageRating | number:'1.1-1' }}</strong> / 5</div>
               </div>
+              <div class="fh-participants">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                {{ publicFeedback.feedbackCount }} participants
+              </div>
+            </div>
+          }
+        </div>
 
-              <!-- Highlights & Improvements -->
-              <div class="feedback-highlights-row">
-                <div class="highlight-box positive">
-                  <h3>Points forts</h3>
-                  <ul>
+        @if (!publicFeedbackLoading && publicFeedback) {
+          <div class="feedback-kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-icon blue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <div class="kpi-text">
+                <span class="kpi-label">Note moyenne</span>
+                <span class="kpi-value">{{ publicFeedback.averageRating | number:'1.1-1' }} <span>/ 5</span></span>
+              </div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-icon purple">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="10" x2="12" y2="10.01"/></svg>
+              </div>
+              <div class="kpi-text">
+                <span class="kpi-label">Avis partagés</span>
+                <span class="kpi-value">{{ publicFeedback.feedbackCount }}</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon green">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              </div>
+              <div class="kpi-text">
+                <span class="kpi-label">Satisfaction globale</span>
+                <span class="kpi-value">{{ (publicFeedback.averageRating / 5) | percent:'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feedback-content-card">
+            <div class="feedback-tabs">
+              <div class="feedback-tab" [class.active]="feedbackTab === 'feedbacks'" (click)="feedbackTab = 'feedbacks'">Feedbacks</div>
+              <div class="feedback-tab" [class.active]="feedbackTab === 'strengths'" (click)="feedbackTab = 'strengths'">Points forts</div>
+              <div class="feedback-tab" [class.active]="feedbackTab === 'weaknesses'" (click)="feedbackTab = 'weaknesses'">Points à améliorer</div>
+            </div>
+
+            <div class="feedback-content-area" [style.display]="feedbackTab === 'feedbacks' ? 'grid' : 'block'">
+              @if (feedbackTab === 'feedbacks') {
+              <div class="feedback-comments-col">
+                <h3>Feedbacks anonymes</h3>
+                @if (publicFeedback.publicComments.length > 0) {
+                  <div class="comment-list">
+                    @for (item of publicFeedback.publicComments; track $index) {
+                      <div class="comment-item">
+                        <div class="ci-header">
+                          <span class="ci-author">Participant anonyme</span>
+                          <div class="ci-meta">
+                            <span>10 juin 2026</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                          </div>
+                        </div>
+                        <div class="ci-rating">
+                          <div class="ci-stars">
+                            @for (star of [1, 2, 3, 4, 5]; track star) {
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" [attr.fill]="star <= item.rating ? 'currentColor' : '#E2E8F0'" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            }
+                          </div>
+                          <span class="ci-score">{{ item.rating | number:'1.1-1' }}</span>
+                        </div>
+                        <p class="ci-text">{{ item.comment }}</p>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="ci-text">Aucun feedback disponible</p>
+                }
+              </div>
+              }
+
+              <div class="feedback-highlights-col">
+                @if (feedbackTab === 'feedbacks' || feedbackTab === 'strengths') {
+                <div class="hc-card positive">
+                  <div class="hc-header">
+                    <div class="hc-title-wrap">
+                      <div class="hc-icon green">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                      </div>
+                      <h4 class="hc-title">Points forts</h4>
+                    </div>
+                    <div class="hc-badge green">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                    </div>
+                  </div>
+                  <ul class="hc-list">
                     @for (item of publicFeedback.highlights; track $index) {
                       <li>{{ item }}</li>
                     }
                     @if (publicFeedback.highlights.length === 0) {
-                      <li class="empty-list-item">Aucun point fort spécifique mentionné.</li>
+                      <li>Aucun point fort spécifique mentionné.</li>
                     }
                   </ul>
                 </div>
-                <div class="highlight-box neutral">
-                  <h3>Points d'attention</h3>
-                  <ul>
+                }
+
+                @if (feedbackTab === 'feedbacks' || feedbackTab === 'weaknesses') {
+                <div class="hc-card negative">
+                  <div class="hc-header">
+                    <div class="hc-title-wrap">
+                      <div class="hc-icon orange">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                      </div>
+                      <h4 class="hc-title">Points à améliorer</h4>
+                    </div>
+                    <div class="hc-badge orange">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    </div>
+                  </div>
+                  <ul class="hc-list">
                     @for (item of publicFeedback.improvementPoints; track $index) {
                       <li>{{ item }}</li>
                     }
                     @if (publicFeedback.improvementPoints.length === 0) {
-                      <li class="empty-list-item">Aucune suggestion d'amélioration partagée.</li>
+                      <li>Aucune suggestion d'amélioration partagée.</li>
                     }
                   </ul>
                 </div>
-              </div>
-
-              <!-- Comments -->
-              <div class="public-comments-area">
-                <h3>Commentaires publics</h3>
-                @if (publicFeedback.publicComments.length > 0) {
-                  <div class="comments-grid">
-                    @for (item of publicFeedback.publicComments; track $index) {
-                      <article class="comment-card">
-                        <div class="comment-header">
-                          <span class="comment-author">Participant anonyme</span>
-                          <span class="comment-rating">
-                            @for (star of [1, 2, 3, 4, 5]; track star) {
-                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" [attr.fill]="star <= item.rating ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.star-filled]="star <= item.rating"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            }
-                          </span>
-                        </div>
-                        <p class="comment-text">{{ item.comment }}</p>
-                      </article>
-                    }
-                  </div>
-                } @else {
-                  <div class="empty-feedback-message">
-                    <p>Aucun feedback disponible</p>
-                  </div>
                 }
               </div>
             </div>
-          } @else {
-            <div class="empty-feedback-message">
+          </div>
+        } @else if (!publicFeedbackLoading && !publicFeedback) {
+          <div class="feedback-header-card">
+            <div class="empty-feedback-message" style="text-align: center; padding: 20px;">
               <p>Aucun feedback disponible</p>
             </div>
-          }
-        </div>
+          </div>
+        }
       </section>
     }
     @if (showUnregisterModal) {
