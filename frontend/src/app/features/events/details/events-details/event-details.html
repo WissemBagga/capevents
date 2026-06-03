@@ -91,7 +91,7 @@
                             </div>
                             <div class="registration-actions" style="display: flex; gap: 12px; flex-wrap: wrap;">
                                 @if (canRegisterNow) {
-                                    <button class="btn-primary" type="button" (click)="register()" [disabled]="actionLoading">
+                                    <button class="invite-toggle-btn" type="button" (click)="register()" [disabled]="actionLoading">
                                         @if (actionLoading) {
                                             <span class="spinner-small" appScrollToMessage></span> Inscription...
                                         } @else {
@@ -101,7 +101,7 @@
                                 }
 
                                 @if (isRegistered) {
-                                    <button class="btn-danger" type="button" (click)="openUnregisterModal()" [disabled]="actionLoading || !canUnregisterNow">
+                                    <button class="danger-toggle-btn" type="button" (click)="openUnregisterModal()" [disabled]="actionLoading || !canUnregisterNow">
                                         @if (actionLoading) {
                                             <span class="spinner-small" appScrollToMessage></span> Traitement...
                                         } @else {

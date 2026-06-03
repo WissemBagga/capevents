@@ -5165,3 +5165,35 @@
   box-shadow: 0 4px 12px rgba(0, 88, 171, 0.06);
 }
 
+
+
+/* ===== Action Toggle Buttons (Matches Invite Button) ===== */
+.danger-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  border-radius: 14px;
+  font-family: \'Ubuntu\', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(143, 50, 55, 0.16);
+  background: rgba(143, 50, 55, 0.06);
+  color: #8F3237;
+  padding: 0 16px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.danger-toggle-btn:hover:not(:disabled) {
+  background: rgba(143, 50, 55, 0.12);
+  color: #7a282d;
+}
+.danger-toggle-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
