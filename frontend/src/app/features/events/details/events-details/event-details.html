@@ -688,7 +688,7 @@
               <div class="feedback-tab" [class.active]="feedbackTab === 'weaknesses'" (click)="feedbackTab = 'weaknesses'">Points à améliorer</div>
             </div>
 
-            <div class="feedback-content-area" [style.display]="feedbackTab === 'feedbacks' ? 'grid' : 'block'">
+            <div class="feedback-content-area" style="display: block;">
               @if (feedbackTab === 'feedbacks') {
               <div class="feedback-comments-col">
                 <h3>Feedbacks anonymes</h3>
@@ -722,7 +722,7 @@
               }
 
               <div class="feedback-highlights-col">
-                @if (feedbackTab === 'feedbacks' || feedbackTab === 'strengths') {
+                @if (feedbackTab === 'strengths') {
                 <div class="hc-card positive">
                   <div class="hc-header">
                     <div class="hc-title-wrap">
@@ -746,7 +746,7 @@
                 </div>
                 }
 
-                @if (feedbackTab === 'feedbacks' || feedbackTab === 'weaknesses') {
+                @if (feedbackTab === 'weaknesses') {
                 <div class="hc-card negative">
                   <div class="hc-header">
                     <div class="hc-title-wrap">
