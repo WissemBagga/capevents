@@ -59,7 +59,7 @@ export class AdminEventDetails {
   participantsLoading = false;
   showParticipantsList = true;
   showAIFeedbackPanel = true;
-
+  showRemindersHistoryPanel = true;
 
   showInvitationPanel = false;
   invitationLoading = false;
@@ -1245,6 +1245,11 @@ export class AdminEventDetails {
 
   toggleAIFeedbackPanel(): void {
     this.showAIFeedbackPanel = !this.showAIFeedbackPanel;
+    this.cdr.markForCheck();
+  }
+
+  toggleRemindersHistoryPanel(): void {
+    this.showRemindersHistoryPanel = !this.showRemindersHistoryPanel;
     this.cdr.markForCheck();
   }
 
