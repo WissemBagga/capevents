@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -27,7 +27,7 @@ import { PointService } from '@core/services/point.service';
   templateUrl: './employee-dashboard.html',
   styleUrl: './employee-dashboard.css'
 })
-export class EmployeeDashboard implements OnInit, OnDestroy {
+export class EmployeeDashboard implements OnInit, OnDestroy, AfterViewInit {
   private authService = inject(AuthService);
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
@@ -50,6 +50,9 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   aiLoading = false;
   aiErrorMessage = '';
   aiRecommendations: AiRecommendationItem[] = [];
+
+  canScrollLeft = false;
+  canScrollRight = true;
 
   invitations: MyInvitationResponse[] = [];
   invitationsLoading = false;
@@ -425,24 +428,26 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
     return item.startAt || '';
   }
 
-  scrollRecommendations(): void {
+  ngAfterViewInit(): void {
+    this.updateCarouselArrows();
+  }
+
+  updateCarouselArrows(): void {
     const track = this.recCarouselTrack?.nativeElement;
     if (!track) return;
 
-    const card = track.querySelector('.rec-card') as HTMLElement;
-    if (!card) return;
-
-    const cardWidth = card.offsetWidth + 20; // card width + gap
     const maxScroll = track.scrollWidth - track.clientWidth;
-
-    if (track.scrollLeft >= maxScroll - 10) {
-      track.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      track.scrollBy({ left: cardWidth, behavior: 'smooth' });
-    }
+    this.canScrollLeft = track.scrollLeft > 10;
+    this.canScrollRight = track.scrollLeft < maxScroll - 10;
+    this.cdr.markForCheck();
   }
 
-  scrollRecommendationsLeft(): void {
+  onCarouselScroll(): void {
+    this.updateCarouselArrows();
+  }
+
+  scrollRecommendations(): void {
+    if (!this.canScrollRight) return;
     const track = this.recCarouselTrack?.nativeElement;
     if (!track) return;
 
@@ -450,13 +455,19 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
     if (!card) return;
 
     const cardWidth = card.offsetWidth + 20;
+    track.scrollBy({ left: cardWidth, behavior: 'smooth' });
+  }
 
-    if (track.scrollLeft <= 10) {
-      const maxScroll = track.scrollWidth - track.clientWidth;
-      track.scrollTo({ left: maxScroll, behavior: 'smooth' });
-    } else {
-      track.scrollBy({ left: -cardWidth, behavior: 'smooth' });
-    }
+  scrollRecommendationsLeft(): void {
+    if (!this.canScrollLeft) return;
+    const track = this.recCarouselTrack?.nativeElement;
+    if (!track) return;
+
+    const card = track.querySelector('.rec-card') as HTMLElement;
+    if (!card) return;
+
+    const cardWidth = card.offsetWidth + 20;
+    track.scrollBy({ left: -cardWidth, behavior: 'smooth' });
   }
 }
 

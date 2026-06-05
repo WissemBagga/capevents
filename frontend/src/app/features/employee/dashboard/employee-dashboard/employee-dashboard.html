@@ -148,14 +148,14 @@
       }
 
       @if (!aiLoading && aiRecommendations.length > 0) {
-        <div class="rec-carousel-wrapper">
-          <button class="rec-carousel-arrow arrow-left" (click)="scrollRecommendationsLeft()" aria-label="Voir les recommandations précédentes">
+        <div class="rec-carousel-wrapper" [class.at-start]="!canScrollLeft" [class.at-end]="!canScrollRight">
+          <button class="rec-carousel-arrow arrow-left" [disabled]="!canScrollLeft" (click)="scrollRecommendationsLeft()" aria-label="Voir les recommandations précédentes">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
           </button>
 
-          <div class="rec-carousel-track" #recCarouselTrack>
+          <div class="rec-carousel-track" #recCarouselTrack (scroll)="onCarouselScroll()">
             @for (item of aiRecommendations; track item.eventId) {
               <article class="rec-card">
                 <div class="rec-card-image" [style.background-image]="'url(' + getRecommendationImageUrl(item) + ')'">
@@ -201,7 +201,7 @@
             }
           </div>
 
-          <button class="rec-carousel-arrow arrow-right" (click)="scrollRecommendations()" aria-label="Voir plus de recommandations">
+          <button class="rec-carousel-arrow arrow-right" [disabled]="!canScrollRight" (click)="scrollRecommendations()" aria-label="Voir plus de recommandations">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="9 18 15 12 9 6"/>
             </svg>

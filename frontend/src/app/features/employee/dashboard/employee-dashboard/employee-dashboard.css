@@ -1246,6 +1246,7 @@
   pointer-events: none;
   z-index: 2;
   border-radius: 0 16px 16px 0;
+  transition: opacity 0.25s ease;
 }
 
 /* Fade hint on left edge */
@@ -1260,6 +1261,15 @@
   pointer-events: none;
   z-index: 2;
   border-radius: 16px 0 0 16px;
+  transition: opacity 0.25s ease;
+}
+
+.rec-carousel-wrapper.at-start::before {
+  opacity: 0;
+}
+
+.rec-carousel-wrapper.at-end::after {
+  opacity: 0;
 }
 
 /* Scroll arrow buttons */
@@ -1296,6 +1306,13 @@
 
 .rec-carousel-arrow.arrow-left {
   left: -6px;
+}
+
+.rec-carousel-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+  box-shadow: none;
 }
 
 /* ===== Recommendation Card ===== */
