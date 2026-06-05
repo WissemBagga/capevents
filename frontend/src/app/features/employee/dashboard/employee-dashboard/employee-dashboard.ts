@@ -1,4 +1,4 @@
-﻿import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -33,6 +33,8 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private aiRecommendationService = inject(AiRecommendationService);
   private pointService = inject(PointService);
+
+  @ViewChild('recCarouselTrack') recCarouselTrack!: ElementRef<HTMLDivElement>;
 
   currentUser = this.authService.getCurrentUserSnapshot();
 
@@ -421,6 +423,40 @@ export class EmployeeDashboard implements OnInit, OnDestroy {
 
   getRecommendationDateLabel(item: AiRecommendationItem): string {
     return item.startAt || '';
+  }
+
+  scrollRecommendations(): void {
+    const track = this.recCarouselTrack?.nativeElement;
+    if (!track) return;
+
+    const card = track.querySelector('.rec-card') as HTMLElement;
+    if (!card) return;
+
+    const cardWidth = card.offsetWidth + 20; // card width + gap
+    const maxScroll = track.scrollWidth - track.clientWidth;
+
+    if (track.scrollLeft >= maxScroll - 10) {
+      track.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      track.scrollBy({ left: cardWidth, behavior: 'smooth' });
+    }
+  }
+
+  scrollRecommendationsLeft(): void {
+    const track = this.recCarouselTrack?.nativeElement;
+    if (!track) return;
+
+    const card = track.querySelector('.rec-card') as HTMLElement;
+    if (!card) return;
+
+    const cardWidth = card.offsetWidth + 20;
+
+    if (track.scrollLeft <= 10) {
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      track.scrollTo({ left: maxScroll, behavior: 'smooth' });
+    } else {
+      track.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+    }
   }
 }
 
