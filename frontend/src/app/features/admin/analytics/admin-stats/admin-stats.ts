@@ -93,6 +93,7 @@ export class AdminStats {
   isDeptParticipationCollapsed = false;
   deptView: 'table' | 'chart' = 'table';
   isTopParticipantsCollapsed = false;
+  topParticipantView: 'top5' | 'perDept' = 'top5';
   isTopParticipantPerDeptCollapsed = false;
   isTopRatedCollapsed = false;
   isTopEngagingCollapsed = false;

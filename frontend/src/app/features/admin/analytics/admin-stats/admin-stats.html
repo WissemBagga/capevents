@@ -779,26 +779,34 @@
           </section>
         }
 
-        @if (analytics.topMembers.length > 0) {
+        @if (analytics.topMembers.length > 0 || (isHr && analytics.topParticipantPerDepartment.length > 0)) {
           <section class="admin-card stats-section premium-stats-section">
             <div class="card-header">
               <div class="header-text-group">
-                <h2 class="card-title">Top 5 participants</h2>
+                <h2 class="card-title">Palmarès des participants</h2>
                 <p class="card-subtitle">
                   @if (isHr) {
-                    Classement global tous départements confondus.
+                    Les participants les plus assidus et les leaders de département.
                   } @else {
                     Classement des participants de votre périmètre.
                   }
                 </p>
               </div>
 
-              <div class="header-actions-group" style="display: flex; gap: 8px; align-items: center;">
+              <div class="header-actions-group" style="display: flex; gap: 12px; align-items: center;">
+                @if (isHr) {
+                  <div class="view-toggle">
+                    <button type="button" [class.active]="topParticipantView === 'top5'" (click)="topParticipantView = 'top5'">Top 5 Global</button>
+                    <button type="button" [class.active]="topParticipantView === 'perDept'" (click)="topParticipantView = 'perDept'">Leaders par Dept</button>
+                  </div>
+                }
+
                 @if (isManager && analytics.memberRows.length > 0) {
                   <button type="button" class="btn-secondary" (click)="exportMembersExcel()">
                     Export Excel
                   </button>
                 }
+                
                 <button type="button" class="stats-toggle-btn" (click)="toggleSection('topParticipants')">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     @if (isTopParticipantsCollapsed) {
@@ -812,93 +820,74 @@
             </div>
 
             @if (!isTopParticipantsCollapsed) {
-              <div class="stats-list">
-              @for (item of sortedTopMembers; track trackByTopMember($index, item)) {
-                <article class="stat-list-item">
-                  <div class="item-main">
-                    <div class="user-profile-row">
-                      <span class="rank-badge">#{{ $index + 1 }}</span>
-                      <div class="user-avatar bg-blue-light text-blue" style="text-transform: uppercase;">{{ item.fullName.charAt(0) }}</div>
-                      <div class="user-info">
-                        <h3 class="event-title">{{ item.fullName }}</h3>
-                        <span class="muted-text">{{ item.departmentName || 'Sans département' }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="item-metrics">
-                    <div class="metric-cell">
-                      <span class="metric-label">Inscrits</span>
-                      <strong class="metric-value">{{ item.registeredCount }}</strong>
-                    </div>
-
-                    <div class="metric-cell highlight">
-                      <span class="metric-label">Présence</span>
-                      <strong class="metric-value">{{ item.attendanceRate | number:'1.0-2' }}%</strong>
-                    </div>
-                  </div>
-                </article>
-              }
-            </div>
-            }
-          </section>
-        }
-
-        @if (isHr) {
-          <section class="admin-card stats-section premium-stats-section">
-            <div class="card-header">
-              <div class="header-text-group">
-                <h2 class="card-title">Meilleur participant de chaque département</h2>
-                <p class="card-subtitle">Participant au meilleur taux de présence par département.</p>
-              </div>
-              <button type="button" class="stats-toggle-btn" (click)="toggleSection('topParticipantPerDept')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  @if (isTopParticipantPerDeptCollapsed) {
-                    <polyline points="6 9 12 15 18 9"/>
-                  } @else {
-                    <polyline points="18 15 12 9 6 15"/>
-                  }
-                </svg>
-              </button>
-            </div>
-
-            @if (!isTopParticipantPerDeptCollapsed) {
-              @if (analytics.topParticipantPerDepartment.length === 0) {
-              <div class="state-message info-msg" appScrollToMessage>
-                <p>Aucune donnée disponible pour les départements.</p>
-              </div>
-            }
-
-            @if (analytics.topParticipantPerDepartment.length > 0) {
-              <div class="stats-list">
-                @for (item of sortedTopParticipantPerDepartment; track item.departmentId) {
-                  <article class="stat-list-item">
-                    <div class="item-main">
-                      <div class="user-profile-row">
-                        <span class="rank-badge">#{{ $index + 1 }}</span>
-                        <div class="user-avatar bg-teal-light text-teal" style="text-transform: uppercase;">{{ item.fullName.charAt(0) }}</div>
-                        <div class="user-info">
-                          <h3 class="event-title">{{ item.fullName }}</h3>
-                          <span class="muted-text">{{ item.departmentName }}</span>
+              @if (topParticipantView === 'top5' || !isHr) {
+                <div class="stats-list">
+                  @for (item of sortedTopMembers; track trackByTopMember($index, item)) {
+                    <article class="stat-list-item">
+                      <div class="item-main">
+                        <div class="user-profile-row">
+                          <span class="rank-badge">#{{ $index + 1 }}</span>
+                          <div class="user-avatar bg-blue-light text-blue" style="text-transform: uppercase;">{{ item.fullName.charAt(0) }}</div>
+                          <div class="user-info">
+                            <h3 class="event-title">{{ item.fullName }}</h3>
+                            <span class="muted-text">{{ item.departmentName || 'Sans département' }}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div class="item-metrics">
-                      <div class="metric-cell">
-                        <span class="metric-label">Inscrits</span>
-                        <strong class="metric-value">{{ item.registeredCount }}</strong>
-                      </div>
+                      <div class="item-metrics">
+                        <div class="metric-cell">
+                          <span class="metric-label">Inscrits</span>
+                          <strong class="metric-value">{{ item.registeredCount }}</strong>
+                        </div>
 
-                      <div class="metric-cell highlight">
-                        <span class="metric-label">Présence</span>
-                        <strong class="metric-value">{{ item.attendanceRate | number:'1.0-2' }}%</strong>
+                        <div class="metric-cell highlight">
+                          <span class="metric-label">Présence</span>
+                          <strong class="metric-value">{{ item.attendanceRate | number:'1.0-2' }}%</strong>
+                        </div>
                       </div>
-                    </div>
-                  </article>
+                    </article>
+                  }
+                </div>
+              }
+
+              @if (isHr && topParticipantView === 'perDept') {
+                @if (analytics.topParticipantPerDepartment.length === 0) {
+                  <div class="state-message info-msg" appScrollToMessage>
+                    <p>Aucune donnée disponible pour les départements.</p>
+                  </div>
                 }
-              </div>
-            }
+                @if (analytics.topParticipantPerDepartment.length > 0) {
+                  <div class="stats-list">
+                    @for (item of sortedTopParticipantPerDepartment; track item.departmentId) {
+                      <article class="stat-list-item">
+                        <div class="item-main">
+                          <div class="user-profile-row">
+                            <span class="rank-badge">#{{ $index + 1 }}</span>
+                            <div class="user-avatar bg-teal-light text-teal" style="text-transform: uppercase;">{{ item.fullName.charAt(0) }}</div>
+                            <div class="user-info">
+                              <h3 class="event-title">{{ item.fullName }}</h3>
+                              <span class="muted-text">{{ item.departmentName }}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="item-metrics">
+                          <div class="metric-cell">
+                            <span class="metric-label">Inscrits</span>
+                            <strong class="metric-value">{{ item.registeredCount }}</strong>
+                          </div>
+
+                          <div class="metric-cell highlight">
+                            <span class="metric-label">Présence</span>
+                            <strong class="metric-value">{{ item.attendanceRate | number:'1.0-2' }}%</strong>
+                          </div>
+                        </div>
+                      </article>
+                    }
+                  </div>
+                }
+              }
             }
           </section>
         }
