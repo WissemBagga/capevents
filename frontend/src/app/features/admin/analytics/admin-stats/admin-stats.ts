@@ -88,6 +88,27 @@ export class AdminStats {
   planningMonitoringDays = 30;
   selectedAiMonitoringPanel: StatsAiMonitoringPanel | null = null;
 
+  isMonitoringCollapsed = false;
+  isTeamStatsCollapsed = false;
+  isDeptParticipationCollapsed = false;
+  isTopParticipantsCollapsed = false;
+  isTopParticipantPerDeptCollapsed = false;
+  isTopRatedCollapsed = false;
+  isTopEngagingCollapsed = false;
+
+  toggleSection(section: string): void {
+    switch(section) {
+      case 'monitoring': this.isMonitoringCollapsed = !this.isMonitoringCollapsed; break;
+      case 'teamStats': this.isTeamStatsCollapsed = !this.isTeamStatsCollapsed; break;
+      case 'deptParticipation': this.isDeptParticipationCollapsed = !this.isDeptParticipationCollapsed; break;
+      case 'topParticipants': this.isTopParticipantsCollapsed = !this.isTopParticipantsCollapsed; break;
+      case 'topParticipantPerDept': this.isTopParticipantPerDeptCollapsed = !this.isTopParticipantPerDeptCollapsed; break;
+      case 'topRated': this.isTopRatedCollapsed = !this.isTopRatedCollapsed; break;
+      case 'topEngaging': this.isTopEngagingCollapsed = !this.isTopEngagingCollapsed; break;
+    }
+    this.cdr.markForCheck();
+  }
+
   ngOnInit(): void {
     if (this.isHr) {
       this.loadDepartments();

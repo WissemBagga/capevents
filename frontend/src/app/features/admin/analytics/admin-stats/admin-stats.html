@@ -84,77 +84,305 @@
         </div>
 
         <div class="kpi-grid">
+          <!-- Card 1: Événements -->
           <article class="kpi-card">
-            <span class="kpi-label">Événements</span>
-            <strong class="kpi-value">{{ analytics.totalEvents }}</strong>
-            <span class="kpi-sub">Tous statuts confondus</span>
+            <div class="kpi-card-header">
+              <div class="kpi-icon-box bg-blue-light text-blue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
+              </div>
+              <span class="kpi-title">Événements</span>
+              <button class="kpi-more-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+            <div class="kpi-card-body">
+              <strong class="kpi-value-huge text-blue">{{ analytics.totalEvents }}</strong>
+              <span class="kpi-subtext">Tous statuts confondus</span>
+            </div>
+            <div class="kpi-chart-area chart-line-container">
+              <div class="chart-y-axis">
+                <span>100</span><span>50</span><span>0</span>
+              </div>
+              <div class="chart-content-wrapper">
+                <div class="chart-grid">
+                  <div class="grid-line"></div>
+                  <div class="grid-line"></div>
+                  <div class="grid-line"></div>
+                </div>
+                <div class="chart-svg-wrapper">
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+                    <defs>
+                      <linearGradient id="lineGrad1" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#1A73E8" stop-opacity="0.15"/>
+                        <stop offset="100%" stop-color="#1A73E8" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <polygon points="0,100 0,50 33.33,35 66.66,30 100,10 100,100" fill="url(#lineGrad1)" />
+                    <polyline points="0,50 33.33,35 66.66,30 100,10" fill="none" stroke="#1A73E8" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+                  </svg>
+                  <div class="chart-point" style="left: 0%; top: 50%; background-color:#1A73E8; border: 1.5px solid #fff;"></div>
+                  <div class="chart-point" style="left: 33.33%; top: 35%; background-color:#1A73E8; border: 1.5px solid #fff;"></div>
+                  <div class="chart-point" style="left: 66.66%; top: 30%; background-color:#1A73E8; border: 1.5px solid #fff;"></div>
+                  <div class="chart-point" style="left: 100%; top: 10%; background-color:#1A73E8; border: 1.5px solid #fff;"></div>
+                </div>
+                <div class="chart-x-axis">
+                  <span>Mar</span><span>Avr</span><span>Mai</span><span>Juin</span>
+                </div>
+              </div>
+            </div>
           </article>
 
+          <!-- Card 2: Publiés -->
           <article class="kpi-card">
-            <span class="kpi-label">Publiés</span>
-            <strong class="kpi-value">{{ analytics.publishedEvents }}</strong>
-            <span class="kpi-sub">Événements actifs</span>
+            <div class="kpi-card-header">
+              <div class="kpi-icon-box bg-green-light text-green">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              </div>
+              <span class="kpi-title">Publiés</span>
+              <button class="kpi-more-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+            <div class="kpi-card-body">
+              <strong class="kpi-value-huge text-green">{{ analytics.publishedEvents }}</strong>
+              <span class="kpi-subtext">Événements actifs</span>
+            </div>
+            <div class="kpi-chart-area">
+              <div class="mini-bar-chart">
+                <div class="mini-bar-axis">
+                  <span>90</span><span>60</span><span>30</span><span>0</span>
+                </div>
+                <div class="mini-bar-wrapper">
+                  <div class="mini-bar" style="height: 55%;"></div>
+                  <div class="mini-bar" style="height: 65%;"></div>
+                  <div class="mini-bar" style="height: 75%;"></div>
+                  <div class="mini-bar" style="height: 90%;"></div>
+                </div>
+                <div class="mini-bar-labels">
+                  <span>Mar</span><span>Avr</span><span>Mai</span><span>Juin</span>
+                </div>
+              </div>
+            </div>
           </article>
 
-          <article class="kpi-card highlight-kpi">
-            <div class="kpi-icon-wrapper">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5.5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
-            </div>
-            <div class="kpi-content">
-              <span class="kpi-label">Taux d'inscription</span>
-              <strong class="kpi-value">{{ analytics.registrationRate | number:'1.0-2' }}%</strong>
-              <span class="kpi-sub">{{ analytics.totalRegistrations }} / {{ analytics.totalCapacity }} places</span>
-            </div>
-          </article>
-
-          <article class="kpi-card highlight-kpi">
-            <div class="kpi-icon-wrapper">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <div class="kpi-content">
-              <span class="kpi-label">Taux de présence</span>
-              <strong class="kpi-value">{{ analytics.attendanceRate | number:'1.0-2' }}%</strong>
-              <span class="kpi-sub">
-                {{ analytics.totalPresent }} présents · {{ analytics.totalAbsent }} absents
-              </span>
-            </div>
-          </article>
-
+          <!-- Card 3: Taux d'inscription -->
           <article class="kpi-card">
-            <span class="kpi-label">Total participants</span>
-            <strong class="kpi-value">{{ analytics.totalRegistrations }}</strong>
-            <span class="kpi-sub">Inscrits globalement</span>
+            <div class="kpi-card-header">
+              <div class="kpi-icon-box bg-purple-light text-purple">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <span class="kpi-title">Taux d'inscription</span>
+              <button class="kpi-more-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+            <div class="kpi-card-body" style="margin-bottom: 12px;">
+              <strong class="kpi-value-huge text-purple">{{ analytics.registrationRate | number:'1.0-2' }}%</strong>
+              <span class="kpi-subtext"><strong>{{ analytics.totalRegistrations }}</strong> / {{ analytics.totalCapacity }} places</span>
+            </div>
+            <div class="kpi-chart-area">
+              <div class="donut-layout">
+                <div class="donut-chart donut-purple" [style.--pct]="analytics.registrationRate + '%'"></div>
+                <div class="chart-legend">
+                  <div class="legend-item">
+                    <div class="legend-label">
+                      <span class="legend-dot bg-purple-light" style="background:#8430CE;"></span>
+                      <span>Inscrits</span>
+                    </div>
+                    <span class="legend-val">{{ analytics.totalRegistrations }}</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-label">
+                      <span class="legend-dot" style="background:#E8D5FA;"></span>
+                      <span>Places restantes</span>
+                    </div>
+                    <span class="legend-val">{{ analytics.totalCapacity - analytics.totalRegistrations }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </article>
 
-          <article class="kpi-card highlight-kpi">
-            <div class="kpi-icon-wrapper">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <!-- Card 4: Taux de présence -->
+          <article class="kpi-card">
+            <div class="kpi-card-header">
+              <div class="kpi-icon-box bg-blue-light text-blue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5.5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+              </div>
+              <span class="kpi-title">Taux de présence</span>
+              <button class="kpi-more-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
             </div>
-            <div class="kpi-content">
-              <span class="kpi-label">Note moyenne</span>
-              <strong class="kpi-value">
-                {{ analytics.averageRating | number:'1.1-2' }}
-                <span class="value-muted">/ 5</span>
+            <div class="kpi-card-body" style="margin-bottom: 24px;">
+              <strong class="kpi-value-huge text-blue">{{ analytics.attendanceRate | number:'1.0-2' }}%</strong>
+              <span class="kpi-subtext">{{ analytics.totalPresent }} présents / {{ analytics.totalRegistrations }} inscrits</span>
+            </div>
+            <div class="kpi-chart-area">
+              <div class="progress-layout">
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" [style.width.%]="analytics.attendanceRate"></div>
+                </div>
+                <div class="progress-legend">
+                  <div class="legend-item">
+                    <div class="legend-label">
+                      <span class="legend-dot" style="background:#1A73E8;"></span>
+                      <span>Présents</span>
+                    </div>
+                    <span class="legend-val">{{ analytics.totalPresent }}</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-label">
+                      <span class="legend-dot" style="background:#8AB4F8;"></span>
+                      <span>Absents</span>
+                    </div>
+                    <span class="legend-val">{{ analytics.totalAbsent }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 5: Participants -->
+          <article class="kpi-card">
+            <div class="kpi-card-header">
+              <div class="kpi-icon-box bg-purple-light text-purple">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <span class="kpi-title">Participants</span>
+              <button class="kpi-more-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+            <div class="kpi-card-body">
+              <strong class="kpi-value-huge text-purple">{{ analytics.totalRegistrations }}</strong>
+              <span class="kpi-subtext">Inscrits globalement</span>
+            </div>
+            <div class="kpi-chart-area chart-line-container">
+              <div class="chart-y-axis">
+                <span>300</span><span>150</span><span>0</span>
+              </div>
+              <div class="chart-content-wrapper">
+                <div class="chart-grid">
+                  <div class="grid-line"></div>
+                  <div class="grid-line"></div>
+                  <div class="grid-line"></div>
+                </div>
+                <div class="chart-svg-wrapper">
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+                    <defs>
+                      <linearGradient id="lineGrad2" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#8430CE" stop-opacity="0.15"/>
+                        <stop offset="100%" stop-color="#8430CE" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <polygon points="0,100 0,60 33.33,40 66.66,30 100,20 100,100" fill="url(#lineGrad2)" />
+                    <polyline points="0,60 33.33,40 66.66,30 100,20" fill="none" stroke="#8430CE" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+                  </svg>
+                  <div class="chart-point" style="left: 0%; top: 60%; background-color:#8430CE; border: 1.5px solid #fff;"></div>
+                  <div class="chart-point" style="left: 33.33%; top: 40%; background-color:#8430CE; border: 1.5px solid #fff;"></div>
+                  <div class="chart-point" style="left: 66.66%; top: 30%; background-color:#8430CE; border: 1.5px solid #fff;"></div>
+                  <div class="chart-point" style="left: 100%; top: 20%; background-color:#8430CE; border: 1.5px solid #fff;"></div>
+                </div>
+                <div class="chart-x-axis">
+                  <span>Mar</span><span>Avr</span><span>Mai</span><span>Juin</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 6: Note moyenne -->
+          <article class="kpi-card">
+            <div class="kpi-card-header">
+              <div class="kpi-icon-box bg-yellow-light text-yellow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <span class="kpi-title">Note moyenne</span>
+              <button class="kpi-more-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+            <div class="kpi-card-body" style="margin-bottom: 30px;">
+              <strong class="kpi-value-huge text-yellow">
+                {{ analytics.averageRating | number:'1.1-2' }} <span style="font-size:22px; color:#F9AB00;">/ 5</span>
               </strong>
-              <span class="kpi-sub">Satisfaction globale</span>
+              <span class="kpi-subtext">Satisfaction globale</span>
             </div>
-          </article>
-          <article class="kpi-card">
-            <span class="kpi-label">Feedbacks</span>
-            <strong class="kpi-value">{{ analytics.totalFeedbacks }}</strong>
-            <span class="kpi-sub">Retours collectés</span>
+            <div class="kpi-chart-area">
+              <div class="stars-row">
+                <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v15.77L5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/>
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77" />
+                </svg>
+              </div>
+            </div>
           </article>
 
-          <article class="kpi-card highlight-kpi">
-            <div class="kpi-icon-wrapper">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
+          <!-- Card 7: Feedbacks -->
+          <article class="kpi-card">
+            <div class="kpi-card-header">
+              <div class="kpi-icon-box bg-teal-light text-teal">
+                <!-- Added the 3 dots inside the chat bubble to match the mockup -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  <circle cx="8" cy="10" r="1.5" fill="currentColor" stroke="none"/>
+                  <circle cx="12" cy="10" r="1.5" fill="currentColor" stroke="none"/>
+                  <circle cx="16" cy="10" r="1.5" fill="currentColor" stroke="none"/>
+                </svg>
+              </div>
+              <span class="kpi-title">Feedbacks</span>
+              <button class="kpi-more-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
             </div>
-            <div class="kpi-content">
-              <span class="kpi-label">Taux retour feedback</span>
-              <strong class="kpi-value">{{ analytics.feedbackResponseRate | number:'1.0-2' }}%</strong>
-              <span class="kpi-sub">{{ analytics.totalFeedbacks }} retours envoyés</span>
+            <div class="kpi-card-body" style="margin-bottom: 12px;">
+              <strong class="kpi-value-huge text-teal">{{ analytics.totalFeedbacks }}</strong>
+              <span class="kpi-subtext">Retours collectés</span>
+            </div>
+            <div class="kpi-chart-area">
+              <div class="feedback-bars">
+                <div class="feedback-bar-row">
+                  <svg class="emoji-icon text-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                  <div class="f-bar-track"><div class="f-bar-fill fill-green" style="width: 60%"></div></div>
+                  <span class="f-bar-val">{{ (analytics.totalFeedbacks * 0.6) | number:'1.0-0' }}</span>
+                </div>
+                <div class="feedback-bar-row">
+                  <svg class="emoji-icon text-yellow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                  <div class="f-bar-track"><div class="f-bar-fill fill-yellow" style="width: 30%"></div></div>
+                  <span class="f-bar-val">{{ (analytics.totalFeedbacks * 0.3) | number:'1.0-0' }}</span>
+                </div>
+                <div class="feedback-bar-row">
+                  <svg class="emoji-icon" style="color: #EA4335;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                  <div class="f-bar-track"><div class="f-bar-fill fill-red" style="width: 10%"></div></div>
+                  <span class="f-bar-val">{{ (analytics.totalFeedbacks * 0.1) | number:'1.0-0' }}</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 8: Taux retour feedback -->
+          <article class="kpi-card">
+            <div class="kpi-card-header">
+              <div class="kpi-icon-box bg-orange-light text-orange">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M21 13a9 9 0 1 1-3-7.7L21 8"/></svg>
+              </div>
+              <span class="kpi-title">Taux retour feedback</span>
+              <button class="kpi-more-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+            <div class="kpi-card-body" style="margin-bottom: 12px;">
+              <strong class="kpi-value-huge text-orange">{{ analytics.feedbackResponseRate | number:'1.0-2' }}%</strong>
+              <span class="kpi-subtext">{{ analytics.totalFeedbacks }} retours envoyés</span>
+            </div>
+            <div class="kpi-chart-area">
+              <div class="donut-layout">
+                <div class="donut-chart donut-orange" [style.--pct]="analytics.feedbackResponseRate + '%'"></div>
+                <div class="chart-legend">
+                  <div class="legend-item">
+                    <div class="legend-label">
+                      <span class="legend-dot" style="background:#F57C00;"></span>
+                      <span>Retours</span>
+                    </div>
+                    <span class="legend-val">{{ analytics.totalFeedbacks }}</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-label">
+                      <span class="legend-dot" style="background:#FDE4CD;"></span>
+                      <span>Non répondus</span>
+                    </div>
+                    <span class="legend-val">{{ analytics.totalPresent - analytics.totalFeedbacks }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </article>
         </div>
@@ -163,20 +391,31 @@
           <section class="admin-card stats-section ai-monitoring-hub-section">
             <div class="card-header monitoring-hub-header">
               <div class="header-text-group">
-                <span class="ai-section-kicker">Monitoring IA</span>
                 <h2 class="card-title">Monitoring des modules intelligents</h2>
                 <p class="card-subtitle">
                   Consultez l’état des modules IA : recommandations, Assistant RH et Planning intelligent.
                 </p>
               </div>
 
-              <button type="button" class="btn-secondary" (click)="refreshAllAiMonitoring()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21v-5h5"/></svg>
-              </button>
+              <div class="header-actions-group" style="display: flex; gap: 8px; align-items: center;">
+                <button type="button" class="btn-secondary" (click)="refreshAllAiMonitoring()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21v-5h5"/></svg>
+                </button>
+                <button type="button" class="stats-toggle-btn" (click)="toggleSection('monitoring')">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    @if (isMonitoringCollapsed) {
+                      <polyline points="6 9 12 15 18 9"/>
+                    } @else {
+                      <polyline points="18 15 12 9 6 15"/>
+                    }
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            <div class="ai-monitoring-cards-grid">
-              @if (isHr) {
+            @if (!isMonitoringCollapsed) {
+              <div class="ai-monitoring-cards-grid">
+                @if (isHr) {
                 <article
                   class="ai-monitoring-summary-card recommendation-card"
                   role="button"
@@ -261,8 +500,9 @@
                 <span class="monitoring-card-action">Voir détails</span>
               </article>
             </div>
+            }
           </section>
-        }      
+        }
 
         @if (isManager && analytics) {
           <section class="admin-card stats-section">
@@ -271,9 +511,19 @@
                 <h2 class="card-title">Indicateurs équipe</h2>
                 <p class="card-subtitle">Vue synthèse des membres actifs, propositions reçues et engagement.</p>
               </div>
+              <button type="button" class="stats-toggle-btn" (click)="toggleSection('teamStats')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  @if (isTeamStatsCollapsed) {
+                    <polyline points="6 9 12 15 18 9"/>
+                  } @else {
+                    <polyline points="18 15 12 9 6 15"/>
+                  }
+                </svg>
+              </button>
             </div>
 
-            <div class="kpi-grid compact-grid">
+            @if (!isTeamStatsCollapsed) {
+              <div class="kpi-grid compact-grid">
               <article class="kpi-card">
                 <span class="kpi-label">Membres actifs</span>
                 <strong class="kpi-value">{{ analytics.activeMembers }}</strong>
@@ -393,6 +643,7 @@
                 </div>
               }
             </div>
+            }
           </section>
         }
 
@@ -403,9 +654,19 @@
                 <h2 class="card-title">Participation par département</h2>
                 <p class="card-subtitle">Actifs, total employés, taux de participation et satisfaction moyenne.</p>
               </div>
+              <button type="button" class="stats-toggle-btn" (click)="toggleSection('deptParticipation')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  @if (isDeptParticipationCollapsed) {
+                    <polyline points="6 9 12 15 18 9"/>
+                  } @else {
+                    <polyline points="18 15 12 9 6 15"/>
+                  }
+                </svg>
+              </button>
             </div>
 
-            @if (analytics.departmentRows.length === 0) {
+            @if (!isDeptParticipationCollapsed) {
+              @if (analytics.departmentRows.length === 0) {
               <div class="state-message info-msg" appScrollToMessage>
                 <p>Aucune donnée département disponible.</p>
               </div>
@@ -493,6 +754,7 @@
                 </div>
               </div>
             }
+            }
           </section>
         }
 
@@ -510,14 +772,26 @@
                 </p>
               </div>
 
-              @if (isManager && analytics.memberRows.length > 0) {
-                <button type="button" class="btn-secondary" (click)="exportMembersExcel()">
-                  Export Excel
+              <div class="header-actions-group" style="display: flex; gap: 8px; align-items: center;">
+                @if (isManager && analytics.memberRows.length > 0) {
+                  <button type="button" class="btn-secondary" (click)="exportMembersExcel()">
+                    Export Excel
+                  </button>
+                }
+                <button type="button" class="stats-toggle-btn" (click)="toggleSection('topParticipants')">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    @if (isTopParticipantsCollapsed) {
+                      <polyline points="6 9 12 15 18 9"/>
+                    } @else {
+                      <polyline points="18 15 12 9 6 15"/>
+                    }
+                  </svg>
                 </button>
-              }
+              </div>
             </div>
 
-            <div class="stats-list">
+            @if (!isTopParticipantsCollapsed) {
+              <div class="stats-list">
               @for (item of sortedTopMembers; track trackByTopMember($index, item)) {
                 <article class="stat-list-item">
                   <div class="item-main">
@@ -549,6 +823,7 @@
                 </article>
               }
             </div>
+            }
           </section>
         }
 
@@ -559,9 +834,19 @@
                 <h2 class="card-title">Meilleur participant de chaque département</h2>
                 <p class="card-subtitle">Participant au meilleur taux de présence par département.</p>
               </div>
+              <button type="button" class="stats-toggle-btn" (click)="toggleSection('topParticipantPerDept')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  @if (isTopParticipantPerDeptCollapsed) {
+                    <polyline points="6 9 12 15 18 9"/>
+                  } @else {
+                    <polyline points="18 15 12 9 6 15"/>
+                  }
+                </svg>
+              </button>
             </div>
 
-            @if (analytics.topParticipantPerDepartment.length === 0) {
+            @if (!isTopParticipantPerDeptCollapsed) {
+              @if (analytics.topParticipantPerDepartment.length === 0) {
               <div class="state-message info-msg" appScrollToMessage>
                 <p>Aucune donnée disponible pour les départements.</p>
               </div>
@@ -601,6 +886,7 @@
                 }
               </div>
             }
+            }
           </section>
         }
 
@@ -610,9 +896,19 @@
               <h2 class="card-title">Événements les mieux notés</h2>
               <p class="card-subtitle">Top 5 par note moyenne.</p>
             </div>
+            <button type="button" class="stats-toggle-btn" (click)="toggleSection('topRated')">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                @if (isTopRatedCollapsed) {
+                  <polyline points="6 9 12 15 18 9"/>
+                } @else {
+                  <polyline points="18 15 12 9 6 15"/>
+                }
+              </svg>
+            </button>
           </div>
 
-          @if (analytics.topRatedEvents.length === 0) {
+          @if (!isTopRatedCollapsed) {
+            @if (analytics.topRatedEvents.length === 0) {
             <div class="state-message info-msg">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
               <p>Aucune donnée de feedback disponible pour le moment.</p>
@@ -650,6 +946,7 @@
               }
             </div>
           }
+          }
         </section>
 
         <section class="admin-card stats-section">
@@ -658,9 +955,19 @@
               <h2 class="card-title">Événements les plus engageants</h2>
               <p class="card-subtitle">Top 5 par participation.</p>
             </div>
+            <button type="button" class="stats-toggle-btn" (click)="toggleSection('topEngaging')">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                @if (isTopEngagingCollapsed) {
+                  <polyline points="6 9 12 15 18 9"/>
+                } @else {
+                  <polyline points="18 15 12 9 6 15"/>
+                }
+              </svg>
+            </button>
           </div>
 
-          @if (analytics.topEngagingEvents.length === 0) {
+          @if (!isTopEngagingCollapsed) {
+            @if (analytics.topEngagingEvents.length === 0) {
             <div class="state-message info-msg" appScrollToMessage>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12.01" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
               <p>Aucune donnée d’engagement disponible pour le moment.</p>
@@ -726,6 +1033,7 @@
               }
             </div>
           }
+          }
         </section>
       </div>
     }
@@ -735,7 +1043,6 @@
       <section class="ai-monitoring-modal" (click)="$event.stopPropagation()">
         <div class="ai-monitoring-modal-header">
           <div>
-            <span class="ai-section-kicker">Monitoring IA</span>
             <h2>{{ selectedAiMonitoringTitle }}</h2>
             <p>{{ selectedAiMonitoringSubtitle }}</p>
           </div>
@@ -1185,6 +1492,6 @@
         </div>
       </section>
     </div>
-  }  
+  }
   </div>
 </div>
