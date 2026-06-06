@@ -91,6 +91,7 @@ export class AdminStats {
   isMonitoringCollapsed = false;
   isTeamStatsCollapsed = false;
   isDeptParticipationCollapsed = false;
+  deptView: 'table' | 'chart' = 'table';
   isTopParticipantsCollapsed = false;
   isTopParticipantPerDeptCollapsed = false;
   isTopRatedCollapsed = false;
