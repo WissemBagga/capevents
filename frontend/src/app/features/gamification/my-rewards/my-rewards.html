@@ -30,34 +30,72 @@
     }
 
     @if (!loading && data) {
-      <section class="rewards-stats-grid">
-        <div class="stat-card brand-glow">
-          <div class="stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+      <section class="rewards-banner">
+        <!-- Left Side: Cagnotte -->
+        <div class="banner-left">
+          <div class="banner-bg-lines"></div>
+          <div class="sparkles">
+            <svg class="sparkle s1" width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M12 0l2 8 8 2-8 2-2 8-2-8-8-2 8-2z"/></svg>
+            <svg class="sparkle s2" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0l2 8 8 2-8 2-2 8-2-8-8-2 8-2z"/></svg>
+            <svg class="sparkle s3" width="8" height="8" viewBox="0 0 24 24" fill="white"><path d="M12 0l2 8 8 2-8 2-2 8-2-8-8-2 8-2z"/></svg>
           </div>
-          <div class="stat-details">
-            <span class="stat-label">Ma cagnotte disponible</span>
-            <strong class="stat-value">{{ data.currentPoints }} <span class="stat-unit">pts</span></strong>
+          <svg class="banner-wave" preserveAspectRatio="none" viewBox="0 0 100 100">
+            <path d="M100,-1 C 50,-1 50,101 0,101 L 101,101 L 101,-1 Z" fill="#ffffff"/>
+          </svg>
+          <div class="banner-left-content">
+            <span class="stat-label text-light">Ma cagnotte disponible</span>
+            <div class="stat-val-wrapper">
+              <div class="stat-icon-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                  <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"></path>
+                </svg>
+              </div>
+              <div class="stat-val-text">
+                <strong class="stat-value text-white stat-value-large">{{ data.currentPoints }}</strong>
+                <span class="stat-unit">pts</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-icon level">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <!-- Middle Side: Statut -->
+        <div class="banner-middle">
+          <div class="icon-hex-wrapper">
+            <svg class="hex-svg" viewBox="0 0 100 100" width="72" height="72" style="filter: drop-shadow(0px 4px 8px rgba(0, 88, 171, 0.15));">
+              <polygon points="50 5, 90 25, 90 75, 50 95, 10 75, 10 25" fill="#ffffff" stroke="#EBF4FF" stroke-width="6" stroke-linejoin="round"/>
+            </svg>
+            <svg class="icon-star" style="position: absolute; z-index: 2;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#0066FF" stroke="#0066FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           </div>
           <div class="stat-details">
             <span class="stat-label">Mon statut fidélité</span>
-            <strong class="stat-value text-dark">Niveau {{ userLevel.level }} <span class="stat-level-tag">{{ userLevel.label }}</span></strong>
+            <strong class="stat-value text-dark stat-value-medium">Niveau {{ userLevel.level }}</strong>
+            <span class="status-pill-blue">
+              <span class="dot"></span>
+              {{ userLevel.label }}
+            </span>
           </div>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-icon exchanges">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <div class="banner-divider"></div>
+
+        <!-- Right Side: Plaisirs validés -->
+        <div class="banner-right">
+          <div class="icon-circle-wrapper">
+            <svg width="76" height="76" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="46" fill="none" stroke="#E6F4EA" stroke-width="2" stroke-dasharray="4 4" />
+              <circle cx="50" cy="50" r="34" fill="#F0FDF4" />
+              <circle cx="50" cy="50" r="22" fill="#ffffff" stroke="#22C55E" stroke-width="3" />
+              <path d="M42 50 l6 6 l14 -14" fill="none" stroke="#22C55E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
           </div>
           <div class="stat-details">
             <span class="stat-label">Mes plaisirs validés</span>
-            <strong class="stat-value text-dark">{{ totalExchangesCount }} <span class="stat-unit-dark">échanges</span></strong>
+            <div class="stat-val-text">
+              <strong class="stat-value text-dark stat-value-large">{{ totalExchangesCount }}</strong>
+              <span class="stat-unit-dark">échanges</span>
+            </div>
           </div>
         </div>
       </section>
@@ -119,44 +157,74 @@
       </section>
 
       <section class="history-section">
-        <h2>Mon journal des petits bonheurs</h2>
+        <div class="history-header">
+          <h2>Mon journal des petits bonheurs</h2>
+          <p class="history-subtitle">Retrouvez l'historique de vos cadeaux et leur état d'avancement.</p>
+        </div>
 
         @if (data.history.length === 0) {
-          <div class="state-message info-msg">
+          <div class="empty-state-modern">
+            <div class="empty-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+            <h3>Aucune demande pour le moment</h3>
             <p>Pas encore de cadeaux demandés ? C'est le moment idéal pour commencer à accumuler des points ! 🌟</p>
           </div>
         }
 
         @if (data.history.length > 0) {
-          <div class="history-list">
+          <div class="pro-transaction-list">
             @for (item of data.history; track trackByHistoryId($index, item)) {
-              <article class="history-card" [class.status-completed]="item.status === 'COMPLETED'" [class.status-pending]="item.status === 'PENDING_HR_ACTION'" [class.status-rejected]="item.status === 'REJECTED'">
-                <div class="history-main">
-                  <div class="history-icon-bg">
-                    <img [src]="getRewardImageUrl(item.rewardTitle)" [alt]="item.rewardTitle" class="history-icon-img" />
+              <div class="tx-row" [class.tx-rejected]="item.status === 'REJECTED'">
+                
+                <div class="tx-icon-wrapper">
+                  <div class="tx-image-box">
+                    <img [src]="getRewardImageUrl(item.rewardTitle)" [alt]="item.rewardTitle" />
                   </div>
-                  <div class="history-details">
-                    <h3>{{ item.rewardTitle }}</h3>
-                    <p class="history-date">{{ item.createdAt | date:'dd MMMM yyyy' : '' : 'fr' }}</p>
-                    @if (item.hrComment) {
-                      <p class="history-comment" [title]="item.hrComment">
-                        <strong>Le petit mot des RH :</strong> {{ item.hrComment }}
-                      </p>
+                  <div class="tx-status-dot" [class.completed]="item.status === 'COMPLETED'" [class.pending]="item.status === 'PENDING_HR_ACTION'" [class.rejected]="item.status === 'REJECTED'">
+                    @if (item.status === 'COMPLETED') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    } @else if (item.status === 'PENDING_HR_ACTION') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    } @else if (item.status === 'REJECTED') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                     }
                   </div>
                 </div>
 
-                <div class="history-side">
-                  <strong class="points-spent">-{{ item.pointsSpent }} pts</strong>
-                  <span class="status-pill" [class.completed]="item.status === 'COMPLETED'" [class.pending]="item.status === 'PENDING_HR_ACTION'" [class.rejected]="item.status === 'REJECTED'">
-                    {{ statusLabel(item.status) }}
-                  </span>
-
-                  @if (item.handledByFullName) {
-                    <p class="history-handler"><strong>Validé par :</strong> {{ item.handledByFullName }}</p>
+                <div class="tx-main">
+                  <div class="tx-title-row">
+                    <h3 class="tx-title">{{ item.rewardTitle }}</h3>
+                    <span class="tx-date">{{ item.createdAt | date:'dd MMM yyyy' : '' : 'fr' }}</span>
+                  </div>
+                  
+                  @if (item.hrComment || item.handledByFullName) {
+                    <div class="tx-meta-row">
+                      @if (item.hrComment) {
+                        <div class="tx-comment" [title]="item.hrComment">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                          <span>{{ item.hrComment }}</span>
+                        </div>
+                      }
+                      
+                      @if (item.handledByFullName) {
+                        <div class="tx-handler">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                          <span>Validé par {{ item.handledByFullName }}</span>
+                        </div>
+                      }
+                    </div>
                   }
                 </div>
-              </article>
+
+                <div class="tx-right">
+                  <strong class="tx-points">-{{ item.pointsSpent }} pts</strong>
+                  <span class="tx-badge" [class.completed]="item.status === 'COMPLETED'" [class.pending]="item.status === 'PENDING_HR_ACTION'" [class.rejected]="item.status === 'REJECTED'">
+                    {{ statusLabel(item.status) }}
+                  </span>
+                </div>
+
+              </div>
             }
           </div>
         }
