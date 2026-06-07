@@ -12,6 +12,10 @@ import { UserService } from '@core/services/user.service';
 import { Department } from '@core/models/department.model';
 import { EVENT_CATEGORY_OPTIONS } from '@core/constants/event-categories';
 import { ScrollToMessageDirective } from '../../../../shared/directives/scroll-to-message.directive';
+import { EventService } from '@core/services/event.service';
+import { EventResponse } from '@core/models/event.model';
+import { UserSummary } from '@core/models/user-summary.model';
+import { resolveEventImageUrl, getDefaultEventImage } from '@core/constants/event-image-presets';
 
 import { AiMonitoringService } from '@core/services/ai-monitoring.service';
 import { AiRecommendationMonitoringSummary, AiRecentPrediction, AiTopRecommendedEvent } from '@core/models/ai-monitoring.model';
@@ -44,9 +48,12 @@ export class AdminStats {
   private authService = inject(AuthService);
   private adminAnalyticsService = inject(AdminAnalyticsService);
   private userService = inject(UserService);
+  private eventService = inject(EventService);
   private aiMonitoringService = inject(AiMonitoringService);
   private aiHrCopilotMonitoringService = inject(AiHrCopilotMonitoringService);
 
+  users: UserSummary[] = [];
+  events: EventResponse[] = [];
 
   readonly trendChartWidth = 640;
   readonly trendChartHeight = 260;
@@ -95,6 +102,7 @@ export class AdminStats {
   isTopParticipantsCollapsed = false;
   topParticipantView: 'top5' | 'perDept' = 'top5';
   isTopParticipantPerDeptCollapsed = false;
+  topEventView: 'rated' | 'engaging' = 'rated';
   isTopRatedCollapsed = false;
   isTopEngagingCollapsed = false;
 
@@ -122,7 +130,51 @@ export class AdminStats {
       this.loadPlanningMonitoring();
     }
 
+    this.loadDepartments();
     this.loadAnalytics();
+    this.loadUsersAndEvents();
+  }
+
+  loadUsersAndEvents(): void {
+    this.userService.getAllUsers(0, 1000).subscribe({
+      next: (res) => {
+        this.users = res.items || [];
+        this.cdr.markForCheck();
+      }
+    });
+
+    this.eventService.getHrAdminEvents(0, 1000).subscribe({
+      next: (res) => {
+        this.events = res.items || [];
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  getUserAvatar(email: string): string | null {
+    if (!email) return null;
+    const user = this.users.find(u => u.email === email);
+    return user?.avatarUrl || null;
+  }
+
+  getUserAvatarById(userId: string): string | null {
+    if (!userId) return null;
+    const user = this.users.find(u => u.id === userId);
+    return user?.avatarUrl || null;
+  }
+
+  getUserInitialsById(userId: string): string {
+    const user = this.users.find(u => u.id === userId);
+    if (user) {
+      return (user.firstName?.charAt(0) || '') + (user.lastName?.charAt(0) || '');
+    }
+    return '?';
+  }
+
+  getEventImage(eventId: string): string {
+    const event = this.events.find(e => e.id === eventId);
+    if (!event) return getDefaultEventImage(null);
+    return resolveEventImageUrl(event.imageUrl, event.category);
   }
 
   loadPlanningMonitoring(): void {
